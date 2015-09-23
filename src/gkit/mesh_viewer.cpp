@@ -103,8 +103,10 @@ public:
             gk::IOFileSystem::manager().basePath(path);
             SDL_free(path);
         }
-        
+
+        std::cout <<"      ------ init widgets-----"<<std::endl;
         m_widgets.init();
+        std::cout <<"      ------ init widgets (ok)-----"<<std::endl;
         m_widgets.reshape(windowWidth(), windowHeight());
     }
     
@@ -147,6 +149,10 @@ public:
         // positionne la camera pour voir l'objet
         m_center= mesh->box.center();
         m_camera.look(mesh->box);
+
+
+        std::cout << "so far so good"<<std::endl;
+
         
         // shader program
         gk::programPath("shaders");
