@@ -87,41 +87,11 @@ solution "TP"
 			links { "GLEW" }
 
 
-local project_files = {
-	"tutorial1",
-	"tutorial2",
-	"tutorial3",
-	"tutorial4",
-        "tutorial5",
-        "tutorial6",
-	"mini_gkit2",
-	"image_viewer",
-	"mesh_viewer",
-	"shader_kit",
-	"filter_tutorial1",
-	"filter_compute_tutorial1",
-	"batch_perf",
-	"tessellation_tuto",
-	"tessellation_sphere",
-	"compute_tutorial1",
-	"compute_tutorial2",
-	"compute_tutorial3"
-}
-
-for i, name in ipairs(project_files) do
-	project(name)
+project("testGL")
 		language "C++"
 		kind "ConsoleApp"
 		files ( gkit_files )
-		files { name..'.cpp' }
-end
-
--- squelette d'application GL3 core profile sans utiliser gKit
-project("mini_gl3core")
-	language "C++"
-	kind "ConsoleApp"
-	files { "mini_gl3core.cpp" }
-
+		files { "mesh_viewer.cpp" }
 
 project("vizo")
 	language "C++"
