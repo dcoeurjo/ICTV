@@ -13,9 +13,9 @@
 #include "Definitions.h"
 #include "Utils.h"
 
-#define SHADER_PATH(x) "../ICTV/src/glsl/" x
+#define SHADER_PATH(x) "../glsl/" x
 #define CAPTURE_PATH(x) "./captures/" x
-#define DATA_PATH(x) "../ICTV/data/" x
+#define DATA_PATH(x) "../../data/" x
 #define VIEWPOINT_FILE "vp.txt" 
 #define QUATPOINT_FILE "qp.txt" 
 
