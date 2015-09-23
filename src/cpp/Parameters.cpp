@@ -8,8 +8,8 @@ Parameters::Parameters()
 {
     g_window.width = 1500;
     g_window.height = 1000;
-    g_window.major = 4;
-    g_window.minor = 3;
+    g_window.major = 3;
+    g_window.minor = 2;
     g_window.msaa_factor = 1; // multisampling level
     g_window.msaa_fixedsamplelocations = true; // fixed sample locations for msaa
 

@@ -46,7 +46,7 @@ int SdlFont::init_cache( TTF_Font *font )
     // fill the glyphs cache, replace non printable characters with a '?'
     // 1. compute texture area
     int area= 0;
-    SDL_Color color= { 255, 255, 255, 0 };
+    SDL_Color color= { 255, 0, 0, 0 };
     for(int i= 0; i < 128; i++)
     {
         const int g= isprint(i) ? i : '?';

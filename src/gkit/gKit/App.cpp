@@ -190,7 +190,7 @@ int App::createGLContext( const AppSettings& settings )
         if(GLEW_ARB_debug_output)
         {
             glDebugMessageControlARB(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, 0, GL_TRUE);
-            glDebugMessageCallbackARB(AppDebug, NULL);
+            //glDebugMessageCallbackARB(AppDebug, NULL);
             glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS_ARB);
         }
     }
