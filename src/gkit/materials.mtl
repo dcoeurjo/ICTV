@@ -1,0 +1,16 @@
+newmtl diffuse50SG
+Kd 0.7 0.7 0.7
+
+newmtl red50SG
+Kd 0.7 0 0
+
+newmtl diffuseLuminaire1SG
+Le 1 1 1
+
+newmtl mirrorSG
+Ns 256
+
+newmtl glossyred50SG
+Ks 0.7 0 0
+Ns 100
+
