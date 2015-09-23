@@ -1,0 +1,13 @@
+To be installed in the same folder as GKIT.
+
+Build & run
+	cd GKIT
+	premake4 gmake
+	make vizo
+	./vizo
+
+GKIT will lookup the sources with the path "../ICTV/src/cpp"
+
+data contains two txt files, vp & qp.
+Those are transformations matrices used to remember/load a viewpoint.
+
