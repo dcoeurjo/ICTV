@@ -191,7 +191,7 @@ int App::createGLContext( const AppSettings& settings )
         if(GLEW_ARB_debug_output)
         {
             glDebugMessageControlARB(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, 0, GL_TRUE);
-            glDebugMessageCallbackARB(AppDebug, NULL);
+            //glDebugMessageCallbackARB(AppDebug, NULL);
             glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS_ARB);
         }
     }
@@ -275,7 +275,7 @@ int App::createWindow( const int w, const int h, const AppSettings& settings )
     m_fullscreen= (settings.flags & SDL_WINDOW_FULLSCREEN) ? SDL_TRUE : SDL_FALSE;
 
     std::cout << "SDL window ok "<< std::endl;
-    
+
     if(createGLContext(settings) < 0)
     {
         closeWindow();
@@ -293,7 +293,7 @@ int App::createWindow( const int w, const int h, const AppSettings& settings )
     SDL_EventState(SDL_DROPFILE, SDL_ENABLE);
 
     std::cout << "Window created..."<<std::endl;
-    
+
     return 0;
 }
 
