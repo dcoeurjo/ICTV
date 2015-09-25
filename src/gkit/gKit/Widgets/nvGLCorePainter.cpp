@@ -1,6 +1,6 @@
 
 #include <cmath>
-
+#include <iostream>
 #include "Widgets/nvGLCorePainter.h"
 #include "ProgramManager.h"
 
@@ -70,6 +70,8 @@ int GLCorePainter::init( UIFont *font )
     program= gk::ProgramManager::manager().createProgram("widget.glsl")->name;
     if(program == 0)
         return -1;
+
+    std::cout << " %%%%%%%%%%%%%%% widget ok"<<std::endl;
     
     m_widget_program.program= program;
     m_widget_program.projection= glGetUniformLocation(program, "projection");

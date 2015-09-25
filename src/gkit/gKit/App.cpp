@@ -1,6 +1,7 @@
 
 #include <cassert>
 #include <cstdio>
+#include <iostream>
 
 #include "GL/GLPlatform.h"
 #ifndef _MSC_VER
@@ -76,7 +77,7 @@ void AppSettings::apply( ) const
     {
         // il faut imposer une version opengl pour obtenir un contexte debug / core
     #ifdef GK_OPENGL3
-        major= 3; minor= 3;
+        major= 3; minor= 2;
     #endif
     #ifdef GK_OPENGL4
         major= 4; minor= 3;
@@ -273,6 +274,8 @@ int App::createWindow( const int w, const int h, const AppSettings& settings )
     m_height= h;
     m_fullscreen= (settings.flags & SDL_WINDOW_FULLSCREEN) ? SDL_TRUE : SDL_FALSE;
 
+    std::cout << "SDL window ok "<< std::endl;
+
     if(createGLContext(settings) < 0)
     {
         closeWindow();
@@ -288,6 +291,8 @@ int App::createWindow( const int w, const int h, const AppSettings& settings )
 
     // active le drag&drop de fichiers
     SDL_EventState(SDL_DROPFILE, SDL_ENABLE);
+
+    std::cout << "Window created..."<<std::endl;
 
     return 0;
 }

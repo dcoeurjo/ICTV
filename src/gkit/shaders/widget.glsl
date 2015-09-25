@@ -1,4 +1,4 @@
-    #version 330
+#version 330
     
 #ifdef VERTEX_SHADER
     uniform mat4 projection;
