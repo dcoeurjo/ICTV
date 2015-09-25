@@ -37,12 +37,13 @@ Parameters::Parameters()
     g_draw_cells = false;
     g_draw_triangles = true;
     g_culling = true;
-    g_fromtexture = false;
+    g_fromtexture = true;
     g_solid_wireframe = true;
-    g_controls = true;
+    g_controls = false;
     g_gui = true;
     g_radial_length = true;
     g_textured_data = false;
+	g_curvradius = 10.0;
 
     g_scale = 3.7;
     g_tessel = 2;

@@ -62,7 +62,7 @@ void streamFrustum (void)
 void GPUOctree::loadBuffers()
 {
         const int root[] = {0,0,0,0};
-        const size_t cap = 1 << 26;
+        const size_t cap = 1 << 28;
 	
 	glGenBuffers (1, &Parameters::getInstance()->g_buffers[BUFFER_FRUSTUM]);
         glBindBuffer (GL_ARRAY_BUFFER, Parameters::getInstance()->g_buffers[BUFFER_FRUSTUM]);

@@ -36,6 +36,7 @@ public:
 class DataRaw : public DataLoader
 {
 public:	
+	DataRaw(int size) { sizex=sizey=sizez=size; }
 	virtual float* get32BData() { return data; }
 	virtual unsigned char* get8BData() { return data_char; }
 	virtual void loadFile(char* file);

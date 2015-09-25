@@ -62,8 +62,8 @@ uniform float u_scale; //octree levels length
 uniform int u_radial; //use radial distance for LoD
 uniform float u_time;
 
-float max_tex = log2(512);
-uint max_level =  9u; //max octree level; cannot be splitted more than this level
+float max_tex = log2(256);
+uint max_level =  6u; //max octree level; cannot be splitted more than this level
 
 
 

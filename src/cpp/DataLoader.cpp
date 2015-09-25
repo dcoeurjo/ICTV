@@ -7,6 +7,8 @@ void DataLoader::loadData32BGpu()
 	glGenTextures(1, &Parameters::getInstance()->g_textures[TEXTURE_DENSITY]);
 	glBindTexture(GL_TEXTURE_3D, Parameters::getInstance()->g_textures[TEXTURE_DENSITY]);
 	
+	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	
 	glTexImage3D(GL_TEXTURE_3D, 0, GL_R32F, sizex, sizey, sizez, 0, GL_RED, GL_FLOAT, data);
         glGenerateMipmap(GL_TEXTURE_3D);
 	
@@ -71,6 +73,8 @@ void DataTerrain::loadFile(char* file)
 //Files .raw provided by http://www.tc18.org/code_data_set/3D_images.php
 void DataRaw::loadFile(char* file)
 {
+	printf("Loading .raw file %s (size %d^3) ...\n", file, sizex);
+	
 	FILE* fd = fopen(file, "r");
 	if (fd == NULL)
 	{
@@ -82,16 +86,12 @@ void DataRaw::loadFile(char* file)
         fread(line1, sizeof(unsigned char), 8, fd);
         
         printf("%s\n", line1);*/
-     
-        sizex = 256;
-        sizey = 256;
-        sizez = 256;
         
 	unsigned long int total = sizex * sizey * sizez;
-        data = (float*) malloc(sizeof(float)*total);
-        data_char = (unsigned char*) malloc(sizeof(unsigned char)*total);
+    data = (float*) malloc(sizeof(float)*total);
+    data_char = (unsigned char*) malloc(sizeof(unsigned char)*total);
         
-        fread(data_char, sizeof(unsigned char), total, fd);
+    fread(data_char, sizeof(unsigned char), total, fd);
 	fclose(fd);
 	
 	unsigned long int i = 0;

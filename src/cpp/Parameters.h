@@ -64,6 +64,7 @@ public:
     float g_scale; //sets the size of the different levels
     float g_tessel; //tessellates the cell in N^3 smaller cells
     float g_isosurface; //sets the isovalue for potential or density fields
+    float g_curvradius;
     
     float g_time_elapsed; //in seconds
 };

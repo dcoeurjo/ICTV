@@ -69,9 +69,13 @@ void Shading::configureProgram()
 			Parameters::getInstance()->g_camera.pos[2]
    			);
 
-	glProgramUniform1i (Parameters::getInstance()->g_programs[PROGRAM_SKYBOX],
+	glProgramUniform1f (Parameters::getInstance()->g_programs[PROGRAM_SHADING],
+                    Parameters::getInstance()->g_uniform_locations[LOCATION_SHADING_CURVRADIUS],
+                    Parameters::getInstance()->g_curvradius);
+	
+	glProgramUniform1i (Parameters::getInstance()->g_programs[PROGRAM_SHADING],
                     Parameters::getInstance()->g_uniform_locations[LOCATION_SKYBOX_TEXTURE],
-                    TEXTURE_ENVMAP);GLuint *program = &Parameters::getInstance()->g_programs[PROGRAM_SKYBOX];
+                    TEXTURE_ENVMAP);
 }
 
 void Shading::loadProgram()
@@ -128,6 +132,9 @@ void Shading::loadProgram()
 	
 	Parameters::getInstance()->g_uniform_locations[LOCATION_SHADING_CAMERA] =
 		glGetUniformLocation (Parameters::getInstance()->g_programs[PROGRAM_SHADING], "u_camera_pos");
+		
+	Parameters::getInstance()->g_uniform_locations[LOCATION_SHADING_CURVRADIUS] =
+		glGetUniformLocation (Parameters::getInstance()->g_programs[PROGRAM_SHADING], "u_curv_radius");
 	}
 	
 	{

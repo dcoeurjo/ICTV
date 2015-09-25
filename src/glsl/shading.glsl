@@ -71,6 +71,7 @@ in vec3 geometry_view;
 
 out vec4 fragment_color;
 
+uniform float u_curv_radius;
 uniform int textured;
 uniform int solid_wireframe;
 
@@ -114,121 +115,28 @@ vec3 perturb_normal(vec3 surf_pos, vec3 normal, float h)
 void main( )
 {
 	/**Normal**/
-	vec3 geometry_normal = getNormal(geometry_position, 0.005); 
+	//vec3 geometry_normal = getNormal(geometry_position, 0.005); 
 	//vec3 geometry_normal = 1*getNormal(geometry_position, (1.0/(512.0*500))*length(geometry_view));
-	//vec3 geometry_normal = -1 * normalize(cross( dFdx(geometry_position.xyz), dFdy(geometry_position.xyz)));
+	vec3 geometry_normal = -1 * normalize(cross( dFdx(geometry_position.xyz), dFdy(geometry_position.xyz)));
 
-	/**Color**/
-	float h = 0;
+	float r = u_curv_radius;
 	
-	/*float brightness = 0.2;
-	vec3 color_levels[6] = vec3[6] (
-		vec3 (1, brightness, brightness),
-		vec3 (brightness, 1, brightness),
-		vec3 (brightness, brightness, 1),
-		vec3 (brightness, 1, 1),
-		vec3 (1, 1, brightness),
-		vec3 (1, brightness, 1)
-	);
-	vec4 tmp_color = vec4(color_levels[uint(gl_PrimitiveID)%6], 1);// vec4(0.4, 0.8, 0.7, 1);*/
+	float density = textureLod(densities, geometry_position, log2(r)).r;
 	
-	vec4 tmp_color = vec4(geometry_normal, 1);
-	if (textured == 1)
-	{
-		float tex_factor = 20;
-		float bump_factor = 2;
-		vec2 tex_x, tex_y, tex_z;
-		vec3 weights = vec3(0);
-		
-		tex_x.x = geometry_position.y;
-		tex_y.x = geometry_position.x;
-		tex_z.x = geometry_position.x;
-		
-		tex_x.y = geometry_position.z;
-		tex_y.y = geometry_position.z;
-		tex_z.y = geometry_position.y;
-		
-		float delta = 0.1;
-		float mw = 1;
-		float normalization = 0;
-
-		if (geometry_position.x < 0)
-		        tex_x.x *= -1;
-		if (geometry_position.y >= 0)
-		        tex_y.x *= -1;
-		if (geometry_position.x < 0)
-		        tex_z.x *= -1;
-		        
-		weights.x = pow( max(abs(geometry_normal.x) - delta, 0.0), mw);
-		weights.y = pow( max(abs(geometry_normal.y) - delta, 0.0), mw);
-		weights.z = pow( max(abs(geometry_normal.z) - delta, 0.0), mw);
-		
-		normalization = weights.x + weights.y + weights.z;
-		weights /= normalization;
-		
-		/*h =  texture(u_texbump_x, tex_x*bump_factor).r * weights.x;
-		h += texture(u_texbump_y, tex_x*bump_factor).r * weights.x;
-		h += texture(u_texbump_z, tex_z*bump_factor).r * weights.z;
-		
-		geometry_normal = perturb_normal(geometry_position, geometry_normal, h);
-		
-		weights.x = pow( max(abs(geometry_normal.x) - delta, 0.0), mw);
-		weights.y = pow( max(abs(geometry_normal.y) - delta, 0.0), mw);
-		weights.z = pow( max(abs(geometry_normal.z) - delta, 0.0), mw);
-		
-		normalization = weights.x + weights.y + weights.z;
-		weights /= normalization;*/
-	  
-		tmp_color =  texture(u_texcolor_y, tex_x*tex_factor) * weights.x;
-		tmp_color += texture(u_texcolor_z, tex_y*tex_factor) * weights.y;
-		tmp_color += texture(u_texcolor_y, tex_z*tex_factor) * weights.z;
-	}
+	float fact83r = 8.0/(3.0*r);
+	float fact4pir4 = 4.0 / (3.14159*r*r*r*r);
 	
-	if (fromtexture == 1)
-	{
-		vec3 light_dir = vec3(1, -1, -1);
-		float w = 0.5;
-		fragment_color = pow( clamp(dot(normalize(light_dir), normalize(geometry_normal)), 0.0, 1.0), 1) * w * tmp_color + tmp_color * (1-w);
-	}
-	else
-	{
+	float curvature = fact83r - fact4pir4*density;
+	float min_c = fact83r - fact4pir4;
+	float max_c = fact83r;
 	
-	/**Ocean**/
-	/*https://www.shadertoy.com/view/Ms2SD1*/
+	float norm_curv = (curvature-min_c) / (max_c-min_c);
 	
-	/*const vec3 SEA_BASE = vec3(0.2,0.4,0.4);
-	const vec3 SEA_WATER_COLOR = vec3(0.8,0.9,0.6);
+	float disp = norm_curv;
 	
-	vec3 sun_pos = vec3(0.5, 2, -2);
-	vec3 real_pos = (geometry_position - 0.5) * u_scene_size;
-	vec3 cam_dir = normalize(geometry_view);
-	vec3 light_dir = normalize(sun_pos - geometry_position);
+	vec3 color = disp*vec3(1, 0, 0) + (1 - disp)*vec3(0, 0, 1);
 	
-	float fresnel = 1.0 - max(dot(geometry_normal,-cam_dir),0.0);
-	fresnel = pow(fresnel,3.0) * 0.65;
-		
-	vec3 reflected = vec3(1);//getSkyColor(reflect(eye,n));    
-	vec3 refracted = SEA_BASE + diffuse(geometry_normal,light_dir,20.0) * SEA_WATER_COLOR * 0.12; 
-	
-	vec3 color = mix(refracted,reflected,fresnel);
-	color += SEA_WATER_COLOR * 0.18 * (geometry_position.y - 0.6);
-	color += vec3(specular(geometry_normal,light_dir,cam_dir,20.0));
-	
-	fragment_color = vec4(color, 1);*/
-	
-	
-	/**Metaballs**/
-	
-		vec3 real_pos = (geometry_position - 0.5) * u_scene_size;
-		vec3 cam_dir = normalize(geometry_view);
-		vec3 light_dir = vec3(1);
-			
-		vec3 color = 0.7 * diffuse(geometry_normal, light_dir, 1) * vec3(1, 0, 0);
-		color += 0.5 * vec3(specular(geometry_normal,light_dir,cam_dir,20.0));
-		
-		fragment_color = vec4(color, 1);
-	}
-
+	fragment_color = vec4( color * (0.5*abs(dot(normalize(geometry_normal), vec3(0, 1, 1))) + 0.5), 1);
 
 	if (solid_wireframe == 1)
 	{

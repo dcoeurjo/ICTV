@@ -158,7 +158,9 @@ private:
 	BlitFramebuffer blitter;
 	
 	//Data Loaded
-	DataTerrain dl;
+	DataLoader* dl;
+	char** argv;
+	int argc;
 
 	//Bench
 	int frame;
@@ -192,8 +194,9 @@ private:
 	bool plot;
 	bool transition_cells_displayed;
 	bool reload_fetch;
+	
 public:
-	Vizo() : gk::App()
+	Vizo(int _argc, char** _argv) : gk::App()
 	{
 		//Creates OpenGL's context
 		gk::AppSettings settings;
@@ -208,6 +211,9 @@ public:
 		//Init gui
 		m_widgets.init();
 		m_widgets.reshape(windowWidth(), windowHeight());
+		
+		argc = _argc;
+		argv = _argv;
 	}
     
 	~Vizo( ) {}
@@ -227,9 +233,16 @@ public:
 		cam_speed = CAM_SPEED;
 		cam_rotate = CAM_ROTATE;
 
-		//dl.loadFile(DATA_PATH("Geomod/helene-moria-512.vox"));
-		//dl.loadFile(DATA_PATH("Medic/skull.raw"));
-		//dl.loadData32BGpu();
+		int type = atoi(argv[2]);
+		if (type == 1)
+		{
+			float size = 256;
+			if (argc >= 4)
+				size = atoi(argv[3]);
+			dl = new DataRaw(size);
+		}
+		dl->loadFile(argv[1]);
+		dl->loadData32BGpu();
 		
 		lodManager.init();
 		extractor.init();
@@ -805,6 +818,9 @@ public:
 				sprintf(tmp, "Isosurface %.2f", Parameters::getInstance()->g_isosurface);
 				m_widgets.doLabel(nv::Rect(), tmp);
 				m_widgets.doHorizontalSlider(nv::Rect(0,0, 200, 0), 0.f, 1.f, &(Parameters::getInstance()->g_isosurface));
+				sprintf(tmp, "Curvature Radius %.2f", Parameters::getInstance()->g_curvradius);
+				m_widgets.doLabel(nv::Rect(), tmp);
+				m_widgets.doHorizontalSlider(nv::Rect(0,0, 200, 0), 1.f, 30.f, &(Parameters::getInstance()->g_curvradius));
 				
 				static bool unfold_flags= 0;
 				static bool unfold_actions= 0;
@@ -877,6 +893,10 @@ public:
 		window_draw();
 		GLint64 stop; glGetInteger64v(GL_TIMESTAMP, &stop); // Nanoseconds
 		
+		double cpu_time = (stop - start) - sync_cell_cull - sync_count_triangles;
+		cpu_time /= 1000; // Microseconds
+		GUI( cpu_time );  
+		
 		/** Screen Recording **/
 		if (Parameters::getInstance()->g_capture.enabled && frame%2 == 0) 
 		{
@@ -885,12 +905,9 @@ public:
                         std::string str = std::string(CAPTURE_PATH()) /*+ currentDateTime() + "_"*/ + std::string(buf) + ".bmp";
 			gk::writeFramebuffer(str.c_str());
 			++(Parameters::getInstance()->g_capture.frame);
+			Parameters::getInstance()->g_capture.enabled = !Parameters::getInstance()->g_capture.enabled;
 		}
 
-		double cpu_time = (stop - start) - sync_cell_cull - sync_count_triangles;
-		cpu_time /= 1000; // Microseconds
-		
-		GUI( cpu_time );  
 		present();
              
 		frame++;
@@ -937,7 +954,12 @@ public:
 
 int main( int argc, char **argv )
 {
-	Vizo app;
+	if (argc < 3)
+	{
+		printf("Usage : %s <data_file> <type> [size]\n\n Type: \t 1 - .raw files\n Size:\t default = 256\n", argv[0]);
+		return 0;
+	}
+	Vizo app(argc, argv);
 	app.run();
 
 	return 0;
