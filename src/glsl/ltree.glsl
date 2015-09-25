@@ -600,7 +600,8 @@ void lt_cell_2_15 (in uint key, out vec2 cell, out float cell_size) {
 	uint l;
 	lt_decode_2_15 (key, l, p); // get cell pos
 	cell_size = 1.0 / float (1u << l); // normalized size
-	cell = p * cell_size;
+	float tmp = cell_size;
+        cell = vec2(p) * tmp;
 }
 void lt_cell_2_15 (in uint key, out vec2 cell, out float cell_size, out vec2 parent_cell) {
 	lt_cell_2_15 (key, cell, cell_size);

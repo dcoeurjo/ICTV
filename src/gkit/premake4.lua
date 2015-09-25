@@ -14,7 +14,7 @@ solution "TP"
 			"gKit",
 		}
 
-		defines { "GK_OPENGL4", "VERBOSE" }
+		defines { "GK_OPENGL3", "VERBOSE" }
 
 		configuration "debug"
 			defines { "DEBUG" }

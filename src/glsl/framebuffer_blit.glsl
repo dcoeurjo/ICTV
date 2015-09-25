@@ -1,4 +1,4 @@
-#version 430
+#version 410
 
 #ifndef MSAA_FACTOR
 #error MSAA_FACTOR must be specified by the application

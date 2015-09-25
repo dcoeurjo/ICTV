@@ -1,4 +1,4 @@
-#version 430
+#version 410
 
 uniform usampler1D code_class_tr;
 uniform usampler2D code_vertices_tr;

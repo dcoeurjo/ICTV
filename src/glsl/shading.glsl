@@ -1,4 +1,4 @@
-#version 430
+#version 410
 
 #ifdef VERTEX_SHADER
 
