@@ -72,6 +72,9 @@ in vec3 geometry_view;
 out vec4 fragment_color;
 
 uniform float u_curv_radius;
+uniform float u_kmin;
+uniform float u_kmax;
+
 uniform int textured;
 uniform int solid_wireframe;
 
@@ -112,6 +115,40 @@ vec3 perturb_normal(vec3 surf_pos, vec3 normal, float h)
 	
 }
 
+vec3 HSVtoRGB(vec3 hsv)
+{
+  int i;
+  double f, p, q, t;
+  if( hsv.y == 0 ) {                     // achromatic (gray)
+    return vec3(hsv.z);
+  }
+  i = int( floor( hsv.x / 60 ) );
+  f = ( hsv.x / 60 ) - i;                        // factorial part of h
+  p = hsv.z * ( 1.0 - hsv.y );
+  q = hsv.z * ( 1.0 - hsv.y * f );
+  t = hsv.z * ( 1.0 - hsv.y * ( 1.0 - f ) );
+
+  if (i==0)
+  	return vec3(hsv.z, t, p);
+  if (i==1)
+  	return vec3(q, hsv.z, p);
+  if (i==2)
+  	return vec3(p, hsv.z, t);
+  if (i==3)
+  	return vec3(p, q, hsv.z);
+  if (i==4)
+  	return vec3(t, p, hsv.z);
+
+  return vec3(hsv.z, p, q);
+}
+
+vec3 colormap(float scale)
+{
+  float cycles = 1;
+  const double hue = 360 * ( scale * cycles - floor(scale * cycles));
+  return HSVtoRGB( vec3(hue, 0.9, 1.0) );
+}
+
 void main( )
 {
 	/**Normal**/
@@ -121,22 +158,33 @@ void main( )
 
 	float r = u_curv_radius;
 	
-	float density = textureLod(densities, geometry_position, log2(r)).r;
-	
+	float density = textureLod(densities, geometry_position, log2(r)+1.0).r;
+	float volume =  ((4*3.14159*(r*r*r))/3.0) * density;
+	//float volume =  (r*r*r) * density;
+
+	//Curvature from volume
 	float fact83r = 8.0/(3.0*r);
 	float fact4pir4 = 4.0 / (3.14159*r*r*r*r);
 	
-	float curvature = fact83r - fact4pir4*density;
-	float min_c = fact83r - fact4pir4;
-	float max_c = fact83r;
+	float curvature = fact83r - fact4pir4*volume;
 	
-	float norm_curv = (curvature-min_c) / (max_c-min_c);
+	//float min_c = -0.163115;
+	//float max_c = 0.231016;
+	
+	float norm_curv = curvature;
+	if(u_kmax > u_kmin)
+		norm_curv = (curvature-u_kmin) / (u_kmax-u_kmin);
 	
 	float disp = norm_curv;
 	
-	vec3 color = disp*vec3(1, 0, 0) + (1 - disp)*vec3(0, 0, 1);
+
+	vec3 color;
+	if ((disp<0) || (disp>1)) color= vec3(0,0,0);
+	else
+	  color= colormap(disp);//disp*vec3(1, 0, 0) + (1 - disp)*vec3(0, 0, 1);
 	
-	fragment_color = vec4( color * (0.5*abs(dot(normalize(geometry_normal), vec3(0, 1, 1))) + 0.5), 1);
+
+	fragment_color = vec4( color * (0.5*abs(dot(normalize(geometry_normal), vec3(-1, -1, -1))) + 0.5), 1);
 
 	if (solid_wireframe == 1)
 	{

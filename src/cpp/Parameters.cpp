@@ -44,6 +44,8 @@ Parameters::Parameters()
     g_radial_length = true;
     g_textured_data = false;
 	g_curvradius = 10.0;
+    g_curvmin = 0;
+    g_curvmax = 1;
 
     g_scale = 3.7;
     g_tessel = 2;

@@ -101,7 +101,12 @@ void BlitFramebuffer::loadProgram()
         gk::GLCompiler& c = gk::loadProgram(SHADER_PATH("framebuffer_blit.glsl"));
         c.defineVertex("MSAA_FACTOR", Format("%i", Parameters::getInstance()->g_window.msaa_factor).text);
         c.defineFragment("MSAA_FACTOR", Format("%i", Parameters::getInstance()->g_window.msaa_factor).text);
-        Parameters::getInstance()->g_programs[PROGRAM_FRAMEBUFFER_BLIT] = c.make()->name;
+
+        GLProgram* tmp = c.make();
+        if (tmp->errors)
+            exit(-1);
+
+        Parameters::getInstance()->g_programs[PROGRAM_FRAMEBUFFER_BLIT] = tmp->name;
 
         Parameters::getInstance()->g_uniform_locations[LOCATION_FRAMEBUFFER_BLIT_VIEWPORT] =
                 glGetUniformLocation (Parameters::getInstance()->g_programs[PROGRAM_FRAMEBUFFER_BLIT], "u_viewport");

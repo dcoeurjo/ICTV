@@ -91,6 +91,8 @@ void main (void)
 	
 	voxel.level = lt_level_3_20(i_key.xy);
 	
+	/**/
+	
 	uint a = gl_InstanceID % u_tessellation;
 	uint b = gl_InstanceID / u_tessellation;
 	voxel.scales = vec3(s / float(u_tessellation));
@@ -100,7 +102,7 @@ void main (void)
 	for(int i=0; i<3; i++)
 	{
 		if (side_neighbour[i] > 0)
-			voxel.corner[i] += voxel.scales * (u_tessellation - 1);
+			voxel.corner[i] += voxel.scales[i] * (u_tessellation - 1);
 		if (side_neighbour[i] != 0)
 		{
 			move[(i+1) % 3] = a;
@@ -121,7 +123,8 @@ void main (void)
 	voxel.tr_code_id_cw[3] = voxel.tr_code_id_cw[2] >> 7;
 	
 	voxel.tr_code_id_cw[2] &= 0x7F;
-	
+	/**/
+
 	indirect_draw current_cmd;
 	tgl_vertices current_vertices;
 	

@@ -72,6 +72,14 @@ void Shading::configureProgram()
 	glProgramUniform1f (Parameters::getInstance()->g_programs[PROGRAM_SHADING],
                     Parameters::getInstance()->g_uniform_locations[LOCATION_SHADING_CURVRADIUS],
                     Parameters::getInstance()->g_curvradius);
+
+    glProgramUniform1f (Parameters::getInstance()->g_programs[PROGRAM_SHADING],
+                    Parameters::getInstance()->g_uniform_locations[LOCATION_SHADING_CURVMIN],
+                    Parameters::getInstance()->g_curvmin);
+
+    glProgramUniform1f (Parameters::getInstance()->g_programs[PROGRAM_SHADING],
+                    Parameters::getInstance()->g_uniform_locations[LOCATION_SHADING_CURVMAX],
+                    Parameters::getInstance()->g_curvmax);
 	
 	glProgramUniform1i (Parameters::getInstance()->g_programs[PROGRAM_SHADING],
                     Parameters::getInstance()->g_uniform_locations[LOCATION_SKYBOX_TEXTURE],
@@ -90,7 +98,11 @@ void Shading::loadProgram()
         c.include(SHADER_PATH("noise.glsl") );
         c.include(SHADER_PATH("octree_common.glsl") );
         c.include(SHADER_PATH("ltree.glsl") );
-        *program = c.make()->name;
+        GLProgram* tmp = c.make();
+        if (tmp->errors)
+            exit(-1);
+
+        *program = tmp->name;
         
         //glTransformFeedbackVaryings (*program, 1, varyings, GL_SEPARATE_ATTRIBS);
         glLinkProgram (*program);
@@ -135,6 +147,10 @@ void Shading::loadProgram()
 		
 	Parameters::getInstance()->g_uniform_locations[LOCATION_SHADING_CURVRADIUS] =
 		glGetUniformLocation (Parameters::getInstance()->g_programs[PROGRAM_SHADING], "u_curv_radius");
+        Parameters::getInstance()->g_uniform_locations[LOCATION_SHADING_CURVMIN] =
+        glGetUniformLocation (Parameters::getInstance()->g_programs[PROGRAM_SHADING], "u_kmin");
+        Parameters::getInstance()->g_uniform_locations[LOCATION_SHADING_CURVMAX] =
+        glGetUniformLocation (Parameters::getInstance()->g_programs[PROGRAM_SHADING], "u_kmax");
 	}
 	
 	{
@@ -142,7 +158,11 @@ void Shading::loadProgram()
 
         fprintf (stderr, "loading skybox program... "); fflush (stderr);
         gk::GLCompiler& c = gk::loadProgram(SHADER_PATH("skybox.glsl"));
-        *program = c.make()->name;
+        GLProgram* tmp = c.make();
+        if (tmp->errors)
+            exit(-1);
+
+        *program = tmp->name;
         glLinkProgram (*program);
 
         Parameters::getInstance()->g_uniform_locations[LOCATION_SKYBOX_TEXTURE] =

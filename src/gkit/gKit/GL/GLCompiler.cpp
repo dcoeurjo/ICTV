@@ -439,6 +439,7 @@ GLProgram *GLCompiler::make( )
             MESSAGE("error linking program: no log. failed.\n");
         
         program->errors= true;
+
         return program;
     }
     

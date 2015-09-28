@@ -63,7 +63,7 @@ uniform int u_radial; //use radial distance for LoD
 uniform float u_time;
 
 float max_tex = log2(256);
-uint max_level =  6u; //max octree level; cannot be splitted more than this level
+uint max_level =  12u; //max octree level; cannot be splitted more than this level
 
 
 

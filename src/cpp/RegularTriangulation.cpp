@@ -139,7 +139,11 @@ void RegularTriangulation::loadPrograms()
 	c.include(SHADER_PATH("octree_common.glsl") );
 	c.include(SHADER_PATH("ltree.glsl") );
 
-	*program = c.make()->name;
+	GLProgram* tmp = c.make();
+	if (tmp->errors)
+		exit(-1);
+
+	*program = tmp->name;
 
 	glLinkProgram (*program);
 

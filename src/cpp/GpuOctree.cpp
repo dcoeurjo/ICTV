@@ -341,11 +341,15 @@ void GPUOctree::loadPrograms()
         fprintf (stderr, "Loading octree LOD program... "); fflush (stderr);        //struct program_args_t *args = program_args_create ();
 	
         gk::GLCompiler& c = gk::loadProgram( SHADER_PATH("octree_lod.glsl"));
-	c.include(SHADER_PATH("noise.glsl") );
-	c.include(SHADER_PATH("octree_common.glsl") );
-	c.include(SHADER_PATH("ltree.glsl") );
+	   c.include(SHADER_PATH("noise.glsl") );
+	   c.include(SHADER_PATH("octree_common.glsl") );
+	   c.include(SHADER_PATH("ltree.glsl") );
 
-        *program = c.make()->name;
+        GLProgram* tmp = c.make();
+        if (tmp->errors)
+            exit(-1);
+
+        *program = tmp->name;
         glTransformFeedbackVaryings (*program, 1, varyings, GL_SEPARATE_ATTRIBS);
         glLinkProgram (*program);
 
@@ -375,11 +379,15 @@ void GPUOctree::loadPrograms()
 
         fprintf (stderr, "Loading octree cull program... "); fflush (stderr);
         gk::GLCompiler& c = gk::loadProgram( SHADER_PATH("octree_cull.glsl") );
-	c.include(SHADER_PATH("noise.glsl") );
-	c.include(SHADER_PATH("octree_common.glsl") );
-	c.include(SHADER_PATH("ltree.glsl") );
+    	c.include(SHADER_PATH("noise.glsl") );
+    	c.include(SHADER_PATH("octree_common.glsl") );
+    	c.include(SHADER_PATH("ltree.glsl") );
 
-        *program = c.make()->name;
+        GLProgram* tmp = c.make();
+        if (tmp->errors)
+            exit(-1);
+
+        *program = tmp->name;
         glTransformFeedbackVaryings (*program, 7, varyings, GL_INTERLEAVED_ATTRIBS);
         glLinkProgram (*program);
 
@@ -409,27 +417,31 @@ void GPUOctree::loadPrograms()
 	}
 	
 	{
-	GLuint *program = &Parameters::getInstance()->g_programs[PROGRAM_CELL_DRAW];
+	   GLuint *program = &Parameters::getInstance()->g_programs[PROGRAM_CELL_DRAW];
 	
-	fprintf (stderr, "Loading cell draw program... "); fflush (stderr);
+	   fprintf (stderr, "Loading cell draw program... "); fflush (stderr);
         gk::GLCompiler& c = gk::loadProgram( SHADER_PATH("cell_draw.glsl"));
-	c.include(SHADER_PATH("noise.glsl") );
-	c.include(SHADER_PATH("octree_common.glsl") );
-	c.include(SHADER_PATH("ltree.glsl") );
-        *program = c.make()->name;
+    	c.include(SHADER_PATH("noise.glsl") );
+    	c.include(SHADER_PATH("octree_common.glsl") );
+    	c.include(SHADER_PATH("ltree.glsl") );
+        GLProgram* tmp = c.make();
+        if (tmp->errors)
+            exit(-1);
+
+        *program = tmp->name;
 	
-	Parameters::getInstance()->g_uniform_locations[LOCATION_DRAW_SCENE_SIZE] =
-                glGetUniformLocation (Parameters::getInstance()->g_programs[PROGRAM_CELL_DRAW], "u_scene_size");
-	Parameters::getInstance()->g_uniform_locations[LOCATION_CELL_TAN_FOVY] =
-                glGetUniformLocation (Parameters::getInstance()->g_programs[PROGRAM_CELL_DRAW], "u_tan_fovy");
-	Parameters::getInstance()->g_uniform_locations[LOCATION_CELL_SCALE] =
-                glGetUniformLocation (Parameters::getInstance()->g_programs[PROGRAM_CELL_DRAW], "u_scale");
-	Parameters::getInstance()->g_uniform_locations[LOCATION_DRAW_DENSITY] =
-                glGetUniformLocation (Parameters::getInstance()->g_programs[PROGRAM_CELL_DRAW], "densities");
-	Parameters::getInstance()->g_uniform_locations[LOCATION_CELL_FROMTEXTURE] =
-		glGetUniformLocation (Parameters::getInstance()->g_programs[PROGRAM_CELL_DRAW], "fromtexture");
-	Parameters::getInstance()->g_uniform_locations[LOCATION_CELL_TIME] =
-		glGetUniformLocation (Parameters::getInstance()->g_programs[PROGRAM_CELL_DRAW], "u_time");
+    	Parameters::getInstance()->g_uniform_locations[LOCATION_DRAW_SCENE_SIZE] =
+                    glGetUniformLocation (Parameters::getInstance()->g_programs[PROGRAM_CELL_DRAW], "u_scene_size");
+    	Parameters::getInstance()->g_uniform_locations[LOCATION_CELL_TAN_FOVY] =
+                    glGetUniformLocation (Parameters::getInstance()->g_programs[PROGRAM_CELL_DRAW], "u_tan_fovy");
+    	Parameters::getInstance()->g_uniform_locations[LOCATION_CELL_SCALE] =
+                    glGetUniformLocation (Parameters::getInstance()->g_programs[PROGRAM_CELL_DRAW], "u_scale");
+    	Parameters::getInstance()->g_uniform_locations[LOCATION_DRAW_DENSITY] =
+                    glGetUniformLocation (Parameters::getInstance()->g_programs[PROGRAM_CELL_DRAW], "densities");
+    	Parameters::getInstance()->g_uniform_locations[LOCATION_CELL_FROMTEXTURE] =
+    		glGetUniformLocation (Parameters::getInstance()->g_programs[PROGRAM_CELL_DRAW], "fromtexture");
+    	Parameters::getInstance()->g_uniform_locations[LOCATION_CELL_TIME] =
+    		glGetUniformLocation (Parameters::getInstance()->g_programs[PROGRAM_CELL_DRAW], "u_time");
 	
 	fprintf (stderr, "Success\n");
 	}

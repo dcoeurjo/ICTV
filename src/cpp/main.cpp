@@ -17,7 +17,7 @@
 
 #include <cmath>
 
-#define CAM_SPEED 20
+#define CAM_SPEED 40
 #define CAM_SPEED_MAX Parameters::getInstance()->g_geometry.scale[0] / 5.0
 #define CAM_ROTATE 0.1f
 #define CAM_ROTATE_MAX 1.0f
@@ -277,7 +277,10 @@ public:
 		
 		fprintf(plotfd, "# Frame \t\t TotalCells \t\t RegCells \t\t TrCells \t\t Tgl \t\t LodTime (ms) \t\t CullTime (ms) \t\t RegTglTime (ms) \t\t TrTglTime (ms)\t\t ShadingTime (ms)\t\t ShdLessTime (ms)\t\t TotalTime (ms) \t\t Cpu Time (ns)\n");
 		
-		load_quatPoint(cam);
+		if (Parameters::getInstance()->g_controls == true)
+			load_quatPoint(cam);
+		else 
+			load_viewPoint();
 		
 		reload_fetch = Parameters::getInstance()->g_fromtexture;
 		
@@ -370,9 +373,9 @@ public:
 			m_time_shading->end();
 		}
 		
-		fprintf(stdout, "%lf %lf %lf -- ", Parameters::getInstance()->g_camera.pos[0], Parameters::getInstance()->g_camera.pos[1], Parameters::getInstance()->g_camera.pos[2]);
-		fprintf(stdout, "[Cells] Total %d Regular %d Transition %d // [Triangles] Regular %d Transition %d ...\r", 
-			queryResult_lod, queryResult_regular, queryResult_transition, triangles_regular, triangles_transition); fflush(stdout);
+		//fprintf(stdout, "%lf %lf %lf -- ", Parameters::getInstance()->g_camera.pos[0], Parameters::getInstance()->g_camera.pos[1], Parameters::getInstance()->g_camera.pos[2]);
+		//fprintf(stdout, "[Cells] Total %d Regular %d Transition %d // [Triangles] Regular %d Transition %d ...\r", 
+		//	queryResult_lod, queryResult_regular, queryResult_transition, triangles_regular, triangles_transition); fflush(stdout);
        
 		m_time_blit->begin();
 		
@@ -532,9 +535,9 @@ public:
 						
 			//QUATERNION
 			if(key('s'))
-				cam.moveBackward(cam_speed*(gpu_time/1000.0));
+				cam.moveBackward(cam_speed);//*(gpu_time/1000.0));
 			if(key('z'))
-				cam.moveForward(cam_speed*(gpu_time/1000.0));
+				cam.moveForward(cam_speed);//*(gpu_time/1000.0));
 			
 			if(button & SDL_BUTTON(1))
 			{
@@ -580,13 +583,13 @@ public:
 				if(key(SDLK_UP))
 				{
 					Parameters::getInstance()->g_geometry.affine =
-						gk::Translate(gk::Vector(0, 0, cam_speed*(gpu_time/1000.0))) *
+						gk::Translate(gk::Vector(0, 0, cam_speed)) * //*(gpu_time/1000.0))) *
 						Parameters::getInstance()->g_geometry.affine;
 				}
 				if(key(SDLK_DOWN))
 				{
 					Parameters::getInstance()->g_geometry.affine =
-						gk::Translate(gk::Vector(0, 0, -cam_speed*(gpu_time/1000.0))) *
+						gk::Translate(gk::Vector(0, 0, -cam_speed)) * //*(gpu_time/1000.0))) *
 						Parameters::getInstance()->g_geometry.affine;
 				}
 			}
@@ -595,25 +598,25 @@ public:
 				if(key(SDLK_UP))
 				{
 					Parameters::getInstance()->g_geometry.affine =
-						gk::Translate(gk::Vector(0, -cam_speed*(gpu_time/1000.0), 0)) *
+						gk::Translate(gk::Vector(0, -cam_speed, 0)) * //*(gpu_time/1000.0), 0)) *
 						Parameters::getInstance()->g_geometry.affine;
 				}
 				if(key(SDLK_DOWN))
 				{
 					Parameters::getInstance()->g_geometry.affine =
-						gk::Translate(gk::Vector(0, cam_speed*(gpu_time/1000.0), 0)) *
+						gk::Translate(gk::Vector(0, cam_speed, 0)) * //*(gpu_time/1000.0), 0)) *
 						Parameters::getInstance()->g_geometry.affine;
 				}
 				if(key(SDLK_RIGHT))
 				{
 					Parameters::getInstance()->g_geometry.affine =
-						gk::Translate(gk::Vector(-cam_speed*(gpu_time/1000.0), 0, 0)) *
+						gk::Translate(gk::Vector(-cam_speed, 0, 0)) * //*(gpu_time/1000.0), 0, 0)) *
 						Parameters::getInstance()->g_geometry.affine;
 				}
 				if(key(SDLK_LEFT))
 				{
 					Parameters::getInstance()->g_geometry.affine =
-						gk::Translate(gk::Vector(cam_speed*(gpu_time/1000.0), 0, 0)) *
+						gk::Translate(gk::Vector(cam_speed, 0, 0)) * //*(gpu_time/1000.0), 0, 0)) *
 						Parameters::getInstance()->g_geometry.affine;
 				}
 			}
@@ -821,6 +824,12 @@ public:
 				sprintf(tmp, "Curvature Radius %.2f", Parameters::getInstance()->g_curvradius);
 				m_widgets.doLabel(nv::Rect(), tmp);
 				m_widgets.doHorizontalSlider(nv::Rect(0,0, 200, 0), 1.f, 30.f, &(Parameters::getInstance()->g_curvradius));
+				sprintf(tmp, "Curvature Min %.2f", Parameters::getInstance()->g_curvmin);
+				m_widgets.doLabel(nv::Rect(), tmp);
+				m_widgets.doHorizontalSlider(nv::Rect(0,0, 200, 0), -5.f, 5.f, &(Parameters::getInstance()->g_curvmin));
+				sprintf(tmp, "Curvature Max %.2f", Parameters::getInstance()->g_curvmax);
+				m_widgets.doLabel(nv::Rect(), tmp);
+				m_widgets.doHorizontalSlider(nv::Rect(0,0, 200, 0), -5.f, 5.f, &(Parameters::getInstance()->g_curvmax));
 				
 				static bool unfold_flags= 0;
 				static bool unfold_actions= 0;
