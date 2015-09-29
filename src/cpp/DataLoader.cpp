@@ -93,13 +93,34 @@ void DataRaw::loadFile(char* file)
         
     fread(data_char, sizeof(unsigned char), total, fd);
 	fclose(fd);
-	
+
+	unsigned char min = data_char[0];
+	unsigned char max = data_char[0];
+
 	unsigned long int i = 0;
 	for(unsigned long int x=0; x < sizex; x++)
 	for(unsigned long int y=0; y < sizey; y++)
 	for(unsigned long int z=0; z < sizez; z++)
 	{
-		data[i] = ((float)data_char[i] / 255.0);
+		if (data_char[i]<min)
+			min = data_char[i];
+
+		if (data_char[i]>max)
+			max = data_char[i];
+
+		i++;
+	}
+	
+	if (min != 0)
+		printf("ERROR min value != 0; normalization will fail");
+	printf("Max %d Min %d\n", max, min);
+
+	i = 0;
+	for(unsigned long int x=0; x < sizex; x++)
+	for(unsigned long int y=0; y < sizey; y++)
+	for(unsigned long int z=0; z < sizez; z++)
+	{
+		data[i] = ((float)data_char[i] / (float)max);
 		i++;
 	}
 

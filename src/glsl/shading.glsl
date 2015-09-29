@@ -157,20 +157,39 @@ void main( )
 	vec3 geometry_normal = -1 * normalize(cross( dFdx(geometry_position.xyz), dFdy(geometry_position.xyz)));
 
 	float r = u_curv_radius;
+	float volume = 0.0;
+
+	/*curvature O(1)*/
 	
 	float density = textureLod(densities, geometry_position, log2(r)+1.0).r;
-	float volume =  ((4*3.14159*(r*r*r))/3.0) * density;
-	//float volume =  (r*r*r) * density;
+	volume =  ((4*3.14159*(r*r*r))/3.0) * density;
+	//volume =  (r*r*r) * density;
+	
+	/**/
+
+	/*curvature regular integration*/
+
+	/*
+	float size_obj = 128.0;
+	for(float i=-r; i<=r; i++)
+	for(float j=-r; j<=r; j++)
+	for(float k=-r; k<=r; k++)
+	{
+		if (length(vec3(i, j, k)) <= r)
+		{
+			volume += textureLod(densities, geometry_position + (vec3(i, j, k)/size_obj), 0).r;
+		}
+	}
+	*/
+	
+	/**/
 
 	//Curvature from volume
 	float fact83r = 8.0/(3.0*r);
 	float fact4pir4 = 4.0 / (3.14159*r*r*r*r);
 	
 	float curvature = fact83r - fact4pir4*volume;
-	
-	//float min_c = -0.163115;
-	//float max_c = 0.231016;
-	
+
 	float norm_curv = curvature;
 	if(u_kmax > u_kmin)
 		norm_curv = (curvature-u_kmin) / (u_kmax-u_kmin);
