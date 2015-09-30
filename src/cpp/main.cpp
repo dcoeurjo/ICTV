@@ -332,7 +332,7 @@ public:
 			m_time_render_regular->end();
 		}
 		
-		if (transition_cells_displayed && queryResult_transition > 0)
+		if (transition_cells_displayed && queryResult_transition > 0 && !(Parameters::getInstance()->g_regular))
 		{
 			m_time_render_transition->begin();
 			
@@ -662,15 +662,15 @@ public:
 				/*sprintf(tmp, "Fovy %.2f", Parameters::getInstance()->g_camera.fovy);
 				m_widgets.doLabel(nv::Rect(), tmp);
 				m_widgets.doHorizontalSlider(nv::Rect(0,0, 200, 0), 10.f, 180.f, &(Parameters::getInstance()->g_camera.fovy));*/
-				sprintf(tmp, "Scale %.2f", Parameters::getInstance()->g_scale);
-				m_widgets.doLabel(nv::Rect(), tmp);
-				m_widgets.doHorizontalSlider(nv::Rect(0,0, 200, 0), 2.f, 28.f, &(Parameters::getInstance()->g_scale));
 				/*sprintf(tmp, "Tessellation %.2f", Parameters::getInstance()->g_tessel);
 				m_widgets.doLabel(nv::Rect(), tmp);
 				m_widgets.doHorizontalSlider(nv::Rect(0,0, 200, 0), 1.f, 10.f, &(Parameters::getInstance()->g_tessel));
 				sprintf(tmp, "Isosurface %.2f", Parameters::getInstance()->g_isosurface);
 				m_widgets.doLabel(nv::Rect(), tmp);
 				m_widgets.doHorizontalSlider(nv::Rect(0,0, 200, 0), 0.f, 1.f, &(Parameters::getInstance()->g_isosurface));*/
+				sprintf(tmp, "Mode:\nGT (1)\nGT hierachique (2)\nApprox (3)\n|GT-Approx| (4)\nCurrent %d", (int)Parameters::getInstance()->g_ground_truth);
+				m_widgets.doLabel(nv::Rect(), tmp);
+				m_widgets.doHorizontalSlider(nv::Rect(0,0, 200, 0), 1, 5.f, &(Parameters::getInstance()->g_ground_truth));
 				sprintf(tmp, "Curvature Radius %.2f", Parameters::getInstance()->g_curvradius);
 				m_widgets.doLabel(nv::Rect(), tmp);
 				m_widgets.doHorizontalSlider(nv::Rect(0,0, 200, 0), 1.f, 30.f, &(Parameters::getInstance()->g_curvradius));
@@ -697,7 +697,6 @@ public:
 					//m_widgets.doButton(nv::Rect(), "Display background", &(skybox));
 					m_widgets.doButton(nv::Rect(), "Display transitions", &transition_cells_displayed);
 					m_widgets.doButton(nv::Rect(), "LoD Radial", &(Parameters::getInstance()->g_radial_length));
-					m_widgets.doButton(nv::Rect(), "Ground truth", &(Parameters::getInstance()->g_ground_truth));
 					m_widgets.doButton(nv::Rect(), "Regular grid", &(Parameters::getInstance()->g_regular));
 					
 					m_widgets.endPanel();
@@ -732,6 +731,9 @@ public:
 				sprintf(tmp, "Camera speed %.2f", cam_speed);
 				m_widgets.doLabel(nv::Rect(), tmp);
 				m_widgets.doHorizontalSlider(nv::Rect(0,0, 200, 0), 0.f, CAM_SPEED_MAX, &cam_speed);
+				sprintf(tmp, "Scale %.2f", Parameters::getInstance()->g_scale);
+				m_widgets.doLabel(nv::Rect(), tmp);
+				m_widgets.doHorizontalSlider(nv::Rect(0,0, 200, 0), 2.f, 28.f, &(Parameters::getInstance()->g_scale));
 			}
 		}
 		

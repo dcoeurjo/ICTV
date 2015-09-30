@@ -43,7 +43,9 @@ Parameters::Parameters()
     g_gui = true;
     g_radial_length = true;
     g_textured_data = false;
-    g_ground_truth = false;
+
+    g_ground_truth = 3;
+    
     g_regular = false;
     g_radius_show = true;
 

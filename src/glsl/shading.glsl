@@ -156,20 +156,17 @@ void main( )
 	vec3 geometry_normal = -1 * normalize(cross( dFdx(geometry_position.xyz), dFdy(geometry_position.xyz)));
 
 	float r = u_curv_radius;
-	float volume = 0.0;
-
-	float vol_boule = ((4*3.14159*(r*r*r))/3.0);
-
-	float gt_curvature = 0.0;
-	float approx_curvature = 0.0;
-
-	float disp;
 	vec3 color;
 
 	/*curvature from regular integration*/
 
-	if (false)
+	if (u_ground_truth == 4)
 	{
+		float volume = 0.0;
+		float gt_curvature = 0.0;
+		float approx_curvature = 0.0;
+		float vol_boule = ((4*3.14159*(r*r*r))/3.0);
+
 		float size_obj = u_size_tex;
 		for(float i=-r; i<r; i++)
 		for(float j=-r; j<r; j++)
@@ -202,63 +199,90 @@ void main( )
 		if(u_kmax > u_kmin)
 			approx_curvature = (curvature-u_kmin) / (u_kmax-u_kmin);
 
-		disp = length(gt_curvature - approx_curvature);
+		float diff = length(gt_curvature - approx_curvature);
 		float mind = -0.1;
 		float maxd = 0.1;
-		disp = (disp + mind) / (maxd - mind);
-		color= disp * vec3(1, 0, 0) + (1- disp)*vec3(0, 0, 1);
+		diff = (diff + mind) / (maxd - mind);
+		color= diff * vec3(1, 0, 0) + (1- diff)*vec3(0, 0, 1);
 	}
-	else
+	else if (u_ground_truth == 1)
 	{
-		if (u_ground_truth == 1)
+		float volume = 0.0;
+		float gt_curvature = 0.0;
+		
+		float size_obj = u_size_tex;
+		for(float i=-r; i<r; i++)
+		for(float j=-r; j<r; j++)
+		for(float k=-r; k<r; k++)
 		{
-			float size_obj = u_size_tex;
-			for(float i=-r; i<r; i++)
-			for(float j=-r; j<r; j++)
-			for(float k=-r; k<r; k++)
+			vec3 probe = vec3(i+0.5, j+0.5, k+0.5);
+			if (length(probe) <= r)
 			{
-				vec3 probe = vec3(i+0.5, j+0.5, k+0.5);
-				if (length(probe) <= r)
-				{
-					volume += textureLod(densities, geometry_position + (probe/size_obj), 0).r;
-				}
+				volume += textureLod(densities, geometry_position + (probe/size_obj), 0).r;
 			}
-
-			//Curvature from volume
-			float fact83r = 8.0/(3.0*r);
-			float fact4pir4 = 4.0 / (3.14159*r*r*r*r);
-			
-			float curvature = fact83r - fact4pir4*volume;
-
-			gt_curvature = curvature;
-			if(u_kmax > u_kmin)
-				gt_curvature = (curvature-u_kmin) / (u_kmax-u_kmin);
-
-		}
-		else /*curvature from O(1) probing*/
-		{
-			float density = textureLod(densities, geometry_position, log2(r)).r;
-			volume =  ((4*3.14159*(r*r*r))/3.0) * density;
-			//volume =  (r*r*r) * density;
-
-			float fact83r = 8.0/(3.0*r);
-			float fact4pir4 = 4.0 / (3.14159*r*r*r*r);
-			
-			float curvature = fact83r - fact4pir4*volume;
-
-			approx_curvature = curvature;
-			if(u_kmax > u_kmin)
-				approx_curvature = (curvature-u_kmin) / (u_kmax-u_kmin);
 		}
 
-		if(u_ground_truth == 1)
-			disp = gt_curvature;
-		else
-			disp = approx_curvature;
+		//Curvature from volume
+		float fact83r = 8.0/(3.0*r);
+		float fact4pir4 = 4.0 / (3.14159*r*r*r*r);
+		
+		float curvature = fact83r - fact4pir4*volume;
 
-		if ((disp<0) || (disp>1)) color= vec3(0.5,0.5,0.5);
+		gt_curvature = curvature;
+		if(u_kmax > u_kmin)
+			gt_curvature = (curvature-u_kmin) / (u_kmax-u_kmin);
+
+		if ((gt_curvature<0) || (gt_curvature>1)) color= vec3(0.5,0.5,0.5);
 		else
-		  color= colormap(disp);//disp*vec3(1, 0, 0) + (1 - disp)*vec3(0, 0, 1);
+		  color= colormap(gt_curvature);
+
+	}
+	else if (u_ground_truth == 2)
+	{
+		float volume = 0.0;
+		float gt_curvature = 0.0;
+		float size_obj = u_size_tex;
+
+		float higher_level = log2(sqrt(2.0)/2.0*r);
+		//volume = higher_level;
+  		//volume = textureLod(densities, geometry_position, higher_level).r;
+  		
+		//Curvature from volume
+		float fact83r = 8.0/(3.0*r);
+		float fact4pir4 = 4.0 / (3.14159*r*r*r*r);
+		
+		float curvature = fact83r - fact4pir4*volume;
+
+		gt_curvature = curvature;
+		if(u_kmax > u_kmin)
+			gt_curvature = (curvature-u_kmin) / (u_kmax-u_kmin);
+
+		if ((gt_curvature<0) || (gt_curvature>1)) color= vec3(0.5,0.5,0.5);
+		else
+		  color= colormap(gt_curvature);
+	}
+	else if (u_ground_truth == 3) /*curvature from O(1) probing*/
+	{
+		float volume = 0.0;
+		float approx_curvature = 0.0;
+		float vol_boule = ((4*3.14159*(r*r*r))/3.0);
+
+		float density = textureLod(densities, geometry_position, log2(r)).r;
+		volume =  ((4*3.14159*(r*r*r))/3.0) * density;
+		//volume =  (r*r*r) * density;
+
+		float fact83r = 8.0/(3.0*r);
+		float fact4pir4 = 4.0 / (3.14159*r*r*r*r);
+		
+		float curvature = fact83r - fact4pir4*volume;
+
+		approx_curvature = curvature;
+		if(u_kmax > u_kmin)
+			approx_curvature = (curvature-u_kmin) / (u_kmax-u_kmin);
+
+		if ((approx_curvature<0) || (approx_curvature>1)) color= vec3(0.5,0.5,0.5);
+		else
+		  color= colormap(approx_curvature);
 	}
 
 	

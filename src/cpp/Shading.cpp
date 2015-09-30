@@ -87,7 +87,7 @@ void Shading::configureProgram()
 
     glProgramUniform1i (Parameters::getInstance()->g_programs[PROGRAM_SHADING],
             Parameters::getInstance()->g_uniform_locations[LOCATION_SHADING_GROUNDTRUTH],
-            Parameters::getInstance()->g_ground_truth);
+            (int)Parameters::getInstance()->g_ground_truth);
 
     glProgramUniform1f(Parameters::getInstance()->g_programs[PROGRAM_SHADING],
                             Parameters::getInstance()->g_uniform_locations[LOCATION_SHADING_SIZETEX],
