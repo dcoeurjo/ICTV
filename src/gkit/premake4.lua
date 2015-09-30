@@ -108,5 +108,6 @@ project("vizo")
 		projectfile.."RegularTriangulation.cpp",
 		projectfile.."TransitionTriangulation.cpp",
 		projectfile.."Shading.cpp",
-		projectfile.."QuaternionCamera.cpp"
+		projectfile.."QuaternionCamera.cpp",
+		projectfile.."PrimitiveDraw.cpp"
 	}

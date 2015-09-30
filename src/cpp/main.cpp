@@ -8,6 +8,7 @@
 #include "Triangulation.h"
 #include "Shading.h"
 #include "QuaternionCamera.h"
+#include "PrimitiveDraw.h"
 
 #include "GL/GLQuery.h"
 #include "GL/GLTexture.h"
@@ -156,6 +157,9 @@ private:
 	//Framebuffer
 	Shading shadator;
 	BlitFramebuffer blitter;
+
+	//radius
+	SphereDraw radiusShower;
 	
 	//Data Loaded
 	DataLoader* dl;
@@ -248,6 +252,7 @@ public:
 		extractor.init();
 		shadator.init();
 		blitter.init();
+		radiusShower.init();
 		
 		queryResult_lod = 0;
 		queryResult_regular = 0;
@@ -363,7 +368,12 @@ public:
 		{
 			lodManager.runDisplay(queryResult_regular);
 		}
-		
+
+		if (Parameters::getInstance()->g_radius_show)
+		{
+			radiusShower.run();
+		}
+
 		if (Parameters::getInstance()->g_draw_triangles)
 		{
 			m_time_shading->begin();
@@ -435,6 +445,7 @@ public:
 			lodManager.loadPrograms();
 			extractor.loadPrograms();
 			shadator.loadProgram();
+			radiusShower.loadProgram();
 			gk::reloadPrograms();
 			key('r')= 0;
 		}
@@ -514,25 +525,6 @@ public:
 		
 		if (Parameters::getInstance()->g_controls)
 		{
-			//MATRIX
-			/*if(button & SDL_BUTTON(1))
-			{
-				if (fabs(x) > fabs(y))
-					Parameters::getInstance()->g_geometry.affine = gk::Rotate(x*cam_rotate, gk::Vector(0, 1, 0)) * Parameters::getInstance()->g_geometry.affine;
-				else
-					Parameters::getInstance()->g_geometry.affine = gk::Rotate(y*cam_rotate, gk::Vector(1, 0, 0)) * Parameters::getInstance()->g_geometry.affine;
-			}
-			
-			if(key('s'))
-				Parameters::getInstance()->g_geometry.affine =
-						gk::Translate(gk::Vector(0, 0, -cam_speed*0.5)) *
-						Parameters::getInstance()->g_geometry.affine;
-			if(key('z'))
-				Parameters::getInstance()->g_geometry.affine =
-						gk::Translate(gk::Vector(0, 0, cam_speed*0.5)) *
-						Parameters::getInstance()->g_geometry.affine;*/
-			
-						
 			//QUATERNION
 			if(key('s'))
 				cam.moveBackward(cam_speed);//*(gpu_time/1000.0));
@@ -620,150 +612,8 @@ public:
 						Parameters::getInstance()->g_geometry.affine;
 				}
 			}
-			
-			/*
-			gk::Vector rot = gk::Vector(0, -0.004, 0);
-			rot = Normalize(rot);
-			
-			rotateGlobal_noTranslation(
-				Parameters::getInstance()->g_geometry.affine, 
-						   rot, 0.1);
-			Parameters::getInstance()->g_geometry.affine =
-						gk::Translate(
-							gk::Vector(0.004, 0, 0)
-						    ) *
-						Parameters::getInstance()->g_geometry.affine;*/
-			
 		}
-		
-		/*
-		static float speed = 0.2;
-		static float rot_speed = 0.5;
-		
-		static bool turn = false;
-		
-		float initfr = 0;
-		float nb_step = 3.5;
-		float step = 300;
-		if (frame >= initfr && frame <= initfr + nb_step*step)
-		{
-			if (frame >= initfr + step && frame <= initfr + 2*step)
-				Parameters::getInstance()->g_solid_wireframe = true;
-			else
-				Parameters::getInstance()->g_solid_wireframe = false;
-			
-			if (frame > initfr + 2.5*step)
-				animate = true;
-		}
-		else
-		{
-			if (!turn)
-			{
-				float state = sin(Parameters::getInstance()->g_time_elapsed * rot_speed);
-				printf("sin(rot_speed) = %lf\n", state);
-				cam.rotate( 2 * state, 0);
-				if (frame >= 1650)
-					turn = true;
-			}
-				
-			cam.moveForward(speed);
-			
-			if (frame >= 2500)
-				exit(0);
-			
-		}*/
-		
-		/*Parameters::getInstance()->g_geometry.affine =
-				gk::Translate(gk::Vector(0, 0, -0.25)) *
-				Parameters::getInstance()->g_geometry.affine;
-				
-		if (Parameters::getInstance()->g_camera.pos[2] = Parameters::getInstance()->g_geometry.affine.matrix()[2*4 + 3] < -800)
-			exit(0);*/
-		
-		
-		
-		
-		/*static float speed = 0.3;
-		
-		static float move = speed;
-		static float rot = 2.5 * speed;
-		static float move_tot = 0;
-		static float rot_tot = 0;
-		
-		static float move_at_rot = -1;
-		
-		static float pause = 1;
-		static float pause_count;
-		
-		static int pause_length = 800;
-		static bool first = true;
-		
-		if (pause)
-		{
-			pause_count++;
-			
-			if (pause_count > pause_length)
-				pause = 0;
-			
-			if ( (pause_count == (pause_length/2)) && (!first))
-			{
-				if (move_tot < 0)
-					exit(0);
-				
-				if (Parameters::getInstance()->g_solid_wireframe)
-				{
-					Parameters::getInstance()->g_draw_cells = true;
-					Parameters::getInstance()->g_solid_wireframe = false;
-				}
-				else
-				{
-					Parameters::getInstance()->g_draw_cells = false;
-					Parameters::getInstance()->g_solid_wireframe = true;
-				}
-			}
-		}
-		else
-		{
-		
-			first = false;
-		
-			cam.moveBackward(move);
-			
-			move_tot += move;
-			if (move_tot > 180)
-			{
-				move = -speed;
-				pause_count = 0;
-				pause = 1;
-			}
 
-			
-			cam.rotate(0, rot);
-			rot_tot += rot;
-			
-			if (rot_tot > 250)
-			{
-				if (move_tot <= move_at_rot)
-					rot = -2.5 * speed;
-				
-				if (move_at_rot == -1)
-				{
-					move_at_rot = move_tot;
-					rot = 0;
-				}
-			}
-			
-			
-			
-			if (move_tot < 0)
-			{
-				pause = 1;
-				pause_count = 0;
-			}
-			
-			printf("rot %lf -- mov %lf\n", rot_tot, move_tot);
-		}*/
-		
 		setShaderCameraPos(Parameters::getInstance()->g_geometry.affine);
 	}
     
@@ -839,6 +689,7 @@ public:
 				{
 					m_widgets.doButton(nv::Rect(), "Display Triangles", &(Parameters::getInstance()->g_draw_triangles));
 					m_widgets.doButton(nv::Rect(), "Display Octree", &(Parameters::getInstance()->g_draw_cells));
+					m_widgets.doButton(nv::Rect(), "Display Radius", &(Parameters::getInstance()->g_radius_show));
 					m_widgets.doButton(nv::Rect(), "Wireframe", &(Parameters::getInstance()->g_solid_wireframe));
 					m_widgets.doButton(nv::Rect(), "Cull", &(Parameters::getInstance()->g_culling));
 					m_widgets.doButton(nv::Rect(), "Flying camera", &(Parameters::getInstance()->g_controls));
@@ -925,37 +776,29 @@ public:
 		
 		if (plot)
 		{
-			//frame++;
 			
-			/*if (frame == 5000)
-				animate = false;
-			if (frame == 10000)
-				animate = true;
-			if (frame == 20000)
-				exit(0);*/
-			
-			fprintf(plotfd, "%d \t\t %d \t\t %d \t\t %d \t\t %d \t\t %lf \t\t %lf \t\t %lf \t\t %lf \t\t %lf \t\t %lf \t\t %lf \t\t %lf\n",
+				fprintf(plotfd, "%d \t\t %d \t\t %d \t\t %d \t\t %d \t\t %lf \t\t %lf \t\t %lf \t\t %lf \t\t %lf \t\t %lf \t\t %lf \t\t %lf\n",
 					
-					frame,
-					queryResult_lod,
-					queryResult_regular,
-					queryResult_transition,
-					triangles_regular+triangles_transition,
-					
-					gpu_lod_time / 1000.0,
-					gpu_cull_time / 1000.0,
-					gpu_render_time_regular / 1000.0,
-					gpu_render_time_transition / 1000.0,
-					gpu_shading_time / 1000.0,
-		
-					gpu_lod_time / 1000.0 +
-					gpu_cull_time / 1000.0 +
-					gpu_render_time_regular / 1000.0 +
-					gpu_render_time_transition / 1000.0,
-		
-					gpu_time,
-		
-					cpu_time
+				frame,
+				queryResult_lod,
+				queryResult_regular,
+				queryResult_transition,
+				triangles_regular+triangles_transition,
+				
+				gpu_lod_time / 1000.0,
+				gpu_cull_time / 1000.0,
+				gpu_render_time_regular / 1000.0,
+				gpu_render_time_transition / 1000.0,
+				gpu_shading_time / 1000.0,
+	
+				gpu_lod_time / 1000.0 +
+				gpu_cull_time / 1000.0 +
+				gpu_render_time_regular / 1000.0 +
+				gpu_render_time_transition / 1000.0,
+	
+				gpu_time,
+	
+				cpu_time
 			);
 		}
 		

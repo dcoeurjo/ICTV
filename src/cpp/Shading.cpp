@@ -166,8 +166,6 @@ void Shading::loadProgram()
     Parameters::getInstance()->g_uniform_locations[LOCATION_SHADING_SIZETEX] =
         glGetUniformLocation (Parameters::getInstance()->g_programs[PROGRAM_SHADING], "u_size_tex");
 
-        
-        
 	}
 	
 	{
@@ -383,7 +381,7 @@ void Shading::loadVA()
         glVertexAttribIPointer(1, 1, GL_UNSIGNED_INT, 0, 0);
 	glBindVertexArray(0);
         
-        glGenVertexArrays (1, Parameters::getInstance()->g_vertex_arrays + VERTEX_ARRAY_SHADING_TR);
+    glGenVertexArrays (1, Parameters::getInstance()->g_vertex_arrays + VERTEX_ARRAY_SHADING_TR);
 	glBindVertexArray(Parameters::getInstance()->g_vertex_arrays[VERTEX_ARRAY_SHADING_TR]);
 	glEnableVertexAttribArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, Parameters::getInstance()->g_buffers[BUFFER_VERTICES_TR]);

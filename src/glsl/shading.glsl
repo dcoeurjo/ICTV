@@ -157,8 +157,18 @@ void main( )
 
 	float r = u_curv_radius;
 	float volume = 0.0;
+
+	float vol_boule = ((4*3.14159*(r*r*r))/3.0);
+
+	float gt_curvature = 0.0;
+	float approx_curvature = 0.0;
+
+	float disp;
+	vec3 color;
+
 	/*curvature from regular integration*/
-	if (u_ground_truth == 1)
+
+	if (false)
 	{
 		float size_obj = u_size_tex;
 		for(float i=-r; i<r; i++)
@@ -171,35 +181,91 @@ void main( )
 				volume += textureLod(densities, geometry_position + (probe/size_obj), 0).r;
 			}
 		}
-	}
-	else /*curvature from O(1) probing*/
-	{
+
+		//Curvature from volume
+		float fact83r = 8.0/(3.0*r);
+		float fact4pir4 = 4.0 / (3.14159*r*r*r*r);
+		
+		float curvature = fact83r - fact4pir4*volume;
+
+		gt_curvature = curvature;
+		if(u_kmax > u_kmin)
+			gt_curvature = (curvature-u_kmin) / (u_kmax-u_kmin);
+
 		float density = textureLod(densities, geometry_position, log2(r)).r;
-		volume =  ((4*3.14159*(r*r*r))/3.0) * density;
+		volume =  vol_boule * density;
 		//volume =  (r*r*r) * density;
+		
+		curvature = fact83r - fact4pir4*volume;
+
+		approx_curvature = curvature;
+		if(u_kmax > u_kmin)
+			approx_curvature = (curvature-u_kmin) / (u_kmax-u_kmin);
+
+		disp = length(gt_curvature - approx_curvature);
+		float mind = -0.1;
+		float maxd = 0.1;
+		disp = (disp + mind) / (maxd - mind);
+		color= disp * vec3(1, 0, 0) + (1- disp)*vec3(0, 0, 1);
 	}
-	
-
-	//Curvature from volume
-	float fact83r = 8.0/(3.0*r);
-	float fact4pir4 = 4.0 / (3.14159*r*r*r*r);
-	
-	float curvature = fact83r - fact4pir4*volume;
-
-	float norm_curv = curvature;
-	if(u_kmax > u_kmin)
-		norm_curv = (curvature-u_kmin) / (u_kmax-u_kmin);
-	
-	float disp = norm_curv;
-	
-
-	vec3 color;
-	if ((disp<0) || (disp>1)) color= vec3(0.5,0.5,0.5);
 	else
-	  color= colormap(disp);//disp*vec3(1, 0, 0) + (1 - disp)*vec3(0, 0, 1);
+	{
+		if (u_ground_truth == 1)
+		{
+			float size_obj = u_size_tex;
+			for(float i=-r; i<r; i++)
+			for(float j=-r; j<r; j++)
+			for(float k=-r; k<r; k++)
+			{
+				vec3 probe = vec3(i+0.5, j+0.5, k+0.5);
+				if (length(probe) <= r)
+				{
+					volume += textureLod(densities, geometry_position + (probe/size_obj), 0).r;
+				}
+			}
+
+			//Curvature from volume
+			float fact83r = 8.0/(3.0*r);
+			float fact4pir4 = 4.0 / (3.14159*r*r*r*r);
+			
+			float curvature = fact83r - fact4pir4*volume;
+
+			gt_curvature = curvature;
+			if(u_kmax > u_kmin)
+				gt_curvature = (curvature-u_kmin) / (u_kmax-u_kmin);
+
+		}
+		else /*curvature from O(1) probing*/
+		{
+			float density = textureLod(densities, geometry_position, log2(r)).r;
+			volume =  ((4*3.14159*(r*r*r))/3.0) * density;
+			//volume =  (r*r*r) * density;
+
+			float fact83r = 8.0/(3.0*r);
+			float fact4pir4 = 4.0 / (3.14159*r*r*r*r);
+			
+			float curvature = fact83r - fact4pir4*volume;
+
+			approx_curvature = curvature;
+			if(u_kmax > u_kmin)
+				approx_curvature = (curvature-u_kmin) / (u_kmax-u_kmin);
+		}
+
+		if(u_ground_truth == 1)
+			disp = gt_curvature;
+		else
+			disp = approx_curvature;
+
+		if ((disp<0) || (disp>1)) color= vec3(0.5,0.5,0.5);
+		else
+		  color= colormap(disp);//disp*vec3(1, 0, 0) + (1 - disp)*vec3(0, 0, 1);
+	}
+
 	
 	//Phong
-	fragment_color = vec4( color * (0.5*abs(dot(normalize(geometry_normal), vec3(-1, -1, -1))) + 0.5), 1);
+	float shadow_weight = 0.3;
+	float dotnormal = abs(dot(normalize(geometry_normal), vec3(-1, -1, -1)));
+	fragment_color = vec4( shadow_weight * color * dotnormal + (1-shadow_weight) * color, 1);
 
 	if (solid_wireframe == 1)
 	{
