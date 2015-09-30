@@ -58,7 +58,9 @@ public:
     bool g_fromtexture; //set if the data is to be computed or read from a texture
     bool g_textured_data; //color with the textures
     bool g_radial_length; //use the LoD criteria with radial length
-    
+    bool g_ground_truth;
+    bool g_regular;
+
     bool g_gui; //hides/show the gui
     
     float g_scale; //sets the size of the different levels
@@ -67,6 +69,7 @@ public:
     float g_curvradius;
     float g_curvmin;
     float g_curvmax;
+    int g_sizetex;
     
     float g_time_elapsed; //in seconds
 };

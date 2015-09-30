@@ -77,6 +77,7 @@ uniform float u_kmax;
 
 uniform int textured;
 uniform int solid_wireframe;
+uniform int u_ground_truth;
 
 uniform sampler2D u_texcolor_x;
 uniform sampler2D u_texcolor_y;
@@ -151,38 +152,33 @@ vec3 colormap(float scale)
 
 void main( )
 {
-	/**Normal**/
-	//vec3 geometry_normal = getNormal(geometry_position, 0.005); 
-	//vec3 geometry_normal = 1*getNormal(geometry_position, (1.0/(512.0*500))*length(geometry_view));
+
 	vec3 geometry_normal = -1 * normalize(cross( dFdx(geometry_position.xyz), dFdy(geometry_position.xyz)));
 
 	float r = u_curv_radius;
 	float volume = 0.0;
-
-	/*curvature O(1)*/
-	
-	float density = textureLod(densities, geometry_position, log2(r)+1.0).r;
-	volume =  ((4*3.14159*(r*r*r))/3.0) * density;
-	//volume =  (r*r*r) * density;
-	
-	/**/
-
-	/*curvature regular integration*/
-
-	/*
-	float size_obj = 128.0;
-	for(float i=-r; i<=r; i++)
-	for(float j=-r; j<=r; j++)
-	for(float k=-r; k<=r; k++)
+	/*curvature from regular integration*/
+	if (u_ground_truth == 1)
 	{
-		if (length(vec3(i, j, k)) <= r)
+		float size_obj = u_size_tex;
+		for(float i=-r; i<r; i++)
+		for(float j=-r; j<r; j++)
+		for(float k=-r; k<r; k++)
 		{
-			volume += textureLod(densities, geometry_position + (vec3(i, j, k)/size_obj), 0).r;
+			vec3 probe = vec3(i+0.5, j+0.5, k+0.5);
+			if (length(probe) <= r)
+			{
+				volume += textureLod(densities, geometry_position + (probe/size_obj), 0).r;
+			}
 		}
 	}
-	*/
+	else /*curvature from O(1) probing*/
+	{
+		float density = textureLod(densities, geometry_position, log2(r)).r;
+		volume =  ((4*3.14159*(r*r*r))/3.0) * density;
+		//volume =  (r*r*r) * density;
+	}
 	
-	/**/
 
 	//Curvature from volume
 	float fact83r = 8.0/(3.0*r);
@@ -198,11 +194,11 @@ void main( )
 	
 
 	vec3 color;
-	if ((disp<0) || (disp>1)) color= vec3(0,0,0);
+	if ((disp<0) || (disp>1)) color= vec3(0.5,0.5,0.5);
 	else
 	  color= colormap(disp);//disp*vec3(1, 0, 0) + (1 - disp)*vec3(0, 0, 1);
 	
-
+	//Phong
 	fragment_color = vec4( color * (0.5*abs(dot(normalize(geometry_normal), vec3(-1, -1, -1))) + 0.5), 1);
 
 	if (solid_wireframe == 1)

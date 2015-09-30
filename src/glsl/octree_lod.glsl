@@ -23,6 +23,8 @@ layout (location = 0) out uvec4 o_data;
 
 layout (binding = 0, offset = 0) uniform atomic_uint unchanged;
 
+uniform int u_regular;
+
 void main() {
 	// get position
 	vec3 node, parent;
@@ -61,7 +63,7 @@ void main() {
 	float dp = getLength(parent) * u_tan_fovy; // XXX fix the 0.5 factor
 
 	// merge
-	bool regular = false;
+	bool regular = (u_regular == 1);
 	
 	if ( (regular && lt_level_3_20(i_data[0].xy) > max_level) || 
 		(!regular && (!lt_is_root_3_20 (i_data[0].xy) && (u_scale * 2.0 * node_size) < dp)) )

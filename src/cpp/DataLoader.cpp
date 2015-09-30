@@ -120,9 +120,16 @@ void DataRaw::loadFile(char* file)
 	for(unsigned long int y=0; y < sizey; y++)
 	for(unsigned long int z=0; z < sizez; z++)
 	{
-		data[i] = ((float)data_char[i] / (float)max);
+		if (data_char[i] == 0)
+			data[i] = 0;
+		else
+			data[i] = 1;
+
+		//data[i] = ((float)data_char[i] / (float)max);
 		i++;
 	}
+
+	Parameters::getInstance()->g_sizetex = sizex;
 
 	printf("Complete\n");
 }

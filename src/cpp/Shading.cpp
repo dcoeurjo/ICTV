@@ -84,6 +84,14 @@ void Shading::configureProgram()
 	glProgramUniform1i (Parameters::getInstance()->g_programs[PROGRAM_SHADING],
                     Parameters::getInstance()->g_uniform_locations[LOCATION_SKYBOX_TEXTURE],
                     TEXTURE_ENVMAP);
+
+    glProgramUniform1i (Parameters::getInstance()->g_programs[PROGRAM_SHADING],
+            Parameters::getInstance()->g_uniform_locations[LOCATION_SHADING_GROUNDTRUTH],
+            Parameters::getInstance()->g_ground_truth);
+
+    glProgramUniform1f(Parameters::getInstance()->g_programs[PROGRAM_SHADING],
+                            Parameters::getInstance()->g_uniform_locations[LOCATION_SHADING_SIZETEX],
+                            Parameters::getInstance()->g_sizetex);
 }
 
 void Shading::loadProgram()
@@ -151,6 +159,15 @@ void Shading::loadProgram()
         glGetUniformLocation (Parameters::getInstance()->g_programs[PROGRAM_SHADING], "u_kmin");
         Parameters::getInstance()->g_uniform_locations[LOCATION_SHADING_CURVMAX] =
         glGetUniformLocation (Parameters::getInstance()->g_programs[PROGRAM_SHADING], "u_kmax");
+
+    Parameters::getInstance()->g_uniform_locations[LOCATION_SHADING_GROUNDTRUTH] =
+        glGetUniformLocation (Parameters::getInstance()->g_programs[PROGRAM_SHADING], "u_ground_truth");
+
+    Parameters::getInstance()->g_uniform_locations[LOCATION_SHADING_SIZETEX] =
+        glGetUniformLocation (Parameters::getInstance()->g_programs[PROGRAM_SHADING], "u_size_tex");
+
+        
+        
 	}
 	
 	{

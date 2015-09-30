@@ -278,7 +278,14 @@ void GPUOctree::configurePrograms()
 	glProgramUniform1f (Parameters::getInstance()->g_programs[PROGRAM_LTREE_LOD],
                             Parameters::getInstance()->g_uniform_locations[LOCATION_LOD_TIME],
                             Parameters::getInstance()->g_time_elapsed);
+    glProgramUniform1i (Parameters::getInstance()->g_programs[PROGRAM_LTREE_LOD], 
+                Parameters::getInstance()->g_uniform_locations[LOCATION_LOD_REGULAR], 
+                (int)Parameters::getInstance()->g_regular);
 
+    glProgramUniform1f(Parameters::getInstance()->g_programs[PROGRAM_LTREE_LOD],
+                            Parameters::getInstance()->g_uniform_locations[LOCATION_LOD_SIZETEX],
+                            Parameters::getInstance()->g_sizetex);
+    
 
 	/**CULLING**/
         glProgramUniform3f (Parameters::getInstance()->g_programs[PROGRAM_LTREE_CULL],
@@ -308,6 +315,10 @@ void GPUOctree::configurePrograms()
 	glProgramUniform1f (Parameters::getInstance()->g_programs[PROGRAM_LTREE_CULL],
                             Parameters::getInstance()->g_uniform_locations[LOCATION_CULL_TIME],
                             Parameters::getInstance()->g_time_elapsed);
+    glProgramUniform1f (Parameters::getInstance()->g_programs[PROGRAM_LTREE_CULL],
+                            Parameters::getInstance()->g_uniform_locations[LOCATION_CULL_SIZETEX],
+                            Parameters::getInstance()->g_sizetex);
+
 	
 	
 	/**DISPLAY**/
@@ -329,6 +340,8 @@ void GPUOctree::configurePrograms()
 	glProgramUniform1f(Parameters::getInstance()->g_programs[PROGRAM_CELL_DRAW],
                             Parameters::getInstance()->g_uniform_locations[LOCATION_CELL_TIME],
                             Parameters::getInstance()->g_time_elapsed);
+
+    
 }
 
 void GPUOctree::loadPrograms()
@@ -357,16 +370,21 @@ void GPUOctree::loadPrograms()
                 glGetUniformLocation (Parameters::getInstance()->g_programs[PROGRAM_LTREE_LOD], "u_scene_size");
         Parameters::getInstance()->g_uniform_locations[LOCATION_LOD_TAN_FOVY] =
                 glGetUniformLocation (Parameters::getInstance()->g_programs[PROGRAM_LTREE_LOD], "u_tan_fovy");
-	Parameters::getInstance()->g_uniform_locations[LOCATION_LOD_SCALE] =
+	    Parameters::getInstance()->g_uniform_locations[LOCATION_LOD_SCALE] =
                 glGetUniformLocation (Parameters::getInstance()->g_programs[PROGRAM_LTREE_LOD], "u_scale");
         Parameters::getInstance()->g_uniform_locations[LOCATION_LOD_DENSITY] =
                 glGetUniformLocation (Parameters::getInstance()->g_programs[PROGRAM_LTREE_LOD], "densities");
-	Parameters::getInstance()->g_uniform_locations[LOCATION_LOD_FROMTEXTURE] =
-		glGetUniformLocation (Parameters::getInstance()->g_programs[PROGRAM_LTREE_LOD], "fromtexture");
-	Parameters::getInstance()->g_uniform_locations[LOCATION_LOD_METRIC] =
-		glGetUniformLocation (Parameters::getInstance()->g_programs[PROGRAM_LTREE_LOD], "u_radial");
-	Parameters::getInstance()->g_uniform_locations[LOCATION_LOD_TIME] =
-		glGetUniformLocation (Parameters::getInstance()->g_programs[PROGRAM_LTREE_LOD], "u_time");
+	    Parameters::getInstance()->g_uniform_locations[LOCATION_LOD_FROMTEXTURE] =
+		        glGetUniformLocation (Parameters::getInstance()->g_programs[PROGRAM_LTREE_LOD], "fromtexture");
+	    Parameters::getInstance()->g_uniform_locations[LOCATION_LOD_METRIC] =
+		        glGetUniformLocation (Parameters::getInstance()->g_programs[PROGRAM_LTREE_LOD], "u_radial");
+	    Parameters::getInstance()->g_uniform_locations[LOCATION_LOD_TIME] =
+		        glGetUniformLocation (Parameters::getInstance()->g_programs[PROGRAM_LTREE_LOD], "u_time");
+        Parameters::getInstance()->g_uniform_locations[LOCATION_LOD_REGULAR] =
+                glGetUniformLocation (Parameters::getInstance()->g_programs[PROGRAM_LTREE_LOD], "u_regular");
+        Parameters::getInstance()->g_uniform_locations[LOCATION_LOD_SIZETEX] =
+                glGetUniformLocation (Parameters::getInstance()->g_programs[PROGRAM_LTREE_LOD], "u_size_tex");
+        
 		
 	fprintf (stderr, "Success\n");
 
@@ -411,6 +429,8 @@ void GPUOctree::loadPrograms()
 		glGetUniformLocation (Parameters::getInstance()->g_programs[PROGRAM_LTREE_CULL], "u_radial");
 	Parameters::getInstance()->g_uniform_locations[LOCATION_CULL_TIME] =
 		glGetUniformLocation (Parameters::getInstance()->g_programs[PROGRAM_LTREE_CULL], "u_time");
+    Parameters::getInstance()->g_uniform_locations[LOCATION_CULL_SIZETEX] =
+        glGetUniformLocation (Parameters::getInstance()->g_programs[PROGRAM_LTREE_CULL], "u_size_tex");
 		
 	fprintf (stderr, "Success\n");
 				

@@ -809,18 +809,18 @@ public:
 
 				//printf("Frame number %d\r", frame_number);
 
-				sprintf(tmp, "Fovy %.2f", Parameters::getInstance()->g_camera.fovy);
+				/*sprintf(tmp, "Fovy %.2f", Parameters::getInstance()->g_camera.fovy);
 				m_widgets.doLabel(nv::Rect(), tmp);
-				m_widgets.doHorizontalSlider(nv::Rect(0,0, 200, 0), 10.f, 180.f, &(Parameters::getInstance()->g_camera.fovy));
+				m_widgets.doHorizontalSlider(nv::Rect(0,0, 200, 0), 10.f, 180.f, &(Parameters::getInstance()->g_camera.fovy));*/
 				sprintf(tmp, "Scale %.2f", Parameters::getInstance()->g_scale);
 				m_widgets.doLabel(nv::Rect(), tmp);
 				m_widgets.doHorizontalSlider(nv::Rect(0,0, 200, 0), 2.f, 28.f, &(Parameters::getInstance()->g_scale));
-				sprintf(tmp, "Tessellation %.2f", Parameters::getInstance()->g_tessel);
+				/*sprintf(tmp, "Tessellation %.2f", Parameters::getInstance()->g_tessel);
 				m_widgets.doLabel(nv::Rect(), tmp);
 				m_widgets.doHorizontalSlider(nv::Rect(0,0, 200, 0), 1.f, 10.f, &(Parameters::getInstance()->g_tessel));
 				sprintf(tmp, "Isosurface %.2f", Parameters::getInstance()->g_isosurface);
 				m_widgets.doLabel(nv::Rect(), tmp);
-				m_widgets.doHorizontalSlider(nv::Rect(0,0, 200, 0), 0.f, 1.f, &(Parameters::getInstance()->g_isosurface));
+				m_widgets.doHorizontalSlider(nv::Rect(0,0, 200, 0), 0.f, 1.f, &(Parameters::getInstance()->g_isosurface));*/
 				sprintf(tmp, "Curvature Radius %.2f", Parameters::getInstance()->g_curvradius);
 				m_widgets.doLabel(nv::Rect(), tmp);
 				m_widgets.doHorizontalSlider(nv::Rect(0,0, 200, 0), 1.f, 30.f, &(Parameters::getInstance()->g_curvradius));
@@ -842,10 +842,12 @@ public:
 					m_widgets.doButton(nv::Rect(), "Wireframe", &(Parameters::getInstance()->g_solid_wireframe));
 					m_widgets.doButton(nv::Rect(), "Cull", &(Parameters::getInstance()->g_culling));
 					m_widgets.doButton(nv::Rect(), "Flying camera", &(Parameters::getInstance()->g_controls));
-					m_widgets.doButton(nv::Rect(), "Display textures", &(Parameters::getInstance()->g_textured_data));
-					m_widgets.doButton(nv::Rect(), "Display background", &(skybox));
+					//m_widgets.doButton(nv::Rect(), "Display textures", &(Parameters::getInstance()->g_textured_data));
+					//m_widgets.doButton(nv::Rect(), "Display background", &(skybox));
 					m_widgets.doButton(nv::Rect(), "Display transitions", &transition_cells_displayed);
 					m_widgets.doButton(nv::Rect(), "LoD Radial", &(Parameters::getInstance()->g_radial_length));
+					m_widgets.doButton(nv::Rect(), "Ground truth", &(Parameters::getInstance()->g_ground_truth));
+					m_widgets.doButton(nv::Rect(), "Regular grid", &(Parameters::getInstance()->g_regular));
 					
 					m_widgets.endPanel();
 				}
