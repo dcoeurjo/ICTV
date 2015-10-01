@@ -4,117 +4,12 @@
 
 in vec4 position;
 out vec3 vertex_position;
-
-void main( )
-{
-    vertex_position = position.xyz;
-    gl_Position = position;
-}
-#endif
-
-#ifdef GEOMETRY_SHADER
-
-layout (triangles) in;
-layout (triangle_strip, max_vertices = 3) out;
-
-in vec3 vertex_position[];
-out vec3 geometry_position;
-out vec3 geometry_normal;
-out vec3 geometry_view;
-out vec3 geometry_distance;
-out vec3 geometry_color;
-
-void main()
-{
-	vec3 pts[3];
-	pts = vec3[3](( vertex_position[0] - 0.5 ) * u_scene_size, ( vertex_position[1] - 0.5 ) * u_scene_size, ( vertex_position[2] - 0.5 ) * u_scene_size);
-	
-	vec3 pts_abs[3];
-	pts_abs = vec3[3](( vertex_position[0]) * u_scene_size, ( vertex_position[1]) * u_scene_size, ( vertex_position[2] ) * u_scene_size);
-
-	vec4 transformed[3];
-	transformed[0] = u_transforms.modelviewprojection * vec4(pts[0], 1 );
-	transformed[1] = u_transforms.modelviewprojection * vec4(pts[1], 1 );
-	transformed[2] = u_transforms.modelviewprojection * vec4(pts[2], 1 );
-	
-	vec2 p0 = u_viewport * transformed[0].xy / transformed[0].w;
-	vec2 p1 = u_viewport * transformed[1].xy / transformed[1].w;
-	vec2 p2 = u_viewport * transformed[2].xy / transformed[2].w;
-	
-	vec2 v[3] = vec2[3](p2 - p1, p2 - p0, p1 - p0);
-	float area = abs (v[1].x*v[2].y - v[1].y*v[2].x);
-	
-	for(int i =0; i<3; i++)
-	{
-		geometry_distance = vec3(0);
-		geometry_distance[i] = area * inversesqrt (dot (v[i],v[i]));
-		gl_Position = transformed[i];
-		geometry_position = vertex_position[i].xyz;
-		geometry_view = (u_transforms.modelview * vec4( ((vertex_position[i]-0.5)*u_scene_size), 1 )).xyz;
-		vec3 center = (pts_abs[1] + pts_abs[2] + pts_abs[0]) / 3;
-		gl_PrimitiveID = int( length(center)*1000 );
-		EmitVertex();
-	}
-	
-	EndPrimitive();
-}
-
-#endif
-
-#ifdef FRAGMENT_SHADER
-
-layout(early_fragment_tests) in;
-
-in vec3 geometry_position;
-in vec3 geometry_distance;
-in vec3 geometry_view;
-
-out vec4 fragment_color;
+out vec3 vertex_color;
 
 uniform float u_curv_radius;
 uniform float u_kmin;
 uniform float u_kmax;
-
-uniform int textured;
-uniform int solid_wireframe;
 uniform int u_ground_truth;
-
-uniform sampler2D u_texcolor_x;
-uniform sampler2D u_texcolor_y;
-uniform sampler2D u_texcolor_z;
-
-uniform sampler2D u_texbump_x;
-uniform sampler2D u_texbump_y;
-uniform sampler2D u_texbump_z;
-
-uniform vec3 u_camera_pos;
-
-float specular(vec3 n,vec3 l,vec3 e,float s) {    
-    float nrm = (s + 8.0) / (3.1415 * 8.0);
-    return pow(max(dot(normalize(reflect(e,n)),normalize(l)),0.0),s) * nrm;
-}
-float diffuse(vec3 n,vec3 l,float p) {
-    return pow(clamp(dot(normalize(n),normalize(l)), 0.3, 1.0), p);
-}
-
-vec3 perturb_normal(vec3 surf_pos, vec3 normal, float h)
-{
-	vec3 sigmaS = dFdx(surf_pos);
-	vec3 sigmaT = dFdy(surf_pos);
-	vec3 vn = normal;
-	
-	vec3 vr1 = cross(sigmaT, vn);
-	vec3 vr2 = cross(vn, sigmaS);
-	
-	float det = dot(sigmaS, vr1);
-	
-	float dBs = dFdx( h );
-	float dBt = dFdy( h );
-	
-	vec3 grad = sign(det) * (dBs * vr1 + dBt * vr2);
-	return normalize( abs(det)*vn - grad );
-	
-}
 
 vec3 HSVtoRGB(vec3 hsv)
 {
@@ -150,13 +45,37 @@ vec3 colormap(float scale)
   return HSVtoRGB( vec3(hue, 0.9, 1.0) );
 }
 
+mat3 fromSymToMatrix(vec3 sym)
+{
+	vec3 m0 = vec3(0);
+	m0[int(abs(sym[0])-1)] = 1;
+	if (sym[0] < 0)
+		m0[int(abs(sym[0])-1)] = -1;
+	
+	vec3 m1 = vec3(0);
+	m1[int(abs(sym[1])-1)] = 1;
+	if (sym[1] < 0)
+		m1[int(abs(sym[1])-1)] = -1;
+		
+	vec3 m2 = vec3(0);
+	m2[int(abs(sym[2])-1)] = 1;
+	if (sym[2] < 0)
+		m2[int(abs(sym[2])-1)] = -1;
+	
+	mat3 ret;
+	ret[0] = vec3(m0.x, m1.x, m2.x);
+	ret[1] = vec3(m0.y, m1.y, m2.y);
+	ret[2] = vec3(m0.z, m1.z, m2.z);
+	return ret;
+}
+
 void main( )
 {
+    vertex_position = position.xyz;
 
-	vec3 geometry_normal = -1 * normalize(cross( dFdx(geometry_position.xyz), dFdy(geometry_position.xyz)));
-
-	float r = u_curv_radius;
+    float r = u_curv_radius;
 	vec3 color;
+	float vol_boule = ((4*3.14159*(r*r*r))/3.0);
 
 	/*curvature from regular integration*/
 
@@ -175,7 +94,7 @@ void main( )
 			vec3 probe = vec3(i+0.5, j+0.5, k+0.5);
 			if (length(probe) <= r)
 			{
-				volume += textureLod(densities, geometry_position + (probe/size_obj), 0).r;
+				volume += textureLod(densities, vertex_position + (probe/size_obj), 0).r;
 			}
 		}
 
@@ -189,7 +108,7 @@ void main( )
 		if(u_kmax > u_kmin)
 			gt_curvature = (curvature-u_kmin) / (u_kmax-u_kmin);
 
-		float density = textureLod(densities, geometry_position, log2(r)).r;
+		float density = textureLod(densities, vertex_position, log2(r)).r;
 		volume =  vol_boule * density;
 		//volume =  (r*r*r) * density;
 		
@@ -218,7 +137,7 @@ void main( )
 			vec3 probe = vec3(i+0.5, j+0.5, k+0.5);
 			if (length(probe) <= r)
 			{
-				volume += textureLod(densities, geometry_position + (probe/size_obj), 0).r;
+				volume += textureLod(densities, vertex_position + (probe/size_obj), 0).r;
 			}
 		}
 
@@ -243,9 +162,76 @@ void main( )
 		float gt_curvature = 0.0;
 		float size_obj = u_size_tex;
 
-		float higher_level = log2(sqrt(2.0)/2.0*r);
-		//volume = higher_level;
-  		//volume = textureLod(densities, geometry_position, higher_level).r;
+		vec3 symetries[24];
+		int id = 0;
+		for(int i=1; i<=3; i++)
+		{
+			for(int j=1; j<=3; j++)
+			{
+				if(j==i)
+					continue;
+				for(int k=1; k<=3; k++)
+				{
+					if (k==i || k== j || j > k)
+						continue;
+					
+					for(int s0=1; s0>=-1; s0-=2)
+					for(int s1=1; s1>=-1; s1-=2)
+					for(int s2=1; s2>=-1; s2-=2)
+						symetries[id++]=vec3(s0*i, s1*j, s2*k);
+				}
+			}
+		}
+		
+		vec3 orig = vertex_position*u_size_tex;
+	
+		float k = log2((2.0*r/sqrt(3)));
+		float size = pow(2.0, k);
+		
+		float total_volume = 0.0;
+		
+		volume += textureLod(densities, orig/u_size_tex, k).r * pow(size, 3);
+		total_volume += pow(size, 3);
+
+		vec3 center = orig + vec3(size/2.0, 0, 0);
+		while(k>=0)
+		{
+			size/=2.0;
+			
+			vec3 right_corner = center+vec3(size);
+			
+			vec3 current_voxel = right_corner;
+			bool stay = true;
+			while(true)
+			{
+				if (length(current_voxel - orig) > r)
+					break;
+				
+				while(true)
+				{
+					if (length(current_voxel - orig) > r)
+						break;
+					
+					for(int i=0; i<24; i++)
+					{
+						stay = false;
+						vec3 pos = orig + fromSymToMatrix(symetries[i])*(current_voxel-vec3(size/2.0));
+						volume += textureLod(densities, pos/u_size_tex, k).r * pow(size, 3);
+						total_volume += pow(size, 3);
+					}
+					current_voxel+= vec3(0, size, 0);
+				}
+				current_voxel.y = right_corner.y;
+				current_voxel += vec3(0, 0, size);
+			}
+			
+			if(!stay)
+				center += vec3(size, 0, 0);
+			
+			k--;
+		}
+		
+		volume *= vol_boule/total_volume;
   		
 		//Curvature from volume
 		float fact83r = 8.0/(3.0*r);
@@ -265,9 +251,8 @@ void main( )
 	{
 		float volume = 0.0;
 		float approx_curvature = 0.0;
-		float vol_boule = ((4*3.14159*(r*r*r))/3.0);
 
-		float density = textureLod(densities, geometry_position, log2(r)).r;
+		float density = textureLod(densities, vertex_position, log2(r)).r;
 		volume =  ((4*3.14159*(r*r*r))/3.0) * density;
 		//volume =  (r*r*r) * density;
 
@@ -284,12 +269,87 @@ void main( )
 		else
 		  color= colormap(approx_curvature);
 	}
-
 	
+	vertex_color = color;
+    gl_Position = position;
+}
+#endif
+
+#ifdef GEOMETRY_SHADER
+
+layout (triangles) in;
+layout (triangle_strip, max_vertices = 3) out;
+
+in vec3 vertex_position[];
+in vec3 vertex_color[];
+
+out vec3 geometry_position;
+out vec3 geometry_normal;
+out vec3 geometry_view;
+out vec3 geometry_distance;
+out vec3 geometry_color;
+
+void main()
+{
+	vec3 pts[3];
+	pts = vec3[3](( vertex_position[0] - 0.5 ) * u_scene_size, ( vertex_position[1] - 0.5 ) * u_scene_size, ( vertex_position[2] - 0.5 ) * u_scene_size);
+	
+	vec3 pts_abs[3];
+	pts_abs = vec3[3](( vertex_position[0]) * u_scene_size, ( vertex_position[1]) * u_scene_size, ( vertex_position[2] ) * u_scene_size);
+
+	vec4 transformed[3];
+	transformed[0] = u_transforms.modelviewprojection * vec4(pts[0], 1 );
+	transformed[1] = u_transforms.modelviewprojection * vec4(pts[1], 1 );
+	transformed[2] = u_transforms.modelviewprojection * vec4(pts[2], 1 );
+	
+	vec2 p0 = u_viewport * transformed[0].xy / transformed[0].w;
+	vec2 p1 = u_viewport * transformed[1].xy / transformed[1].w;
+	vec2 p2 = u_viewport * transformed[2].xy / transformed[2].w;
+	
+	vec2 v[3] = vec2[3](p2 - p1, p2 - p0, p1 - p0);
+	float area = abs (v[1].x*v[2].y - v[1].y*v[2].x);
+	
+	for(int i =0; i<3; i++)
+	{
+		geometry_distance = vec3(0);
+		geometry_distance[i] = area * inversesqrt (dot (v[i],v[i]));
+		gl_Position = transformed[i];
+		geometry_position = vertex_position[i].xyz;
+		geometry_view = (u_transforms.modelview * vec4( ((vertex_position[i]-0.5)*u_scene_size), 1 )).xyz;
+		vec3 center = (pts_abs[1] + pts_abs[2] + pts_abs[0]) / 3;
+		gl_PrimitiveID = int( length(center)*1000 );
+		geometry_color = vertex_color[i];
+		EmitVertex();
+	}
+	
+	EndPrimitive();
+}
+
+#endif
+
+#ifdef FRAGMENT_SHADER
+
+layout(early_fragment_tests) in;
+
+in vec3 geometry_position;
+in vec3 geometry_distance;
+in vec3 geometry_view;
+in vec3 geometry_color;
+
+uniform int solid_wireframe;
+uniform vec3 u_camera_pos;
+
+out vec4 fragment_color;
+
+void main( )
+{
+
+	vec3 geometry_normal = -1 * normalize(cross( dFdx(geometry_position.xyz), dFdy(geometry_position.xyz)));
+
 	//Phong
 	float shadow_weight = 0.3;
 	float dotnormal = abs(dot(normalize(geometry_normal), vec3(-1, -1, -1)));
-	fragment_color = vec4( shadow_weight * color * dotnormal + (1-shadow_weight) * color, 1);
+	fragment_color = vec4( shadow_weight * geometry_color * dotnormal + (1-shadow_weight) * geometry_color, 1);
 
 	if (solid_wireframe == 1)
 	{
