@@ -9,10 +9,10 @@ uniform float u_curv_radius;
 
 void main( )
 {
-	vec3 corner_pos = (position.xyz + 0.5);
+	vec3 corner_pos = position.xyz;
 	vec3 scales = (u_scene_size/u_size_tex)*u_curv_radius;
 	corner_pos *= scales;
-	corner_pos.x += u_scene_size.x*0.5;
+	corner_pos.x += u_scene_size.x*0.5 + u_size_tex/2.0;
 
 	/*
 	mat4 scaleMat;

@@ -11,6 +11,9 @@ uniform float u_kmin;
 uniform float u_kmax;
 uniform int u_ground_truth;
 
+uniform sampler3D u_xyz2_tex;
+uniform sampler3D u_xy_yz_xz_tex;
+
 vec3 HSVtoRGB(vec3 hsv)
 {
   int i;
@@ -60,7 +63,7 @@ void main( )
 	float size_obj = u_size_tex;
 
 	vec3 probe = vec3(0.01, 0, 0);
-	volume += textureLod(densities, vertex_position + probe/u_size_tex, log2(r)+1).r * vol_boule;
+	volume += textureLod(densities, vertex_position + probe/u_size_tex, log2(r)).r * vol_boule;
 
 	//Curvature from volume
 	float fact83r = 8.0/(3.0*r);

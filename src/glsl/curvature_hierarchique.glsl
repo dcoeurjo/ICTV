@@ -115,7 +115,7 @@ void main( )
 	total_volume += pow(size, 3);
 
 	vec3 center = orig + vec3(size/2.0, 0, 0);
-	while(k>=0)
+	while(k>=1)
 	{
 		size/=2.0;
 		

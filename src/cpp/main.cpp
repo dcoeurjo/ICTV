@@ -89,6 +89,11 @@ void activateTextures()
 {
 	glActiveTexture(GL_TEXTURE0 + TEXTURE_DENSITY);
 	glBindTexture(GL_TEXTURE_3D, Parameters::getInstance()->g_textures[TEXTURE_DENSITY]);
+
+	glActiveTexture(GL_TEXTURE0 + TEXTURE_X2Y2Z2);
+	glBindTexture(GL_TEXTURE_3D, Parameters::getInstance()->g_textures[TEXTURE_X2Y2Z2]);
+	glActiveTexture(GL_TEXTURE0 + TEXTURE_XY_YZ_XZ);
+	glBindTexture(GL_TEXTURE_3D, Parameters::getInstance()->g_textures[TEXTURE_XY_YZ_XZ]);
 	
 	glActiveTexture(GL_TEXTURE0 + TEXTURE_CODE_CLASS);
 	glBindTexture(GL_TEXTURE_1D, Parameters::getInstance()->g_textures[TEXTURE_CODE_CLASS]);
@@ -247,6 +252,8 @@ public:
 		}
 		dl->loadFile(argv[1]);
 		dl->loadData32BGpu();
+		dl->loadx2y2z2();
+		dl->loadxyyzxz();
 		
 		lodManager.init();
 		extractor.init();
@@ -668,7 +675,7 @@ public:
 				sprintf(tmp, "Isosurface %.2f", Parameters::getInstance()->g_isosurface);
 				m_widgets.doLabel(nv::Rect(), tmp);
 				m_widgets.doHorizontalSlider(nv::Rect(0,0, 200, 0), 0.f, 1.f, &(Parameters::getInstance()->g_isosurface));*/
-				sprintf(tmp, "Mode:\nGT (1)\nGT hierachique (2)\nApprox (3)\n|GT-Approx| (4)\nCurrent %d", (int)Parameters::getInstance()->g_ground_truth);
+				sprintf(tmp, "Mode:\nMean GT (1)\nMean GT hierachique (2)\nMean Approx (3)\nGaussian (4)\nCurrent %d", (int)Parameters::getInstance()->g_ground_truth);
 				m_widgets.doLabel(nv::Rect(), tmp);
 				m_widgets.doHorizontalSlider(nv::Rect(0,0, 200, 0), 1, 5.f, &(Parameters::getInstance()->g_ground_truth));
 				sprintf(tmp, "Ball Radius %.2f", Parameters::getInstance()->g_curvradius);

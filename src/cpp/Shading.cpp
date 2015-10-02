@@ -73,6 +73,14 @@ void configure(GLuint program, GLuint first_loc)
     glProgramUniform1f(program,
             Parameters::getInstance()->g_uniform_locations[first_loc+11],
             Parameters::getInstance()->g_sizetex);
+	
+	glProgramUniform1i (program,
+			Parameters::getInstance()->g_uniform_locations[first_loc+12],
+			TEXTURE_X2Y2Z2);
+	
+	glProgramUniform1i (program,
+			Parameters::getInstance()->g_uniform_locations[first_loc+13],
+ 			TEXTURE_XY_YZ_XZ);
 }
 
 void Shading::configureProgram()
@@ -81,6 +89,7 @@ void Shading::configureProgram()
 	configure(Parameters::getInstance()->g_programs[PROGRAM_GTCURV], LOCATION_GTCURV_SIZE);
 	configure(Parameters::getInstance()->g_programs[PROGRAM_HIERARCHCURV], LOCATION_HIERARCHCURV_SIZE);
 	configure(Parameters::getInstance()->g_programs[PROGRAM_APPROXCURV], LOCATION_APPROXCURV_SIZE);
+	configure(Parameters::getInstance()->g_programs[PROGRAM_GAUSSCURV], LOCATION_GAUSSCURV_SIZE);
 	
 	glProgramUniform1i (PROGRAM_SKYBOX,
                     Parameters::getInstance()->g_uniform_locations[LOCATION_SKYBOX_TEXTURE],
@@ -119,6 +128,12 @@ void load(GLuint program, GLuint first_loc)
 
     Parameters::getInstance()->g_uniform_locations[first_loc+11] =
         glGetUniformLocation (program, "u_size_tex");
+		
+	Parameters::getInstance()->g_uniform_locations[first_loc+12] = 
+		glGetUniformLocation(program, "u_xyz2_tex");
+
+	Parameters::getInstance()->g_uniform_locations[first_loc+13] = 
+		glGetUniformLocation(program, "u_xy_yz_xz_tex");
 }
 
 void Shading::loadProgram()
@@ -192,6 +207,23 @@ void Shading::loadProgram()
 	}
 	
 	{
+		GLuint *program = &Parameters::getInstance()->g_programs[PROGRAM_GAUSSCURV];
+
+        fprintf (stderr, "loading shading program... "); fflush (stderr);
+        gk::GLCompiler& c = gk::loadProgram( SHADER_PATH("curvature_gauss.glsl"));
+        c.include(SHADER_PATH("noise.glsl") );
+        c.include(SHADER_PATH("octree_common.glsl") );
+        c.include(SHADER_PATH("ltree.glsl") );
+        GLProgram* tmp = c.make();
+        if (tmp->errors)
+            exit(-1);
+        *program = tmp->name;
+        glLinkProgram (*program);
+		
+		load(Parameters::getInstance()->g_programs[PROGRAM_GAUSSCURV], LOCATION_GAUSSCURV_SIZE);
+	}
+	
+	{
 	GLuint *program = &Parameters::getInstance()->g_programs[PROGRAM_SKYBOX];
 
         fprintf (stderr, "loading skybox program... "); fflush (stderr);
@@ -208,188 +240,6 @@ void Shading::loadProgram()
 	}
         
 	configureProgram();
-}
-
-void Shading::loadTextures()
-{
-    /** Fetch assets **/
-	
-    gk::Image* texture_yz = gk::ImageIO::readImage(DATA_PATH("texture/rock_texture.jpg"));
-    if (texture_yz == NULL)
-        exit(1);
-    gk::Image* texture_xz = gk::ImageIO::readImage(DATA_PATH("texture/rock_texture.jpg"));
-    if (texture_xz == NULL)
-        exit(1);
-    gk::Image* texture_xy = gk::ImageIO::readImage(DATA_PATH("texture/grass_texture.jpg"));
-    if (texture_xy == NULL)
-        exit(1);
-    
-    /*
-    gk::Image* texture_yz = gk::ImageIO::readImage(DATA_PATH("texture/bone.jpg"));
-    if (texture_yz == NULL)
-        exit(1);
-    gk::Image* texture_xz = gk::ImageIO::readImage(DATA_PATH("texture/bone.jpg"));
-    if (texture_xz == NULL)
-        exit(1);
-    gk::Image* texture_xy = gk::ImageIO::readImage(DATA_PATH("texture/bone.jpg"));
-    if (texture_xy == NULL)
-        exit(1);
-    */
-    
-    /*gk::Image* bump_yz = gk::ImageIO::readImage(DATA_PATH("texture/rock_bumpmap.jpg"));
-    if (texture_yz == NULL)
-        exit(1);
-    gk::Image* bump_xz = gk::ImageIO::readImage(DATA_PATH("texture/rock_bumpmap.jpg"));
-    if (texture_xz == NULL)
-        exit(1);
-    gk::Image* bump_xy = gk::ImageIO::readImage(DATA_PATH("texture/sand_bumpmap.jpg"));
-    if (texture_xy == NULL)
-        exit(1);*/
-    
-    gk::Image* texture_envmap = gk::ImageIO::readImage(DATA_PATH("texture/envmap3.jpg"));
-    if (texture_envmap == NULL)
-        exit(1);
-    
-    /**Load textures**/
-    
-    glGenTextures(1, &Parameters::getInstance()->g_textures[TEXTURE_COLOR_X]);	
-    glBindTexture(GL_TEXTURE_2D, Parameters::getInstance()->g_textures[TEXTURE_COLOR_X]);
-
-    if (texture_yz->channels == 3)
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, texture_yz->width, texture_yz->height, 0, GL_RGB, GL_UNSIGNED_BYTE, texture_yz->data);
-    else if  (texture_yz->channels == 4)
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, texture_yz->width, texture_yz->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, texture_yz->data);
-    else
-    {
-        printf("Error: %d channels on texture YZ\n", texture_yz->channels);
-        exit(1);
-    }
-
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    
-    glGenerateMipmap(GL_TEXTURE_2D);
-    
-    
-    glGenTextures(1, &Parameters::getInstance()->g_textures[TEXTURE_COLOR_Y]);	
-    glBindTexture(GL_TEXTURE_2D, Parameters::getInstance()->g_textures[TEXTURE_COLOR_Y]);
-
-    if (texture_xz->channels == 3)
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, texture_xz->width, texture_xz->height, 0, GL_RGB, GL_UNSIGNED_BYTE, texture_xz->data);
-    else if  (texture_xz->channels == 4)
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, texture_xz->width, texture_xz->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, texture_xz->data);
-    else
-    {
-        printf("Error: %d channels on texture XZ\n", texture_xz->channels);
-        exit(1);
-    }
-    
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    
-    glGenerateMipmap(GL_TEXTURE_2D);
-    
-    
-    glGenTextures(1, &Parameters::getInstance()->g_textures[TEXTURE_COLOR_Z]);	
-    glBindTexture(GL_TEXTURE_2D, Parameters::getInstance()->g_textures[TEXTURE_COLOR_Z]);
-
-    if (texture_xy->channels == 3)
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, texture_xy->width, texture_xy->height, 0, GL_RGB, GL_UNSIGNED_BYTE, texture_xy->data);
-    else if  (texture_xy->channels == 4)
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, texture_xy->width, texture_xy->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, texture_xy->data);
-    else
-    {
-        printf("Error: %d channels on texture XY\n", texture_xy->channels);
-        exit(1);
-    }
-
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    
-    glGenerateMipmap(GL_TEXTURE_2D);
-    
-    /** Load Bumpmaps **/
-    
-    /*glGenTextures(1, &Parameters::getInstance()->g_textures[TEXTURE_BUMP_X]);	
-    glBindTexture(GL_TEXTURE_2D, Parameters::getInstance()->g_textures[TEXTURE_BUMP_X]);
-
-    if (bump_yz->channels == 3)
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, bump_yz->width, bump_yz->height, 0, GL_RGB, GL_UNSIGNED_BYTE, bump_yz->data);
-    else if  (bump_yz->channels == 4)
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, bump_yz->width, bump_yz->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, bump_yz->data);
-    else
-    {
-        printf("Error: %d channels on bump YZ\n", bump_yz->channels);
-        exit(1);
-    }
-
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    
-    glGenerateMipmap(GL_TEXTURE_2D);
-    
-    glGenTextures(1, &Parameters::getInstance()->g_textures[TEXTURE_BUMP_Y]);	
-    glBindTexture(GL_TEXTURE_2D, Parameters::getInstance()->g_textures[TEXTURE_BUMP_Y]);
-
-    if (bump_xz->channels == 3)
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, bump_xz->width, bump_xz->height, 0, GL_RGB, GL_UNSIGNED_BYTE, bump_xz->data);
-    else if  (bump_xz->channels == 4)
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, bump_xz->width, bump_xz->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, bump_xz->data);
-    else
-    {
-        printf("Error: %d channels on bump XZ\n", bump_xz->channels);
-        exit(1);
-    }
-
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    
-    glGenerateMipmap(GL_TEXTURE_2D);
-    
-    glGenTextures(1, &Parameters::getInstance()->g_textures[TEXTURE_BUMP_Z]);	
-    glBindTexture(GL_TEXTURE_2D, Parameters::getInstance()->g_textures[TEXTURE_BUMP_Z]);
-
-    if (bump_xy->channels == 3)
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, bump_xy->width, bump_xy->height, 0, GL_RGB, GL_UNSIGNED_BYTE, bump_xy->data);
-    else if  (bump_xy->channels == 4)
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, bump_xy->width, bump_xy->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, bump_xy->data);
-    else
-    {
-        printf("Error: %d channels on bump XY\n", bump_xy->channels);
-        exit(1);
-    }
-
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    
-    glGenerateMipmap(GL_TEXTURE_2D);*/
-
-    /** Load Envmap **/
-    
-    glGenTextures(1, &Parameters::getInstance()->g_textures[TEXTURE_ENVMAP]);	
-    glBindTexture(GL_TEXTURE_2D, Parameters::getInstance()->g_textures[TEXTURE_ENVMAP]);
-
-    if (texture_envmap->channels == 3)
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, texture_envmap->width, texture_envmap->height, 0, GL_RGB, GL_UNSIGNED_BYTE, texture_envmap->data);
-    else if  (texture_envmap->channels == 4)
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, texture_envmap->width, texture_envmap->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, texture_envmap->data);
-    else
-    {
-        printf("Error: %d channels on skybox texture\n", texture_envmap->channels);
-        exit(1);
-    }
-
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    
-    glGenerateMipmap(GL_TEXTURE_2D);
 }
 
 void Shading::loadVA()
@@ -418,7 +268,6 @@ void Shading::loadVA()
 void Shading::init()
 {
 	loadProgram();
-	//loadTextures();
 	loadVA();
 	glGenQueries (1, &Parameters::getInstance()->g_query[QUERY_TRIANGLES]);
 }
@@ -433,6 +282,8 @@ void Shading::run(GLuint nbcells_reg, GLuint nbcells_tr, GLuint* nb_triangles_re
 		glUseProgram(Parameters::getInstance()->g_programs[PROGRAM_HIERARCHCURV]);
 	else if((int)Parameters::getInstance()->g_ground_truth == 3)
 		glUseProgram(Parameters::getInstance()->g_programs[PROGRAM_APPROXCURV]);
+	else if((int)Parameters::getInstance()->g_ground_truth == 4)
+		glUseProgram(Parameters::getInstance()->g_programs[PROGRAM_GAUSSCURV]);
 	else
 		glUseProgram(Parameters::getInstance()->g_programs[PROGRAM_SHADING]);
 	

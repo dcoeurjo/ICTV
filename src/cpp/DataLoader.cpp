@@ -26,6 +26,62 @@ void DataLoader::loadData8BGpu()
 	glBindTexture(GL_TEXTURE_3D, 0);
 }
 
+void DataLoader::loadx2y2z2()
+{
+	float* data;
+	data = new float[sizex*sizey*sizez*3];
+	int nb = 0;
+	for(unsigned int i=0; i<sizex; i++)
+	for(unsigned int j=0; j<sizey; j++)
+	for(unsigned int k=0; k<sizez; k++)
+	{
+		float norm_i = i;//(float)i/(float)sizex;
+		float norm_j = j;//(float)j/(float)sizey;
+		float norm_k = k;//(float)k/(float)sizez;
+		
+		data[nb++] = norm_i*norm_i;
+		data[nb++] = norm_j*norm_j;
+		data[nb++] = norm_k*norm_k;
+	}
+	
+	glGenTextures(1, &Parameters::getInstance()->g_textures[TEXTURE_X2Y2Z2]);
+	glBindTexture(GL_TEXTURE_3D, Parameters::getInstance()->g_textures[TEXTURE_X2Y2Z2]);
+	
+	glTexImage3D(GL_TEXTURE_3D, 0, GL_RGB16F, sizex, sizey, sizez, 0, GL_RGB, GL_FLOAT, data);
+        glGenerateMipmap(GL_TEXTURE_3D);
+	
+	glBindTexture(GL_TEXTURE_3D, 0);
+}
+
+
+void DataLoader::loadxyyzxz()
+{
+	float* data;
+	data = new float[sizex*sizey*sizez*3];
+	int nb = 0;
+	for(unsigned int i=0; i<sizex; i++)
+	for(unsigned int j=0; j<sizey; j++)
+	for(unsigned int k=0; k<sizez; k++)
+	{
+		float norm_i = i;//(float)i/(float)sizex;
+		float norm_j = j;//(float)j/(float)sizey;
+		float norm_k = k;//(float)k/(float)sizez;
+		
+		data[nb++] = norm_i*norm_j;
+		data[nb++] = norm_j*norm_k;
+		data[nb++] = norm_i*norm_k;
+	}
+	
+	glGenTextures(1, &Parameters::getInstance()->g_textures[TEXTURE_XY_YZ_XZ]);
+	glBindTexture(GL_TEXTURE_3D, Parameters::getInstance()->g_textures[TEXTURE_XY_YZ_XZ]);
+	
+	glTexImage3D(GL_TEXTURE_3D, 0, GL_RGB16F, sizex, sizey, sizez, 0, GL_RGB, GL_FLOAT, data);
+        glGenerateMipmap(GL_TEXTURE_3D);
+	
+	glBindTexture(GL_TEXTURE_3D, 0);
+}
+
+
 unsigned long int f(unsigned int sf, unsigned long int x, unsigned long int y, unsigned long int z)
 {
 	return ((z*sf) + x)*sf + y;
