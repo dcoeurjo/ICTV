@@ -9,6 +9,7 @@
 #include "Shading.h"
 #include "QuaternionCamera.h"
 #include "PrimitiveDraw.h"
+#include "Curvature.h"
 
 #include "GL/GLQuery.h"
 #include "GL/GLTexture.h"
@@ -160,7 +161,7 @@ private:
 	Triangulation extractor;
 	
 	//Framebuffer
-	Shading shadator;
+	Curvature curver;
 	BlitFramebuffer blitter;
 
 	//radius
@@ -198,8 +199,6 @@ private:
 	FILE* plotfd;
 	
 	//CPU flags
-	bool skybox;
-	bool animate;
 	bool plot;
 	bool transition_cells_displayed;
 	bool reload_fetch;
@@ -257,7 +256,7 @@ public:
 		
 		lodManager.init();
 		extractor.init();
-		shadator.init();
+		curver.init();
 		blitter.init();
 		radiusShower.init();
 		
@@ -269,8 +268,6 @@ public:
 		unmovedCells = 0;
 		frame = 0;
 		
-		skybox = false;
-		animate = true;
 		plot = false;
 		transition_cells_displayed = true;
 		
@@ -356,20 +353,6 @@ public:
 		glViewport    (0, 0, Parameters::getInstance()->g_window.width, Parameters::getInstance()->g_window.height);
 		glPolygonMode (GL_FRONT_AND_BACK, GL_FILL);
 		
-		if(skybox)
-		{
-		    glDisable(GL_DEPTH_TEST);
-		    glPolygonMode (GL_FRONT_AND_BACK, GL_FILL);
-		    
-		    glUseProgram (Parameters::getInstance()->g_programs[PROGRAM_SKYBOX]);
-		    glBindVertexArray (Parameters::getInstance()->g_vertex_arrays[VERTEX_ARRAY_EMPTY]);
-		    glDrawArrays (GL_TRIANGLE_STRIP, 0, 4);
-		    glBindVertexArray(0);
-		    glUseProgram(0);
-		    
-		    glEnable(GL_DEPTH_TEST);
-		}
-
 		//draw octree
 		if (Parameters::getInstance()->g_draw_cells)
 		{
@@ -385,7 +368,7 @@ public:
 		{
 			m_time_shading->begin();
 			
-			shadator.run(queryResult_regular, queryResult_transition, &triangles_regular, &triangles_transition, &sync_count_triangles);
+			curver.run(queryResult_regular, queryResult_transition, &triangles_regular, &triangles_transition, &sync_count_triangles);
 			
 			m_time_shading->end();
 		}
@@ -451,7 +434,7 @@ public:
 		{
 			lodManager.loadPrograms();
 			extractor.loadPrograms();
-			shadator.loadProgram();
+			curver.loadProgram();
 			radiusShower.loadProgram();
 			gk::reloadPrograms();
 			key('r')= 0;
@@ -491,38 +474,6 @@ public:
 			Parameters::getInstance()->g_capture.enabled = !Parameters::getInstance()->g_capture.enabled;
 			key('c') = 0;
 		}
-		
-		if (key('a'))
-		{
-			animate = !animate;
-			key('a') = 0;
-		}
-		
-		if (reload_fetch != Parameters::getInstance()->g_fromtexture)
-		{
-			if (Parameters::getInstance()->g_fromtexture)
-			{
-				Parameters::getInstance()->g_controls = true;
-				load_quatPoint(cam);
-				
-				animate = false;
-				
-				Parameters::getInstance()->g_scale = 3.7;
-				Parameters::getInstance()->g_tessel = 2;
-			}
-			else
-			{
-				Parameters::getInstance()->g_controls = false;
-				load_viewPoint();
-				
-				animate = true;
-				
-				Parameters::getInstance()->g_scale = 7;
-				Parameters::getInstance()->g_tessel = 2;
-			}
-		}
-		
-		reload_fetch = Parameters::getInstance()->g_fromtexture;
 	}
     
 	void testMovement()
@@ -678,6 +629,9 @@ public:
 				sprintf(tmp, "Mode:\nMean GT (1)\nMean GT hierachique (2)\nMean Approx (3)\nGaussian (4)\nCurrent %d", (int)Parameters::getInstance()->g_ground_truth);
 				m_widgets.doLabel(nv::Rect(), tmp);
 				m_widgets.doHorizontalSlider(nv::Rect(0,0, 200, 0), 1, 5.f, &(Parameters::getInstance()->g_ground_truth));
+				sprintf(tmp, "Mode:\nNo curvature directions (0)\nMin curvature directions (1)\nMax curvature directions (2)\nCurrent %d", (int)Parameters::getInstance()->g_curv_dir);
+				m_widgets.doLabel(nv::Rect(), tmp);
+				m_widgets.doHorizontalSlider(nv::Rect(0,0, 200, 0), 0, 3.f, &(Parameters::getInstance()->g_curv_dir));
 				sprintf(tmp, "Ball Radius %.2f", Parameters::getInstance()->g_curvradius);
 				m_widgets.doLabel(nv::Rect(), tmp);
 				m_widgets.doHorizontalSlider(nv::Rect(0,0, 200, 0), 1.f, 30.f, &(Parameters::getInstance()->g_curvradius));
@@ -753,12 +707,6 @@ public:
 		testParameters();
 		
 		testMovement();
-			
-		if (animate)
-		{
-			Parameters::getInstance()->g_time_elapsed += 0.02;
-			//Parameters::getInstance()->g_time_elapsed += gpu_time / 1000.0;
-		}
 		
 		GLint64 start; glGetInteger64v(GL_TIMESTAMP, &start);
 		window_draw();

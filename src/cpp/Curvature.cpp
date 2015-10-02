@@ -1,4 +1,4 @@
-#include "Shading.h"
+#include "Curvature.h"
 #include <boost/concept_check.hpp>
 
 #include "GL/GLQuery.h"
@@ -10,7 +10,7 @@
 #include "ImageIO.h"
 #include "Image.h"
 
-void configure(GLuint program, GLuint first_loc)
+void configure_curv(GLuint program, GLuint first_loc)
 {
 	/*
 	LOCATION_SHADING_SIZE,
@@ -81,17 +81,21 @@ void configure(GLuint program, GLuint first_loc)
 	glProgramUniform1i (program,
 			Parameters::getInstance()->g_uniform_locations[first_loc+13],
  			TEXTURE_XY_YZ_XZ);
+	
+	glProgramUniform1i (program,
+			Parameters::getInstance()->g_uniform_locations[first_loc+14],
+ 			(int)Parameters::getInstance()->g_curv_dir);
 }
 
-void Shading::configureProgram()
+void Curvature::configureProgram()
 {
-	configure(Parameters::getInstance()->g_programs[PROGRAM_SHADING], LOCATION_SHADING_SIZE);
-	configure(Parameters::getInstance()->g_programs[PROGRAM_GTCURV], LOCATION_GTCURV_SIZE);
-	configure(Parameters::getInstance()->g_programs[PROGRAM_HIERARCHCURV], LOCATION_HIERARCHCURV_SIZE);
-	configure(Parameters::getInstance()->g_programs[PROGRAM_APPROXCURV], LOCATION_APPROXCURV_SIZE);
+	configure_curv(Parameters::getInstance()->g_programs[PROGRAM_SHADING], LOCATION_SHADING_SIZE);
+	configure_curv(Parameters::getInstance()->g_programs[PROGRAM_GTCURV], LOCATION_GTCURV_SIZE);
+	configure_curv(Parameters::getInstance()->g_programs[PROGRAM_HIERARCHCURV], LOCATION_HIERARCHCURV_SIZE);
+	configure_curv(Parameters::getInstance()->g_programs[PROGRAM_APPROXCURV], LOCATION_APPROXCURV_SIZE);
 }
 
-void load(GLuint program, GLuint first_loc)
+void load_curv(GLuint program, GLuint first_loc)
 {
 	Parameters::getInstance()->g_uniform_locations[first_loc] =
 		glGetUniformLocation (program, "u_scene_size");
@@ -129,9 +133,12 @@ void load(GLuint program, GLuint first_loc)
 
 	Parameters::getInstance()->g_uniform_locations[first_loc+13] = 
 		glGetUniformLocation(program, "u_xy_yz_xz_tex");
+		
+	Parameters::getInstance()->g_uniform_locations[first_loc+14] = 
+		glGetUniformLocation(program, "u_curv_dir");
 }
 
-void Shading::loadProgram()
+void Curvature::loadProgram()
 {
 	{
 		GLuint *program = &Parameters::getInstance()->g_programs[PROGRAM_SHADING];
@@ -147,7 +154,7 @@ void Shading::loadProgram()
         *program = tmp->name;
         glLinkProgram (*program);
 		
-		load(Parameters::getInstance()->g_programs[PROGRAM_SHADING], LOCATION_SHADING_SIZE);
+		load_curv(Parameters::getInstance()->g_programs[PROGRAM_SHADING], LOCATION_SHADING_SIZE);
 	}
 	
 	{
@@ -164,7 +171,7 @@ void Shading::loadProgram()
         *program = tmp->name;
         glLinkProgram (*program);
 		
-		load(Parameters::getInstance()->g_programs[PROGRAM_APPROXCURV], LOCATION_APPROXCURV_SIZE);
+		load_curv(Parameters::getInstance()->g_programs[PROGRAM_APPROXCURV], LOCATION_APPROXCURV_SIZE);
 	}
 	
 	{
@@ -181,7 +188,7 @@ void Shading::loadProgram()
         *program = tmp->name;
         glLinkProgram (*program);
 		
-		load(Parameters::getInstance()->g_programs[PROGRAM_GTCURV], LOCATION_GTCURV_SIZE);
+		load_curv(Parameters::getInstance()->g_programs[PROGRAM_GTCURV], LOCATION_GTCURV_SIZE);
 	}
 	
 	{
@@ -198,13 +205,13 @@ void Shading::loadProgram()
         *program = tmp->name;
         glLinkProgram (*program);
 		
-		load(Parameters::getInstance()->g_programs[PROGRAM_HIERARCHCURV], LOCATION_HIERARCHCURV_SIZE);
+		load_curv(Parameters::getInstance()->g_programs[PROGRAM_HIERARCHCURV], LOCATION_HIERARCHCURV_SIZE);
 	}
         
 	configureProgram();
 }
 
-void Shading::loadVA()
+void Curvature::loadVA()
 {
 	glGenVertexArrays (1, Parameters::getInstance()->g_vertex_arrays + VERTEX_ARRAY_SHADING);
 	glBindVertexArray(Parameters::getInstance()->g_vertex_arrays[VERTEX_ARRAY_SHADING]);
@@ -227,14 +234,14 @@ void Shading::loadVA()
 	glBindVertexArray(0);
 }
 
-void Shading::init()
+void Curvature::init()
 {
 	loadProgram();
 	loadVA();
 	glGenQueries (1, &Parameters::getInstance()->g_query[QUERY_TRIANGLES]);
 }
 
-void Shading::run(GLuint nbcells_reg, GLuint nbcells_tr, GLuint* nb_triangles_regular, GLuint* nb_triangles_transition, GLuint64* sync_time)
+void Curvature::run(GLuint nbcells_reg, GLuint nbcells_tr, GLuint* nb_triangles_regular, GLuint* nb_triangles_transition, GLuint64* sync_time)
 {
 	configureProgram();
 
