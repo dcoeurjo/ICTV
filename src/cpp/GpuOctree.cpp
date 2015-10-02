@@ -485,23 +485,23 @@ void GPUOctree::init()
             gk::Translate(gk::Vector(0, -Parameters::getInstance()->g_geometry.scale[2] * 1e-5, -Parameters::getInstance()->g_geometry.scale[2] * 1.1f));
         Parameters::getInstance()->g_geometry.affine = Parameters::getInstance()->g_geometry.affine * gk::RotateX(3.14159f * 0.025f);
   
-          // pre process quadtree
-        glEnable (GL_RASTERIZER_DISCARD);
-        glUseProgram (Parameters::getInstance()->g_programs[PROGRAM_LTREE_LOD]);
-        glBindTransformFeedback (GL_TRANSFORM_FEEDBACK,
-                                 Parameters::getInstance()->g_feedbacks[FEEDBACK_LTREE1]);
+    // pre process quadtree
+	glEnable (GL_RASTERIZER_DISCARD);
+	glUseProgram (Parameters::getInstance()->g_programs[PROGRAM_LTREE_LOD]);
+	glBindTransformFeedback (GL_TRANSFORM_FEEDBACK,
+								Parameters::getInstance()->g_feedbacks[FEEDBACK_LTREE1]);
 	glBindBufferBase (
                 GL_TRANSFORM_FEEDBACK_BUFFER,
                 0u,
                 Parameters::getInstance()->g_buffers[BUFFER_LTREE_DATA2]
 	);
-        glBeginTransformFeedback (GL_POINTS);
-                glBindVertexArray (Parameters::getInstance()->g_vertex_arrays[VERTEX_ARRAY_LTREE_UPDATE1]);
-                glDrawArrays (GL_POINTS, 0, 1);
-        glEndTransformFeedback ();
-        glDisable (GL_RASTERIZER_DISCARD);
+	glBeginTransformFeedback (GL_POINTS);
+			glBindVertexArray (Parameters::getInstance()->g_vertex_arrays[VERTEX_ARRAY_LTREE_UPDATE1]);
+			glDrawArrays (GL_POINTS, 0, 1);
+	glEndTransformFeedback ();
+	glDisable (GL_RASTERIZER_DISCARD);
 
-        glFinish (); // for AMD only ?
+	glFinish (); // for AMD only ?
 }
 
 void GPUOctree::runLod(GLuint* unmovedCells, GLuint* queryResult_lod)

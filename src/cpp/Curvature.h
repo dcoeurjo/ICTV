@@ -8,8 +8,10 @@ class Curvature
 {
 private:
 	void configureProgram();
-	void loadTextures();
+	void loadBuffers();
 	void loadVA();
+	void loadTransformFeedbacks();
+	
 public:
 	void loadProgram();
 	

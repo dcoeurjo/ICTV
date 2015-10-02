@@ -117,9 +117,9 @@ void load_curv(GLuint program, GLuint first_loc)
 		
 	Parameters::getInstance()->g_uniform_locations[first_loc+7] =
 		glGetUniformLocation (program, "u_curv_radius");
-        Parameters::getInstance()->g_uniform_locations[first_loc+8] =
+    Parameters::getInstance()->g_uniform_locations[first_loc+8] =
         glGetUniformLocation (program, "u_kmin");
-        Parameters::getInstance()->g_uniform_locations[first_loc+9] =
+    Parameters::getInstance()->g_uniform_locations[first_loc+9] =
         glGetUniformLocation (program, "u_kmax");
 
     Parameters::getInstance()->g_uniform_locations[first_loc+10] =
@@ -238,6 +238,9 @@ void Curvature::init()
 {
 	loadProgram();
 	loadVA();
+	loadBuffers();
+	loadTransformFeedbacks();
+	
 	glGenQueries (1, &Parameters::getInstance()->g_query[QUERY_TRIANGLES]);
 }
 
@@ -296,5 +299,14 @@ void Curvature::run(GLuint nbcells_reg, GLuint nbcells_tr, GLuint* nb_triangles_
 	
 	*sync_time += (stop - start);
 }
+
+void Curvature::loadTransformFeedbacks()
+{
+}
+
+void Curvature::loadBuffers()
+{
+}
+
 
 
