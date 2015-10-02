@@ -53,7 +53,7 @@ void main( )
 {
     vertex_position = position.xyz;
 
-    /*float r = u_curv_radius;
+    float r = u_curv_radius;
 	vec3 color;
 	float vol_boule = ((4*3.14159*(r*r*r))/3.0);
 
@@ -77,10 +77,10 @@ void main( )
 
 	if ((gt_curvature<0) || (gt_curvature>1)) color= vec3(0.5,0.5,0.5);
 	else
-		color= colormap(gt_curvature);*/
+		color= colormap(gt_curvature);
 	
-	dir_courbure = vec3(0, 1, 0);
-	vertex_color = texture(u_xy_yz_xz_tex, vertex_position).rgb / (float(u_size_tex-1)*float(u_size_tex-1));
+	dir_courbure = normalize(vec3(1, 1, 0));
+	vertex_color = color;//texture(u_xy_yz_xz_tex, vertex_position).rgb / (float(u_size_tex-1)*float(u_size_tex-1));
     gl_Position = position;
 }
 #endif
@@ -88,7 +88,7 @@ void main( )
 #ifdef GEOMETRY_SHADER
 
 layout (triangles) in;
-layout (triangle_strip, max_vertices = 10) out;
+layout (triangle_strip, max_vertices = 20) out;
 
 in vec3 vertex_position[];
 in vec3 vertex_color[];
@@ -100,6 +100,14 @@ out vec3 geometry_view;
 out vec3 geometry_distance;
 out vec3 geometry_color;
 out flat int geometry_curvdir;
+
+void setPoint(vec3 point)
+{
+	geometry_curvdir = 1;
+	gl_Position = u_transforms.modelviewprojection * vec4(point, 1 );
+	geometry_position = point.xyz;
+	geometry_color = vec3(0, 0, 1);
+}
 
 void main()
 {
@@ -140,48 +148,64 @@ void main()
 	vec3 mean_dir = (dir_courbure[0]+dir_courbure[1]+dir_courbure[2]);
 	mean_dir = normalize(mean_dir);
 	vec3 center_face = (pts[0].xyz+pts[1].xyz+pts[2].xyz)/3.0;
-	vec3 normale = cross(normalize(pts[0]-pts[1]).xyz, 
-						 normalize(pts[0]-pts[2]).xyz);
-	vec3 tan_dir = cross(normalize(normale), normalize(mean_dir));
+	vec3 normale = normalize(cross(normalize(pts[0]-pts[1]).xyz, 
+						 normalize(pts[0]-pts[2]).xyz));
+	vec3 tan_dir = normalize(cross(normalize(normale), normalize(mean_dir)));
+	vec3 depth = normalize(cross(normalize(tan_dir), normalize(mean_dir)));
 	
 	float l = 2.0;
-	float L = 8.0;
+	float L = 16.0;
+	float p = 1.0;
 	
-	vec3 middle_geom = center_face;// + 0.5*normale;
+	vec3 middle_geom = center_face + normale;
 	vec3 up_geom = middle_geom+mean_dir*0.5*L;
 	vec3 bottom_geom = middle_geom-mean_dir*0.5*L;
 	vec3 right_geom = middle_geom+tan_dir*0.5*l;
 	vec3 left_geom = middle_geom-tan_dir*0.5*l;
 	
-	vec3 up_right_corner = (right_geom+up_geom)/2.0;
-	vec3 up_left_corner = (left_geom+up_geom)/2.0;
-	vec3 bot_right_corner = (right_geom+bottom_geom)/2.0;
-	vec3 bot_left_corner = (left_geom+bottom_geom)/2.0;
+	vec3 c0 = (right_geom+up_geom)/2.0;
+	vec3 c1 = (left_geom+up_geom)/2.0;
+	vec3 c2 = (right_geom+bottom_geom)/2.0;
+	vec3 c3 = (left_geom+bottom_geom)/2.0;
 	
-	geometry_curvdir = 1;
-	gl_Position = u_transforms.modelviewprojection * vec4(up_right_corner, 1 );
-	geometry_position = up_right_corner.xyz;
-	geometry_color = vec3(0, 0, 1);
+	vec3 c4 = c0+p*depth;
+	vec3 c5 = c1+p*depth;
+	vec3 c6 = c2+p*depth;
+	vec3 c7 = c3+p*depth;
+	
+	setPoint(c0);
+	EmitVertex();
+	setPoint(c1);
+	EmitVertex();
+	setPoint(c2);
+	EmitVertex();
+	setPoint(c3);
 	EmitVertex();
 	
-	geometry_curvdir = 1;
-	gl_Position = u_transforms.modelviewprojection * vec4(up_left_corner, 1 );
-	geometry_position = up_right_corner.xyz;
-	geometry_color = vec3(0, 0, 1);
+	setPoint(c7);
+	EmitVertex();
+	setPoint(c1);
+	EmitVertex();
+	setPoint(c5);
+	EmitVertex();
+	setPoint(c4);
 	EmitVertex();
 	
-	geometry_curvdir = 1;
-	gl_Position = u_transforms.modelviewprojection * vec4(bot_right_corner, 1 );
-	geometry_position = up_right_corner.xyz;
-	geometry_color = vec3(0, 0, 1);
+	setPoint(c7);
+	EmitVertex();
+	setPoint(c6);
+	EmitVertex();
+	setPoint(c2);
 	EmitVertex();
 	
-	geometry_curvdir = 1;
-	gl_Position = u_transforms.modelviewprojection * vec4(bot_left_corner, 1 );
-	geometry_position = up_right_corner.xyz;
-	geometry_color = vec3(0, 0, 1);
+	setPoint(c4);
 	EmitVertex();
-
+	setPoint(c0);
+	EmitVertex();
+	setPoint(c1);
+	EmitVertex();
+	
+	
 	EndPrimitive();
 }
 
@@ -203,25 +227,19 @@ out vec4 fragment_color;
 
 void main( )
 {
-	if (geometry_curvdir == 1)
-		fragment_color = vec4(geometry_color, 1);
-	else
+	vec3 geometry_normal = -1 * normalize(cross( dFdx(geometry_position.xyz), dFdy(geometry_position.xyz)));
+	//Phong
+	float shadow_weight = 0.3;
+	float dotnormal = abs(dot(normalize(geometry_normal), vec3(-1, -1, -1)));
+	fragment_color = vec4( shadow_weight * geometry_color * dotnormal + (1-shadow_weight) * geometry_color, 1);
+
+	if (geometry_curvdir == 0 && solid_wireframe == 1)
 	{
-		vec3 geometry_normal = -1 * normalize(cross( dFdx(geometry_position.xyz), dFdy(geometry_position.xyz)));
-
-		//Phong
-		float shadow_weight = 0.3;
-		float dotnormal = abs(dot(normalize(geometry_normal), vec3(-1, -1, -1)));
-		fragment_color = vec4( shadow_weight * geometry_color * dotnormal + (1-shadow_weight) * geometry_color, 1);
-
-		if (solid_wireframe == 1)
-		{
-			const float wirescale = 0.5; // scale of the wire
-			vec3 d2 = geometry_distance * geometry_distance;
-			float nearest = min (min (d2.x, d2.y), d2.z);
-			float f = exp2 (-nearest / wirescale);
-			fragment_color = mix (fragment_color, vec4(0), f);
-		}
+		const float wirescale = 0.5; // scale of the wire
+		vec3 d2 = geometry_distance * geometry_distance;
+		float nearest = min (min (d2.x, d2.y), d2.z);
+		float f = exp2 (-nearest / wirescale);
+		fragment_color = mix (fragment_color, vec4(0), f);
 	}
 }
 #endif
