@@ -53,12 +53,10 @@ void main( )
 	vec3 color;
 	float vol_boule = ((4*3.14159*(r*r*r))/3.0);
 
-	/*difference between approx and regular gt curvatures*/
-
+	/*curvature from regular integration*/
 	float volume = 0.0;
 	float gt_curvature = 0.0;
-	float approx_curvature = 0.0;
-
+	
 	float size_obj = u_size_tex;
 	for(float i=-r; i<r; i++)
 	for(float j=-r; j<r; j++)
@@ -81,22 +79,9 @@ void main( )
 	if(u_kmax > u_kmin)
 		gt_curvature = (curvature-u_kmin) / (u_kmax-u_kmin);
 
-	float density = textureLod(densities, vertex_position, log2(r)).r;
-	volume =  vol_boule * density;
-	//volume =  (r*r*r) * density;
-	
-	curvature = fact83r - fact4pir4*volume;
-
-	approx_curvature = curvature;
-	if(u_kmax > u_kmin)
-		approx_curvature = (curvature-u_kmin) / (u_kmax-u_kmin);
-
-	float diff = length(gt_curvature - approx_curvature);
-	float mind = -0.1;
-	float maxd = 0.1;
-	diff = (diff + mind) / (maxd - mind);
-	color= diff * vec3(1, 0, 0) + (1- diff)*vec3(0, 0, 1);
-
+	if ((gt_curvature<0) || (gt_curvature>1)) color= vec3(0.5,0.5,0.5);
+	else
+		color= colormap(gt_curvature);
 	
 	vertex_color = color;
     gl_Position = position;

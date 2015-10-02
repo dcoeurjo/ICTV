@@ -45,6 +45,30 @@ vec3 colormap(float scale)
   return HSVtoRGB( vec3(hue, 0.9, 1.0) );
 }
 
+mat3 fromSymToMatrix(vec3 sym)
+{
+	vec3 m0 = vec3(0);
+	m0[int(abs(sym[0])-1)] = 1;
+	if (sym[0] < 0)
+		m0[int(abs(sym[0])-1)] = -1;
+	
+	vec3 m1 = vec3(0);
+	m1[int(abs(sym[1])-1)] = 1;
+	if (sym[1] < 0)
+		m1[int(abs(sym[1])-1)] = -1;
+		
+	vec3 m2 = vec3(0);
+	m2[int(abs(sym[2])-1)] = 1;
+	if (sym[2] < 0)
+		m2[int(abs(sym[2])-1)] = -1;
+	
+	mat3 ret;
+	ret[0] = vec3(m0.x, m1.x, m2.x);
+	ret[1] = vec3(m0.y, m1.y, m2.y);
+	ret[2] = vec3(m0.z, m1.z, m2.z);
+	return ret;
+}
+
 void main( )
 {
     vertex_position = position.xyz;
@@ -53,24 +77,83 @@ void main( )
 	vec3 color;
 	float vol_boule = ((4*3.14159*(r*r*r))/3.0);
 
-	/*difference between approx and regular gt curvatures*/
-
+	/*curvature from hierarchical integration*/
+	
 	float volume = 0.0;
 	float gt_curvature = 0.0;
-	float approx_curvature = 0.0;
-
 	float size_obj = u_size_tex;
-	for(float i=-r; i<r; i++)
-	for(float j=-r; j<r; j++)
-	for(float k=-r; k<r; k++)
+
+	vec3 symetries[24];
+	int id = 0;
+	for(int i=1; i<=3; i++)
 	{
-		vec3 probe = vec3(i+0.5, j+0.5, k+0.5);
-		if (length(probe) <= r)
+		for(int j=1; j<=3; j++)
 		{
-			volume += textureLod(densities, vertex_position + (probe/size_obj), 0).r;
+			if(j==i)
+				continue;
+			for(int k=1; k<=3; k++)
+			{
+				if (k==i || k== j || j > k)
+					continue;
+				
+				for(int s0=1; s0>=-1; s0-=2)
+				for(int s1=1; s1>=-1; s1-=2)
+				for(int s2=1; s2>=-1; s2-=2)
+					symetries[id++]=vec3(s0*i, s1*j, s2*k);
+			}
 		}
 	}
+	
+	vec3 orig = vertex_position*u_size_tex;
 
+	float k = log2((2.0*r/sqrt(3)));
+	float size = pow(2.0, k);
+	
+	float total_volume = 0.0;
+	
+	volume += textureLod(densities, orig/u_size_tex, k).r * pow(size, 3);
+	total_volume += pow(size, 3);
+
+	vec3 center = orig + vec3(size/2.0, 0, 0);
+	while(k>=0)
+	{
+		size/=2.0;
+		
+		vec3 right_corner = center+vec3(size);
+		
+		vec3 current_voxel = right_corner;
+		bool stay = true;
+		while(true)
+		{
+			if (length(current_voxel - orig) > r)
+				break;
+			
+			while(true)
+			{
+				if (length(current_voxel - orig) > r)
+					break;
+				
+				for(int i=0; i<24; i++)
+				{
+					stay = false;
+					vec3 pos = orig + fromSymToMatrix(symetries[i])*(current_voxel-vec3(size/2.0));
+					volume += textureLod(densities, pos/u_size_tex, k).r * pow(size, 3);
+					total_volume += pow(size, 3);
+				}
+				current_voxel+= vec3(0, size, 0);
+			}
+			current_voxel.y = right_corner.y;
+			current_voxel += vec3(0, 0, size);
+		}
+		
+		if(!stay)
+			center += vec3(size, 0, 0);
+		
+		k--;
+	}
+	
+	volume *= vol_boule/total_volume;
+	
 	//Curvature from volume
 	float fact83r = 8.0/(3.0*r);
 	float fact4pir4 = 4.0 / (3.14159*r*r*r*r);
@@ -81,23 +164,10 @@ void main( )
 	if(u_kmax > u_kmin)
 		gt_curvature = (curvature-u_kmin) / (u_kmax-u_kmin);
 
-	float density = textureLod(densities, vertex_position, log2(r)).r;
-	volume =  vol_boule * density;
-	//volume =  (r*r*r) * density;
-	
-	curvature = fact83r - fact4pir4*volume;
+	if ((gt_curvature<0) || (gt_curvature>1)) color= vec3(0.5,0.5,0.5);
+	else
+		color= colormap(gt_curvature);
 
-	approx_curvature = curvature;
-	if(u_kmax > u_kmin)
-		approx_curvature = (curvature-u_kmin) / (u_kmax-u_kmin);
-
-	float diff = length(gt_curvature - approx_curvature);
-	float mind = -0.1;
-	float maxd = 0.1;
-	diff = (diff + mind) / (maxd - mind);
-	color= diff * vec3(1, 0, 0) + (1- diff)*vec3(0, 0, 1);
-
-	
 	vertex_color = color;
     gl_Position = position;
 }

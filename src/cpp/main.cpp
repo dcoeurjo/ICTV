@@ -671,7 +671,7 @@ public:
 				sprintf(tmp, "Mode:\nGT (1)\nGT hierachique (2)\nApprox (3)\n|GT-Approx| (4)\nCurrent %d", (int)Parameters::getInstance()->g_ground_truth);
 				m_widgets.doLabel(nv::Rect(), tmp);
 				m_widgets.doHorizontalSlider(nv::Rect(0,0, 200, 0), 1, 5.f, &(Parameters::getInstance()->g_ground_truth));
-				sprintf(tmp, "Curvature Radius %.2f", Parameters::getInstance()->g_curvradius);
+				sprintf(tmp, "Ball Radius %.2f", Parameters::getInstance()->g_curvradius);
 				m_widgets.doLabel(nv::Rect(), tmp);
 				m_widgets.doHorizontalSlider(nv::Rect(0,0, 200, 0), 1.f, 30.f, &(Parameters::getInstance()->g_curvradius));
 				sprintf(tmp, "Curvature Min %.2f", Parameters::getInstance()->g_curvmin);

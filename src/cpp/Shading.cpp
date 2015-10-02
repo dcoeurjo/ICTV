@@ -1,4 +1,5 @@
 #include "Shading.h"
+#include <boost/concept_check.hpp>
 
 #include "GL/GLQuery.h"
 #include "GL/GLTexture.h"
@@ -9,97 +10,121 @@
 #include "ImageIO.h"
 #include "Image.h"
 
-void Shading::configureProgram()
+void configure(GLuint program, GLuint first_loc)
 {
-	glProgramUniform3f (Parameters::getInstance()->g_programs[PROGRAM_SHADING],
-			Parameters::getInstance()->g_uniform_locations[LOCATION_SHADING_SIZE],
+	/*
+	LOCATION_SHADING_SIZE,
+	LOCATION_SHADING_DENSITY,
+	LOCATION_SHADING_VIEWPORT,
+	LOCATION_SHADING_TAN_FOVY,
+	LOCATION_SHADING_SCALE,
+	LOCATION_SHADING_WIREFRAME,
+	LOCATION_SHADING_CAMERA,
+	LOCATION_SHADING_CURVRADIUS,
+	LOCATION_SHADING_CURVMIN,
+	LOCATION_SHADING_CURVMAX,
+	LOCATION_SHADING_GROUNDTRUTH,
+	LOCATION_SHADING_SIZETEX,
+	*/
+	glProgramUniform3f (program,
+			Parameters::getInstance()->g_uniform_locations[first_loc],//LOCATION_SHADING_SIZE+first_loc],
 			Parameters::getInstance()->g_geometry.scale[0], Parameters::getInstance()->g_geometry.scale[1], Parameters::getInstance()->g_geometry.scale[2]);
-	glProgramUniform1i (Parameters::getInstance()->g_programs[PROGRAM_SHADING],
-			Parameters::getInstance()->g_uniform_locations[LOCATION_SHADING_DENSITY],
+	glProgramUniform1i (program,
+			Parameters::getInstance()->g_uniform_locations[first_loc+1],
 			TEXTURE_DENSITY);
-	glProgramUniform2f (Parameters::getInstance()->g_programs[PROGRAM_SHADING],
-			Parameters::getInstance()->g_uniform_locations[LOCATION_SHADING_VIEWPORT],
+	glProgramUniform2f (program,
+			Parameters::getInstance()->g_uniform_locations[first_loc+2],
 			Parameters::getInstance()->g_window.width, Parameters::getInstance()->g_window.height);
 
-	glProgramUniform1f (Parameters::getInstance()->g_programs[PROGRAM_SHADING],
-			Parameters::getInstance()->g_uniform_locations[LOCATION_SHADING_TAN_FOVY],
+	glProgramUniform1f (program,
+			Parameters::getInstance()->g_uniform_locations[first_loc+3],
 			tanf (Parameters::getInstance()->g_camera.fovy / 360.f * 3.14159f));
-	glProgramUniform1f(Parameters::getInstance()->g_programs[PROGRAM_SHADING],
-			Parameters::getInstance()->g_uniform_locations[LOCATION_SHADING_SCALE],
+	glProgramUniform1f(program,
+			Parameters::getInstance()->g_uniform_locations[first_loc+4],
 			Parameters::getInstance()->g_scale);
-	glProgramUniform1f(Parameters::getInstance()->g_programs[PROGRAM_SHADING],
-			Parameters::getInstance()->g_uniform_locations[LOCATION_SHADING_TIME],
-			Parameters::getInstance()->g_time_elapsed);
 
-
-	glProgramUniform1i (Parameters::getInstance()->g_programs[PROGRAM_SHADING],
-			Parameters::getInstance()->g_uniform_locations[LOCATION_SHADING_COLOR_X],
-			TEXTURE_COLOR_X);
-	glProgramUniform1i (Parameters::getInstance()->g_programs[PROGRAM_SHADING],
-			Parameters::getInstance()->g_uniform_locations[LOCATION_SHADING_COLOR_Y],
-			TEXTURE_COLOR_Y);
-	glProgramUniform1i (Parameters::getInstance()->g_programs[PROGRAM_SHADING],
-			Parameters::getInstance()->g_uniform_locations[LOCATION_SHADING_COLOR_Z],
-			TEXTURE_COLOR_Z);
-	
-	glProgramUniform1i (Parameters::getInstance()->g_programs[PROGRAM_SHADING],
-			Parameters::getInstance()->g_uniform_locations[LOCATION_SHADING_BUMP_X],
-			TEXTURE_BUMP_X);
-	glProgramUniform1i (Parameters::getInstance()->g_programs[PROGRAM_SHADING],
-			Parameters::getInstance()->g_uniform_locations[LOCATION_SHADING_BUMP_Y],
-			TEXTURE_BUMP_Y);
-	glProgramUniform1i (Parameters::getInstance()->g_programs[PROGRAM_SHADING],
-			Parameters::getInstance()->g_uniform_locations[LOCATION_SHADING_BUMP_Z],
-			TEXTURE_BUMP_Z);
-
-	glProgramUniform1i (Parameters::getInstance()->g_programs[PROGRAM_SHADING],
-			Parameters::getInstance()->g_uniform_locations[LOCATION_SHADING_WIREFRAME],
+	glProgramUniform1i (program,
+			Parameters::getInstance()->g_uniform_locations[first_loc+5],
 			Parameters::getInstance()->g_solid_wireframe);
-	glProgramUniform1i (Parameters::getInstance()->g_programs[PROGRAM_SHADING],
-			Parameters::getInstance()->g_uniform_locations[LOCATION_SHADING_TEXTURED],
-			Parameters::getInstance()->g_textured_data);
 
-	glProgramUniform1i (Parameters::getInstance()->g_programs[PROGRAM_SHADING],
-			Parameters::getInstance()->g_uniform_locations[LOCATION_SHADING_FROMTEXTURE],
-			Parameters::getInstance()->g_fromtexture);
-	glProgramUniform3f (Parameters::getInstance()->g_programs[PROGRAM_SHADING],
-			Parameters::getInstance()->g_uniform_locations[LOCATION_SHADING_CAMERA],
+	glProgramUniform3f (program,
+			Parameters::getInstance()->g_uniform_locations[first_loc+6],
 			Parameters::getInstance()->g_camera.pos[0],
 			Parameters::getInstance()->g_camera.pos[1],
 			Parameters::getInstance()->g_camera.pos[2]
    			);
 
-	glProgramUniform1f (Parameters::getInstance()->g_programs[PROGRAM_SHADING],
-                    Parameters::getInstance()->g_uniform_locations[LOCATION_SHADING_CURVRADIUS],
+	glProgramUniform1f (program,
+                    Parameters::getInstance()->g_uniform_locations[first_loc+7],
                     Parameters::getInstance()->g_curvradius);
 
-    glProgramUniform1f (Parameters::getInstance()->g_programs[PROGRAM_SHADING],
-                    Parameters::getInstance()->g_uniform_locations[LOCATION_SHADING_CURVMIN],
+    glProgramUniform1f (program,
+                    Parameters::getInstance()->g_uniform_locations[first_loc+8],
                     Parameters::getInstance()->g_curvmin);
 
-    glProgramUniform1f (Parameters::getInstance()->g_programs[PROGRAM_SHADING],
-                    Parameters::getInstance()->g_uniform_locations[LOCATION_SHADING_CURVMAX],
+    glProgramUniform1f (program,
+                    Parameters::getInstance()->g_uniform_locations[first_loc+9],
                     Parameters::getInstance()->g_curvmax);
-	
-	glProgramUniform1i (Parameters::getInstance()->g_programs[PROGRAM_SHADING],
-                    Parameters::getInstance()->g_uniform_locations[LOCATION_SKYBOX_TEXTURE],
-                    TEXTURE_ENVMAP);
 
-    glProgramUniform1i (Parameters::getInstance()->g_programs[PROGRAM_SHADING],
-            Parameters::getInstance()->g_uniform_locations[LOCATION_SHADING_GROUNDTRUTH],
+    glProgramUniform1i (program,
+            Parameters::getInstance()->g_uniform_locations[first_loc+10],
             (int)Parameters::getInstance()->g_ground_truth);
 
-    glProgramUniform1f(Parameters::getInstance()->g_programs[PROGRAM_SHADING],
-                            Parameters::getInstance()->g_uniform_locations[LOCATION_SHADING_SIZETEX],
-                            Parameters::getInstance()->g_sizetex);
+    glProgramUniform1f(program,
+            Parameters::getInstance()->g_uniform_locations[first_loc+11],
+            Parameters::getInstance()->g_sizetex);
+}
+
+void Shading::configureProgram()
+{
+	configure(Parameters::getInstance()->g_programs[PROGRAM_SHADING], LOCATION_SHADING_SIZE);
+	configure(Parameters::getInstance()->g_programs[PROGRAM_GTCURV], LOCATION_GTCURV_SIZE);
+	configure(Parameters::getInstance()->g_programs[PROGRAM_HIERARCHCURV], LOCATION_HIERARCHCURV_SIZE);
+	configure(Parameters::getInstance()->g_programs[PROGRAM_APPROXCURV], LOCATION_APPROXCURV_SIZE);
+	
+	glProgramUniform1i (PROGRAM_SKYBOX,
+                    Parameters::getInstance()->g_uniform_locations[LOCATION_SKYBOX_TEXTURE],
+                    TEXTURE_ENVMAP);
+}
+
+void load(GLuint program, GLuint first_loc)
+{
+	Parameters::getInstance()->g_uniform_locations[first_loc] =
+		glGetUniformLocation (program, "u_scene_size");
+	Parameters::getInstance()->g_uniform_locations[first_loc+1] =
+		glGetUniformLocation (program, "densities");
+	Parameters::getInstance()->g_uniform_locations[first_loc+2] =
+		glGetUniformLocation (program, "u_viewport");
+
+	Parameters::getInstance()->g_uniform_locations[first_loc+3] =
+		glGetUniformLocation (program, "u_tan_fovy");
+	Parameters::getInstance()->g_uniform_locations[first_loc+4] =
+		glGetUniformLocation (program, "u_scale");
+
+	Parameters::getInstance()->g_uniform_locations[first_loc+5] =
+		glGetUniformLocation (program, "solid_wireframe");
+	
+	Parameters::getInstance()->g_uniform_locations[first_loc+6] =
+		glGetUniformLocation (program, "u_camera_pos");
+		
+	Parameters::getInstance()->g_uniform_locations[first_loc+7] =
+		glGetUniformLocation (program, "u_curv_radius");
+        Parameters::getInstance()->g_uniform_locations[first_loc+8] =
+        glGetUniformLocation (program, "u_kmin");
+        Parameters::getInstance()->g_uniform_locations[first_loc+9] =
+        glGetUniformLocation (program, "u_kmax");
+
+    Parameters::getInstance()->g_uniform_locations[first_loc+10] =
+        glGetUniformLocation (program, "u_ground_truth");
+
+    Parameters::getInstance()->g_uniform_locations[first_loc+11] =
+        glGetUniformLocation (program, "u_size_tex");
 }
 
 void Shading::loadProgram()
 {
 	{
-	GLuint *program = &Parameters::getInstance()->g_programs[PROGRAM_SHADING];
-    
-    //const char* varyings[1] = { "trfeed_position" };
+		GLuint *program = &Parameters::getInstance()->g_programs[PROGRAM_SHADING];
 
         fprintf (stderr, "loading shading program... "); fflush (stderr);
         gk::GLCompiler& c = gk::loadProgram( SHADER_PATH("shading.glsl"));
@@ -109,63 +134,61 @@ void Shading::loadProgram()
         GLProgram* tmp = c.make();
         if (tmp->errors)
             exit(-1);
-
         *program = tmp->name;
-        
-        //glTransformFeedbackVaryings (*program, 1, varyings, GL_SEPARATE_ATTRIBS);
         glLinkProgram (*program);
-    
-	Parameters::getInstance()->g_uniform_locations[LOCATION_SHADING_SIZE] =
-		glGetUniformLocation (Parameters::getInstance()->g_programs[PROGRAM_SHADING], "u_scene_size");
-	Parameters::getInstance()->g_uniform_locations[LOCATION_SHADING_DENSITY] =
-		glGetUniformLocation (Parameters::getInstance()->g_programs[PROGRAM_SHADING], "densities");
-	Parameters::getInstance()->g_uniform_locations[LOCATION_SHADING_VIEWPORT] =
-		glGetUniformLocation (Parameters::getInstance()->g_programs[PROGRAM_SHADING], "u_viewport");
-
-	Parameters::getInstance()->g_uniform_locations[LOCATION_SHADING_TAN_FOVY] =
-		glGetUniformLocation (Parameters::getInstance()->g_programs[PROGRAM_SHADING], "u_tan_fovy");
-	Parameters::getInstance()->g_uniform_locations[LOCATION_SHADING_SCALE] =
-		glGetUniformLocation (Parameters::getInstance()->g_programs[PROGRAM_SHADING], "u_scale");
-
-	Parameters::getInstance()->g_uniform_locations[LOCATION_SHADING_WIREFRAME] =
-		glGetUniformLocation (Parameters::getInstance()->g_programs[PROGRAM_SHADING], "solid_wireframe");
-	Parameters::getInstance()->g_uniform_locations[LOCATION_SHADING_TEXTURED] =
-		glGetUniformLocation (Parameters::getInstance()->g_programs[PROGRAM_SHADING], "textured");
-	Parameters::getInstance()->g_uniform_locations[LOCATION_SHADING_FROMTEXTURE] =
-		glGetUniformLocation (Parameters::getInstance()->g_programs[PROGRAM_SHADING], "fromtexture");
-	Parameters::getInstance()->g_uniform_locations[LOCATION_SHADING_TIME] =
-		glGetUniformLocation (Parameters::getInstance()->g_programs[PROGRAM_SHADING], "u_time");
 		
-	Parameters::getInstance()->g_uniform_locations[LOCATION_SHADING_COLOR_X] =
-		glGetUniformLocation (Parameters::getInstance()->g_programs[PROGRAM_SHADING], "u_texcolor_x");
-	Parameters::getInstance()->g_uniform_locations[LOCATION_SHADING_COLOR_Y] =
-		glGetUniformLocation (Parameters::getInstance()->g_programs[PROGRAM_SHADING], "u_texcolor_y");
-	Parameters::getInstance()->g_uniform_locations[LOCATION_SHADING_COLOR_Z] =
-		glGetUniformLocation (Parameters::getInstance()->g_programs[PROGRAM_SHADING], "u_texcolor_z");
-		
-	Parameters::getInstance()->g_uniform_locations[LOCATION_SHADING_BUMP_X] =
-		glGetUniformLocation (Parameters::getInstance()->g_programs[PROGRAM_SHADING], "u_texbump_x");
-	Parameters::getInstance()->g_uniform_locations[LOCATION_SHADING_BUMP_Y] =
-		glGetUniformLocation (Parameters::getInstance()->g_programs[PROGRAM_SHADING], "u_texbump_y");
-	Parameters::getInstance()->g_uniform_locations[LOCATION_SHADING_BUMP_Z] =
-		glGetUniformLocation (Parameters::getInstance()->g_programs[PROGRAM_SHADING], "u_texbump_z");
+		load(Parameters::getInstance()->g_programs[PROGRAM_SHADING], LOCATION_SHADING_SIZE);
+	}
 	
-	Parameters::getInstance()->g_uniform_locations[LOCATION_SHADING_CAMERA] =
-		glGetUniformLocation (Parameters::getInstance()->g_programs[PROGRAM_SHADING], "u_camera_pos");
+	{
+		GLuint *program = &Parameters::getInstance()->g_programs[PROGRAM_APPROXCURV];
+
+        fprintf (stderr, "loading shading program... "); fflush (stderr);
+        gk::GLCompiler& c = gk::loadProgram( SHADER_PATH("curvature_o1.glsl"));
+        c.include(SHADER_PATH("noise.glsl") );
+        c.include(SHADER_PATH("octree_common.glsl") );
+        c.include(SHADER_PATH("ltree.glsl") );
+        GLProgram* tmp = c.make();
+        if (tmp->errors)
+            exit(-1);
+        *program = tmp->name;
+        glLinkProgram (*program);
 		
-	Parameters::getInstance()->g_uniform_locations[LOCATION_SHADING_CURVRADIUS] =
-		glGetUniformLocation (Parameters::getInstance()->g_programs[PROGRAM_SHADING], "u_curv_radius");
-        Parameters::getInstance()->g_uniform_locations[LOCATION_SHADING_CURVMIN] =
-        glGetUniformLocation (Parameters::getInstance()->g_programs[PROGRAM_SHADING], "u_kmin");
-        Parameters::getInstance()->g_uniform_locations[LOCATION_SHADING_CURVMAX] =
-        glGetUniformLocation (Parameters::getInstance()->g_programs[PROGRAM_SHADING], "u_kmax");
+		load(Parameters::getInstance()->g_programs[PROGRAM_APPROXCURV], LOCATION_APPROXCURV_SIZE);
+	}
+	
+	{
+		GLuint *program = &Parameters::getInstance()->g_programs[PROGRAM_GTCURV];
 
-    Parameters::getInstance()->g_uniform_locations[LOCATION_SHADING_GROUNDTRUTH] =
-        glGetUniformLocation (Parameters::getInstance()->g_programs[PROGRAM_SHADING], "u_ground_truth");
+        fprintf (stderr, "loading shading program... "); fflush (stderr);
+        gk::GLCompiler& c = gk::loadProgram( SHADER_PATH("curvature_gt.glsl"));
+        c.include(SHADER_PATH("noise.glsl") );
+        c.include(SHADER_PATH("octree_common.glsl") );
+        c.include(SHADER_PATH("ltree.glsl") );
+        GLProgram* tmp = c.make();
+        if (tmp->errors)
+            exit(-1);
+        *program = tmp->name;
+        glLinkProgram (*program);
+		
+		load(Parameters::getInstance()->g_programs[PROGRAM_GTCURV], LOCATION_GTCURV_SIZE);
+	}
+	
+	{
+		GLuint *program = &Parameters::getInstance()->g_programs[PROGRAM_HIERARCHCURV];
 
-    Parameters::getInstance()->g_uniform_locations[LOCATION_SHADING_SIZETEX] =
-        glGetUniformLocation (Parameters::getInstance()->g_programs[PROGRAM_SHADING], "u_size_tex");
-
+        fprintf (stderr, "loading shading program... "); fflush (stderr);
+        gk::GLCompiler& c = gk::loadProgram( SHADER_PATH("curvature_hierarchique.glsl"));
+        c.include(SHADER_PATH("noise.glsl") );
+        c.include(SHADER_PATH("octree_common.glsl") );
+        c.include(SHADER_PATH("ltree.glsl") );
+        GLProgram* tmp = c.make();
+        if (tmp->errors)
+            exit(-1);
+        *program = tmp->name;
+        glLinkProgram (*program);
+		
+		load(Parameters::getInstance()->g_programs[PROGRAM_HIERARCHCURV], LOCATION_HIERARCHCURV_SIZE);
 	}
 	
 	{
@@ -404,7 +427,14 @@ void Shading::run(GLuint nbcells_reg, GLuint nbcells_tr, GLuint* nb_triangles_re
 {
 	configureProgram();
 
-	glUseProgram(Parameters::getInstance()->g_programs[PROGRAM_SHADING]);
+	if((int)Parameters::getInstance()->g_ground_truth == 1)
+		glUseProgram(Parameters::getInstance()->g_programs[PROGRAM_GTCURV]);
+	else if((int)Parameters::getInstance()->g_ground_truth == 2)
+		glUseProgram(Parameters::getInstance()->g_programs[PROGRAM_HIERARCHCURV]);
+	else if((int)Parameters::getInstance()->g_ground_truth == 3)
+		glUseProgram(Parameters::getInstance()->g_programs[PROGRAM_APPROXCURV]);
+	else
+		glUseProgram(Parameters::getInstance()->g_programs[PROGRAM_SHADING]);
 	
 	glBeginQuery(GL_PRIMITIVES_GENERATED, Parameters::getInstance()->g_query[QUERY_TRIANGLES]);
 	
