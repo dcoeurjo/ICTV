@@ -45,7 +45,7 @@ Parameters::Parameters()
     g_textured_data = false;
 	g_curv_dir = 0;
 
-    g_ground_truth = 4;
+    g_ground_truth = 3;
     
     g_regular = false;
     g_radius_show = true;

@@ -89,7 +89,7 @@ void configure_curv(GLuint program, GLuint first_loc)
 
 void Curvature::configureProgram()
 {
-	configure_curv(Parameters::getInstance()->g_programs[PROGRAM_SHADING], LOCATION_SHADING_SIZE);
+	//configure_curv(Parameters::getInstance()->g_programs[PROGRAM_SHADING], LOCATION_SHADING_SIZE);
 	configure_curv(Parameters::getInstance()->g_programs[PROGRAM_GTCURV], LOCATION_GTCURV_SIZE);
 	configure_curv(Parameters::getInstance()->g_programs[PROGRAM_HIERARCHCURV], LOCATION_HIERARCHCURV_SIZE);
 	configure_curv(Parameters::getInstance()->g_programs[PROGRAM_APPROXCURV], LOCATION_APPROXCURV_SIZE);
@@ -140,14 +140,15 @@ void load_curv(GLuint program, GLuint first_loc)
 
 void Curvature::loadProgram()
 {
-	{
+	/*{
 		GLuint *program = &Parameters::getInstance()->g_programs[PROGRAM_SHADING];
 
         fprintf (stderr, "loading shading program... "); fflush (stderr);
         gk::GLCompiler& c = gk::loadProgram( SHADER_PATH("shading.glsl"));
-        c.include(SHADER_PATH("noise.glsl") );
-        c.include(SHADER_PATH("octree_common.glsl") );
-        c.include(SHADER_PATH("ltree.glsl") );
+        //c.include(SHADER_PATH("noise.glsl") );
+        //c.include(SHADER_PATH("octree_common.glsl") );
+        //c.include(SHADER_PATH("ltree.glsl") );
+		c.include(SHADER_PATH("eigendecomposition.glsl"));
         GLProgram* tmp = c.make();
         if (tmp->errors)
             exit(-1);
@@ -155,16 +156,17 @@ void Curvature::loadProgram()
         glLinkProgram (*program);
 		
 		load_curv(Parameters::getInstance()->g_programs[PROGRAM_SHADING], LOCATION_SHADING_SIZE);
-	}
+	}*/
 	
 	{
 		GLuint *program = &Parameters::getInstance()->g_programs[PROGRAM_APPROXCURV];
 
         fprintf (stderr, "loading shading program... "); fflush (stderr);
         gk::GLCompiler& c = gk::loadProgram( SHADER_PATH("curvature_o1.glsl"));
-        c.include(SHADER_PATH("noise.glsl") );
+        /*c.include(SHADER_PATH("noise.glsl") );
         c.include(SHADER_PATH("octree_common.glsl") );
-        c.include(SHADER_PATH("ltree.glsl") );
+        c.include(SHADER_PATH("ltree.glsl") );*/
+		c.include(SHADER_PATH("eigendecomposition.glsl"));
         GLProgram* tmp = c.make();
         if (tmp->errors)
             exit(-1);
@@ -179,9 +181,10 @@ void Curvature::loadProgram()
 
         fprintf (stderr, "loading shading program... "); fflush (stderr);
         gk::GLCompiler& c = gk::loadProgram( SHADER_PATH("curvature_gt.glsl"));
-        c.include(SHADER_PATH("noise.glsl") );
+        /*c.include(SHADER_PATH("noise.glsl") );
         c.include(SHADER_PATH("octree_common.glsl") );
-        c.include(SHADER_PATH("ltree.glsl") );
+        c.include(SHADER_PATH("ltree.glsl") );*/
+		c.include(SHADER_PATH("eigendecomposition.glsl"));
         GLProgram* tmp = c.make();
         if (tmp->errors)
             exit(-1);
@@ -196,9 +199,10 @@ void Curvature::loadProgram()
 
         fprintf (stderr, "loading shading program... "); fflush (stderr);
         gk::GLCompiler& c = gk::loadProgram( SHADER_PATH("curvature_hierarchique.glsl"));
-        c.include(SHADER_PATH("noise.glsl") );
+        /*c.include(SHADER_PATH("noise.glsl") );
         c.include(SHADER_PATH("octree_common.glsl") );
-        c.include(SHADER_PATH("ltree.glsl") );
+        c.include(SHADER_PATH("ltree.glsl") );*/
+		c.include(SHADER_PATH("eigendecomposition.glsl"));
         GLProgram* tmp = c.make();
         if (tmp->errors)
             exit(-1);
@@ -254,8 +258,8 @@ void Curvature::run(GLuint nbcells_reg, GLuint nbcells_tr, GLuint* nb_triangles_
 		glUseProgram(Parameters::getInstance()->g_programs[PROGRAM_HIERARCHCURV]);
 	else if((int)Parameters::getInstance()->g_ground_truth == 3)
 		glUseProgram(Parameters::getInstance()->g_programs[PROGRAM_APPROXCURV]);
-	else
-		glUseProgram(Parameters::getInstance()->g_programs[PROGRAM_SHADING]);
+	/*else
+		glUseProgram(Parameters::getInstance()->g_programs[PROGRAM_SHADING]);*/
 	
 	glBeginQuery(GL_PRIMITIVES_GENERATED, Parameters::getInstance()->g_query[QUERY_TRIANGLES]);
 	

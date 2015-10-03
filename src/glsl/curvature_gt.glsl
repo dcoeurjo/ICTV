@@ -5,10 +5,8 @@
 in vec4 position;
 
 uniform float u_curv_radius;
-uniform float u_kmin;
-uniform float u_kmax;
-uniform int u_ground_truth;
-
+uniform float u_size_tex;
+uniform sampler3D densities;
 uniform sampler3D u_xyz2_tex;
 uniform sampler3D u_xy_yz_xz_tex;
 
@@ -61,6 +59,8 @@ void main( )
 
 #ifdef GEOMETRY_SHADER
 
+#define TRANSFORMS_BINDING 0
+
 layout (triangles) in;
 layout (triangle_strip, max_vertices = 50) out;
 
@@ -79,6 +79,17 @@ out vec3 geometry_distance;
 out vec3 geometry_color;
 out float geometry_curv_value;
 out flat int geometry_curvdir;
+
+layout (std140, binding = TRANSFORMS_BINDING)
+uniform Transforms {
+	mat4 modelview;
+	mat4 projection;
+	mat4 modelviewprojection;
+	mat4 invmodelview;
+} u_transforms;
+
+uniform vec3 u_scene_size;
+uniform vec2 u_viewport;
 
 void setPoint(vec3 point, vec3 color)
 {

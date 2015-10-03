@@ -5,7 +5,8 @@
 in vec4 position;
 
 uniform float u_curv_radius;
-
+uniform float u_size_tex;
+uniform sampler3D densities;
 uniform sampler3D u_xyz2_tex;
 uniform sampler3D u_xy_yz_xz_tex;
 
@@ -15,6 +16,39 @@ out vec3 vertex_color;
 out float curv_value;
 out vec3 curv_dir_min;
 out vec3 curv_dir_max;
+
+void computeK1K2(vec3 pos, 
+				float volume, float x2, float y2, float z2, float xy, float yz, float xz,
+				out vec3 minDir, out vec3 maxDir, out float k1, out float k2)
+{	
+	mat3 covmat;
+	covmat[0] = vec3(x2, xy, xz);
+	covmat[1] = vec3(xy, y2, yz);
+	covmat[2] = vec3(xz, yz, z2);
+	
+	mat3 curvmat = covmat - (1.0/volume) * covmat;
+	
+	/*
+	curvmat[0] = vec3(1, 2, 0);
+	curvmat[1] = vec3(2, 1, 0);
+	curvmat[2] = vec3(0, 0, 1);
+	*/
+	
+	mat3 eigenvectors;
+	vec3 eigenvalues;
+	getEigenValuesVectors ( curvmat, eigenvectors, eigenvalues );
+	
+	minDir = normalize( vec3( eigenvectors[0][0], eigenvectors[1][0], eigenvectors[2][0] ));
+	maxDir = normalize( vec3( eigenvectors[0][1], eigenvectors[1][1], eigenvectors[2][1] ));
+	
+	float l1 = eigenvalues[0];
+	float l2 = eigenvalues[1];
+	
+	float pi = 3.14159;
+	float r6 = u_curv_radius*u_curv_radius*u_curv_radius*u_curv_radius*u_curv_radius*u_curv_radius;
+	k1 = (6.0/(pi*r6))*(l2 - 3.0*l1) + (8.0/(5.0*u_curv_radius));
+	k2 = (6.0/(pi*r6))*(l1 - 3.0*l2) + (8.0/(5.0*u_curv_radius));
+}
 
 void main( )
 {
@@ -30,24 +64,37 @@ void main( )
 	
 	float size_obj = u_size_tex;
 
-	vec3 probe = vec3(0.01, 0, 0);
-	volume += textureLod(densities, vertex_position + probe/u_size_tex, log2(r)).r * vol_boule;
+	vec3 probe = vec3(0, 0, 0);
+	volume = textureLod(densities, vertex_position + probe/u_size_tex, log2(r)).r * vol_boule;
+	float x2 = textureLod(u_xyz2_tex, vertex_position, log2(u_curv_radius)).r;
+	float y2 = textureLod(u_xyz2_tex, vertex_position, log2(u_curv_radius)).g;
+	float z2 = textureLod(u_xyz2_tex, vertex_position, log2(u_curv_radius)).b;
+	float xy = textureLod(u_xy_yz_xz_tex, vertex_position, log2(u_curv_radius)).r;
+	float yz = textureLod(u_xy_yz_xz_tex, vertex_position, log2(u_curv_radius)).g;
+	float xz = textureLod(u_xy_yz_xz_tex, vertex_position, log2(u_curv_radius)).b;
 
 	//Curvature from volume
 	float fact83r = 8.0/(3.0*r);
 	float fact4pir4 = 4.0 / (3.14159*r*r*r*r);
-	
 	float curvature = fact83r - fact4pir4*volume;
 
-	curv_value = curvature;
+	float k1;
+	float k2;
+	curv_dir_min = vec3(0, 0, 1);
 	curv_dir_max = vec3(0, 0, 1);
-	curv_dir_min = vec3(1, 0, 1);
+	computeK1K2(vertex_position, 
+				volume, x2, y2, z2, xy, yz, xz,
+				curv_dir_min, curv_dir_max, k1, k2);
+	
+	curv_value = (k1+k2)/2.0;
 	
     gl_Position = position;
 }
 #endif
 
 #ifdef GEOMETRY_SHADER
+
+#define TRANSFORMS_BINDING 0
 
 layout (triangles) in;
 layout (triangle_strip, max_vertices = 50) out;
@@ -67,6 +114,17 @@ out vec3 geometry_distance;
 out vec3 geometry_color;
 out float geometry_curv_value;
 out flat int geometry_curvdir;
+
+layout (std140, binding = TRANSFORMS_BINDING)
+uniform Transforms {
+	mat4 modelview;
+	mat4 projection;
+	mat4 modelviewprojection;
+	mat4 invmodelview;
+} u_transforms;
+
+uniform vec3 u_scene_size;
+uniform vec2 u_viewport;
 
 void setPoint(vec3 point, vec3 color)
 {
@@ -105,8 +163,9 @@ void main()
 		geometry_view = (u_transforms.modelview * vec4( ((vertex_position[i]-0.5)*u_scene_size), 1 )).xyz;
 		vec3 center = (pts_abs[1] + pts_abs[2] + pts_abs[0]) / 3;
 		gl_PrimitiveID = int( length(center)*1000 );
-		geometry_color = vertex_color[i];
+		geometry_color = curv_dir_min[i];
 		geometry_curv_value = curv_value[i];
+		geometry_curvdir = 0;
 		EmitVertex();
 	}
 	

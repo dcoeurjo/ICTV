@@ -47,6 +47,8 @@ void DataLoader::loadx2y2z2()
 	glGenTextures(1, &Parameters::getInstance()->g_textures[TEXTURE_X2Y2Z2]);
 	glBindTexture(GL_TEXTURE_3D, Parameters::getInstance()->g_textures[TEXTURE_X2Y2Z2]);
 	
+	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	
 	glTexImage3D(GL_TEXTURE_3D, 0, GL_RGB16F, sizex, sizey, sizez, 0, GL_RGB, GL_FLOAT, data);
         glGenerateMipmap(GL_TEXTURE_3D);
 	
@@ -74,6 +76,8 @@ void DataLoader::loadxyyzxz()
 	
 	glGenTextures(1, &Parameters::getInstance()->g_textures[TEXTURE_XY_YZ_XZ]);
 	glBindTexture(GL_TEXTURE_3D, Parameters::getInstance()->g_textures[TEXTURE_XY_YZ_XZ]);
+	
+	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 	
 	glTexImage3D(GL_TEXTURE_3D, 0, GL_RGB16F, sizex, sizey, sizez, 0, GL_RGB, GL_FLOAT, data);
         glGenerateMipmap(GL_TEXTURE_3D);

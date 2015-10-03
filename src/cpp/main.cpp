@@ -19,7 +19,7 @@
 
 #include <cmath>
 
-#define CAM_SPEED 40
+#define CAM_SPEED 20
 #define CAM_SPEED_MAX Parameters::getInstance()->g_geometry.scale[0] / 5.0
 #define CAM_ROTATE 0.1f
 #define CAM_ROTATE_MAX 1.0f
@@ -626,9 +626,9 @@ public:
 				sprintf(tmp, "Isosurface %.2f", Parameters::getInstance()->g_isosurface);
 				m_widgets.doLabel(nv::Rect(), tmp);
 				m_widgets.doHorizontalSlider(nv::Rect(0,0, 200, 0), 0.f, 1.f, &(Parameters::getInstance()->g_isosurface));*/
-				sprintf(tmp, "Mode:\nMean GT (1)\nMean GT hierachique (2)\nMean Approx (3)\nGaussian (4)\nCurrent %d", (int)Parameters::getInstance()->g_ground_truth);
+				sprintf(tmp, "Mode:\nMean GT (1)\nMean GT hierachique (2)\nMean Approx (3)\nCurrent %d", (int)Parameters::getInstance()->g_ground_truth);
 				m_widgets.doLabel(nv::Rect(), tmp);
-				m_widgets.doHorizontalSlider(nv::Rect(0,0, 200, 0), 1, 5.f, &(Parameters::getInstance()->g_ground_truth));
+				m_widgets.doHorizontalSlider(nv::Rect(0,0, 200, 0), 1.1, 3.9, &(Parameters::getInstance()->g_ground_truth));
 				sprintf(tmp, "Mode:\nNo curvature directions (0)\nMin curvature directions (1)\nMax curvature directions (2)\nCurrent %d", (int)Parameters::getInstance()->g_curv_dir);
 				m_widgets.doLabel(nv::Rect(), tmp);
 				m_widgets.doHorizontalSlider(nv::Rect(0,0, 200, 0), 0, 3.f, &(Parameters::getInstance()->g_curv_dir));
