@@ -7,7 +7,7 @@ void DataLoader::loadData32BGpu()
 	glGenTextures(1, &Parameters::getInstance()->g_textures[TEXTURE_DENSITY]);
 	glBindTexture(GL_TEXTURE_3D, Parameters::getInstance()->g_textures[TEXTURE_DENSITY]);
 	
-	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
 	
 	glTexImage3D(GL_TEXTURE_3D, 0, GL_R32F, sizex, sizey, sizez, 0, GL_RED, GL_FLOAT, data);
         glGenerateMipmap(GL_TEXTURE_3D);
@@ -20,7 +20,7 @@ void DataLoader::loadData8BGpu()
 	glGenTextures(1, &Parameters::getInstance()->g_textures[TEXTURE_DENSITY]);
 	glBindTexture(GL_TEXTURE_3D, Parameters::getInstance()->g_textures[TEXTURE_DENSITY]);
 	
-	glTexImage3D(GL_TEXTURE_3D, 0, GL_R8, sizex, sizey, sizez, 0, GL_RED, GL_FLOAT, data_char);
+	glTexImage3D(GL_TEXTURE_3D, 0, GL_R8, sizex, sizey, sizez, 0, GL_RED, GL_UNSIGNED_BYTE, data_char);
         glGenerateMipmap(GL_TEXTURE_3D);
 	
 	glBindTexture(GL_TEXTURE_3D, 0);
@@ -28,61 +28,111 @@ void DataLoader::loadData8BGpu()
 
 void DataLoader::loadx2y2z2()
 {
-	float* data;
-	data = new float[sizex*sizey*sizez*3];
+	float* mmt;
+	long unsigned int alloc_size = sizex*sizey*sizez*3;
+	mmt = (float*)malloc(sizeof(float)*alloc_size);
 	int nb = 0;
 	for(unsigned int i=0; i<sizex; i++)
 	for(unsigned int j=0; j<sizey; j++)
 	for(unsigned int k=0; k<sizez; k++)
 	{
-		float norm_i = i;//(float)i/(float)sizex;
-		float norm_j = j;//(float)j/(float)sizey;
-		float norm_k = k;//(float)k/(float)sizez;
+		/*float norm_i = (float)i/(float)sizex;
+		float norm_j = (float)j/(float)sizey;
+		float norm_k = (float)k/(float)sizez;*/
+		float norm_i = i;
+		float norm_j = j;
+		float norm_k = k;
 		
-		data[nb++] = norm_i*norm_i;
-		data[nb++] = norm_j*norm_j;
-		data[nb++] = norm_k*norm_k;
+		mmt[nb*3] = norm_i*norm_i;
+		mmt[nb*3 + 1] = norm_j*norm_j;
+		mmt[nb*3 + 2] = norm_k*norm_k;
+		nb++;
 	}
 	
 	glGenTextures(1, &Parameters::getInstance()->g_textures[TEXTURE_X2Y2Z2]);
 	glBindTexture(GL_TEXTURE_3D, Parameters::getInstance()->g_textures[TEXTURE_X2Y2Z2]);
 	
-	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
 	
-	glTexImage3D(GL_TEXTURE_3D, 0, GL_RGB16F, sizex, sizey, sizez, 0, GL_RGB, GL_FLOAT, data);
+	glTexImage3D(GL_TEXTURE_3D, 0, GL_RGB32F, sizex, sizey, sizez, 0, GL_RGB, GL_FLOAT, mmt);
         glGenerateMipmap(GL_TEXTURE_3D);
 	
 	glBindTexture(GL_TEXTURE_3D, 0);
+	
+	free(mmt);
 }
 
 
 void DataLoader::loadxyyzxz()
 {
-	float* data;
-	data = new float[sizex*sizey*sizez*3];
+	float* mmt;
+	long unsigned int alloc_size = sizex*sizey*sizez*3;
+	mmt = (float*)malloc(sizeof(float)*alloc_size);
 	int nb = 0;
 	for(unsigned int i=0; i<sizex; i++)
 	for(unsigned int j=0; j<sizey; j++)
 	for(unsigned int k=0; k<sizez; k++)
 	{
-		float norm_i = i;//(float)i/(float)sizex;
-		float norm_j = j;//(float)j/(float)sizey;
-		float norm_k = k;//(float)k/(float)sizez;
+		/*float norm_i = (float)i/(float)sizex;
+		float norm_j = (float)j/(float)sizey;
+		float norm_k = (float)k/(float)sizez;*/
+		float norm_i = i;
+		float norm_j = j;
+		float norm_k = k;
 		
-		data[nb++] = norm_i*norm_j;
-		data[nb++] = norm_j*norm_k;
-		data[nb++] = norm_i*norm_k;
+		mmt[nb*3] = norm_i*norm_j;
+		mmt[nb*3 + 1] = norm_j*norm_k;
+		mmt[nb*3 + 2] = norm_k*norm_i;
+		nb++;
 	}
 	
 	glGenTextures(1, &Parameters::getInstance()->g_textures[TEXTURE_XY_YZ_XZ]);
 	glBindTexture(GL_TEXTURE_3D, Parameters::getInstance()->g_textures[TEXTURE_XY_YZ_XZ]);
 	
-	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
 	
-	glTexImage3D(GL_TEXTURE_3D, 0, GL_RGB16F, sizex, sizey, sizez, 0, GL_RGB, GL_FLOAT, data);
+	glTexImage3D(GL_TEXTURE_3D, 0, GL_RGB32F, sizex, sizey, sizez, 0, GL_RGB, GL_FLOAT, mmt);
         glGenerateMipmap(GL_TEXTURE_3D);
 	
 	glBindTexture(GL_TEXTURE_3D, 0);
+	
+	free(mmt);
+}
+
+void DataLoader::loadxyz()
+{
+	float* mmt;
+	long unsigned int alloc_size = sizex*sizey*sizez*3;
+	mmt = (float*)malloc(sizeof(float)*alloc_size);
+	int nb = 0;
+	for(unsigned int i=0; i<sizex; i++)
+	for(unsigned int j=0; j<sizey; j++)
+	for(unsigned int k=0; k<sizez; k++)
+	{
+		/*float norm_i = (float)i/(float)sizex;
+		float norm_j = (float)j/(float)sizey;
+		float norm_k = (float)k/(float)sizez;*/
+		float norm_i = i;
+		float norm_j = j;
+		float norm_k = k;
+		
+		mmt[nb*3] = norm_i;
+		mmt[nb*3 + 1] = norm_j;
+		mmt[nb*3 + 2] = norm_k;
+		nb++;
+	}
+	
+	glGenTextures(1, &Parameters::getInstance()->g_textures[TEXTURE_XYZ]);
+	glBindTexture(GL_TEXTURE_3D, Parameters::getInstance()->g_textures[TEXTURE_XYZ]);
+	
+	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
+	
+	glTexImage3D(GL_TEXTURE_3D, 0, GL_RGB32F, sizex, sizey, sizez, 0, GL_RGB, GL_FLOAT, mmt);
+        glGenerateMipmap(GL_TEXTURE_3D);
+	
+	glBindTexture(GL_TEXTURE_3D, 0);
+	
+	free(mmt);
 }
 
 

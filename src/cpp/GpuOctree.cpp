@@ -63,78 +63,93 @@ void GPUOctree::loadBuffers()
 {
         const int root[] = {0,0,0,0};
         const size_t cap = 1 << 28;
-	
-	glGenBuffers (1, &Parameters::getInstance()->g_buffers[BUFFER_FRUSTUM]);
-        glBindBuffer (GL_ARRAY_BUFFER, Parameters::getInstance()->g_buffers[BUFFER_FRUSTUM]);
-        glBufferData (
-                GL_ARRAY_BUFFER,
-                8*4,
-                NULL,
-                GL_DYNAMIC_COPY
-        );
-	glBindBuffer (GL_ARRAY_BUFFER, 0);
+		
+		size_t full_tree = 1;
+		for(int i=1; i<=9;i++) //12 levels to store of 2^i cells each
+			full_tree += std::pow(2, (3*i));
+		printf("LOD CAPACITY %lu\n", full_tree);
+		
+		size_t full_tree_cap = full_tree * sizeof(float)*2; //2 float for each
+		
+		size_t tr_cells = 1;
+		tr_cells = full_tree >> 10; //a lot less than tree cells
+		printf("TR CAPACITY %lu\n", tr_cells);
+		
+		size_t tr_cells_cap = tr_cells * sizeof(float)*2; //2 float for each
+		size_t tr_neighbours = tr_cells * sizeof(float)*3; //3 float for each
+		size_t full_neighbours = full_tree * sizeof(float)*3; //3 float for each
+		
+		glGenBuffers (1, &Parameters::getInstance()->g_buffers[BUFFER_FRUSTUM]);
+			glBindBuffer (GL_ARRAY_BUFFER, Parameters::getInstance()->g_buffers[BUFFER_FRUSTUM]);
+			glBufferData (
+					GL_ARRAY_BUFFER,
+					8*4,
+					NULL,
+					GL_DYNAMIC_COPY
+			);
+		glBindBuffer (GL_ARRAY_BUFFER, 0);
 
         glGenBuffers (1, &Parameters::getInstance()->g_buffers[BUFFER_LTREE_DATA1]);
-        glBindBuffer (GL_ARRAY_BUFFER, Parameters::getInstance()->g_buffers[BUFFER_LTREE_DATA1]);
-        glBufferData (
-                GL_ARRAY_BUFFER,
-                cap,
-                NULL,
-                GL_DYNAMIC_COPY
-        );
-        glBufferSubData (GL_ARRAY_BUFFER, 0, sizeof(root), root);
-	glBindBuffer (GL_ARRAY_BUFFER, 0);
+			glBindBuffer (GL_ARRAY_BUFFER, Parameters::getInstance()->g_buffers[BUFFER_LTREE_DATA1]);
+			glBufferData (
+					GL_ARRAY_BUFFER,
+					full_tree_cap,
+					NULL,
+					GL_DYNAMIC_COPY
+			);
+			glBufferSubData (GL_ARRAY_BUFFER, 0, sizeof(root), root);
+		glBindBuffer (GL_ARRAY_BUFFER, 0);
 
         glGenBuffers (1, &Parameters::getInstance()->g_buffers[BUFFER_LTREE_DATA2]);
-        glBindBuffer (GL_ARRAY_BUFFER, Parameters::getInstance()->g_buffers[BUFFER_LTREE_DATA2]);
-        glBufferData (
-                GL_ARRAY_BUFFER,
-                cap,
-                NULL,
-                GL_DYNAMIC_COPY
-        );
-        glBindBuffer (GL_ARRAY_BUFFER, 0);
-	
-	glGenBuffers (1, &Parameters::getInstance()->g_buffers[BUFFER_LTREE_DATA1_TR]);
+			glBindBuffer (GL_ARRAY_BUFFER, Parameters::getInstance()->g_buffers[BUFFER_LTREE_DATA2]);
+			glBufferData (
+					GL_ARRAY_BUFFER,
+					full_tree_cap,
+					NULL,
+					GL_DYNAMIC_COPY
+			);
+			glBindBuffer (GL_ARRAY_BUFFER, 0);
+		
+		glGenBuffers (1, &Parameters::getInstance()->g_buffers[BUFFER_LTREE_DATA1_TR]);
         glBindBuffer (GL_ARRAY_BUFFER, Parameters::getInstance()->g_buffers[BUFFER_LTREE_DATA1_TR]);
-        glBufferData (
-                GL_ARRAY_BUFFER,
-                cap,
-                NULL,
-                GL_DYNAMIC_COPY
-        );
-	glBufferSubData (GL_ARRAY_BUFFER, 0, sizeof(root), root);
-	glBindBuffer (GL_ARRAY_BUFFER, 0);
+			glBufferData (
+					GL_ARRAY_BUFFER,
+					tr_cells_cap,
+					NULL,
+					GL_DYNAMIC_COPY
+			);
+			glBufferSubData (GL_ARRAY_BUFFER, 0, sizeof(root), root);
+		glBindBuffer (GL_ARRAY_BUFFER, 0);
 	
         glGenBuffers (1, &Parameters::getInstance()->g_buffers[BUFFER_LTREE_DATA2_TR]);
         glBindBuffer (GL_ARRAY_BUFFER, Parameters::getInstance()->g_buffers[BUFFER_LTREE_DATA2_TR]);
-        glBufferData (
-                GL_ARRAY_BUFFER,
-                cap,
-                NULL,
-                GL_DYNAMIC_COPY
-        );
+			glBufferData (
+					GL_ARRAY_BUFFER,
+					tr_cells_cap,
+					NULL,
+					GL_DYNAMIC_COPY
+			);
         glBindBuffer (GL_ARRAY_BUFFER, 0);
 	
-	glGenBuffers (1, &Parameters::getInstance()->g_buffers[BUFFER_NEIGHBOURS]);
-        glBindBuffer (GL_ARRAY_BUFFER, Parameters::getInstance()->g_buffers[BUFFER_NEIGHBOURS]);
-        glBufferData (
-                GL_ARRAY_BUFFER,
-                cap,
-                NULL,
-                GL_DYNAMIC_COPY
-        );
-	glBindBuffer (GL_ARRAY_BUFFER, 0);
+		glGenBuffers (1, &Parameters::getInstance()->g_buffers[BUFFER_NEIGHBOURS]);
+			glBindBuffer (GL_ARRAY_BUFFER, Parameters::getInstance()->g_buffers[BUFFER_NEIGHBOURS]);
+			glBufferData (
+					GL_ARRAY_BUFFER,
+					tr_neighbours,
+					NULL,
+					GL_DYNAMIC_COPY
+			);
+		glBindBuffer (GL_ARRAY_BUFFER, 0);
 	
-	glGenBuffers (1, &Parameters::getInstance()->g_buffers[BUFFER_CODE]);
-        glBindBuffer (GL_ARRAY_BUFFER, Parameters::getInstance()->g_buffers[BUFFER_CODE]);
-        glBufferData (
-                GL_ARRAY_BUFFER,
-                cap,
-                NULL,
-                GL_DYNAMIC_COPY
-        );
-	glBindBuffer (GL_ARRAY_BUFFER, 0);
+		glGenBuffers (1, &Parameters::getInstance()->g_buffers[BUFFER_CODE]);
+			glBindBuffer (GL_ARRAY_BUFFER, Parameters::getInstance()->g_buffers[BUFFER_CODE]);
+			glBufferData (
+					GL_ARRAY_BUFFER,
+					tr_neighbours,
+					NULL,
+					GL_DYNAMIC_COPY
+			);
+		glBindBuffer (GL_ARRAY_BUFFER, 0);
 	
 	//To draw the octree's cells
 	glGenBuffers (1, &Parameters::getInstance()->g_buffers[BUFFER_VERTEX_CUBE]);

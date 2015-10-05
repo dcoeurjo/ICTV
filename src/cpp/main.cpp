@@ -95,6 +95,8 @@ void activateTextures()
 	glBindTexture(GL_TEXTURE_3D, Parameters::getInstance()->g_textures[TEXTURE_X2Y2Z2]);
 	glActiveTexture(GL_TEXTURE0 + TEXTURE_XY_YZ_XZ);
 	glBindTexture(GL_TEXTURE_3D, Parameters::getInstance()->g_textures[TEXTURE_XY_YZ_XZ]);
+	glActiveTexture(GL_TEXTURE0 + TEXTURE_XYZ);
+	glBindTexture(GL_TEXTURE_3D, Parameters::getInstance()->g_textures[TEXTURE_XYZ]);
 	
 	glActiveTexture(GL_TEXTURE0 + TEXTURE_CODE_CLASS);
 	glBindTexture(GL_TEXTURE_1D, Parameters::getInstance()->g_textures[TEXTURE_CODE_CLASS]);
@@ -253,6 +255,7 @@ public:
 		dl->loadData32BGpu();
 		dl->loadx2y2z2();
 		dl->loadxyyzxz();
+		dl->loadxyz();
 		
 		lodManager.init();
 		extractor.init();
@@ -315,7 +318,7 @@ public:
 		
 			m_time_lod->end();
 
-                        /** Cull useless cells **/
+            /** Cull useless cells **/
                         
 			m_time_cull->begin();
 		
@@ -325,6 +328,7 @@ public:
 				
 			Parameters::getInstance()->g_geometry.pingpong = 1 - Parameters::getInstance()->g_geometry.pingpong;
 		}
+		
 		
 		if(queryResult_regular > 0) 
 		{
@@ -359,6 +363,7 @@ public:
 			lodManager.runDisplay(queryResult_regular);
 		}
 
+		
 		if (Parameters::getInstance()->g_radius_show)
 		{
 			radiusShower.run();
@@ -374,8 +379,8 @@ public:
 		}
 		
 		//fprintf(stdout, "%lf %lf %lf -- ", Parameters::getInstance()->g_camera.pos[0], Parameters::getInstance()->g_camera.pos[1], Parameters::getInstance()->g_camera.pos[2]);
-		//fprintf(stdout, "[Cells] Total %d Regular %d Transition %d // [Triangles] Regular %d Transition %d ...\r", 
-		//	queryResult_lod, queryResult_regular, queryResult_transition, triangles_regular, triangles_transition); fflush(stdout);
+		fprintf(stdout, "[Cells] Total %d Regular %d Transition %d // [Triangles] Regular %d Transition %d ...\r", 
+			queryResult_lod, queryResult_regular, queryResult_transition, triangles_regular, triangles_transition); fflush(stdout);
        
 		m_time_blit->begin();
 		

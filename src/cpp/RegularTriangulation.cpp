@@ -199,8 +199,8 @@ void list_indices(std::vector<unsigned int>& id_list)
 }
 void RegularTriangulation::loadBuffers()
 {
-	long long int nb_cells = 1e6;
-	long long int tgl_number = 1e7;
+	int res = (int)Parameters::getInstance()->g_tessel;
+	long long int nb_cells = 300000*res*res*res;
 	
 	glGenBuffers (1, &Parameters::getInstance()->g_buffers[BUFFER_INDIRECT_DRAWS]);
 	glBindBuffer (GL_ARRAY_BUFFER, Parameters::getInstance()->g_buffers[BUFFER_INDIRECT_DRAWS]);
@@ -217,7 +217,7 @@ void RegularTriangulation::loadBuffers()
         //Emitted triangles from regular cells
         glGenBuffers (1, &Parameters::getInstance()->g_buffers[BUFFER_VERTICES]);
         glBindBuffer (GL_TRANSFORM_FEEDBACK_BUFFER, Parameters::getInstance()->g_buffers[BUFFER_VERTICES]);
-        glBufferData (GL_TRANSFORM_FEEDBACK_BUFFER, tgl_number*3*sizeof(float), NULL, GL_DYNAMIC_COPY);
+        glBufferData (GL_TRANSFORM_FEEDBACK_BUFFER, nb_cells*4*12*sizeof(float), NULL, GL_DYNAMIC_COPY);
         glBindBuffer(GL_TRANSFORM_FEEDBACK_BUFFER, 0);
 }
 

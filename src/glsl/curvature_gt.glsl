@@ -9,6 +9,7 @@ uniform float u_size_tex;
 uniform sampler3D densities;
 uniform sampler3D u_xyz2_tex;
 uniform sampler3D u_xy_yz_xz_tex;
+uniform sampler3D u_xyz_tex;
 
 out vec3 vertex_position;
 out vec3 vertex_color;
@@ -16,6 +17,62 @@ out vec3 vertex_color;
 out float curv_value;
 out vec3 curv_dir_min;
 out vec3 curv_dir_max;
+out vec3 curv_normale;
+
+uniform vec3 u_scene_size;
+
+void computeK1K2(float volume, 
+				vec3 xyz2, vec3 xy_yz_xz, vec3 xyz,
+				out vec3 minDir, out vec3 maxDir, out vec3 n, out vec3 val, out float k1, out float k2)
+{	
+	/*mat3 m_x2;
+	m_x2[0] = vec3(xyz2.x, xy_yz_xz.x, xy_yz_xz.z);
+	m_x2[1] = vec3(xy_yz_xz.x, xyz2.y, xy_yz_xz.y);
+	m_x2[2] = vec3(xy_yz_xz.z, xy_yz_xz.y, xyz2.z);
+
+	mat3 mx_2;
+	mx_2[0] = vec3(xyz.x*xyz.x, xyz.x*xyz.y, xyz.x*xyz.z);
+	mx_2[1] = vec3(xyz.x*xyz.y, xyz.y*xyz.y, xyz.y*xyz.z);
+	mx_2[2] = vec3(xyz.x*xyz.z, xyz.y*xyz.z, xyz.z*xyz.z);*/
+	
+	mat3 eigenvectors = mat3(0);
+	vec3 eigenvalues = vec3(0);
+	
+	mat3 curvmat;
+	if (volume <= 0.001)
+	{
+		curvmat = mat3(0);
+		n = vec3(1,0,0);
+		k1 = 0;
+		k2= 0;
+	}
+	else
+	{
+		curvmat[0] = vec3( xyz2.x - (xyz.x*xyz.x/volume),		xy_yz_xz.x - (xyz.x*xyz.y/volume) , 	xy_yz_xz.z - (xyz.x*xyz.z/volume) );
+		curvmat[1] = vec3( xy_yz_xz.x - (xyz.x*xyz.y/volume) , 	xyz2.y - (xyz.y*xyz.y/volume) , 		xy_yz_xz.y - (xyz.y*xyz.z/volume) );
+		curvmat[2] = vec3( xy_yz_xz.z - (xyz.x*xyz.z/volume),	xy_yz_xz.y - (xyz.y*xyz.z/volume) , 	xyz2.z - (xyz.z*xyz.z/volume) );
+		
+		/*curvmat[0] = vec3(13, 248, 5);
+		curvmat[1] = vec3(248, 23, 2);
+		curvmat[2] = vec3(5, 2, 13);*/
+	
+		getEigenValuesVectors ( curvmat, eigenvalues, eigenvectors );
+		
+		n = vec3( eigenvectors[0][0], eigenvectors[1][0], eigenvectors[2][0] );
+		
+		float l1 = eigenvalues[1];
+		float l2 = eigenvalues[2];
+		
+		float pi = 3.14159;
+		float r6 = u_curv_radius*u_curv_radius*u_curv_radius*u_curv_radius*u_curv_radius*u_curv_radius;
+		k1 = (6.0/(pi*r6))*(l2 - 3.0*l1) + (8.0/(5.0*u_curv_radius));
+		k2 = (6.0/(pi*r6))*(l1 - 3.0*l2) + (8.0/(5.0*u_curv_radius));
+	}
+	
+	minDir = vec3( eigenvectors[0][1], eigenvectors[1][1], eigenvectors[2][1] );
+	maxDir = vec3( eigenvectors[0][2], eigenvectors[1][2], eigenvectors[2][2] );
+	val = eigenvalues;
+}
 
 void main( )
 {
@@ -27,6 +84,9 @@ void main( )
 
 	/*curvature from regular integration*/
 	float volume = 0.0;
+	vec3 xyz2 = vec3(0);
+	vec3 xy_yz_xz = vec3(0);
+	vec3 xyz = vec3(0);
 	float gt_curvature = 0.0;
 	
 	float size_obj = u_size_tex;
@@ -37,21 +97,35 @@ void main( )
 		vec3 probe = vec3(i+0.5, j+0.5, k+0.5);
 		if (length(probe) <= r)
 		{
-			volume += textureLod(densities, vertex_position + (probe/size_obj), 0).r;
+			int val = int(textureLod(densities, vertex_position + (probe/size_obj), 0).r);
+			volume += val;
+			if (val == 1)
+			{
+				xyz2 += textureLod(u_xyz2_tex, vertex_position + (probe/size_obj), 0).rgb;
+				xy_yz_xz += textureLod(u_xy_yz_xz_tex, vertex_position + (probe/size_obj), 0).rgb;
+				xyz += textureLod(u_xyz_tex, vertex_position + (probe/size_obj), 0).rgb;
+			}
 		}
 	}
 
 	//Curvature from volume
 	float fact83r = 8.0/(3.0*r);
 	float fact4pir4 = 4.0 / (3.14159*r*r*r*r);
-	
 	float curvature = fact83r - fact4pir4*volume;
-	
-	vertex_color = color;
-	
-	curv_value = curvature;
+
+	float k1;
+	float k2;
+	curv_dir_min = vec3(0, 0, 1);
 	curv_dir_max = vec3(0, 0, 1);
-	curv_dir_min = vec3(1, 0, 1);
+	curv_normale = vec3(0);
+	vec3 values;
+	computeK1K2(volume, 
+				xyz2, xy_yz_xz, xyz,
+				curv_dir_min, curv_dir_max, curv_normale, values, k1, k2);
+	
+	curv_value = k1*k2;
+	vertex_color = curv_normale;
+	//curv_dir_min = curv_normale;
 	
     gl_Position = position;
 }
@@ -70,6 +144,7 @@ in vec3 vertex_position[];
 in vec3 vertex_color[];
 in vec3 curv_dir_max[];
 in vec3 curv_dir_min[];
+in vec3 curv_normale[];
 in float curv_value[];
 
 out vec3 geometry_position;
@@ -130,6 +205,7 @@ void main()
 		gl_PrimitiveID = int( length(center)*1000 );
 		geometry_color = vertex_color[i];
 		geometry_curv_value = curv_value[i];
+		geometry_curvdir = 0;
 		EmitVertex();
 	}
 	
@@ -326,6 +402,8 @@ vec3 colormap(float scale)
 
 vec3 colorFromCurv(float c)
 {
+	return vec3(abs(c), 0, 1);
+	
 	vec3 color;
 	float gt_curvature = c;
 	if(u_kmax > u_kmin)
@@ -345,7 +423,7 @@ void main( )
 	if (geometry_curvdir == 0)
 		color = colorFromCurv(geometry_curv_value);
 	else
-		color = geometry_color;
+		color = abs(geometry_color);
 	
 	//Phong
 	float shadow_weight = 0.5;

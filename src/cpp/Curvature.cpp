@@ -84,6 +84,10 @@ void configure_curv(GLuint program, GLuint first_loc)
 	
 	glProgramUniform1i (program,
 			Parameters::getInstance()->g_uniform_locations[first_loc+14],
+ 			TEXTURE_XYZ);
+	
+	glProgramUniform1i (program,
+			Parameters::getInstance()->g_uniform_locations[first_loc+15],
  			(int)Parameters::getInstance()->g_curv_dir);
 }
 
@@ -135,6 +139,9 @@ void load_curv(GLuint program, GLuint first_loc)
 		glGetUniformLocation(program, "u_xy_yz_xz_tex");
 		
 	Parameters::getInstance()->g_uniform_locations[first_loc+14] = 
+		glGetUniformLocation(program, "u_xyz_tex");
+		
+	Parameters::getInstance()->g_uniform_locations[first_loc+15] = 
 		glGetUniformLocation(program, "u_curv_dir");
 }
 
