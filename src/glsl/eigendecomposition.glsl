@@ -1,14 +1,18 @@
-
-void getEigenValuesVectors ( mat3 mat_data, out mat3 vectors, out vec3 values)
+void getEigenValuesVectors ( in mat3 m, out vec3 values, out mat3 vectors )
 { 
-	vec3 e;
-    
+  vec3 e = vec3(0);
+
+  float mat_data[3][3];
+  for(int i=0; i<3; i++)
+  for(int j=0; j<3; j++)
+	  mat_data[i][j] = m[i][j];
+
     int dimension = 3;
 	int dimensionMinusOne = 2;
 	
 	for( int j = 0; j < dimension; ++j )
 		values[ j ] =  mat_data[dimensionMinusOne][ j ];
-
+		;
 	// Householder reduction to tridiagonal form.
 	for( int i = dimensionMinusOne; i > 0 && i <= dimensionMinusOne; --i )
     {
@@ -17,7 +21,7 @@ void getEigenValuesVectors ( mat3 mat_data, out mat3 vectors, out vec3 values)
       float h =  0.0;
       for( int k = 0; k < i; ++k )
       {
-        scale +=  abs( values[ k ] );
+        scale += abs( values[ k ] );
       }
 
       if( scale ==  0.0 )
@@ -41,7 +45,7 @@ void getEigenValuesVectors ( mat3 mat_data, out mat3 vectors, out vec3 values)
         }
 
         float f = values[ i - 1 ];
-        float g =  sqrt( h );
+        float g = sqrt( h );
 
         if ( f >  0.0 )
         {
@@ -80,11 +84,11 @@ void getEigenValuesVectors ( mat3 mat_data, out mat3 vectors, out vec3 values)
           f += e[ j ] * values[ j ];
         }
 
-        double hh = f / ( h + h );
+        float hh = f / ( h + h );
 
         for ( int j = 0; j < i; ++j )
         {
-          e[ j ] -= float( hh * values[ j ]);
+          e[ j ] -= hh * values[ j ];
         }
 
         for ( int j = 0; j < i; ++j )
@@ -139,14 +143,13 @@ void getEigenValuesVectors ( mat3 mat_data, out mat3 vectors, out vec3 values)
       }
     }
 
- 
     for ( int j = 0; j < dimension; ++j )
     {
         values[ j ] =  mat_data[ dimensionMinusOne ][ j ];
-        mat_data[ dimensionMinusOne ][ j ] = 0.0;
+       mat_data[ dimensionMinusOne ][ j ] = 0.0;
     }
 
-    mat_data[ dimensionMinusOne ][ dimensionMinusOne ] =  1.0;
+     mat_data[ dimensionMinusOne ][ dimensionMinusOne ] =  1.0;
     e[ 0 ] =  0.0;
     
 	for ( int i = 1; i < dimension; ++i )
@@ -156,80 +159,79 @@ void getEigenValuesVectors ( mat3 mat_data, out mat3 vectors, out vec3 values)
 	
 	float f = float( 0.0 );
 	float tst1 = float( 0.0 );
-	float eps = float(  pow( 2.0, -52.0 ));
+	float eps = float( pow( 2.0, -52.0 ));
 	for( int l = 0; l < dimension; ++l )
     {
-		// Find small subdiagonal element
-		tst1 = float(  max( tst1,  abs ( values[ l ] ) +  abs( e[ l ] )));
-		int m = l;
-		while ( m < dimension )
+      // Find small subdiagonal element
+      tst1 = float( max( tst1, abs ( values[ l ] ) + abs( e[ l ] )));
+      int m = l;
+      while ( m < dimension )
         {
-          if (  abs ( e[ m ] ) <= eps * tst1 ) break;
+          if ( abs ( e[ m ] ) <= eps * tst1 ) break;
           ++m;
         }
 
-		// If m == l, d[l] is an eigenvalue,
-		// otherwise, iterate.
-		if( m > l && l==0)
-		{
-			int iter = 0;
-			do
-			{
-				++iter;  // (Could check iteration count here.)
-				// Compute implicit shift
-				
-				float g = values[ l ];
-				float p = ( values[ l + 1 ] - g ) / ( float( 2.0 ) * e[ l ] );
-				float r = float(  sqrt ( p * p + float( 1.0 ) * float( 1.0 )));
-				if( p < 0 ) r = -r;
-				values[ l ] = e[ l ] / ( p + r );
-				values[ l + 1 ] = e[ l ] * ( p + r );
-				float dl1 = values[ l + 1 ];
-				float h = g - values[ l ];
-				for( int i = l + 2; i < dimension; ++i )
-					values[ i ] -= h;
-				f = f + h;
+      // If m == l, d[l] is an eigenvalue,
+      // otherwise, iterate.
+      if( m > l && l==0)
+        {
+          int iter = 0;
+          do
+            {
+              ++iter;  // (Could check iteration count here.)
+              // Compute implicit shift
+              float g = values[ l ];
+              float p = ( values[ l + 1 ] - g ) / ( float( 2.0 ) * e[ l ] );
+              float r = float( sqrt ( p * p + float( 1.0 ) * float( 1.0 )));
+              if( p < 0 ) r = -r;
+              values[ l ] = e[ l ] / ( p + r );
+              values[ l + 1 ] = e[ l ] * ( p + r );
+              float dl1 = values[ l + 1 ];
+              float h = g - values[ l ];
+              for( int i = l + 2; i < dimension; ++i )
+                values[ i ] -= h;
+              f = f + h;
 
-				// Implicit QL transformation.
-				p = values[ m ];
-				float c = float( 1.0 );
-				float c2 = c;
-				float c3 = c;
-				float el1 = e[ l + 1 ];
-				float s = float( 0.0 );
-				float s2 = float( 0.0 );
-				for ( int i = m - 1; i >= l && i <= m - 1; --i )
-				{
-					c3 = c2;
-					c2 = c;
-					s2 = s;
-					g = c * e[ i ];
-					h = c * p;
-					r = float(  sqrt ( p * p + e[ i ] * e[ i ] ));
-					e[ i + 1 ] = s * r;
-					s = e[ i ] / r;
-					c = p / r;
-					p = c * values[ i ] - s * g;
-					values[ i + 1 ] = h + s * ( c * g + s * values[ i ] );
+              // Implicit QL transformation.
+              p = values[ m ];
+              float c = float( 1.0 );
+              float c2 = c;
+              float c3 = c;
+              float el1 = e[ l + 1 ];
+              float s = float( 0.0 );
+              float s2 = float( 0.0 );
+              for ( int i = m - 1; i >= l && i <= m - 1; --i )
+                {
+                  c3 = c2;
+                  c2 = c;
+                  s2 = s;
+                  g = c * e[ i ];
+                  h = c * p;
+                  r = float( sqrt ( p * p + e[ i ] * e[ i ] ));
+                  e[ i + 1 ] = s * r;
+                  s = e[ i ] / r;
+                  c = p / r;
+                  p = c * values[ i ] - s * g;
+                  values[ i + 1 ] = h + s * ( c * g + s * values[ i ] );
 
-					// Accumulate transformation.
-					for( int k = 0; k < dimension; ++k )
-					{
-						h =  mat_data[ k ][ i + 1 ];
-						mat_data[ k ][ i + 1 ] =  ( s *  mat_data[ k ][ i ] + c * h );
-						mat_data[ k ][ i ] = ( c *  mat_data[ k ][ i ] - s * h );
-					}
-				}
-				
-				p = - s * s2 * c3 * el1 * e[ l ] / dl1;
-				e[ l ] = s * p;
-				values[ l ] = c * p;
-				// Check for convergence.
-			}
-			while (  abs ( e[ l ] ) > eps * tst1 && iter < 10);
-		}
-		values[ l ] = values[ l ] + f;
-		e[ l ] = float( 0.0 );
+                  // Accumulate transformation.
+                  for( int k = 0; k < dimension; ++k )
+                    {
+                      h =  mat_data[ k ][ i + 1 ];
+                       mat_data[ k ][ i + 1 ] =  ( s *  mat_data[ k ][ i ] + c * h );
+                       mat_data[ k ][ i ] = ( c *  mat_data[ k ][ i ] - s * h );
+                    }
+                }
+              
+              p = - s * s2 * c3 * el1 * e[ l ] / dl1;
+              e[ l ] = s * p;
+              values[ l ] = c * p;
+              // Check for convergence.
+            }
+          while ( abs ( e[ l ] ) > eps * tst1 );
+        }
+      values[ l ] = values[ l ] + f;
+      e[ l ] = float( 0.0 );
     }
   
   // Sort eigenvalues and corresponding vectors.
@@ -259,5 +261,8 @@ void getEigenValuesVectors ( mat3 mat_data, out mat3 vectors, out vec3 values)
         }
     }
     
-    vectors = mat_data;
+    for(int i=0; i<3; i++)
+	for(int j=0; j<3; j++)
+	  vectors[i][j] = mat_data[i][j];
+    
 }

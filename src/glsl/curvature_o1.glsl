@@ -16,10 +16,11 @@ out vec3 vertex_color;
 out float curv_value;
 out vec3 curv_dir_min;
 out vec3 curv_dir_max;
+out vec3 curv_normale;
 
 void computeK1K2(vec3 pos, 
 				float volume, float x2, float y2, float z2, float xy, float yz, float xz,
-				out vec3 minDir, out vec3 maxDir, out float k1, out float k2)
+				out vec3 minDir, out vec3 maxDir, out vec3 n, out float k1, out float k2)
 {	
 	mat3 covmat;
 	covmat[0] = vec3(x2, xy, xz);
@@ -27,20 +28,22 @@ void computeK1K2(vec3 pos,
 	covmat[2] = vec3(xz, yz, z2);
 	
 	mat3 curvmat = covmat - (1.0/volume) * covmat;
+	/*curvmat[0] = vec3(1, 3, 3);
+	curvmat[1] = vec3(3, 1, 0);
+	curvmat[2] = vec3(3, 0, 1);*/
 	
-	/*
-	curvmat[0] = vec3(1, 2, 0);
-	curvmat[1] = vec3(2, 1, 0);
-	curvmat[2] = vec3(0, 0, 1);
-	*/
 	
 	mat3 eigenvectors;
 	vec3 eigenvalues;
-	getEigenValuesVectors ( curvmat, eigenvectors, eigenvalues );
+	getEigenValuesVectors ( curvmat, eigenvalues, eigenvectors );
 	
-	minDir = normalize( vec3( eigenvectors[0][0], eigenvectors[1][0], eigenvectors[2][0] ));
-	maxDir = normalize( vec3( eigenvectors[0][1], eigenvectors[1][1], eigenvectors[2][1] ));
+	minDir = vec3( eigenvectors[0][0], eigenvectors[1][0], eigenvectors[2][0] );
+    maxDir = vec3( eigenvectors[0][1], eigenvectors[1][1], eigenvectors[2][1] );
+	n = vec3( eigenvectors[0][2], eigenvectors[1][2], eigenvectors[2][2] );
 	
+	//n = normalize( eigenvalues );
+	
+	/*
 	float l1 = eigenvalues[0];
 	float l2 = eigenvalues[1];
 	
@@ -48,6 +51,9 @@ void computeK1K2(vec3 pos,
 	float r6 = u_curv_radius*u_curv_radius*u_curv_radius*u_curv_radius*u_curv_radius*u_curv_radius;
 	k1 = (6.0/(pi*r6))*(l2 - 3.0*l1) + (8.0/(5.0*u_curv_radius));
 	k2 = (6.0/(pi*r6))*(l1 - 3.0*l2) + (8.0/(5.0*u_curv_radius));
+	*/
+	k1 = 1.0;
+	k2 = 1.0;
 }
 
 void main( )
@@ -82,9 +88,10 @@ void main( )
 	float k2;
 	curv_dir_min = vec3(0, 0, 1);
 	curv_dir_max = vec3(0, 0, 1);
+	curv_normale = vec3(0);
 	computeK1K2(vertex_position, 
 				volume, x2, y2, z2, xy, yz, xz,
-				curv_dir_min, curv_dir_max, k1, k2);
+				curv_dir_min, curv_dir_max, curv_normale, k1, k2);
 	
 	curv_value = (k1+k2)/2.0;
 	
@@ -105,6 +112,7 @@ in vec3 vertex_position[];
 in vec3 vertex_color[];
 in vec3 curv_dir_max[];
 in vec3 curv_dir_min[];
+in vec3 curv_normale[];
 in float curv_value[];
 
 out vec3 geometry_position;
@@ -163,9 +171,9 @@ void main()
 		geometry_view = (u_transforms.modelview * vec4( ((vertex_position[i]-0.5)*u_scene_size), 1 )).xyz;
 		vec3 center = (pts_abs[1] + pts_abs[2] + pts_abs[0]) / 3;
 		gl_PrimitiveID = int( length(center)*1000 );
-		geometry_color = curv_dir_min[i];
 		geometry_curv_value = curv_value[i];
-		geometry_curvdir = 0;
+		geometry_color = curv_normale[i];
+		geometry_curvdir = 1;
 		EmitVertex();
 	}
 	
@@ -201,7 +209,7 @@ void main()
 		vec3 c6 = c2+p*depth;
 		vec3 c7 = c3+p*depth;
 		
-		vec3 shade = vec3(0, 0, 1);
+		vec3 shade = curv_dir_min[0];
 		setPoint(c0, shade);
 		EmitVertex();
 		setPoint(c1, shade);
@@ -268,7 +276,7 @@ void main()
 		vec3 c6 = c2+p*depth;
 		vec3 c7 = c3+p*depth;
 		
-		vec3 shade = vec3(1, 0, 0);
+		vec3 shade = curv_dir_max[0];
 		setPoint(c0, shade);
 		EmitVertex();
 		setPoint(c1, shade);
@@ -378,10 +386,10 @@ void main( )
 {
 	vec3 geometry_normal = -1 * normalize(cross( dFdx(geometry_position.xyz), dFdy(geometry_position.xyz)));
 	vec3 color;
-	if (geometry_curvdir == 0)
+	/*if (geometry_curvdir == 0)
 		color = colorFromCurv(geometry_curv_value);
-	else
-		color = geometry_color;
+	else*/
+		color = abs(geometry_color);
 	
 	//Phong
 	float shadow_weight = 0.5;
