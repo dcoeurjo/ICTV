@@ -105,15 +105,11 @@
     vecD[2] = D[2][2];
 }*/
 
-void getEigenValuesVectors ( in mat3 mat_data, out vec3 values, out mat3 vectors )
+
+void getEigenValuesVectors ( in mat3 mat_data, out mat3 vectors, out vec3 values )
 { 
 	vec3 e = vec3(0);
 
-	/*float mat_data[3][3];
-	for(int i=0; i<3; i++)
-	for(int j=0; j<3; j++)
-	  mat_data[i][j] = m[i][j];
-	*/
     int dimension = 3;
 	int dimensionMinusOne = 2;
 	
@@ -280,7 +276,7 @@ void getEigenValuesVectors ( in mat3 mat_data, out vec3 values, out mat3 vectors
 
       // If m == l, d[l] is an eigenvalue,
       // otherwise, iterate.
-      if( m > l && l<2)
+      if( m > l && l<2 )
         {
           int iter = 0;
           do
@@ -368,9 +364,6 @@ void getEigenValuesVectors ( in mat3 mat_data, out vec3 values, out mat3 vectors
         }
     }
     
-  /*  for(int i=0; i<3; i++)
-	for(int j=0; j<3; j++)
-	  vectors[j][i] = mat_data[i][j];
-    */
     vectors = mat_data;
 }
+

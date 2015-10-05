@@ -56,7 +56,7 @@ void computeK1K2(float volume,
 		curvmat[1] = vec3(248, 23, 2);
 		curvmat[2] = vec3(5, 2, 13);*/
 	
-		getEigenValuesVectors ( curvmat, eigenvalues, eigenvectors );
+		getEigenValuesVectors ( curvmat, eigenvectors, eigenvalues );
 		
 		n = vec3( eigenvectors[0][0], eigenvectors[1][0], eigenvectors[2][0] );
 		

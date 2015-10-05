@@ -7,7 +7,7 @@ void DataLoader::loadData32BGpu()
 	glGenTextures(1, &Parameters::getInstance()->g_textures[TEXTURE_DENSITY]);
 	glBindTexture(GL_TEXTURE_3D, Parameters::getInstance()->g_textures[TEXTURE_DENSITY]);
 	
-	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
+	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 	
 	glTexImage3D(GL_TEXTURE_3D, 0, GL_R32F, sizex, sizey, sizez, 0, GL_RED, GL_FLOAT, data);
         glGenerateMipmap(GL_TEXTURE_3D);
@@ -19,6 +19,8 @@ void DataLoader::loadData8BGpu()
 {
 	glGenTextures(1, &Parameters::getInstance()->g_textures[TEXTURE_DENSITY]);
 	glBindTexture(GL_TEXTURE_3D, Parameters::getInstance()->g_textures[TEXTURE_DENSITY]);
+	
+	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 	
 	glTexImage3D(GL_TEXTURE_3D, 0, GL_R8, sizex, sizey, sizez, 0, GL_RED, GL_UNSIGNED_BYTE, data_char);
         glGenerateMipmap(GL_TEXTURE_3D);
@@ -32,9 +34,9 @@ void DataLoader::loadx2y2z2()
 	long unsigned int alloc_size = sizex*sizey*sizez*3;
 	mmt = (float*)malloc(sizeof(float)*alloc_size);
 	int nb = 0;
-	for(unsigned int i=0; i<sizex; i++)
-	for(unsigned int j=0; j<sizey; j++)
 	for(unsigned int k=0; k<sizez; k++)
+	for(unsigned int j=0; j<sizey; j++)
+	for(unsigned int i=0; i<sizex; i++)
 	{
 		/*float norm_i = (float)i/(float)sizex;
 		float norm_j = (float)j/(float)sizey;
@@ -52,7 +54,7 @@ void DataLoader::loadx2y2z2()
 	glGenTextures(1, &Parameters::getInstance()->g_textures[TEXTURE_X2Y2Z2]);
 	glBindTexture(GL_TEXTURE_3D, Parameters::getInstance()->g_textures[TEXTURE_X2Y2Z2]);
 	
-	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
+	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 	
 	glTexImage3D(GL_TEXTURE_3D, 0, GL_RGB32F, sizex, sizey, sizez, 0, GL_RGB, GL_FLOAT, mmt);
         glGenerateMipmap(GL_TEXTURE_3D);
@@ -69,9 +71,9 @@ void DataLoader::loadxyyzxz()
 	long unsigned int alloc_size = sizex*sizey*sizez*3;
 	mmt = (float*)malloc(sizeof(float)*alloc_size);
 	int nb = 0;
-	for(unsigned int i=0; i<sizex; i++)
-	for(unsigned int j=0; j<sizey; j++)
 	for(unsigned int k=0; k<sizez; k++)
+	for(unsigned int j=0; j<sizey; j++)
+	for(unsigned int i=0; i<sizex; i++)
 	{
 		/*float norm_i = (float)i/(float)sizex;
 		float norm_j = (float)j/(float)sizey;
@@ -89,7 +91,7 @@ void DataLoader::loadxyyzxz()
 	glGenTextures(1, &Parameters::getInstance()->g_textures[TEXTURE_XY_YZ_XZ]);
 	glBindTexture(GL_TEXTURE_3D, Parameters::getInstance()->g_textures[TEXTURE_XY_YZ_XZ]);
 	
-	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
+	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 	
 	glTexImage3D(GL_TEXTURE_3D, 0, GL_RGB32F, sizex, sizey, sizez, 0, GL_RGB, GL_FLOAT, mmt);
         glGenerateMipmap(GL_TEXTURE_3D);
@@ -105,9 +107,9 @@ void DataLoader::loadxyz()
 	long unsigned int alloc_size = sizex*sizey*sizez*3;
 	mmt = (float*)malloc(sizeof(float)*alloc_size);
 	int nb = 0;
-	for(unsigned int i=0; i<sizex; i++)
-	for(unsigned int j=0; j<sizey; j++)
 	for(unsigned int k=0; k<sizez; k++)
+	for(unsigned int j=0; j<sizey; j++)
+	for(unsigned int i=0; i<sizex; i++)
 	{
 		/*float norm_i = (float)i/(float)sizex;
 		float norm_j = (float)j/(float)sizey;
@@ -125,7 +127,7 @@ void DataLoader::loadxyz()
 	glGenTextures(1, &Parameters::getInstance()->g_textures[TEXTURE_XYZ]);
 	glBindTexture(GL_TEXTURE_3D, Parameters::getInstance()->g_textures[TEXTURE_XYZ]);
 	
-	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
+	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 	
 	glTexImage3D(GL_TEXTURE_3D, 0, GL_RGB32F, sizex, sizey, sizez, 0, GL_RGB, GL_FLOAT, mmt);
         glGenerateMipmap(GL_TEXTURE_3D);
