@@ -31,13 +31,13 @@ void main( )
 
 	/*curvature from regular integration*/
 	float volume = 0.0;
-	vec3 xyz2 = ivec3(0);
-	vec3 xy_yz_xz = ivec3(0);
-	vec3 xyz = ivec3(0);
+	vec3 xyz2 = vec3(0);
+	vec3 xy_yz_xz = vec3(0);
+	vec3 xyz = vec3(0);
 	float gt_curvature = 0.0;
 	int nb_probe = 0;
 	
-	
+	/*
 	float size_obj = u_size_tex;
 	for(float i=-r; i<r; i++)
 	for(float j=-r; j<r; j++)
@@ -48,19 +48,22 @@ void main( )
 		{
 			float val = textureLod(densities, vertex_position + (probe/size_obj), 0).r;
 			volume += val;
-			/*xyz2 += textureLod(u_xyz2_tex, vertex_position + (probe/size_obj), 0).rgb * val;
+			xyz2 += textureLod(u_xyz2_tex, vertex_position + (probe/size_obj), 0).rgb * val;
 			xy_yz_xz += textureLod(u_xy_yz_xz_tex, vertex_position + (probe/size_obj), 0).rgb * val;
 			xyz += textureLod(u_xyz_tex, vertex_position + (probe/size_obj), 0).rgb * val;
-			nb_probe++;*/
+			nb_probe++;
 		}
 	}
+	*/
 	
-	
-	/*volume = 1.0;
-	vec3 p = vertex_position;
+	vec3 p = vec3(0.5, 0.5, 0.5);
+	/*
+	volume = textureLod(densities, p, 0).r;
+	*/
 	xyz2 = textureLod(u_xyz2_tex, p, 0).rgb;
 	xy_yz_xz = textureLod(u_xy_yz_xz_tex, p, 0).rgb;
-	xyz = textureLod(u_xyz_tex, p, 0).rgb;*/
+	xyz = textureLod(u_xyz_tex, p, 0).rgb;
+	//xyz = texelFetch(u_xyz_tex, ivec3(100,100,100), 0).rgb;
 	
 	//Curvature from volume
 	float fact83r = 8.0/(3.0*r);
@@ -73,15 +76,15 @@ void main( )
 	curv_dir_max = vec3(0, 0, 1);
 	curv_normale = vec3(0);
 	vec3 values;
-	computeK1K2(volume, r,
-				xyz2, xy_yz_xz, xyz,
-				curv_dir_min, curv_dir_max, curv_normale, values, k1, k2);
+	//computeK1K2(volume, r,
+	//			xyz2, xy_yz_xz, xyz,
+	//			curv_dir_min, curv_dir_max, curv_normale, values, k1, k2);
 	
-	curv_value = curvature;
-	//curv_value = k1*k2;
+	//curv_value = curvature;
+	curv_value = k1*k2;
 	//vertex_color = vec3(int(xyz.x*xyz.x)/(32.0*32.0), 0, 0);//vec3( xyz2.x - (xyz.x*xyz.x), 0, 0 );
 	//vertex_color = vec3(int(xyz2.x)/(32.0*32.0), 0, 0);
-	//vertex_color = vec3(int(xyz2.x) - int(xyz.x*xyz.x), 0, 0);
+	vertex_color = xy_yz_xz;
 	//if(xyz.x == 15.5)
 	//if(xyz2.x == 240.5)
 	//	vertex_color = vec3(0, 1, 0);
@@ -165,7 +168,7 @@ void main()
 		gl_PrimitiveID = int( length(center)*1000 );
 		geometry_color = vertex_color[i];
 		geometry_curv_value = curv_value[i];
-		geometry_curvdir = 0;
+		geometry_curvdir = 1;
 		EmitVertex();
 	}
 	

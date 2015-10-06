@@ -403,9 +403,9 @@ void computeK1K2(float volume, float r,
 		curvmat[1] = vec3( xy_yz_xz.x - (xyz.x*xyz.y/volume) , 	xyz2.y - (xyz.y*xyz.y/volume) , 		xy_yz_xz.y - (xyz.y*xyz.z/volume) );
 		curvmat[2] = vec3( xy_yz_xz.z - (xyz.x*xyz.z/volume),	xy_yz_xz.y - (xyz.y*xyz.z/volume) , 	xyz2.z - (xyz.z*xyz.z/volume) );*/
 		
-		float covxy = xy_yz_xz.x - (xyz.x*xyz.y);
-		float covyz = xy_yz_xz.y - (xyz.y*xyz.z);
-		float covxz = xy_yz_xz.z - (xyz.x*xyz.z);
+		float covxy = xy_yz_xz.x - (xyz.x*xyz.y/volume);
+		float covyz = xy_yz_xz.y - (xyz.y*xyz.z/volume);
+		float covxz = xy_yz_xz.z - (xyz.x*xyz.z/volume);
 		
 		//volume = volume;
 		curvmat[0][0] = xyz2.x - ((xyz.x*xyz.x)/(volume)); 
@@ -422,8 +422,8 @@ void computeK1K2(float volume, float r,
 	
 		getEigenValuesVectors ( curvmat, eigenvectors, eigenvalues );
 		
-		//n = vec3( eigenvectors[0][0], eigenvectors[1][0], eigenvectors[2][0] );
-		n = vec3( curvmat[0][0], 0, 0 );
+		n = vec3( eigenvectors[0][0], eigenvectors[1][0], eigenvectors[2][0] );
+		//n = vec3( curvmat[0][0], 0, 0 );
 		//float vol_boule = ((4*3.14159*(r*r*r))/3.0);
  		//n = vec3(volume, 0, 0)*0.01; 
 		

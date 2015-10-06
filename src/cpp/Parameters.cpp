@@ -55,7 +55,7 @@ Parameters::Parameters()
     g_curvmax = 0.5;
 
     g_scale = 10;
-    g_tessel = 2;
+    g_tessel = 2.0;
     g_isosurface = 0;
 
     g_sizetex = 0;
