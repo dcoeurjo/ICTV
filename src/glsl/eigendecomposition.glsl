@@ -422,7 +422,7 @@ void computeK1K2(float volume, float r,
 	
 		getEigenValuesVectors ( curvmat, eigenvectors, eigenvalues );
 		
-		n = vec3( eigenvectors[0][0], eigenvectors[1][0], eigenvectors[2][0] );
+		n = normalize( vec3( abs(eigenvectors[0][0]), abs(eigenvectors[1][0]), abs(eigenvectors[2][0]) ) );
 		//n = vec3( curvmat[0][0], 0, 0 );
 		//float vol_boule = ((4*3.14159*(r*r*r))/3.0);
  		//n = vec3(volume, 0, 0)*0.01; 

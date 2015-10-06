@@ -26,12 +26,13 @@ void main( )
     float r = u_curv_radius;
 	float vol_boule = ((4*3.14159*(r*r*r))/3.0);
 
-	float lvl = log2(r)+1;
+	float lvl = log2(r);
 	float volume = textureLod(densities, vertex_position, lvl).r * vol_boule;
 	
 	vec3 xyz2 = textureLod(u_xyz2_tex, vertex_position, lvl).rgb * vol_boule;
 	vec3 xy_yz_xz = textureLod(u_xy_yz_xz_tex, vertex_position, lvl).rgb * vol_boule;
 	vec3 xyz = textureLod(u_xyz_tex, vertex_position, lvl).rgb * vol_boule;
+	
 
 	//Curvature from volume
 	float fact83r = 8.0/(3.0*r);
@@ -50,7 +51,6 @@ void main( )
 	
 	curv_value = curvature;
 	vertex_color = curv_normale;
-	curv_dir_min = curv_normale;
 	
     gl_Position = position;
 }
@@ -129,7 +129,7 @@ void main()
 		vec3 center = (pts_abs[1] + pts_abs[2] + pts_abs[0]) / 3;
 		gl_PrimitiveID = int( length(center)*1000 );
 		geometry_curv_value = curv_value[i];
-		geometry_color = vertex_color[i];
+		geometry_color = vec3(0, 0, 0);
 		geometry_curvdir = 0;
 		EmitVertex();
 	}

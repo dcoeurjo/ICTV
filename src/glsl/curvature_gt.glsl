@@ -37,7 +37,6 @@ void main( )
 	float gt_curvature = 0.0;
 	int nb_probe = 0;
 	
-	/*
 	float size_obj = u_size_tex;
 	for(float i=-r; i<r; i++)
 	for(float j=-r; j<r; j++)
@@ -48,22 +47,20 @@ void main( )
 		{
 			float val = textureLod(densities, vertex_position + (probe/size_obj), 0).r;
 			volume += val;
+			//vec3 t = (vertex_position + (probe/size_obj))*size_obj;
+			xyz += textureLod(u_xyz_tex, vertex_position + (probe/size_obj), 0).rgb * val;
 			xyz2 += textureLod(u_xyz2_tex, vertex_position + (probe/size_obj), 0).rgb * val;
 			xy_yz_xz += textureLod(u_xy_yz_xz_tex, vertex_position + (probe/size_obj), 0).rgb * val;
-			xyz += textureLod(u_xyz_tex, vertex_position + (probe/size_obj), 0).rgb * val;
+			//xyz += vertex_position*size_obj;//textureLod(u_xyz_tex, vertex_position + (probe/size_obj), 0).rgb * val;
 			nb_probe++;
 		}
 	}
-	*/
-	
-	vec3 p = vec3(0.5, 0.5, 0.5);
+
 	/*
-	volume = textureLod(densities, p, 0).r;
+	xyz2 = textureLod(u_xyz2_tex, vertex_position, 0).rgb;
+	xy_yz_xz = textureLod(u_xy_yz_xz_tex, vertex_position, 0).rgb;
+	xyz = textureLod(u_xyz_tex, vertex_position, 0).rgb;
 	*/
-	xyz2 = textureLod(u_xyz2_tex, p, 0).rgb;
-	xy_yz_xz = textureLod(u_xy_yz_xz_tex, p, 0).rgb;
-	xyz = textureLod(u_xyz_tex, p, 0).rgb;
-	//xyz = texelFetch(u_xyz_tex, ivec3(100,100,100), 0).rgb;
 	
 	//Curvature from volume
 	float fact83r = 8.0/(3.0*r);
@@ -76,15 +73,18 @@ void main( )
 	curv_dir_max = vec3(0, 0, 1);
 	curv_normale = vec3(0);
 	vec3 values;
-	//computeK1K2(volume, r,
-	//			xyz2, xy_yz_xz, xyz,
-	//			curv_dir_min, curv_dir_max, curv_normale, values, k1, k2);
+	computeK1K2(volume, r,
+				xyz2, xy_yz_xz, xyz,
+				curv_dir_min, curv_dir_max, curv_normale, values, k1, k2);
 	
-	//curv_value = curvature;
-	curv_value = k1*k2;
+	//curv_value = (k1+k2)/2.0;
+	//curv_value = k1*k2;
+		
 	//vertex_color = vec3(int(xyz.x*xyz.x)/(32.0*32.0), 0, 0);//vec3( xyz2.x - (xyz.x*xyz.x), 0, 0 );
 	//vertex_color = vec3(int(xyz2.x)/(32.0*32.0), 0, 0);
-	vertex_color = xy_yz_xz;
+	
+	vertex_color = curv_normale;
+	
 	//if(xyz.x == 15.5)
 	//if(xyz2.x == 240.5)
 	//	vertex_color = vec3(0, 1, 0);
@@ -161,14 +161,14 @@ void main()
 	{
 		geometry_distance = vec3(0);
 		geometry_distance[i] = area * inversesqrt (dot (v[i],v[i]));
-		gl_Position = transformed[i];
 		geometry_position = vertex_position[i].xyz;
-		geometry_view = (u_transforms.modelview * vec4( ((vertex_position[i]-0.5)*u_scene_size), 1 )).xyz;
-		vec3 center = (pts_abs[1] + pts_abs[2] + pts_abs[0]) / 3;
-		gl_PrimitiveID = int( length(center)*1000 );
+		//geometry_view = (u_transforms.modelview * vec4( ((vertex_position[i]-0.5)*u_scene_size), 1 )).xyz;
+		//vec3 center = (pts_abs[1] + pts_abs[2] + pts_abs[0]) / 3;
+		//gl_PrimitiveID = int( length(center)*1000 );
 		geometry_color = vertex_color[i];
 		geometry_curv_value = curv_value[i];
-		geometry_curvdir = 1;
+		geometry_curvdir = 0;
+		gl_Position = transformed[i];
 		EmitVertex();
 	}
 	
@@ -317,7 +317,7 @@ layout(early_fragment_tests) in;
 
 in vec3 geometry_position;
 in vec3 geometry_distance;
-in vec3 geometry_view;
+//in vec3 geometry_view;
 in float geometry_curv_value;
 in vec3 geometry_color;
 in flat int geometry_curvdir;
@@ -381,9 +381,9 @@ void main( )
 {
 	vec3 geometry_normal = -1 * normalize(cross( dFdx(geometry_position.xyz), dFdy(geometry_position.xyz)));
 	vec3 color;
-	if (geometry_curvdir == 0)
-		color = colorFromCurv(geometry_curv_value);
-	else
+	//if (geometry_curvdir == 0)
+	//	color = colorFromCurv(geometry_curv_value);
+	//else
 		color = abs(geometry_color);
 	
 	//Phong
@@ -391,7 +391,7 @@ void main( )
 	float dotnormal = abs(dot(normalize(geometry_normal), vec3(-1, -1, -1)));
 	fragment_color = vec4(color, 1);//vec4( shadow_weight * color * dotnormal + (1-shadow_weight) * color, 1);
 
-	if (solid_wireframe == 1)
+	if (geometry_curvdir == 0 && solid_wireframe == 1)
 	{
 		const float wirescale = 0.5; // scale of the wire
 		vec3 d2 = geometry_distance * geometry_distance;

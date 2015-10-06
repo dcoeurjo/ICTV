@@ -2,12 +2,16 @@
 
 #include "GL/GLTexture.h"
 
+const GLenum MIN_FILT = GL_LINEAR_MIPMAP_LINEAR;
+const GLenum MAG_FILT = GL_LINEAR;
+
 void DataLoader::loadData32BGpu()
 {
 	glGenTextures(1, &Parameters::getInstance()->g_textures[TEXTURE_DENSITY]);
 	glBindTexture(GL_TEXTURE_3D, Parameters::getInstance()->g_textures[TEXTURE_DENSITY]);
 	
-	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
+	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, MAG_FILT);
+	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, MIN_FILT);
 	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
@@ -23,7 +27,8 @@ void DataLoader::loadData8BGpu()
 	glGenTextures(1, &Parameters::getInstance()->g_textures[TEXTURE_DENSITY]);
 	glBindTexture(GL_TEXTURE_3D, Parameters::getInstance()->g_textures[TEXTURE_DENSITY]);
 	
-	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
+	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, MAG_FILT);
+	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, MIN_FILT);
 	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
@@ -47,9 +52,9 @@ void DataLoader::loadx2y2z2()
 		/*float norm_i = (float)i/(float)sizex;
 		float norm_j = (float)j/(float)sizey;
 		float norm_k = (float)k/(float)sizez;*/
-		int norm_i = i;
-		int norm_j = j;
-		int norm_k = k;
+		float norm_i = i;
+		float norm_j = j;
+		float norm_k = k;
 		
 		mmt[nb*3] = norm_i*norm_i;
 		mmt[nb*3 + 1] = norm_j*norm_j;
@@ -60,14 +65,15 @@ void DataLoader::loadx2y2z2()
 	glGenTextures(1, &Parameters::getInstance()->g_textures[TEXTURE_X2Y2Z2]);
 	glBindTexture(GL_TEXTURE_3D, Parameters::getInstance()->g_textures[TEXTURE_X2Y2Z2]);
 	
-	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
+	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, MAG_FILT);
+	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, MIN_FILT);
 	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 	
 	glTexImage3D(GL_TEXTURE_3D, 0, GL_RGB32F, sizex, sizey, sizez, 0, GL_RGB, GL_FLOAT, mmt);
 	//glTexImage3D(GL_TEXTURE_3D, 0, GL_RGB32UI, sizex, sizey, sizez, 0, GL_RGB_INTEGER, GL_UNSIGNED_INT, mmt);
-        glGenerateMipmap(GL_TEXTURE_3D);
+    glGenerateMipmap(GL_TEXTURE_3D);
 	
 	glBindTexture(GL_TEXTURE_3D, 0);
 	
@@ -88,9 +94,9 @@ void DataLoader::loadxyyzxz()
 		/*float norm_i = (float)i/(float)sizex;
 		float norm_j = (float)j/(float)sizey;
 		float norm_k = (float)k/(float)sizez;*/
-		int norm_i = i;
-		int norm_j = j;
-		int norm_k = k;
+		float norm_i = i;
+		float norm_j = j;
+		float norm_k = k;
 		
 		mmt[nb*3] = norm_i*norm_j;
 		mmt[nb*3 + 1] = norm_j*norm_k;
@@ -101,14 +107,15 @@ void DataLoader::loadxyyzxz()
 	glGenTextures(1, &Parameters::getInstance()->g_textures[TEXTURE_XY_YZ_XZ]);
 	glBindTexture(GL_TEXTURE_3D, Parameters::getInstance()->g_textures[TEXTURE_XY_YZ_XZ]);
 	
-	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
+	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, MAG_FILT);
+	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, MIN_FILT);
 	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 	
 	glTexImage3D(GL_TEXTURE_3D, 0, GL_RGB32F, sizex, sizey, sizez, 0, GL_RGB, GL_FLOAT, mmt);
 	//glTexImage3D(GL_TEXTURE_3D, 0, GL_RGB32UI, sizex, sizey, sizez, 0, GL_RGB_INTEGER, GL_UNSIGNED_INT, mmt);
-        glGenerateMipmap(GL_TEXTURE_3D);
+    glGenerateMipmap(GL_TEXTURE_3D);
 	
 	glBindTexture(GL_TEXTURE_3D, 0);
 	
@@ -128,9 +135,9 @@ void DataLoader::loadxyz()
 		/*float norm_i = (float)i/(float)sizex;
 		float norm_j = (float)j/(float)sizey;
 		float norm_k = (float)k/(float)sizez;*/
-		int norm_i = i;
-		int norm_j = j;
-		int norm_k = k;
+		float norm_i = i;
+		float norm_j = j;
+		float norm_k = k;
 		
 		mmt[nb*3] = norm_i;
 		mmt[nb*3 + 1] = norm_j;
@@ -141,7 +148,8 @@ void DataLoader::loadxyz()
 	glGenTextures(1, &Parameters::getInstance()->g_textures[TEXTURE_XYZ]);
 	glBindTexture(GL_TEXTURE_3D, Parameters::getInstance()->g_textures[TEXTURE_XYZ]);
 	
-	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
+	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, MAG_FILT);
+	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, MIN_FILT);
 	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);

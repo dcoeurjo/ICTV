@@ -72,7 +72,7 @@ void GPUOctree::loadBuffers()
 		size_t full_tree_cap = full_tree * sizeof(float)*2; //2 float for each
 		
 		size_t tr_cells = 1;
-		tr_cells = full_tree >> 10; //a lot less than tree cells
+		tr_cells = full_tree >> 4; //a lot less than tree cells
 		printf("TR CAPACITY %lu\n", tr_cells);
 		
 		size_t tr_cells_cap = tr_cells * sizeof(float)*2; //2 float for each
