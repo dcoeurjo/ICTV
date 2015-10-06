@@ -50,11 +50,11 @@ Parameters::Parameters()
     g_regular = false;
     g_radius_show = true;
 
-	g_curvradius = 3.0;
+	g_curvradius = 5.0;
     g_curvmin = -0.5;
     g_curvmax = 0.5;
 
-    g_scale = 5;
+    g_scale = 10;
     g_tessel = 2;
     g_isosurface = 0;
 

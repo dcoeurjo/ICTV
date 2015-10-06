@@ -19,61 +19,6 @@ out vec3 curv_dir_min;
 out vec3 curv_dir_max;
 out vec3 curv_normale;
 
-uniform vec3 u_scene_size;
-
-void computeK1K2(float volume, 
-				vec3 xyz2, vec3 xy_yz_xz, vec3 xyz,
-				out vec3 minDir, out vec3 maxDir, out vec3 n, out vec3 val, out float k1, out float k2)
-{	
-	/*mat3 m_x2;
-	m_x2[0] = vec3(xyz2.x, xy_yz_xz.x, xy_yz_xz.z);
-	m_x2[1] = vec3(xy_yz_xz.x, xyz2.y, xy_yz_xz.y);
-	m_x2[2] = vec3(xy_yz_xz.z, xy_yz_xz.y, xyz2.z);
-
-	mat3 mx_2;
-	mx_2[0] = vec3(xyz.x*xyz.x, xyz.x*xyz.y, xyz.x*xyz.z);
-	mx_2[1] = vec3(xyz.x*xyz.y, xyz.y*xyz.y, xyz.y*xyz.z);
-	mx_2[2] = vec3(xyz.x*xyz.z, xyz.y*xyz.z, xyz.z*xyz.z);*/
-	
-	mat3 eigenvectors = mat3(0);
-	vec3 eigenvalues = vec3(0);
-	
-	mat3 curvmat;
-	if (volume <= 0.001)
-	{
-		curvmat = mat3(0);
-		n = vec3(1,0,0);
-		k1 = 0;
-		k2= 0;
-	}
-	else
-	{
-		curvmat[0] = vec3( xyz2.x - (xyz.x*xyz.x/volume),		xy_yz_xz.x - (xyz.x*xyz.y/volume) , 	xy_yz_xz.z - (xyz.x*xyz.z/volume) );
-		curvmat[1] = vec3( xy_yz_xz.x - (xyz.x*xyz.y/volume) , 	xyz2.y - (xyz.y*xyz.y/volume) , 		xy_yz_xz.y - (xyz.y*xyz.z/volume) );
-		curvmat[2] = vec3( xy_yz_xz.z - (xyz.x*xyz.z/volume),	xy_yz_xz.y - (xyz.y*xyz.z/volume) , 	xyz2.z - (xyz.z*xyz.z/volume) );
-	
-		/*curvmat[0] = vec3(13, 248, 5);
-		curvmat[1] = vec3(248, 23, 2);
-		curvmat[2] = vec3(5, 2, 13);*/
-	
-		getEigenValuesVectors ( curvmat, eigenvectors, eigenvalues );
-		
-		n = vec3( eigenvectors[0][0], eigenvectors[1][0], eigenvectors[2][0] );
-		
-		float l1 = eigenvalues[1];
-		float l2 = eigenvalues[2];
-		
-		float pi = 3.14159;
-		float r6 = u_curv_radius*u_curv_radius*u_curv_radius*u_curv_radius*u_curv_radius*u_curv_radius;
-		k1 = (6.0/(pi*r6))*(l2 - 3.0*l1) + (8.0/(5.0*u_curv_radius));
-		k2 = (6.0/(pi*r6))*(l1 - 3.0*l2) + (8.0/(5.0*u_curv_radius));
-	}
-	
-	minDir = vec3( eigenvectors[0][1], eigenvectors[1][1], eigenvectors[2][1] );
-	maxDir = vec3( eigenvectors[0][2], eigenvectors[1][2], eigenvectors[2][2] );
-	val = eigenvalues;
-}
-
 void main( )
 {
     vertex_position = position.xyz;
@@ -83,9 +28,10 @@ void main( )
 
 	float lvl = log2(r)+1;
 	float volume = textureLod(densities, vertex_position, lvl).r * vol_boule;
-	vec3 xyz2 = textureLod(u_xyz2_tex, vertex_position, lvl).rgb * (2*r*2*r*2*r);
-	vec3 xy_yz_xz = textureLod(u_xy_yz_xz_tex, vertex_position, lvl).rgb * (2*r*2*r*2*r);;
-	vec3 xyz = textureLod(u_xyz_tex, vertex_position, lvl).rgb * (2*r*2*r*2*r);;
+	
+	vec3 xyz2 = textureLod(u_xyz2_tex, vertex_position, lvl).rgb * vol_boule;
+	vec3 xy_yz_xz = textureLod(u_xy_yz_xz_tex, vertex_position, lvl).rgb * vol_boule;
+	vec3 xyz = textureLod(u_xyz_tex, vertex_position, lvl).rgb * vol_boule;
 
 	//Curvature from volume
 	float fact83r = 8.0/(3.0*r);
@@ -98,11 +44,11 @@ void main( )
 	curv_dir_max = vec3(0, 0, 1);
 	curv_normale = vec3(0);
 	vec3 values;
-	computeK1K2(volume, 
+	computeK1K2(volume, r,
 				xyz2, xy_yz_xz, xyz,
 				curv_dir_min, curv_dir_max, curv_normale, values, k1, k2);
 	
-	//curv_value = (k1+k2)/2.0;
+	curv_value = curvature;
 	vertex_color = curv_normale;
 	curv_dir_min = curv_normale;
 	
@@ -397,9 +343,9 @@ void main( )
 {
 	vec3 geometry_normal = -1 * normalize(cross( dFdx(geometry_position.xyz), dFdy(geometry_position.xyz)));
 	vec3 color;
-	//if (geometry_curvdir == 0)
-	//	color = colorFromCurv(geometry_curv_value);
-	//else
+	if (geometry_curvdir == 0)
+		color = colorFromCurv(geometry_curv_value);
+	else
 		color = abs(geometry_color);
 
 	
