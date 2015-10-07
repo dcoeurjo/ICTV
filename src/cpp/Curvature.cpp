@@ -175,10 +175,8 @@ void Curvature::loadProgram()
 		GLuint *program = &Parameters::getInstance()->g_programs[PROGRAM_APPROXCURV];
 
         fprintf (stderr, "loading shading program... "); fflush (stderr);
-        gk::GLCompiler& c = gk::loadProgram( SHADER_PATH("curvature_o1.glsl"));
-        /*c.include(SHADER_PATH("noise.glsl") );
-        c.include(SHADER_PATH("octree_common.glsl") );
-        c.include(SHADER_PATH("ltree.glsl") );*/
+        gk::GLCompiler& c = gk::loadProgram( SHADER_PATH("curvature.glsl"));
+        c.include(SHADER_PATH("o1_include.glsl") );
 		c.include(SHADER_PATH("eigendecomposition.glsl"));
         GLProgram* tmp = c.make();
         if (tmp->errors)
@@ -193,10 +191,8 @@ void Curvature::loadProgram()
 		GLuint *program = &Parameters::getInstance()->g_programs[PROGRAM_GTCURV];
 
         fprintf (stderr, "loading shading program... "); fflush (stderr);
-        gk::GLCompiler& c = gk::loadProgram( SHADER_PATH("curvature_gt.glsl"));
-        /*c.include(SHADER_PATH("noise.glsl") );
-        c.include(SHADER_PATH("octree_common.glsl") );
-        c.include(SHADER_PATH("ltree.glsl") );*/
+        gk::GLCompiler& c = gk::loadProgram( SHADER_PATH("curvature.glsl"));
+        c.include(SHADER_PATH("gt_include.glsl") );
 		c.include(SHADER_PATH("eigendecomposition.glsl"));
         GLProgram* tmp = c.make();
         if (tmp->errors)
@@ -211,10 +207,8 @@ void Curvature::loadProgram()
 		GLuint *program = &Parameters::getInstance()->g_programs[PROGRAM_HIERARCHCURV];
 
         fprintf (stderr, "loading shading program... "); fflush (stderr);
-        gk::GLCompiler& c = gk::loadProgram( SHADER_PATH("curvature_hierarchique.glsl"));
-        /*c.include(SHADER_PATH("noise.glsl") );
-        c.include(SHADER_PATH("octree_common.glsl") );
-        c.include(SHADER_PATH("ltree.glsl") );*/
+        gk::GLCompiler& c = gk::loadProgram( SHADER_PATH("curvature.glsl"));
+        c.include(SHADER_PATH("hierarch_include.glsl") );
 		c.include(SHADER_PATH("eigendecomposition.glsl"));
         GLProgram* tmp = c.make();
         if (tmp->errors)

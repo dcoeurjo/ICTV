@@ -1,3 +1,4 @@
+
 // Slightly modified version of  Stan Melax's code for 3x3 matrix diagonalization (Thanks Stan!)
 // source: http://www.melax.com/diag.html?attredirects=0
 void getEigenValuesVectors2(float A[3][3], out float Q[3][3], out float vecD[3])
@@ -104,6 +105,85 @@ void getEigenValuesVectors2(float A[3][3], out float Q[3][3], out float vecD[3])
     vecD[1] = D[1][1];
     vecD[2] = D[2][2];
 }
+
+
+void computeK1K2(float volume, float r, 
+         vec3 xyz2, vec3 xy_yz_xz, vec3 xyz,
+         out vec3 minDir, out vec3 maxDir, out vec3 n, out vec3 val, out float k1, out float k2)
+{ 
+  float eigenvectors[3][3];
+  float eigenvalues[3];
+  float curvmat[3][3];
+  
+  int min_i = 0;
+  int max_i = 1;
+  int med_i = 2;
+  
+  float covxy = xy_yz_xz.x - (xyz.x*xyz.y/volume);
+  float covyz = xy_yz_xz.y - (xyz.y*xyz.z/volume);
+  float covxz = xy_yz_xz.z - (xyz.x*xyz.z/volume);
+  
+  //volume = volume;
+  curvmat[0][0] = xyz2.x - ((xyz.x*xyz.x)/(volume)); 
+  curvmat[0][1] = covxy;  
+  curvmat[0][2] = covyz;
+  
+  curvmat[1][0] = covxy; 
+  curvmat[1][1] = xyz2.y - (xyz.y*xyz.y/volume);
+  curvmat[1][2] = covxz;
+  
+  curvmat[2][0] = covxz;
+  curvmat[2][1] = covyz;
+  curvmat[2][2] = xyz2.z - (xyz.z*xyz.z/volume);
+
+  getEigenValuesVectors2( curvmat, eigenvectors, eigenvalues );
+  
+  min_i = 0;
+  if (eigenvalues[1] < eigenvalues[0] && eigenvalues[1] < eigenvalues[2])
+    min_i= 1;
+  if (eigenvalues[2] < eigenvalues[0] && eigenvalues[2] < eigenvalues[1])
+    min_i= 2;
+    
+  n = vec3( eigenvectors[0][min_i], eigenvectors[1][min_i], eigenvectors[2][min_i] );
+  
+  max_i = 0;
+  if (eigenvalues[1] > eigenvalues[0] && eigenvalues[1] > eigenvalues[2])
+      max_i= 1;
+  if (eigenvalues[2] > eigenvalues[0] && eigenvalues[2] > eigenvalues[1])
+      max_i= 2;
+  
+  maxDir = vec3( eigenvectors[0][max_i], eigenvectors[1][max_i], eigenvectors[2][max_i] );
+
+  for(int i=0; i<3; i++)
+  if (min_i != i && max_i != i)
+    med_i = i;
+    
+  minDir = vec3( eigenvectors[0][med_i], eigenvectors[1][med_i], eigenvectors[2][med_i] );
+  
+  float l1 = eigenvalues[med_i];
+  float l2 = eigenvalues[max_i];
+  
+  float pi = 3.14159;
+  float r6 = r*r*r*r*r*r;
+  k1 = (6.0/(pi*r6))*(l2 - 3.0*l1) + (8.0/(5.0*r));
+  k2 = (6.0/(pi*r6))*(l1 - 3.0*l2) + (8.0/(5.0*r));
+  
+  val = vec3( eigenvalues[min_i], eigenvalues[med_i], eigenvalues[max_i] );
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 /*
 void getEigenValuesVectors ( in mat3 mat_data, out mat3 vectors, out vec3 values )
@@ -366,90 +446,52 @@ void getEigenValuesVectors ( in mat3 mat_data, out mat3 vectors, out vec3 values
     
     vectors = mat_data;
 }
-*/
+
 
 void computeK1K2(float volume, float r, 
 				 vec3 xyz2, vec3 xy_yz_xz, vec3 xyz,
 				 out vec3 minDir, out vec3 maxDir, out vec3 n, out vec3 val, out float k1, out float k2)
 {	
-	/*mat3 m_x2;
-	m_x2[0] = vec3(xyz2.x, xy_yz_xz.x, xy_yz_xz.z);
-	m_x2[1] = vec3(xy_yz_xz.x, xyz2.y, xy_yz_xz.y);
-	m_x2[2] = vec3(xy_yz_xz.z, xy_yz_xz.y, xyz2.z);
+	mat3 eigenvectors = mat3(0);
+  vec3 eigenvalues = vec3(0);
+  mat3 curvmat = mat3(0);
 
-	mat3 mx_2;
-	mx_2[0] = vec3(xyz.x*xyz.x, xyz.x*xyz.y, xyz.x*xyz.z);
-	mx_2[1] = vec3(xyz.x*xyz.y, xyz.y*xyz.y, xyz.y*xyz.z);
-	mx_2[2] = vec3(xyz.x*xyz.z, xyz.y*xyz.z, xyz.z*xyz.z);*/
-	
-	/*mat3 eigenvectors = mat3(0);
-	vec3 eigenvalues = vec3(0);
-	mat3 curvmat;*/
-	
-	float eigenvectors[3][3];
-	float eigenvalues[3];
-	float curvmat[3][3];
-	
-	int min_i = 0;
-	int max_i = 0;
-	
-	
+  if (volume > 0.001)
+  {
+    
+    float covxy = xy_yz_xz.x - (xyz.x*xyz.y/volume);
+    float covyz = xy_yz_xz.y - (xyz.y*xyz.z/volume);
+    float covxz = xy_yz_xz.z - (xyz.x*xyz.z/volume);
+    
+    
+    //volume = volume;
+    curvmat[0][0] = xyz2.x - ((xyz.x*xyz.x)/(volume)); 
+    curvmat[0][1] = covxy;  
+    curvmat[0][2] = covyz;
+    
+    curvmat[1][0] = covxy; 
+    curvmat[1][1] = xyz2.y - (xyz.y*xyz.y/volume);
+    curvmat[1][2] = covxz;
+    
+    curvmat[2][0] = covxz;
+    curvmat[2][1] = covyz;
+    curvmat[2][2] = xyz2.z - (xyz.z*xyz.z/volume);
 
-	/*curvmat[0] = vec3( xyz2.x - (xyz.x*xyz.x/volume),		xy_yz_xz.x - (xyz.x*xyz.y/volume) , 	xy_yz_xz.z - (xyz.x*xyz.z/volume) );
-	curvmat[1] = vec3( xy_yz_xz.x - (xyz.x*xyz.y/volume) , 	xyz2.y - (xyz.y*xyz.y/volume) , 		xy_yz_xz.y - (xyz.y*xyz.z/volume) );
-	curvmat[2] = vec3( xy_yz_xz.z - (xyz.x*xyz.z/volume),	xy_yz_xz.y - (xyz.y*xyz.z/volume) , 	xyz2.z - (xyz.z*xyz.z/volume) );*/
-	
-	float covxy = xy_yz_xz.x - (xyz.x*xyz.y/volume);
-	float covyz = xy_yz_xz.y - (xyz.y*xyz.z/volume);
-	float covxz = xy_yz_xz.z - (xyz.x*xyz.z/volume);
-	
-	//volume = volume;
-	curvmat[0][0] = xyz2.x - ((xyz.x*xyz.x)/(volume)); 
-	curvmat[0][1] =	covxy;	
-	curvmat[0][2] = covyz;
-	
-	curvmat[1][0] = covxy; 
-	curvmat[1][1] =	xyz2.y - (xyz.y*xyz.y/volume);
-	curvmat[1][2] = covxz;
-	
-	curvmat[2][0] = covxz;
-	curvmat[2][1] = covyz;
-	curvmat[2][2] = xyz2.z - (xyz.z*xyz.z/volume);
-
-	getEigenValuesVectors2( curvmat, eigenvectors, eigenvalues );
-	
-	min_i = 0;
-	if (eigenvalues[1] < eigenvalues[0] && eigenvalues[1] < eigenvalues[2])
-		min_i= 1;
-	if (eigenvalues[2] < eigenvalues[0] && eigenvalues[2] < eigenvalues[1])
-		min_i= 2;
-		
-	n = vec3( eigenvectors[0][min_i], eigenvectors[1][min_i], eigenvectors[2][min_i] );
-	
-	max_i = 0;
-	if (eigenvalues[1] > eigenvalues[0] && eigenvalues[1] > eigenvalues[2])
-			max_i= 1;
-	if (eigenvalues[2] > eigenvalues[0] && eigenvalues[2] > eigenvalues[1])
-			max_i= 2;
-	maxDir = vec3( eigenvectors[0][max_i], eigenvectors[1][max_i], eigenvectors[2][max_i] );
-
-	int med_i;
-	for(int i=0; i<3; i++)
-	{
-		if (min_i != i && max_i != i)
-		{
-			med_i = i;
-			minDir = vec3( eigenvectors[0][i], eigenvectors[1][i], eigenvectors[2][i] );
-		}
-	}
-	
-	float l1 = eigenvalues[med_i];
-	float l2 = eigenvalues[max_i];
-	
-	float pi = 3.14159;
-	float r6 = r*r*r*r*r*r;
-	k1 = (6.0/(pi*r6))*(l2 - 3.0*l1) + (8.0/(5.0*r));
-	k2 = (6.0/(pi*r6))*(l1 - 3.0*l2) + (8.0/(5.0*r));
-	
-	val = vec3( eigenvalues[min_i], eigenvalues[med_i], eigenvalues[max_i] );
+    getEigenValuesVectors( curvmat, eigenvectors, eigenvalues );
+    
+    n = vec3( eigenvectors[0][0], eigenvectors[1][0], eigenvectors[2][0] );
+    maxDir = vec3( eigenvectors[0][2], eigenvectors[1][2], eigenvectors[2][2] );
+    minDir = vec3( eigenvectors[0][1], eigenvectors[1][1], eigenvectors[2][1] );
+    
+    float l1 = eigenvalues[1];
+    float l2 = eigenvalues[2];
+    
+    float pi = 3.14159;
+    float r6 = r*r*r*r*r*r;
+    k1 = (6.0/(pi*r6))*(l2 - 3.0*l1) + (8.0/(5.0*r));
+    k2 = (6.0/(pi*r6))*(l1 - 3.0*l2) + (8.0/(5.0*r));
+    
+    val = vec3( eigenvalues[0], eigenvalues[1], eigenvalues[2] );
+  }
 }
+*/
