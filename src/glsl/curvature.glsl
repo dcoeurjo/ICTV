@@ -44,8 +44,15 @@ void main( )
 		curv_value = k1;
 	else if(u_curv_val == 4)
 		curv_value = k2;
+		
+	/*float r = u_curv_radius;
+	float fact83r = 8.0/(3.0*r);
+	float fact4pir4 = 4.0 / (3.14159*r*r*r*r);
+	float curvature = fact83r - fact4pir4*volume;
+	curv_value = curvature;*/
 
-	vertex_color = vec3(1);
+	//vertex_color = vec3(1);
+	vertex_color = xyz2/(65.0*65.0);
 	
     gl_Position = position;
 }
@@ -429,7 +436,7 @@ void main( )
 		color = abs(geometry_color);
 	
 	//Phong
-	float shadow_weight = 0.5;
+	float shadow_weight = 0;
 	float dotnormal = clamp(dot(normalize(geometry_normal), normalize(vec3(1, 1, 1))), 0, 1);
 	fragment_color = vec4( shadow_weight * color * dotnormal + (1-shadow_weight) * color, 1);
 

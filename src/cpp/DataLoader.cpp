@@ -2,6 +2,8 @@
 
 #include "GL/GLTexture.h"
 
+#include <cstring>
+
 const GLenum MIN_FILT = GL_LINEAR_MIPMAP_LINEAR;
 const GLenum MAG_FILT = GL_LINEAR;
 //const GLenum MIN_FILT = GL_NEAREST_MIPMAP_NEAREST;
@@ -41,6 +43,32 @@ void DataLoader::loadData8BGpu()
 	glBindTexture(GL_TEXTURE_3D, 0);
 }
 
+void loadNxtMipmap(int size, float* texture, float** miptexture)
+{
+	int sizemip = size/2;
+	printf("sizemip %d\n", sizemip);
+	
+	*miptexture = (float*)malloc(sizeof(float)*sizemip*sizemip*sizemip*3);
+	memset(*miptexture, 0, sizeof(float)*sizemip*sizemip*sizemip*3);
+	
+	int nb = 0;
+	for(int k=0; k<size; k++)
+	for(int j=0; j<size; j++)
+	for(int i=0; i<size; i++)
+	{
+		int mip_i = i/2;
+		int mip_j = j/2;
+		int mip_k = k/2;
+		
+		int off = (mip_k*sizemip+mip_j)*sizemip+mip_i;
+		
+		(*miptexture)[off*3] += texture[nb*3];
+		(*miptexture)[off*3+1] += texture[nb*3+1];
+		(*miptexture)[off*3+2] += texture[nb*3+2];
+		nb++;
+	}
+}
+
 void DataLoader::loadx2y2z2()
 {
 	float* mmt;
@@ -70,13 +98,26 @@ void DataLoader::loadx2y2z2()
 	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 	
-	glTexImage3D(GL_TEXTURE_3D, 0, GL_RGB32F, sizex, sizey, sizez, 0, GL_RGB, GL_FLOAT, mmt);
+	int lvl = 0;
+	glTexImage3D(GL_TEXTURE_3D, lvl++, GL_RGB32F, sizex, sizey, sizez, 0, GL_RGB, GL_FLOAT, mmt);
+	
+	int size = sizex;
+	float *mip0, *mip1;
+	mip1 = mmt;
+	while(size >= 1)
+	{
+		loadNxtMipmap(size, mip1, &mip0);
+		size = size/2;
+		glTexImage3D(GL_TEXTURE_3D, lvl++, GL_RGB32F, size, size, size, 0, GL_RGB, GL_FLOAT, mip0);
+		free(mip1);
+		mip1 = mip0;
+	}
+	free(mip0);
+	
 	//glTexImage3D(GL_TEXTURE_3D, 0, GL_RGB32UI, sizex, sizey, sizez, 0, GL_RGB_INTEGER, GL_UNSIGNED_INT, mmt);
-    glGenerateMipmap(GL_TEXTURE_3D);
+    //glGenerateMipmap(GL_TEXTURE_3D);
 	
 	glBindTexture(GL_TEXTURE_3D, 0);
-	
-	free(mmt);
 }
 
 
@@ -109,13 +150,25 @@ void DataLoader::loadxyyzxz()
 	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 	
-	glTexImage3D(GL_TEXTURE_3D, 0, GL_RGB32F, sizex, sizey, sizez, 0, GL_RGB, GL_FLOAT, mmt);
-	//glTexImage3D(GL_TEXTURE_3D, 0, GL_RGB32UI, sizex, sizey, sizez, 0, GL_RGB_INTEGER, GL_UNSIGNED_INT, mmt);
-    glGenerateMipmap(GL_TEXTURE_3D);
+	int lvl = 0;
+	glTexImage3D(GL_TEXTURE_3D, lvl++, GL_RGB32F, sizex, sizey, sizez, 0, GL_RGB, GL_FLOAT, mmt);
+	
+	int size = sizex;
+	float *mip0, *mip1;
+	mip1 = mmt;
+	while(size >= 1)
+	{
+		loadNxtMipmap(size, mip1, &mip0);
+		size = size/2;
+		glTexImage3D(GL_TEXTURE_3D, lvl++, GL_RGB32F, size, size, size, 0, GL_RGB, GL_FLOAT, mip0);
+		free(mip1);
+		mip1 = mip0;
+	}
+	free(mip0);
 	
 	glBindTexture(GL_TEXTURE_3D, 0);
 	
-	free(mmt);
+	//free(mmt);
 }
 
 void DataLoader::loadxyz()
@@ -132,6 +185,11 @@ void DataLoader::loadxyz()
 		float norm_j = j;
 		float norm_k = k;
 		
+		/*
+		mmt[nb*3] = norm_i;
+		mmt[nb*3 + 1] = norm_j;
+		mmt[nb*3 + 2] = norm_k;
+		*/
 		mmt[nb*3] = norm_i*data[nb];
 		mmt[nb*3 + 1] = norm_j*data[nb];
 		mmt[nb*3 + 2] = norm_k*data[nb];
@@ -147,13 +205,25 @@ void DataLoader::loadxyz()
 	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 	
-	glTexImage3D(GL_TEXTURE_3D, 0, GL_RGB32F, sizex, sizey, sizez, 0, GL_RGB, GL_FLOAT, mmt);
-	//glTexImage3D(GL_TEXTURE_3D, 0, GL_RGB32I, sizex, sizey, sizez, 0, GL_RGB_INTEGER, GL_INT, mmt);
-        glGenerateMipmap(GL_TEXTURE_3D);
+	int lvl = 0;
+	glTexImage3D(GL_TEXTURE_3D, lvl++, GL_RGB32F, sizex, sizey, sizez, 0, GL_RGB, GL_FLOAT, mmt);
+	
+	int size = sizex;
+	float *mip0, *mip1;
+	mip1 = mmt;
+	while(size >= 1)
+	{
+		loadNxtMipmap(size, mip1, &mip0);
+		size = size/2;
+		glTexImage3D(GL_TEXTURE_3D, lvl++, GL_RGB32F, size, size, size, 0, GL_RGB, GL_FLOAT, mip0);
+		free(mip1);
+		mip1 = mip0;
+	}
+	free(mip0);
 	
 	glBindTexture(GL_TEXTURE_3D, 0);
 	
-	free(mmt);
+	//free(mmt);
 }
 
 

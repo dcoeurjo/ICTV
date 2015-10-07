@@ -49,7 +49,7 @@ void main( )
 				xyz2, xy_yz_xz, xyz,
 				curv_dir_min, curv_dir_max, curv_normale, values, k1, k2);
 	
-	curv_value = curvature;
+	//curv_value = curvature;
 	vertex_color = curv_normale;
 	
     gl_Position = position;
