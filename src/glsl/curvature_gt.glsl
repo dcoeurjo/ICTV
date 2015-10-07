@@ -86,7 +86,7 @@ void main( )
 	//vertex_color = vec3(int(xyz.x*xyz.x)/(32.0*32.0), 0, 0);//vec3( xyz2.x - (xyz.x*xyz.x), 0, 0 );
 	//vertex_color = vec3(int(xyz2.x)/(32.0*32.0), 0, 0);
 	
-	vertex_color = curv_normale;
+	//vertex_color = curv_normale;
 	
 	//if(xyz.x == 15.5)
 	//if(xyz2.x == 240.5)
@@ -170,7 +170,7 @@ void main()
 		//gl_PrimitiveID = int( length(center)*1000 );
 		geometry_color = vertex_color[i];
 		geometry_curv_value = curv_value[i];
-		geometry_curvdir = 1;
+		geometry_curvdir = 0;
 		gl_Position = transformed[i];
 		EmitVertex();
 	}

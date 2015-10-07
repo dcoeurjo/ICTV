@@ -65,19 +65,21 @@ void GPUOctree::loadBuffers()
         //const size_t cap = 1 << 28;
 		
 		size_t full_tree = 1;
-		for(int i=1; i<=8;i++) //12 levels to store of 2^i cells each
+		for(int i=1; i<=8;i++) //8 levels to store of 2^i cells each
 			full_tree += std::pow(2, (3*i));
-		printf("LOD CAPACITY %lu\n", full_tree);
 		
-		size_t full_tree_cap = full_tree * sizeof(float)*2; //2 float for each
+		size_t full_tree_cap = full_tree * sizeof(float) * 8.0; //2 vec4 for each
+		
+		printf("LOD CAPACITY %lu (%lu)\n", full_tree, full_tree_cap);
 		
 		size_t tr_cells = 1;
-		tr_cells = full_tree >> 4; //a lot less than tree cells
+		tr_cells = full_tree/1000.0; //a lot less than tree cells
 		printf("TR CAPACITY %lu\n", tr_cells);
 		
-		size_t tr_cells_cap = tr_cells * sizeof(float)*2; //2 float for each
-		size_t tr_neighbours = tr_cells * sizeof(float)*3; //3 float for each
-		size_t full_neighbours = full_tree * sizeof(float)*3; //3 float for each
+		size_t tr_cells_cap = tr_cells * sizeof(float)*8; //2 vec4 for each
+		
+		size_t tr_neighbours = tr_cells * sizeof(float)*4; //1 vec4 for each
+		size_t full_neighbours = full_tree * sizeof(float)*4; //1 vec4 for each
 		
 		glGenBuffers (1, &Parameters::getInstance()->g_buffers[BUFFER_FRUSTUM]);
 			glBindBuffer (GL_ARRAY_BUFFER, Parameters::getInstance()->g_buffers[BUFFER_FRUSTUM]);
@@ -145,7 +147,7 @@ void GPUOctree::loadBuffers()
 			glBindBuffer (GL_ARRAY_BUFFER, Parameters::getInstance()->g_buffers[BUFFER_CODE]);
 			glBufferData (
 					GL_ARRAY_BUFFER,
-					tr_neighbours,
+					full_neighbours,
 					NULL,
 					GL_DYNAMIC_COPY
 			);

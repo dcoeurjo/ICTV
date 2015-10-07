@@ -198,8 +198,8 @@ void list_indices_tr(std::vector<unsigned int>& id_list)
 }
 void TransitionTriangulation::loadBuffers()
 {
-	long long int nb_cells = 1e5;
-	long long int tgl_number = 1e6;
+	int res = (int)Parameters::getInstance()->g_tessel;
+	long long int nb_cells = 10000*res*res*res;
 	
 	glGenBuffers (1, &Parameters::getInstance()->g_buffers[BUFFER_INDIRECT_DRAWS_TR]);
 	glBindBuffer (GL_ARRAY_BUFFER, Parameters::getInstance()->g_buffers[BUFFER_INDIRECT_DRAWS_TR]);
@@ -215,7 +215,7 @@ void TransitionTriangulation::loadBuffers()
 	
 	glGenBuffers (1, &Parameters::getInstance()->g_buffers[BUFFER_VERTICES_TR]);
         glBindBuffer (GL_TRANSFORM_FEEDBACK_BUFFER, Parameters::getInstance()->g_buffers[BUFFER_VERTICES_TR]);
-        glBufferData (GL_TRANSFORM_FEEDBACK_BUFFER, tgl_number*3*sizeof(float), NULL, GL_DYNAMIC_COPY);
+        glBufferData (GL_TRANSFORM_FEEDBACK_BUFFER, nb_cells*4*12*sizeof(float), NULL, GL_DYNAMIC_COPY);
         glBindBuffer(GL_TRANSFORM_FEEDBACK_BUFFER, 0);
 	
 }
