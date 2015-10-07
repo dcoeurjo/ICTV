@@ -2,8 +2,10 @@
 
 #include "GL/GLTexture.h"
 
-const GLenum MIN_FILT = GL_NEAREST_MIPMAP_NEAREST;
-const GLenum MAG_FILT = GL_NEAREST;
+const GLenum MIN_FILT = GL_LINEAR_MIPMAP_LINEAR;
+const GLenum MAG_FILT = GL_LINEAR;
+//const GLenum MIN_FILT = GL_NEAREST_MIPMAP_NEAREST;
+//const GLenum MAG_FILT = GL_NEAREST;
 
 void DataLoader::loadData32BGpu()
 {
@@ -49,16 +51,13 @@ void DataLoader::loadx2y2z2()
 	for(unsigned int j=0; j<sizey; j++)
 	for(unsigned int i=0; i<sizex; i++)
 	{
-		/*float norm_i = (float)i/(float)sizex;
-		float norm_j = (float)j/(float)sizey;
-		float norm_k = (float)k/(float)sizez;*/
 		float norm_i = i;
 		float norm_j = j;
 		float norm_k = k;
 		
-		mmt[nb*3] = norm_i*norm_i;
-		mmt[nb*3 + 1] = norm_j*norm_j;
-		mmt[nb*3 + 2] = norm_k*norm_k;
+		mmt[nb*3] = norm_i*norm_i*data[nb];
+		mmt[nb*3 + 1] = norm_j*norm_j*data[nb];
+		mmt[nb*3 + 2] = norm_k*norm_k*data[nb];
 		nb++;
 	}
 	
@@ -91,16 +90,13 @@ void DataLoader::loadxyyzxz()
 	for(unsigned int j=0; j<sizey; j++)
 	for(unsigned int i=0; i<sizex; i++)
 	{
-		/*float norm_i = (float)i/(float)sizex;
-		float norm_j = (float)j/(float)sizey;
-		float norm_k = (float)k/(float)sizez;*/
 		float norm_i = i;
 		float norm_j = j;
 		float norm_k = k;
 		
-		mmt[nb*3] = norm_i*norm_j;
-		mmt[nb*3 + 1] = norm_j*norm_k;
-		mmt[nb*3 + 2] = norm_k*norm_i;
+		mmt[nb*3] = norm_i*norm_j*data[nb];
+		mmt[nb*3 + 1] = norm_j*norm_k*data[nb];
+		mmt[nb*3 + 2] = norm_k*norm_i*data[nb];
 		nb++;
 	}
 	
@@ -132,16 +128,13 @@ void DataLoader::loadxyz()
 	for(unsigned int j=0; j<sizey; j++)
 	for(unsigned int i=0; i<sizex; i++)
 	{
-		/*float norm_i = (float)i/(float)sizex;
-		float norm_j = (float)j/(float)sizey;
-		float norm_k = (float)k/(float)sizez;*/
 		float norm_i = i;
 		float norm_j = j;
 		float norm_k = k;
 		
-		mmt[nb*3] = norm_i;
-		mmt[nb*3 + 1] = norm_j;
-		mmt[nb*3 + 2] = norm_k;
+		mmt[nb*3] = norm_i*data[nb];
+		mmt[nb*3 + 1] = norm_j*data[nb];
+		mmt[nb*3 + 2] = norm_k*data[nb];
 		nb++;
 	}
 	
