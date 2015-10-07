@@ -70,6 +70,7 @@ public:
     float g_curvmin;
     float g_curvmax;
 	float g_curv_dir;
+	float g_curv_val;
     int g_sizetex;
 
     float g_ground_truth;

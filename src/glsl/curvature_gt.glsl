@@ -10,6 +10,7 @@ uniform sampler3D densities;
 uniform sampler3D u_xyz2_tex;
 uniform sampler3D u_xy_yz_xz_tex;
 uniform sampler3D u_xyz_tex;
+uniform int u_curv_val;
 
 out vec3 vertex_position;
 out vec3 vertex_color;
@@ -77,8 +78,10 @@ void main( )
 				xyz2, xy_yz_xz, xyz,
 				curv_dir_min, curv_dir_max, curv_normale, values, k1, k2);
 	
-	//curv_value = (k1+k2)/2.0;
-	//curv_value = k1*k2;
+	if (u_curv_val == 1)
+		curv_value = (k1+k2)/2.0;
+	else if(u_curv_val == 2)
+		curv_value = k1*k2;
 		
 	//vertex_color = vec3(int(xyz.x*xyz.x)/(32.0*32.0), 0, 0);//vec3( xyz2.x - (xyz.x*xyz.x), 0, 0 );
 	//vertex_color = vec3(int(xyz2.x)/(32.0*32.0), 0, 0);
@@ -114,7 +117,7 @@ out vec3 geometry_position;
 out vec3 geometry_normal;
 out vec3 geometry_view;
 out vec3 geometry_distance;
-out vec3 geometry_color;
+out flat vec3 geometry_color;
 out float geometry_curv_value;
 out flat int geometry_curvdir;
 
@@ -167,7 +170,7 @@ void main()
 		//gl_PrimitiveID = int( length(center)*1000 );
 		geometry_color = vertex_color[i];
 		geometry_curv_value = curv_value[i];
-		geometry_curvdir = 0;
+		geometry_curvdir = 1;
 		gl_Position = transformed[i];
 		EmitVertex();
 	}
@@ -307,6 +310,73 @@ void main()
 		
 		EndPrimitive();
 	}
+	
+	if (u_curv_dir == 3)
+	{
+		vec3 mean_dir = (curv_normale[0]+curv_normale[1]+curv_normale[2]);
+		mean_dir = normalize(mean_dir);
+		vec3 center_face = (pts[0].xyz+pts[1].xyz+pts[2].xyz)/3.0;
+		vec3 normale = normalize(cross(normalize(pts[0]-pts[1]).xyz, 
+							normalize(pts[0]-pts[2]).xyz));
+		vec3 tan_dir = normalize(cross(normalize(normale), normalize(mean_dir)));
+		vec3 depth = normalize(cross(normalize(tan_dir), normalize(mean_dir)));
+		
+		float l = 2.0;
+		float L = 16.0;
+		float p = 1.0;
+		
+		vec3 middle_geom = center_face + normale;
+		vec3 up_geom = middle_geom+mean_dir*0.5*L;
+		vec3 bottom_geom = middle_geom-mean_dir*0.5*L;
+		vec3 right_geom = middle_geom+tan_dir*0.5*l;
+		vec3 left_geom = middle_geom-tan_dir*0.5*l;
+		
+		vec3 c0 = (right_geom+up_geom)/2.0;
+		vec3 c1 = (left_geom+up_geom)/2.0;
+		vec3 c2 = (right_geom+bottom_geom)/2.0;
+		vec3 c3 = (left_geom+bottom_geom)/2.0;
+		
+		vec3 c4 = c0+p*depth;
+		vec3 c5 = c1+p*depth;
+		vec3 c6 = c2+p*depth;
+		vec3 c7 = c3+p*depth;
+		
+		vec3 shade = vec3(0, 0, 1);
+		setPoint(c0, shade);
+		EmitVertex();
+		setPoint(c1, shade);
+		EmitVertex();
+		setPoint(c2, shade);
+		EmitVertex();
+		setPoint(c3, shade);
+		EmitVertex();
+		
+		setPoint(c7, shade);
+		EmitVertex();
+		setPoint(c1, shade);
+		EmitVertex();
+		setPoint(c5, shade);
+		EmitVertex();
+		setPoint(c4, shade);
+		EmitVertex();
+		
+		setPoint(c7, shade);
+		EmitVertex();
+		setPoint(c6, shade);
+		EmitVertex();
+		setPoint(c2, shade);
+		EmitVertex();
+		
+		setPoint(c4, shade);
+		EmitVertex();
+		setPoint(c0, shade);
+		EmitVertex();
+		setPoint(c1, shade);
+		EmitVertex();
+		
+		
+		EndPrimitive();
+	}
 }
 
 #endif
@@ -319,13 +389,13 @@ in vec3 geometry_position;
 in vec3 geometry_distance;
 //in vec3 geometry_view;
 in float geometry_curv_value;
-in vec3 geometry_color;
+in flat vec3 geometry_color;
 in flat int geometry_curvdir;
 
 uniform float u_kmin;
 uniform float u_kmax;
 uniform int solid_wireframe;
-uniform vec3 u_camera_pos;
+uniform int u_curv_val;
 
 out vec4 fragment_color;
 
@@ -381,15 +451,20 @@ void main( )
 {
 	vec3 geometry_normal = -1 * normalize(cross( dFdx(geometry_position.xyz), dFdy(geometry_position.xyz)));
 	vec3 color;
-	//if (geometry_curvdir == 0)
-	//	color = colorFromCurv(geometry_curv_value);
-	//else
+	if (geometry_curvdir == 0)
+	{
+		if (u_curv_val != 0)
+			color = colorFromCurv(geometry_curv_value);
+		else
+			color = vec3(1);
+	}
+	else
 		color = abs(geometry_color);
 	
 	//Phong
 	float shadow_weight = 0.5;
 	float dotnormal = abs(dot(normalize(geometry_normal), vec3(-1, -1, -1)));
-	fragment_color = vec4(color, 1);//vec4( shadow_weight * color * dotnormal + (1-shadow_weight) * color, 1);
+	fragment_color = vec4( shadow_weight * color * dotnormal + (1-shadow_weight) * color, 1);
 
 	if (geometry_curvdir == 0 && solid_wireframe == 1)
 	{

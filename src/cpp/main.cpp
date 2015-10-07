@@ -634,9 +634,12 @@ public:
 				sprintf(tmp, "Mode:\nMean GT (1)\nMean GT hierachique (2)\nMean Approx (3)\nCurrent %d", (int)Parameters::getInstance()->g_ground_truth);
 				m_widgets.doLabel(nv::Rect(), tmp);
 				m_widgets.doHorizontalSlider(nv::Rect(0,0, 200, 0), 1.1, 3.9, &(Parameters::getInstance()->g_ground_truth));
-				sprintf(tmp, "Mode:\nNo curvature directions (0)\nMin curvature directions (1)\nMax curvature directions (2)\nCurrent %d", (int)Parameters::getInstance()->g_curv_dir);
+				sprintf(tmp, "Mode:\nNone (0)\nMean curvature (1)\nGaussian curvature (2)\nCurrent %d", (int)Parameters::getInstance()->g_curv_val);
 				m_widgets.doLabel(nv::Rect(), tmp);
-				m_widgets.doHorizontalSlider(nv::Rect(0,0, 200, 0), 0, 3.f, &(Parameters::getInstance()->g_curv_dir));
+				m_widgets.doHorizontalSlider(nv::Rect(0,0, 200, 0), 0.1, 2.9, &(Parameters::getInstance()->g_curv_val));
+				sprintf(tmp, "Mode:\nNo curvature directions (0)\nMin curvature directions (1)\nMax curvature directions (2)\nNormales (3)\nCurrent %d", (int)Parameters::getInstance()->g_curv_dir);
+				m_widgets.doLabel(nv::Rect(), tmp);
+				m_widgets.doHorizontalSlider(nv::Rect(0,0, 200, 0), 0.1f, 3.9f, &(Parameters::getInstance()->g_curv_dir));
 				sprintf(tmp, "Ball Radius %.2f", Parameters::getInstance()->g_curvradius);
 				m_widgets.doLabel(nv::Rect(), tmp);
 				m_widgets.doHorizontalSlider(nv::Rect(0,0, 200, 0), 1.f, 30.f, &(Parameters::getInstance()->g_curvradius));
