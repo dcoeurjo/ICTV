@@ -40,8 +40,12 @@ void main( )
 		curv_value = (k1+k2)/2.0;
 	else if(u_curv_val == 2)
 		curv_value = (k1*k2);
+	else if(u_curv_val == 3)
+		curv_value = k1;
+	else if(u_curv_val == 4)
+		curv_value = k2;
 
-	vertex_color = curv_normale;
+	vertex_color = vec3(1);
 	
     gl_Position = position;
 }
@@ -306,7 +310,7 @@ void main()
 		vec3 c6 = c2+p*depth;
 		vec3 c7 = c3+p*depth;
 		
-		vec3 shade = vec3(0);
+		vec3 shade = mean_dir;
 		setPoint(c0, shade);
 		EmitVertex();
 		setPoint(c1, shade);
