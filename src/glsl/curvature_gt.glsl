@@ -49,9 +49,12 @@ void main( )
 			float val = textureLod(densities, vertex_position + (probe/size_obj), 0).r;
 			volume += val;
 			//vec3 t = (vertex_position + (probe/size_obj))*size_obj;
-			xyz += textureLod(u_xyz_tex, vertex_position + (probe/size_obj), 0).rgb * val;
-			xyz2 += textureLod(u_xyz2_tex, vertex_position + (probe/size_obj), 0).rgb * val;
-			xy_yz_xz += textureLod(u_xy_yz_xz_tex, vertex_position + (probe/size_obj), 0).rgb * val;
+			if (val == 1)
+			{
+				xyz += textureLod(u_xyz_tex, vertex_position + (probe/size_obj), 0).rgb;
+				xyz2 += textureLod(u_xyz2_tex, vertex_position + (probe/size_obj), 0).rgb;
+				xy_yz_xz += textureLod(u_xy_yz_xz_tex, vertex_position + (probe/size_obj), 0).rgb;
+			}
 			//xyz += vertex_position*size_obj;//textureLod(u_xyz_tex, vertex_position + (probe/size_obj), 0).rgb * val;
 			nb_probe++;
 		}
@@ -86,7 +89,7 @@ void main( )
 	//vertex_color = vec3(int(xyz.x*xyz.x)/(32.0*32.0), 0, 0);//vec3( xyz2.x - (xyz.x*xyz.x), 0, 0 );
 	//vertex_color = vec3(int(xyz2.x)/(32.0*32.0), 0, 0);
 	
-	//vertex_color = curv_normale;
+	vertex_color = normalize(curv_normale);
 	
 	//if(xyz.x == 15.5)
 	//if(xyz2.x == 240.5)
@@ -179,11 +182,16 @@ void main()
 	
 	if (u_curv_dir == 1)
 	{
-		vec3 mean_dir = (curv_dir_min[0]+curv_dir_min[1]+curv_dir_min[2]);
+		vec3 mean_dir = curv_dir_min[0];
+		for(int i=1; i<3; i++)
+			if (dot(normalize(curv_dir_min[0]), normalize(curv_dir_min[i])) > 0)
+				mean_dir += curv_dir_min[i];
+			else
+				mean_dir -= curv_dir_min[i];
 		mean_dir = normalize(mean_dir);
+		
 		vec3 center_face = (pts[0].xyz+pts[1].xyz+pts[2].xyz)/3.0;
-		vec3 normale = normalize(cross(normalize(pts[0]-pts[1]).xyz, 
-							normalize(pts[0]-pts[2]).xyz));
+		vec3 normale = normalize(cross(normalize(pts[0]-pts[1]).xyz, normalize(pts[0]-pts[2]).xyz));
 		vec3 tan_dir = normalize(cross(normalize(normale), normalize(mean_dir)));
 		vec3 depth = normalize(cross(normalize(tan_dir), normalize(mean_dir)));
 		
@@ -191,7 +199,7 @@ void main()
 		float L = 16.0;
 		float p = 1.0;
 		
-		vec3 middle_geom = center_face + normale;
+		vec3 middle_geom = center_face;
 		vec3 up_geom = middle_geom+mean_dir*0.5*L;
 		vec3 bottom_geom = middle_geom-mean_dir*0.5*L;
 		vec3 right_geom = middle_geom+tan_dir*0.5*l;
@@ -246,7 +254,12 @@ void main()
 	
 	if (u_curv_dir == 2)
 	{
-		vec3 mean_dir = (curv_dir_max[0]+curv_dir_max[1]+curv_dir_max[2]);
+		vec3 mean_dir = curv_dir_max[0];
+		for(int i=1; i<3; i++)
+			if (dot(normalize(curv_dir_max[0]), normalize(curv_dir_max[i])) > 0)
+				mean_dir += curv_dir_max[i];
+			else
+				mean_dir -= curv_dir_max[i];
 		mean_dir = normalize(mean_dir);
 		vec3 center_face = (pts[0].xyz+pts[1].xyz+pts[2].xyz)/3.0;
 		vec3 normale = normalize(cross(normalize(pts[0]-pts[1]).xyz, 
@@ -258,7 +271,7 @@ void main()
 		float L = 16.0;
 		float p = 1.0;
 		
-		vec3 middle_geom = center_face + normale;
+		vec3 middle_geom = center_face;
 		vec3 up_geom = middle_geom+mean_dir*0.5*L;
 		vec3 bottom_geom = middle_geom-mean_dir*0.5*L;
 		vec3 right_geom = middle_geom+tan_dir*0.5*l;
@@ -313,19 +326,24 @@ void main()
 	
 	if (u_curv_dir == 3)
 	{
-		vec3 mean_dir = (curv_normale[0]+curv_normale[1]+curv_normale[2]);
+		vec3 mean_dir = curv_normale[0];
+		for(int i=1; i<3; i++)
+			if (dot(normalize(curv_normale[0]), normalize(curv_normale[i])) > 0)
+				mean_dir += curv_normale[i];
+			else
+				mean_dir -= curv_normale[i];
 		mean_dir = normalize(mean_dir);
 		vec3 center_face = (pts[0].xyz+pts[1].xyz+pts[2].xyz)/3.0;
 		vec3 normale = normalize(cross(normalize(pts[0]-pts[1]).xyz, 
 							normalize(pts[0]-pts[2]).xyz));
-		vec3 tan_dir = normalize(cross(normalize(normale), normalize(mean_dir)));
+		vec3 tan_dir = normalize(cross(normalize(normale), normalize(pts[0]-pts[2]).xyz));
 		vec3 depth = normalize(cross(normalize(tan_dir), normalize(mean_dir)));
 		
 		float l = 2.0;
 		float L = 16.0;
 		float p = 1.0;
 		
-		vec3 middle_geom = center_face + normale;
+		vec3 middle_geom = center_face+normale;
 		vec3 up_geom = middle_geom+mean_dir*0.5*L;
 		vec3 bottom_geom = middle_geom-mean_dir*0.5*L;
 		vec3 right_geom = middle_geom+tan_dir*0.5*l;
@@ -341,7 +359,7 @@ void main()
 		vec3 c6 = c2+p*depth;
 		vec3 c7 = c3+p*depth;
 		
-		vec3 shade = vec3(0, 0, 1);
+		vec3 shade = vec3(0);
 		setPoint(c0, shade);
 		EmitVertex();
 		setPoint(c1, shade);
@@ -456,7 +474,7 @@ void main( )
 		if (u_curv_val != 0)
 			color = colorFromCurv(geometry_curv_value);
 		else
-			color = vec3(1);
+			color = abs(geometry_color);
 	}
 	else
 		color = abs(geometry_color);

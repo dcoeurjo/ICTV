@@ -26,7 +26,7 @@ const GLushort g_cubeIndexes[] = { 0,1,1,2,2,3,3,0,   // front
 
 void streamFrustum (void) 
 {
-        #define STREAM_BUFFER_BYTE_SIZE (1 << 10)
+        #define STREAM_BUFFER_BYTE_SIZE (1 << 8)
         const int mapflags = GL_MAP_WRITE_BIT | GL_MAP_UNSYNCHRONIZED_BIT;
         const int stream_byte_size = sizeof (Parameters::getInstance()->g_transforms);
         static int buffer_byte_offset = STREAM_BUFFER_BYTE_SIZE;
