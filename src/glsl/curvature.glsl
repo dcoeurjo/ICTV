@@ -51,8 +51,8 @@ void main( )
 	float curvature = fact83r - fact4pir4*volume;
 	curv_value = curvature;*/
 
-	//vertex_color = vec3(1);
-	vertex_color = xyz2/(65.0*65.0);
+	vertex_color = vec3(1);
+	//vertex_color = xyz2/(65.0*65.0);
 	
     gl_Position = position;
 }
