@@ -11,6 +11,7 @@ out float curv_value;
 out vec3 curv_dir_min;
 out vec3 curv_dir_max;
 out vec3 curv_normale;
+out vec2 vertex_k1_k2;
 
 uniform vec3 u_scene_size;
 
@@ -36,6 +37,7 @@ void main( )
 				xyz2, xy_yz_xz, xyz,
 				curv_dir_min, curv_dir_max, curv_normale, values, k1, k2);
 	
+	curv_value = 0;
 	if(u_curv_val == 1)
 		curv_value = (k1+k2)/2.0;
 	else if(u_curv_val == 2)
@@ -44,6 +46,9 @@ void main( )
 		curv_value = k1;
 	else if(u_curv_val == 4)
 		curv_value = k2;
+		
+	vertex_k1_k2.x = k1;
+	vertex_k1_k2.y = k2;
 		
 	/*float r = u_curv_radius;
 	float fact83r = 8.0/(3.0*r);
@@ -63,10 +68,11 @@ void main( )
 #define TRANSFORMS_BINDING 0
 
 layout (triangles) in;
-layout (triangle_strip, max_vertices = 50) out;
+layout (triangle_strip, max_vertices = 30) out;
 
 uniform int u_curv_dir;
 
+in vec2 vertex_k1_k2[];
 in vec3 vertex_position[];
 in vec3 vertex_color[];
 in vec3 curv_dir_max[];
@@ -74,7 +80,11 @@ in vec3 curv_dir_min[];
 in vec3 curv_normale[];
 in float curv_value[];
 
+out vec2 geometry_k1_k2;
+out vec3 geometry_min_dir;
+out vec3 geometry_max_dir;
 out vec3 geometry_position;
+
 out vec3 geometry_normal;
 out vec3 geometry_view;
 out vec3 geometry_distance;
@@ -125,10 +135,15 @@ void main()
 	{
 		geometry_distance = vec3(0);
 		geometry_distance[i] = area * inversesqrt (dot (v[i],v[i]));
-		geometry_position = vertex_position[i].xyz;
 		geometry_color = vertex_color[i];
 		geometry_curv_value = curv_value[i];
 		geometry_curvdir = 0;
+		
+		geometry_k1_k2 = vertex_k1_k2[i];
+		geometry_min_dir = curv_dir_min[i].xyz;
+		geometry_max_dir = curv_dir_max[i].xyz;
+		geometry_position = vertex_position[i].xyz;
+		
 		gl_Position = transformed[i];
 		EmitVertex();
 	}
@@ -359,10 +374,16 @@ void main()
 
 layout(early_fragment_tests) in;
 
+in vec2 geometry_k1_k2;
+in vec3 geometry_min_dir;
+in vec3 geometry_max_dir;
 in vec3 geometry_position;
+
+in vec3 geometry_normal;
+in vec3 geometry_view;
 in vec3 geometry_distance;
-in float geometry_curv_value;
 in vec3 geometry_color;
+in float geometry_curv_value;
 in flat int geometry_curvdir;
 
 uniform float u_kmin;

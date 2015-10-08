@@ -290,7 +290,7 @@ public:
 			perror("fopen");
 		
 		//fprintf(plotfd, "# Frame \t\t TotalCells \t\t RegCells \t\t TrCells \t\t Tgl \t\t LodTime (ms) \t\t CullTime (ms) \t\t RegTglTime (ms) \t\t TrTglTime (ms)\t\t ShadingTime (ms)\t\t ShdLessTime (ms)\t\t TotalTime (ms) \t\t Cpu Time (ns)\n");
-		fprintf(plotfd, "Vertex \t\t\t Curvature\n");
+		fprintf(plotfd, "#Vertex \t\tK1 \tK2 \tDir Min \t\tDir Max\n");
 		
 		if (Parameters::getInstance()->g_controls == true)
 			load_quatPoint(cam);
@@ -385,7 +385,7 @@ public:
 				printf("Exporting ...\n");
 				printf(" [1/2] Copying from the GPU ... \n ");
 				
-				int size_data = 3+1; //3 float pour le vertex + 1 float pour la courbure
+				int size_data = 3+2+3+3; //vec3 pos, vec2 k1k2, vec3 min_dir, vec3 max_dir
 				int size_totale = sizeof(float)*3*triangles_regular*size_data; //3 vertex/triangles
 				glBindBuffer(GL_ARRAY_BUFFER, Parameters::getInstance()->g_buffers[BUFFER_TRIANGULATION]);
 				float* data = (float*)malloc(size_totale);
@@ -404,7 +404,7 @@ public:
 					for(int j=0; j<3; j++)
 					{
 						for(int d=0; d<size_data; d++)
-							fprintf(plotfd, "%.2lf\t", data[nb++]);
+							fprintf(plotfd, "%.4lf\t", data[nb++]);
 						fprintf(plotfd, "\n");
 					}
 				}

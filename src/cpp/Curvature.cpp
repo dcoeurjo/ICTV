@@ -171,8 +171,8 @@ void Curvature::loadProgram()
 		load_curv(Parameters::getInstance()->g_programs[PROGRAM_SHADING], LOCATION_SHADING_SIZE);
 	}*/
 	
-	int nb_var = 2;
-	const GLchar *varyings[] = {"geometry_position", "geometry_curv_value"};
+	int nb_var = 4;
+	const GLchar *varyings[] = {"geometry_position", "geometry_k1_k2", "geometry_min_dir", "geometry_max_dir"};
 	
 	{
 		GLuint *program = &Parameters::getInstance()->g_programs[PROGRAM_APPROXCURV];
@@ -343,8 +343,8 @@ void Curvature::loadTransformFeedbacks()
 void Curvature::loadBuffers()
 {
 	int res = (int)Parameters::getInstance()->g_tessel;
-	long long int nb_cells = 500000*res*res*res;
-	int export_data = 3+1; //3 float/vert + 1 float curv
+	long long int nb_cells = 20000*res*res*res;
+	int export_data = 3+2+3+3; //vec3 pos, vec2 k1k2, vec3 min_dir, vec3 max_dir
 	
 	glGenBuffers (1, &Parameters::getInstance()->g_buffers[BUFFER_TRIANGULATION]);
 		glBindBuffer (GL_ARRAY_BUFFER, Parameters::getInstance()->g_buffers[BUFFER_TRIANGULATION]);
