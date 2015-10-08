@@ -206,6 +206,12 @@ private:
 	bool transition_cells_displayed;
 	bool reload_fetch;
 	
+	//Parameters keep for export
+	bool was_regular_grid;
+	bool was_culled;
+	int was_showing_dir;
+	int was_gt;
+	
 public:
 	Vizo(int _argc, char** _argv) : gk::App()
 	{
@@ -285,13 +291,6 @@ public:
 		
 		activateTextures();
 		
-		plotfd = fopen("export_data.txt","w");
-		if (plotfd == NULL)
-			perror("fopen");
-		
-		//fprintf(plotfd, "# Frame \t\t TotalCells \t\t RegCells \t\t TrCells \t\t Tgl \t\t LodTime (ms) \t\t CullTime (ms) \t\t RegTglTime (ms) \t\t TrTglTime (ms)\t\t ShadingTime (ms)\t\t ShdLessTime (ms)\t\t TotalTime (ms) \t\t Cpu Time (ns)\n");
-		fprintf(plotfd, "#Vertex \t\tK1 \tK2 \tDir Min \t\tDir Max\n");
-		
 		if (Parameters::getInstance()->g_controls == true)
 			load_quatPoint(cam);
 		else 
@@ -305,6 +304,19 @@ public:
 	void window_draw ()
 	{
 		//return;
+		if (Parameters::getInstance()->g_export)
+		{
+			was_culled = Parameters::getInstance()->g_culling;
+			was_regular_grid = Parameters::getInstance()->g_regular;
+			was_showing_dir = Parameters::getInstance()->g_curv_dir;
+			was_gt = Parameters::getInstance()->g_ground_truth;
+			
+			Parameters::getInstance()->g_culling = false;
+			Parameters::getInstance()->g_regular = true;
+			Parameters::getInstance()->g_curv_dir = 0;
+			Parameters::getInstance()->g_ground_truth = 0;
+		}
+		
 		
 		updateMatricesAndFrustum();
 		
@@ -316,10 +328,17 @@ public:
 			glEnable(GL_RASTERIZER_DISCARD);
         
 			m_time_lod->begin();
-
 			lodManager.runLod(&unmovedCells, &queryResult_lod);
-		
 			m_time_lod->end();
+			
+			if (Parameters::getInstance()->g_export)
+			{
+				for(int i=0; i<10; i++)
+				{
+					lodManager.runLod(&unmovedCells, &queryResult_lod);
+					Parameters::getInstance()->g_geometry.pingpong = 1 - Parameters::getInstance()->g_geometry.pingpong;
+				}
+			}
 
             /** Cull useless cells **/
                         
@@ -365,7 +384,6 @@ public:
 		{
 			lodManager.runDisplay(queryResult_regular);
 		}
-
 		
 		if (Parameters::getInstance()->g_radius_show)
 		{
@@ -380,10 +398,20 @@ public:
 			curver.run(queryResult_regular, queryResult_transition, &triangles_regular, &triangles_transition, &sync_count_triangles);
 			//glDisable(GL_RASTERIZER_DISCARD);
 			
+			static int nb_export = 0;
 			if (Parameters::getInstance()->g_export)
 			{
+				char buf[256];
+				sprintf (buf, "export_data_%lf_%d.txt", Parameters::getInstance()->g_curvradius, nb_export++);
+				plotfd = fopen(buf,"w");
+				if (plotfd == NULL)
+					perror("fopen");
+				
+				//fprintf(plotfd, "# Frame \t\t TotalCells \t\t RegCells \t\t TrCells \t\t Tgl \t\t LodTime (ms) \t\t CullTime (ms) \t\t RegTglTime (ms) \t\t TrTglTime (ms)\t\t ShadingTime (ms)\t\t ShdLessTime (ms)\t\t TotalTime (ms) \t\t Cpu Time (ns)\n");
+				fprintf(plotfd, "#Vertex \t\tK1 \tK2 \tDir Min \t\tDir Max\n");
+			
 				printf("Exporting ...\n");
-				printf(" [1/2] Copying from the GPU ... \n ");
+				printf(" [1/2] Copying from the GPU ... \n");
 				
 				int size_data = 3+2+3+3; //vec3 pos, vec2 k1k2, vec3 min_dir, vec3 max_dir
 				int size_totale = sizeof(float)*3*triangles_regular*size_data; //3 vertex/triangles
@@ -393,13 +421,12 @@ public:
 				glBindBuffer(GL_ARRAY_BUFFER, 0);
 				
 				
-				printf("\tDone ...\n");
-				printf(" [2/2] Writing to file ... \n ");
+				printf(" [2/2] Writing to file ... \n");
 				int nb = 0;
 				for(unsigned int i=0; i<triangles_regular; i++)
 				{
-					if (i !=0 && i%10 == 0)
-						printf("Done %d/%d\n", i, triangles_regular);
+					if (i !=0 && i%100000 == 0)
+						printf("\t%d/%d\n", i, triangles_regular);
 					
 					for(int j=0; j<3; j++)
 					{
@@ -410,7 +437,15 @@ public:
 				}
 
 				free(data);
+				
+
+				Parameters::getInstance()->g_culling = was_culled;
+				Parameters::getInstance()->g_regular = was_regular_grid;
+				Parameters::getInstance()->g_curv_dir = was_showing_dir;
+				Parameters::getInstance()->g_ground_truth = was_gt;
+				
 				Parameters::getInstance()->g_export = false;
+				fclose(plotfd);
 				printf("Done\n");
 			}
 			
@@ -446,7 +481,6 @@ public:
 		glDeleteTransformFeedbacks(FEEDBACK_COUNT, Parameters::getInstance()->g_feedbacks);
 		glDeleteQueries(1, &Parameters::getInstance()->g_query[QUERY_REGULAR]);
 		glDeleteQueries(1, &Parameters::getInstance()->g_query[QUERY_TRANSITION]);
-		fclose(plotfd);
 		return 0;
 	}
 
