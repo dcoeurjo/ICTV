@@ -171,10 +171,13 @@ void Curvature::loadProgram()
 		load_curv(Parameters::getInstance()->g_programs[PROGRAM_SHADING], LOCATION_SHADING_SIZE);
 	}*/
 	
+	int nb_var = 2;
+	const GLchar *varyings[] = {"geometry_position", "geometry_curv_value"};
+	
 	{
 		GLuint *program = &Parameters::getInstance()->g_programs[PROGRAM_APPROXCURV];
 
-        fprintf (stderr, "loading shading program... "); fflush (stderr);
+        fprintf (stderr, "loading O(1) curv program... "); fflush (stderr);
         gk::GLCompiler& c = gk::loadProgram( SHADER_PATH("curvature.glsl"));
         c.include(SHADER_PATH("o1_include.glsl") );
 		c.include(SHADER_PATH("eigendecomposition.glsl"));
@@ -182,6 +185,8 @@ void Curvature::loadProgram()
         if (tmp->errors)
             exit(-1);
         *program = tmp->name;
+		
+		glTransformFeedbackVaryings (*program, nb_var, varyings, GL_INTERLEAVED_ATTRIBS);
         glLinkProgram (*program);
 		
 		load_curv(Parameters::getInstance()->g_programs[PROGRAM_APPROXCURV], LOCATION_APPROXCURV_SIZE);
@@ -190,7 +195,7 @@ void Curvature::loadProgram()
 	{
 		GLuint *program = &Parameters::getInstance()->g_programs[PROGRAM_GTCURV];
 
-        fprintf (stderr, "loading shading program... "); fflush (stderr);
+        fprintf (stderr, "loading GT curv program... "); fflush (stderr);
         gk::GLCompiler& c = gk::loadProgram( SHADER_PATH("curvature.glsl"));
         c.include(SHADER_PATH("gt_include.glsl") );
 		c.include(SHADER_PATH("eigendecomposition.glsl"));
@@ -198,6 +203,8 @@ void Curvature::loadProgram()
         if (tmp->errors)
             exit(-1);
         *program = tmp->name;
+
+		glTransformFeedbackVaryings (*program, nb_var, varyings, GL_INTERLEAVED_ATTRIBS);
         glLinkProgram (*program);
 		
 		load_curv(Parameters::getInstance()->g_programs[PROGRAM_GTCURV], LOCATION_GTCURV_SIZE);
@@ -206,7 +213,7 @@ void Curvature::loadProgram()
 	{
 		GLuint *program = &Parameters::getInstance()->g_programs[PROGRAM_HIERARCHCURV];
 
-        fprintf (stderr, "loading shading program... "); fflush (stderr);
+        fprintf (stderr, "loading hierarchic curv program... "); fflush (stderr);
         gk::GLCompiler& c = gk::loadProgram( SHADER_PATH("curvature.glsl"));
         c.include(SHADER_PATH("hierarch_include.glsl") );
 		c.include(SHADER_PATH("eigendecomposition.glsl"));
@@ -214,6 +221,8 @@ void Curvature::loadProgram()
         if (tmp->errors)
             exit(-1);
         *program = tmp->name;
+		
+		glTransformFeedbackVaryings (*program, nb_var, varyings, GL_INTERLEAVED_ATTRIBS);
         glLinkProgram (*program);
 		
 		load_curv(Parameters::getInstance()->g_programs[PROGRAM_HIERARCHCURV], LOCATION_HIERARCHCURV_SIZE);
@@ -224,24 +233,30 @@ void Curvature::loadProgram()
 
 void Curvature::loadVA()
 {
-	glGenVertexArrays (1, Parameters::getInstance()->g_vertex_arrays + VERTEX_ARRAY_SHADING);
-	glBindVertexArray(Parameters::getInstance()->g_vertex_arrays[VERTEX_ARRAY_SHADING]);
+	glGenVertexArrays (1, Parameters::getInstance()->g_vertex_arrays + VERTEX_ARRAY_CURVATURE);
+	glBindVertexArray(Parameters::getInstance()->g_vertex_arrays[VERTEX_ARRAY_CURVATURE]);
+	
 	glEnableVertexAttribArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, Parameters::getInstance()->g_buffers[BUFFER_VERTICES]);
 	glVertexAttribPointer(0, 4, GL_FLOAT, 0, 0, 0);
-        glEnableVertexAttribArray(1);       
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, Parameters::getInstance()->g_buffers[BUFFER_INDICES]);
-        glVertexAttribIPointer(1, 1, GL_UNSIGNED_INT, 0, 0);
+    
+	glEnableVertexAttribArray(1);       
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, Parameters::getInstance()->g_buffers[BUFFER_INDICES]);
+    glVertexAttribIPointer(1, 1, GL_UNSIGNED_INT, 0, 0);
+	
 	glBindVertexArray(0);
         
-    glGenVertexArrays (1, Parameters::getInstance()->g_vertex_arrays + VERTEX_ARRAY_SHADING_TR);
-	glBindVertexArray(Parameters::getInstance()->g_vertex_arrays[VERTEX_ARRAY_SHADING_TR]);
+    glGenVertexArrays (1, Parameters::getInstance()->g_vertex_arrays + VERTEX_ARRAY_CURVATURE_TR);
+	glBindVertexArray(Parameters::getInstance()->g_vertex_arrays[VERTEX_ARRAY_CURVATURE_TR]);
+	
 	glEnableVertexAttribArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, Parameters::getInstance()->g_buffers[BUFFER_VERTICES_TR]);
 	glVertexAttribPointer(0, 4, GL_FLOAT, 0, 0, 0);
-        glEnableVertexAttribArray(1);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, Parameters::getInstance()->g_buffers[BUFFER_INDICES_TR]);
-        glVertexAttribIPointer(1, 1, GL_UNSIGNED_INT, 0, 0);
+    
+	glEnableVertexAttribArray(1);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, Parameters::getInstance()->g_buffers[BUFFER_INDICES_TR]);
+    glVertexAttribIPointer(1, 1, GL_UNSIGNED_INT, 0, 0);
+	
 	glBindVertexArray(0);
 }
 
@@ -265,14 +280,21 @@ void Curvature::run(GLuint nbcells_reg, GLuint nbcells_tr, GLuint* nb_triangles_
 		glUseProgram(Parameters::getInstance()->g_programs[PROGRAM_HIERARCHCURV]);
 	else if((int)Parameters::getInstance()->g_ground_truth == 3)
 		glUseProgram(Parameters::getInstance()->g_programs[PROGRAM_APPROXCURV]);
-	/*else
-		glUseProgram(Parameters::getInstance()->g_programs[PROGRAM_SHADING]);*/
-	
+
 	glBeginQuery(GL_PRIMITIVES_GENERATED, Parameters::getInstance()->g_query[QUERY_TRIANGLES]);
 	
 	int res = (int)Parameters::getInstance()->g_tessel;
 	glBindBuffer(GL_DRAW_INDIRECT_BUFFER, Parameters::getInstance()->g_buffers[BUFFER_INDIRECT_DRAWS]);
-	glBindVertexArray (Parameters::getInstance()->g_vertex_arrays[VERTEX_ARRAY_SHADING]);
+	glBindVertexArray (Parameters::getInstance()->g_vertex_arrays[VERTEX_ARRAY_CURVATURE]);
+	glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, Parameters::getInstance()->g_feedbacks[FEEDBACK_TRIANGULATION]);
+	glBindBufferBase (
+		GL_TRANSFORM_FEEDBACK_BUFFER,
+		0u,
+		Parameters::getInstance()->g_buffers[BUFFER_TRIANGULATION]
+	);
+	
+	glBeginTransformFeedback(GL_TRIANGLES);
+	
 	glMultiDrawElementsIndirect(
 		GL_TRIANGLES,
 		GL_UNSIGNED_INT,
@@ -280,19 +302,21 @@ void Curvature::run(GLuint nbcells_reg, GLuint nbcells_tr, GLuint* nb_triangles_
 		nbcells_reg*res*res*res,
 		0);
 	
+	glEndTransformFeedback();
+	glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, 0);
 	glEndQuery(GL_PRIMITIVES_GENERATED);
 	
 	GLint64 start, stop;
 	glGetInteger64v(GL_TIMESTAMP, &start);
 	glGetQueryObjectuiv(Parameters::getInstance()->g_query[QUERY_TRIANGLES], GL_QUERY_RESULT, nb_triangles_regular);
 	glGetInteger64v(GL_TIMESTAMP, &stop);
-	
+
 	*sync_time = stop - start;
 	
 	glBeginQuery(GL_PRIMITIVES_GENERATED, Parameters::getInstance()->g_query[QUERY_TRIANGLES]);
 
 	glBindBuffer(GL_DRAW_INDIRECT_BUFFER, Parameters::getInstance()->g_buffers[BUFFER_INDIRECT_DRAWS_TR]);
-	glBindVertexArray (Parameters::getInstance()->g_vertex_arrays[VERTEX_ARRAY_SHADING_TR]);
+	glBindVertexArray (Parameters::getInstance()->g_vertex_arrays[VERTEX_ARRAY_CURVATURE_TR]);
 	glMultiDrawElementsIndirect(
 		GL_TRIANGLES,
 		GL_UNSIGNED_INT,
@@ -313,10 +337,24 @@ void Curvature::run(GLuint nbcells_reg, GLuint nbcells_tr, GLuint* nb_triangles_
 
 void Curvature::loadTransformFeedbacks()
 {
+	glGenTransformFeedbacks(1, &(Parameters::getInstance()->g_feedbacks[FEEDBACK_TRIANGULATION]));
 }
 
 void Curvature::loadBuffers()
 {
+	int res = (int)Parameters::getInstance()->g_tessel;
+	long long int nb_cells = 500000*res*res*res;
+	int export_data = 3+1; //3 float/vert + 1 float curv
+	
+	glGenBuffers (1, &Parameters::getInstance()->g_buffers[BUFFER_TRIANGULATION]);
+		glBindBuffer (GL_ARRAY_BUFFER, Parameters::getInstance()->g_buffers[BUFFER_TRIANGULATION]);
+		glBufferData (
+				GL_ARRAY_BUFFER,
+				nb_cells*12*export_data*sizeof(float), //12 triangles max for each cell, each made of 3 vec3
+				NULL,
+				GL_DYNAMIC_COPY
+		);
+	glBindBuffer (GL_ARRAY_BUFFER, 0);
 }
 
 

@@ -58,6 +58,8 @@ Parameters::Parameters()
     g_scale = 5;
     g_tessel = 2.0;
     g_isosurface = 0;
+	
+	g_export = false;
 
     g_sizetex = 0;
     

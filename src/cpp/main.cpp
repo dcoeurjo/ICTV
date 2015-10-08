@@ -164,6 +164,7 @@ private:
 	
 	//Framebuffer
 	Curvature curver;
+	Shading shadator;
 	BlitFramebuffer blitter;
 
 	//radius
@@ -262,6 +263,7 @@ public:
 		curver.init();
 		blitter.init();
 		radiusShower.init();
+		shadator.init();
 		
 		queryResult_lod = 0;
 		queryResult_regular = 0;
@@ -283,11 +285,12 @@ public:
 		
 		activateTextures();
 		
-		plotfd = fopen("plot.txt","w");
+		plotfd = fopen("export_data.txt","w");
 		if (plotfd == NULL)
 			perror("fopen");
 		
-		fprintf(plotfd, "# Frame \t\t TotalCells \t\t RegCells \t\t TrCells \t\t Tgl \t\t LodTime (ms) \t\t CullTime (ms) \t\t RegTglTime (ms) \t\t TrTglTime (ms)\t\t ShadingTime (ms)\t\t ShdLessTime (ms)\t\t TotalTime (ms) \t\t Cpu Time (ns)\n");
+		//fprintf(plotfd, "# Frame \t\t TotalCells \t\t RegCells \t\t TrCells \t\t Tgl \t\t LodTime (ms) \t\t CullTime (ms) \t\t RegTglTime (ms) \t\t TrTglTime (ms)\t\t ShadingTime (ms)\t\t ShdLessTime (ms)\t\t TotalTime (ms) \t\t Cpu Time (ns)\n");
+		fprintf(plotfd, "Vertex \t\t\t Curvature\n");
 		
 		if (Parameters::getInstance()->g_controls == true)
 			load_quatPoint(cam);
@@ -373,7 +376,49 @@ public:
 		{
 			m_time_shading->begin();
 			
+			//glEnable(GL_RASTERIZER_DISCARD);
 			curver.run(queryResult_regular, queryResult_transition, &triangles_regular, &triangles_transition, &sync_count_triangles);
+			//glDisable(GL_RASTERIZER_DISCARD);
+			
+			if (Parameters::getInstance()->g_export)
+			{
+				printf("Exporting ...\n");
+				printf(" [1/2] Copying from the GPU ... \n ");
+				
+				int size_data = 3+1; //3 float pour le vertex + 1 float pour la courbure
+				int size_totale = sizeof(float)*3*triangles_regular*size_data; //3 vertex/triangles
+				glBindBuffer(GL_ARRAY_BUFFER, Parameters::getInstance()->g_buffers[BUFFER_TRIANGULATION]);
+				float* data = (float*)malloc(size_totale);
+				glGetBufferSubData(GL_ARRAY_BUFFER, 0, size_totale, data);
+				glBindBuffer(GL_ARRAY_BUFFER, 0);
+				
+				
+				printf("\tDone ...\n");
+				printf(" [2/2] Writing to file ... \n ");
+				int nb = 0;
+				for(unsigned int i=0; i<triangles_regular; i++)
+				{
+					if (i !=0 && i%10 == 0)
+						printf("Done %d/%d\n", i, triangles_regular);
+					
+					for(int j=0; j<3; j++)
+					{
+						for(int d=0; d<size_data; d++)
+							fprintf(plotfd, "%.2lf\t", data[nb++]);
+						fprintf(plotfd, "\n");
+					}
+				}
+
+				free(data);
+				Parameters::getInstance()->g_export = false;
+				printf("Done\n");
+			}
+			
+			/*
+			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+			shadator.run(triangles_regular);
+			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+			*/
 			
 			m_time_shading->end();
 		}
@@ -673,6 +718,7 @@ public:
 				
 				if(m_widgets.beginPanel(r_actions, "Actions", &unfold_actions))
 				{
+					m_widgets.doButton(nv::Rect(), "Export Data", &(Parameters::getInstance()->g_export));
 					m_widgets.doButton(nv::Rect(), "Read data from texture", &(Parameters::getInstance()->g_fromtexture));
 					m_widgets.doButton(nv::Rect(), "Capture", &(Parameters::getInstance()->g_capture.enabled));
 					m_widgets.doButton(nv::Rect(), "Freeze", &(Parameters::getInstance()->g_geometry.freeze));

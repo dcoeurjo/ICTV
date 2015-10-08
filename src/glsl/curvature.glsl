@@ -126,9 +126,6 @@ void main()
 		geometry_distance = vec3(0);
 		geometry_distance[i] = area * inversesqrt (dot (v[i],v[i]));
 		geometry_position = vertex_position[i].xyz;
-		//geometry_view = (u_transforms.modelview * vec4( ((vertex_position[i]-0.5)*u_scene_size), 1 )).xyz;
-		//vec3 center = (pts_abs[1] + pts_abs[2] + pts_abs[0]) / 3;
-		//gl_PrimitiveID = int( length(center)*1000 );
 		geometry_color = vertex_color[i];
 		geometry_curv_value = curv_value[i];
 		geometry_curvdir = 0;
@@ -357,6 +354,7 @@ void main()
 
 #endif
 
+
 #ifdef FRAGMENT_SHADER
 
 layout(early_fragment_tests) in;
@@ -436,7 +434,7 @@ void main( )
 		color = abs(geometry_color);
 	
 	//Phong
-	float shadow_weight = 0;
+	float shadow_weight = 0.5;
 	float dotnormal = clamp(dot(normalize(geometry_normal), normalize(vec3(1, 1, 1))), 0, 1);
 	fragment_color = vec4( shadow_weight * color * dotnormal + (1-shadow_weight) * color, 1);
 

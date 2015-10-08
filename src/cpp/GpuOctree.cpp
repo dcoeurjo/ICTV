@@ -65,8 +65,8 @@ void GPUOctree::loadBuffers()
         //const size_t cap = 1 << 28;
 		
 		size_t full_tree = 1;
-		for(int i=1; i<=8;i++) //8 levels to store of 2^i cells each
-			full_tree += std::pow(2, (3*i));
+		long int side = std::pow(2, 8); //lvl 8 max
+		full_tree += side*side*side; 
 		
 		size_t full_tree_cap = full_tree * sizeof(float) * 8.0; //2 vec4 for each
 		

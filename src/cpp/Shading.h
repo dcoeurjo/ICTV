@@ -14,7 +14,7 @@ public:
 	void loadProgram();
 	
 	void init();
-	void run(GLuint nbcells_reg, GLuint nbcells_tr, GLuint* nb_triangles_regular, GLuint* nb_triangles_transition, GLuint64* sync_time);
+	void run(GLuint nb_triangles_regular);
 };
 
 #endif
