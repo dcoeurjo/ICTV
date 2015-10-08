@@ -18,6 +18,7 @@
 #include "Format.h"
 
 #include <cmath>
+#include <string>
 
 #define CAM_SPEED 20
 #define CAM_SPEED_MAX Parameters::getInstance()->g_geometry.scale[0] / 5.0
@@ -314,7 +315,7 @@ public:
 			Parameters::getInstance()->g_culling = false;
 			Parameters::getInstance()->g_regular = true;
 			Parameters::getInstance()->g_curv_dir = 0;
-			Parameters::getInstance()->g_ground_truth = 0;
+			Parameters::getInstance()->g_ground_truth = 1;
 		}
 		
 		
@@ -335,8 +336,10 @@ public:
 			{
 				for(int i=0; i<10; i++)
 				{
-					lodManager.runLod(&unmovedCells, &queryResult_lod);
 					Parameters::getInstance()->g_geometry.pingpong = 1 - Parameters::getInstance()->g_geometry.pingpong;
+					
+					lodManager.configurePrograms();
+					lodManager.runLod(&unmovedCells, &queryResult_lod);
 				}
 			}
 
@@ -394,23 +397,24 @@ public:
 		{
 			m_time_shading->begin();
 			
-			//glEnable(GL_RASTERIZER_DISCARD);
 			curver.run(queryResult_regular, queryResult_transition, &triangles_regular, &triangles_transition, &sync_count_triangles);
-			//glDisable(GL_RASTERIZER_DISCARD);
 			
 			static int nb_export = 0;
 			if (Parameters::getInstance()->g_export)
 			{
+				std::string file(argv[1]);
+				file = file.substr(file.find_last_of('/')+1, (file.find_last_of('.')-1)-file.find_last_of('/'));
 				char buf[256];
-				sprintf (buf, "export_data_%lf_%d.txt", Parameters::getInstance()->g_curvradius, nb_export++);
+				sprintf (buf, "export%d_%s_r%.2lf.txt", nb_export++, file.c_str(), Parameters::getInstance()->g_curvradius);
+				printf("Exporting to %s...\n", buf);
 				plotfd = fopen(buf,"w");
 				if (plotfd == NULL)
 					perror("fopen");
 				
 				//fprintf(plotfd, "# Frame \t\t TotalCells \t\t RegCells \t\t TrCells \t\t Tgl \t\t LodTime (ms) \t\t CullTime (ms) \t\t RegTglTime (ms) \t\t TrTglTime (ms)\t\t ShadingTime (ms)\t\t ShdLessTime (ms)\t\t TotalTime (ms) \t\t Cpu Time (ns)\n");
 				fprintf(plotfd, "#Vertex \t\tK1 \tK2 \tDir Min \t\tDir Max\n");
+				fprintf(plotfd, "N %d\n", 3*triangles_regular);
 			
-				printf("Exporting ...\n");
 				printf(" [1/2] Copying from the GPU ... \n");
 				
 				int size_data = 3+2+3+3; //vec3 pos, vec2 k1k2, vec3 min_dir, vec3 max_dir
@@ -444,7 +448,7 @@ public:
 				Parameters::getInstance()->g_curv_dir = was_showing_dir;
 				Parameters::getInstance()->g_ground_truth = was_gt;
 				
-				Parameters::getInstance()->g_export = false;
+				
 				fclose(plotfd);
 				printf("Done\n");
 			}
@@ -467,6 +471,9 @@ public:
 		blitter.blit();
                 
 		m_time_blit->end();
+		
+		if (Parameters::getInstance()->g_export)
+				Parameters::getInstance()->g_export = false;
 	}
     
 	int quit( )

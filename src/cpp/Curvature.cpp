@@ -286,13 +286,14 @@ void Curvature::run(GLuint nbcells_reg, GLuint nbcells_tr, GLuint* nb_triangles_
 	int res = (int)Parameters::getInstance()->g_tessel;
 	glBindBuffer(GL_DRAW_INDIRECT_BUFFER, Parameters::getInstance()->g_buffers[BUFFER_INDIRECT_DRAWS]);
 	glBindVertexArray (Parameters::getInstance()->g_vertex_arrays[VERTEX_ARRAY_CURVATURE]);
+
+	
 	glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, Parameters::getInstance()->g_feedbacks[FEEDBACK_TRIANGULATION]);
 	glBindBufferBase (
 		GL_TRANSFORM_FEEDBACK_BUFFER,
 		0u,
 		Parameters::getInstance()->g_buffers[BUFFER_TRIANGULATION]
 	);
-	
 	glBeginTransformFeedback(GL_TRIANGLES);
 	
 	glMultiDrawElementsIndirect(
@@ -305,6 +306,7 @@ void Curvature::run(GLuint nbcells_reg, GLuint nbcells_tr, GLuint* nb_triangles_
 	glEndTransformFeedback();
 	glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, 0);
 	glEndQuery(GL_PRIMITIVES_GENERATED);
+	
 	
 	GLint64 start, stop;
 	glGetInteger64v(GL_TIMESTAMP, &start);
