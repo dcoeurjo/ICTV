@@ -1,4 +1,4 @@
-
+/*
 // Slightly modified version of  Stan Melax's code for 3x3 matrix diagonalization (Thanks Stan!)
 // source: http://www.melax.com/diag.html?attredirects=0
 void getEigenValuesVectors2(float A[3][3], out float Q[3][3], out float vecD[3])
@@ -124,7 +124,7 @@ void computeK1K2(float volume, float r,
   float covxz = xy_yz_xz.z - (xyz.x*xyz.z/volume);
   
   //volume = volume;
-  curvmat[0][0] = xyz2.x - ((xyz.x*xyz.x)/(volume)); 
+  curvmat[0][0] = xyz2.x - (xyz.x*xyz.x/volume); 
   curvmat[0][1] = covxy;  
   curvmat[0][2] = covyz;
   
@@ -139,17 +139,17 @@ void computeK1K2(float volume, float r,
   getEigenValuesVectors2( curvmat, eigenvectors, eigenvalues );
   
   min_i = 0;
-  if (eigenvalues[1] < eigenvalues[0] && eigenvalues[1] < eigenvalues[2])
+  if ((eigenvalues[1] <= eigenvalues[0]) && (eigenvalues[1] <= eigenvalues[2]))
     min_i= 1;
-  if (eigenvalues[2] < eigenvalues[0] && eigenvalues[2] < eigenvalues[1])
+  if ((eigenvalues[2] <= eigenvalues[0]) && (eigenvalues[2] <= eigenvalues[1]))
     min_i= 2;
     
   n = vec3( eigenvectors[0][min_i], eigenvectors[1][min_i], eigenvectors[2][min_i] );
   
   max_i = 0;
-  if (eigenvalues[1] > eigenvalues[0] && eigenvalues[1] > eigenvalues[2])
+  if (eigenvalues[1] >= eigenvalues[0] && eigenvalues[1] >= eigenvalues[2])
       max_i= 1;
-  if (eigenvalues[2] > eigenvalues[0] && eigenvalues[2] > eigenvalues[1])
+  if (eigenvalues[2] >= eigenvalues[0] && eigenvalues[2] >= eigenvalues[1])
       max_i= 2;
   
   maxDir = vec3( eigenvectors[0][max_i], eigenvectors[1][max_i], eigenvectors[2][max_i] );
@@ -170,6 +170,7 @@ void computeK1K2(float volume, float r,
   
   val = vec3( eigenvalues[min_i], eigenvalues[med_i], eigenvalues[max_i] );
 }
+*/
 
 
 
@@ -185,8 +186,7 @@ void computeK1K2(float volume, float r,
 
 
 
-/*
-void getEigenValuesVectors ( in mat3 mat_data, out mat3 vectors, out vec3 values )
+void getEigenValuesVectors ( in float mat_data[3][3], out float vectors[3][3], out float values[3] )
 { 
 	vec3 e = vec3(0);
 
@@ -195,7 +195,7 @@ void getEigenValuesVectors ( in mat3 mat_data, out mat3 vectors, out vec3 values
 	
 	for( int j = 0; j < dimension; ++j )
 		values[ j ] =  mat_data[dimensionMinusOne][ j ];
-		;
+
 	// Householder reduction to tridiagonal form.
 	for( int i = dimensionMinusOne; i > 0 && i <= dimensionMinusOne; --i )
     {
@@ -444,7 +444,9 @@ void getEigenValuesVectors ( in mat3 mat_data, out mat3 vectors, out vec3 values
         }
     }
     
-    vectors = mat_data;
+    for(int i=0; i<3; i++)
+    for(int j=0; j<3; j++)
+		vectors[i][j] = mat_data[i][j];
 }
 
 
@@ -452,11 +454,11 @@ void computeK1K2(float volume, float r,
 				 vec3 xyz2, vec3 xy_yz_xz, vec3 xyz,
 				 out vec3 minDir, out vec3 maxDir, out vec3 n, out vec3 val, out float k1, out float k2)
 {	
-	mat3 eigenvectors = mat3(0);
-  vec3 eigenvalues = vec3(0);
-  mat3 curvmat = mat3(0);
+  float eigenvectors[3][3];
+  float eigenvalues[3];
+  float curvmat[3][3];
 
-  if (volume > 0.001)
+  if (volume > 0.1)
   {
     
     float covxy = xy_yz_xz.x - (xyz.x*xyz.y/volume);
@@ -480,8 +482,8 @@ void computeK1K2(float volume, float r,
     getEigenValuesVectors( curvmat, eigenvectors, eigenvalues );
     
     n = vec3( eigenvectors[0][0], eigenvectors[1][0], eigenvectors[2][0] );
-    maxDir = vec3( eigenvectors[0][2], eigenvectors[1][2], eigenvectors[2][2] );
     minDir = vec3( eigenvectors[0][1], eigenvectors[1][1], eigenvectors[2][1] );
+    maxDir = vec3( eigenvectors[0][2], eigenvectors[1][2], eigenvectors[2][2] );
     
     float l1 = eigenvalues[1];
     float l2 = eigenvalues[2];
@@ -493,5 +495,15 @@ void computeK1K2(float volume, float r,
     
     val = vec3( eigenvalues[0], eigenvalues[1], eigenvalues[2] );
   }
+  else
+  {
+	n = vec3( 0 );
+    minDir = vec3( 0 );
+    maxDir = vec3( 0 );
+
+    k1 = 0;
+    k2 = 0;
+    
+    val = vec3( 0 );
+  }
 }
-*/

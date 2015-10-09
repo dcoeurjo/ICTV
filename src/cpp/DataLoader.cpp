@@ -9,6 +9,8 @@ const GLenum MAG_FILT = GL_LINEAR;
 //const GLenum MIN_FILT = GL_NEAREST_MIPMAP_NEAREST;
 //const GLenum MAG_FILT = GL_NEAREST;
 
+bool mymipmap = false;
+
 void DataLoader::loadData32BGpu()
 {
 	glGenTextures(1, &Parameters::getInstance()->g_textures[TEXTURE_DENSITY]);
@@ -45,7 +47,7 @@ void DataLoader::loadData8BGpu()
 
 void loadNxtMipmap(int size, float* texture, float** miptexture)
 {
-	int sizemip = size/2;
+	int sizemip = ceil(size/2.0);
 	printf("sizemip %d\n", sizemip);
 	
 	*miptexture = (float*)malloc(sizeof(float)*sizemip*sizemip*sizemip*3);
@@ -65,6 +67,7 @@ void loadNxtMipmap(int size, float* texture, float** miptexture)
 		(*miptexture)[off*3] += texture[nb*3];
 		(*miptexture)[off*3+1] += texture[nb*3+1];
 		(*miptexture)[off*3+2] += texture[nb*3+2];
+		
 		nb++;
 	}
 }
@@ -100,22 +103,28 @@ void DataLoader::loadx2y2z2()
 	
 	int lvl = 0;
 	glTexImage3D(GL_TEXTURE_3D, lvl++, GL_RGB32F, sizex, sizey, sizez, 0, GL_RGB, GL_FLOAT, mmt);
+		
 	
-	int size = sizex;
-	float *mip0, *mip1;
-	mip1 = mmt;
-	while(size >= 1)
+	if (mymipmap)
 	{
-		loadNxtMipmap(size, mip1, &mip0);
-		size = size/2;
-		glTexImage3D(GL_TEXTURE_3D, lvl++, GL_RGB32F, size, size, size, 0, GL_RGB, GL_FLOAT, mip0);
-		free(mip1);
-		mip1 = mip0;
+		int size = sizex;
+		float *mip0, *mip1;
+		mip1 = mmt;
+		while(size > 1)
+		{
+			loadNxtMipmap(size, mip1, &mip0);
+			size = ceil(size/2.0);
+			glTexImage3D(GL_TEXTURE_3D, lvl++, GL_RGB32F, size, size, size, 0, GL_RGB, GL_FLOAT, mip0);
+			free(mip1);
+			mip1 = mip0;
+		}
+		free(mip0);
 	}
-	free(mip0);
-	
-	//glTexImage3D(GL_TEXTURE_3D, 0, GL_RGB32UI, sizex, sizey, sizez, 0, GL_RGB_INTEGER, GL_UNSIGNED_INT, mmt);
-    //glGenerateMipmap(GL_TEXTURE_3D);
+	else
+	{
+		glGenerateMipmap(GL_TEXTURE_3D);
+		free(mmt);
+	}
 	
 	glBindTexture(GL_TEXTURE_3D, 0);
 }
@@ -152,19 +161,28 @@ void DataLoader::loadxyyzxz()
 	
 	int lvl = 0;
 	glTexImage3D(GL_TEXTURE_3D, lvl++, GL_RGB32F, sizex, sizey, sizez, 0, GL_RGB, GL_FLOAT, mmt);
-	
-	int size = sizex;
-	float *mip0, *mip1;
-	mip1 = mmt;
-	while(size >= 1)
+		
+		
+	if (mymipmap)
 	{
-		loadNxtMipmap(size, mip1, &mip0);
-		size = size/2;
-		glTexImage3D(GL_TEXTURE_3D, lvl++, GL_RGB32F, size, size, size, 0, GL_RGB, GL_FLOAT, mip0);
-		free(mip1);
-		mip1 = mip0;
+		int size = sizex;
+		float *mip0, *mip1;
+		mip1 = mmt;
+		while(size > 1)
+		{
+			loadNxtMipmap(size, mip1, &mip0);
+			size = ceil(size/2.0);
+			glTexImage3D(GL_TEXTURE_3D, lvl++, GL_RGB32F, size, size, size, 0, GL_RGB, GL_FLOAT, mip0);
+			free(mip1);
+			mip1 = mip0;
+		}
+		free(mip0);
 	}
-	free(mip0);
+	else
+	{
+		glGenerateMipmap(GL_TEXTURE_3D);
+		free(mmt);
+	}
 	
 	glBindTexture(GL_TEXTURE_3D, 0);
 	
@@ -204,22 +222,30 @@ void DataLoader::loadxyz()
 	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-	
+
 	int lvl = 0;
 	glTexImage3D(GL_TEXTURE_3D, lvl++, GL_RGB32F, sizex, sizey, sizez, 0, GL_RGB, GL_FLOAT, mmt);
 	
-	int size = sizex;
-	float *mip0, *mip1;
-	mip1 = mmt;
-	while(size >= 1)
+	if(mymipmap)
 	{
-		loadNxtMipmap(size, mip1, &mip0);
-		size = size/2;
-		glTexImage3D(GL_TEXTURE_3D, lvl++, GL_RGB32F, size, size, size, 0, GL_RGB, GL_FLOAT, mip0);
-		free(mip1);
-		mip1 = mip0;
+		int size = sizex;
+		float *mip0, *mip1;
+		mip1 = mmt;
+		while(size > 1)
+		{
+			loadNxtMipmap(size, mip1, &mip0);
+			size = ceil(size/2.0);
+			glTexImage3D(GL_TEXTURE_3D, lvl++, GL_RGB32F, size, size, size, 0, GL_RGB, GL_FLOAT, mip0);
+			free(mip1);
+			mip1 = mip0;
+		}
+		free(mip0);
 	}
-	free(mip0);
+	else
+	{
+		glGenerateMipmap(GL_TEXTURE_3D);
+		free(mmt);
+	}
 	
 	glBindTexture(GL_TEXTURE_3D, 0);
 	

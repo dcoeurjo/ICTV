@@ -311,7 +311,7 @@ public:
 			was_gt = Parameters::getInstance()->g_ground_truth;
 			
 			Parameters::getInstance()->g_culling = false;
-			Parameters::getInstance()->g_regular = true;
+			//Parameters::getInstance()->g_regular = true;
 			Parameters::getInstance()->g_curv_dir = 0;
 			Parameters::getInstance()->g_ground_truth = 1;
 		}
@@ -410,21 +410,25 @@ public:
 					perror("fopen");
 				
 				//fprintf(plotfd, "# Frame \t\t TotalCells \t\t RegCells \t\t TrCells \t\t Tgl \t\t LodTime (ms) \t\t CullTime (ms) \t\t RegTglTime (ms) \t\t TrTglTime (ms)\t\t ShadingTime (ms)\t\t ShdLessTime (ms)\t\t TotalTime (ms) \t\t Cpu Time (ns)\n");
-				fprintf(plotfd, "#Vertex \t\tK1 \tK2 \tDir Min \t\tDir Max\n");
+				fprintf(plotfd, "#Vertex \t\tK1 \tK2 \tDir Min \t\tDir Max \t\tNormale \t\tEigenvalues \t\tCovmat Diag \t\tCovmat Upper\n");
 				fprintf(plotfd, "N %d\n", 3*triangles_regular);
 			
 				printf(" [1/2] Copying from the GPU ... \n");
 				
-				int size_data = 3+2+3+3; //vec3 pos, vec2 k1k2, vec3 min_dir, vec3 max_dir
+				int size_data = 3; //vec3 pos
+				size_data += 2; //vec2 k1k2
+				size_data += 3; //vec3 min_dir;
+				size_data += 3; //vec3 max_dir;
+				size_data += 3; //vec3 normale;
+				size_data += 3; //vec3 eigenvalues
+				size_data += 3; //vec3 covmatup
+				size_data += 3; //vec3 covmatdiag
+				
 				int size_totale = sizeof(float)*3*triangles_regular*size_data; //3 vertex/triangles
 				glBindBuffer(GL_ARRAY_BUFFER, Parameters::getInstance()->g_buffers[BUFFER_TRIANGULATION]);
 				float* data = (float*)malloc(size_totale);
 				glGetBufferSubData(GL_ARRAY_BUFFER, 0, size_totale, data);
 				glBindBuffer(GL_ARRAY_BUFFER, 0);
-				
-				bool minmaxset = false;
-				float min = 0;
-				float max = 0;
 				
 				printf(" [2/2] Writing to file ... \n");
 				int nb = 0;
@@ -435,33 +439,6 @@ public:
 					
 					for(int j=0; j<3; j++)
 					{
-						float k1 = data[nb+3];
-						float k2 = data[nb+4];
-						
-						if (!minmaxset)
-						{
-							if ((int)Parameters::getInstance()->g_curv_val == 1)
-								min = max = (k1+k2)/2.0;
-							if ((int)Parameters::getInstance()->g_curv_val == 2)
-								min = max = (k1*k2);
-							minmaxset = true;
-						}
-						else
-						{
-							float c = 0;
-							if ((int)Parameters::getInstance()->g_curv_val == 1)
-								c = (k1+k2)/2.0;
-							if ((int)Parameters::getInstance()->g_curv_val == 2)
-								c = (k1*k2);
-							
-							if (c < min)
-								min = c;
-							if (c > max)
-								max = c;
-							
-							//printf("%lf\n", c);
-						}
-						
 						for(int d=0; d<size_data; d++)
 							fprintf(plotfd, "%.4lf\t", data[nb++]);
 						fprintf(plotfd, "\n");
@@ -469,8 +446,6 @@ public:
 				}
 
 				free(data);
-				
-				printf("Min %lf Max %lf\n", min, max);
 
 				Parameters::getInstance()->g_culling = was_culled;
 				Parameters::getInstance()->g_regular = was_regular_grid;
@@ -485,7 +460,15 @@ public:
 			{
 				//printf(" Reading curvatures ...\n");
 				
-				int size_data = 3+2+3+3; //vec3 pos, vec2 k1k2, vec3 min_dir, vec3 max_dir
+				int size_data = 3; //vec3 pos
+				size_data += 2; //vec2 k1k2
+				size_data += 3; //vec3 min_dir;
+				size_data += 3; //vec3 max_dir;
+				size_data += 3; //vec3 normale;
+				size_data += 3; //vec3 eigenvalues
+				size_data += 3; //vec3 covmatup
+				size_data += 3; //vec3 covmatdiag
+				
 				int size_totale = sizeof(float)*3*triangles_regular*size_data; //3 vertex/triangles
 				glBindBuffer(GL_ARRAY_BUFFER, Parameters::getInstance()->g_buffers[BUFFER_TRIANGULATION]);
 				float* data = (float*)malloc(size_totale);
@@ -546,7 +529,7 @@ public:
 				Parameters::getInstance()->g_curvmin = min;
 				Parameters::getInstance()->g_curvmax = max;
 				
-				//Parameters::getInstance()->g_compute_min_max = false;
+				Parameters::getInstance()->g_compute_min_max = false;
 			}
 		}
 		
@@ -811,9 +794,9 @@ public:
 				sprintf(tmp, "Mode:\nNone (0),\nMean curvature (1), Gaussian curvature (2)\nK1 (3), K2(4)\nCurrent %d", (int)Parameters::getInstance()->g_curv_val);
 				m_widgets.doLabel(nv::Rect(), tmp);
 				m_widgets.doHorizontalSlider(nv::Rect(0,0, 200, 0), 0.1, 4.9, &(Parameters::getInstance()->g_curv_val));
-				sprintf(tmp, "Mode:\nNone (0)\nMin directions (1), Max directions (2)\nNormales (3)\nCurrent %d", (int)Parameters::getInstance()->g_curv_dir);
+				sprintf(tmp, "Mode:\nNone (0)\nMin directions (1), Max directions (2)\nMin & Max (3), Normales (4)\nCurrent %d", (int)Parameters::getInstance()->g_curv_dir);
 				m_widgets.doLabel(nv::Rect(), tmp);
-				m_widgets.doHorizontalSlider(nv::Rect(0,0, 200, 0), 0.1f, 3.9f, &(Parameters::getInstance()->g_curv_dir));
+				m_widgets.doHorizontalSlider(nv::Rect(0,0, 200, 0), 0.1f, 4.9f, &(Parameters::getInstance()->g_curv_dir));
 				sprintf(tmp, "Ball Radius %.2f", Parameters::getInstance()->g_curvradius);
 				m_widgets.doLabel(nv::Rect(), tmp);
 				m_widgets.doHorizontalSlider(nv::Rect(0,0, 200, 0), 1.f, 30.f, &(Parameters::getInstance()->g_curvradius));
