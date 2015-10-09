@@ -14,8 +14,7 @@ void getVolumeMoments(vec3 vertex_position, out float volume, out vec3 xyz, out 
 	volume = 0.0;
 	
 	float lvl = log2(2*r);
-	volume = textureLod(densities, vertex_position, lvl).r * (2.0*vol_boule/vol_cube);
-	
+	volume = textureLod(densities, vertex_position, lvl).r * vol_boule;
 	
 	xyz2 = vec3(0);
 	xy_yz_xz = vec3(0);
@@ -30,7 +29,6 @@ void getVolumeMoments(vec3 vertex_position, out float volume, out vec3 xyz, out 
 		vec3 probe = vec3(i+0.5, j+0.5, k+0.5);
 		if (length(probe) <= r)
 		{
-			//volume += textureLod(densities, vertex_position + (probe/size_obj), 0).r;
 			xyz += textureLod(u_xyz_tex, vertex_position + (probe/size_obj), 0).rgb;
 			xyz2 += textureLod(u_xyz2_tex, vertex_position + (probe/size_obj), 0).rgb;
 			xy_yz_xz += textureLod(u_xy_yz_xz_tex, vertex_position + (probe/size_obj), 0).rgb;

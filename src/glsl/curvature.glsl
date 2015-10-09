@@ -18,6 +18,37 @@ out vec2 vertex_k1_k2;
 
 uniform vec3 u_scene_size;
 
+void getVolumeMoments2(vec3 vertex_position, out float volume, out vec3 xyz, out vec3 xy_yz_xz, out vec3 xyz2)
+{
+	float r = u_curv_radius;
+	float vol_boule = ((4*3.14159*(r*r*r))/3.0);
+	float vol_cube = (2*r)*(2*r)*(2*r);
+	volume = 0.0;
+	
+	float lvl = log2(2*r);
+	volume = textureLod(densities, vertex_position, lvl).r * vol_boule;
+	
+	xyz2 = vec3(0);
+	xy_yz_xz = vec3(0);
+	xyz = vec3(0);
+	
+	int nb_probe = 0;
+	float size_obj = u_size_tex;
+	for(float i=-r; i<r; i++)
+	for(float j=-r; j<r; j++)
+	for(float k=-r; k<r; k++)
+	{
+		vec3 probe = vec3(i+0.5, j+0.5, k+0.5);
+		if (length(probe) <= r)
+		{
+			xyz += textureLod(u_xyz_tex, vertex_position + (probe/size_obj), 0).rgb;
+			xyz2 += textureLod(u_xyz2_tex, vertex_position + (probe/size_obj), 0).rgb;
+			xy_yz_xz += textureLod(u_xy_yz_xz_tex, vertex_position + (probe/size_obj), 0).rgb;
+			nb_probe ++;
+		}
+	}
+}
+
 void main( )
 {
     vertex_position = position.xyz;
@@ -27,6 +58,9 @@ void main( )
 	vec3 xyz2 = vec3(0);
 	vec3 xy_yz_xz = vec3(0);
 	vec3 xyz = vec3(0);
+	
+	float volume_approx = 0.0;
+	getVolumeMoments2(vertex_position, volume_approx, xyz, xy_yz_xz, xyz2);
 	getVolumeMoments(vertex_position, volume, xyz, xy_yz_xz, xyz2);
 
 	float k1;
@@ -37,6 +71,11 @@ void main( )
 	computeK1K2(volume, u_curv_radius,
 				xyz2, xy_yz_xz, xyz,
 				curv_dir_min, curv_dir_max, curv_normale, eigenvalues, k1, k2);
+	
+	float r = u_curv_radius;
+	float fact83r = 8.0/(3.0*r);
+	float fact4pir4 = 4.0 / (3.14159*r*r*r*r);
+	float curvature = fact83r - fact4pir4*volume;
 	
 	curv_value = 0;
 	if(u_curv_val == 1)
@@ -70,7 +109,7 @@ void main( )
 	float curvature = fact83r - fact4pir4*volume;
 	curv_value = curvature;*/
 
-	vertex_color = vec3(1);
+	vertex_color = vec3((volume-volume_approx)*0.01, 0, 1);
 	//vertex_color = xyz2/(65.0*65.0);
 	
     gl_Position = position;
@@ -256,6 +295,7 @@ void main()
 	{
 		geometry_distance = vec3(0);
 		geometry_distance[i] = area * inversesqrt (dot (v[i],v[i]));
+		
 		geometry_color = vertex_color[i];
 		geometry_curv_value = curv_value[i];
 		geometry_curvdir = 0;
@@ -263,7 +303,7 @@ void main()
 		geometry_k1_k2 = vertex_k1_k2[i];
 		geometry_min_dir = curv_dir_min[i].xyz;
 		geometry_max_dir = curv_dir_max[i].xyz;
-		geometry_position = vertex_position[i].xyz - 0.5;
+		geometry_position = vertex_position[i].xyz;
 		
 		geometry_normale = curv_normale[i];
 		geometry_covmatDiag = covmatDiag[i];

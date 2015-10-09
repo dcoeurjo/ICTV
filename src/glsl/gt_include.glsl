@@ -36,4 +36,6 @@ void getVolumeMoments(in vec3 vertex_position, out float volume, out vec3 xyz, o
 			nb_probe++;
 		}
 	}
+	
+	volume += 10;
 }

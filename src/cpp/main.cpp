@@ -440,7 +440,10 @@ public:
 					for(int j=0; j<3; j++)
 					{
 						for(int d=0; d<size_data; d++)
-							fprintf(plotfd, "%.4lf\t", data[nb++]);
+						{
+							//if (d == 14 || d == 15 || d == 16)
+								fprintf(plotfd, "%.4lf\t", data[nb++]);
+						}
 						fprintf(plotfd, "\n");
 					}
 				}
