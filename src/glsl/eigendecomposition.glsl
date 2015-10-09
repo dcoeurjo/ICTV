@@ -5,7 +5,7 @@ void getEigenValuesVectors2(float A[3][3], out float Q[3][3], out float vecD[3])
 {
 	float D[3][3];
     // A must be a symmetric matrix.
-    // returns Q and D such that 
+    // returns Q and D such that
     // Diagonal matrix D = QT * A * Q;  and  A = Q*D*QT
     int maxsteps=24;  // certainly wont need that many.
     int k0, k1, k2;
@@ -50,14 +50,14 @@ void getEigenValuesVectors2(float A[3][3], out float Q[3][3], out float vecD[3])
         AQ[2][1] = Q[0][1]*A[0][2]+Q[1][1]*A[1][2]+Q[2][1]*A[2][2];
         AQ[2][2] = Q[0][2]*A[0][2]+Q[1][2]*A[1][2]+Q[2][2]*A[2][2];
         // D = Qt * AQ
-        D[0][0] = AQ[0][0]*Q[0][0]+AQ[1][0]*Q[1][0]+AQ[2][0]*Q[2][0]; 
-        D[0][1] = AQ[0][0]*Q[0][1]+AQ[1][0]*Q[1][1]+AQ[2][0]*Q[2][1]; 
-        D[0][2] = AQ[0][0]*Q[0][2]+AQ[1][0]*Q[1][2]+AQ[2][0]*Q[2][2]; 
-        D[1][0] = AQ[0][1]*Q[0][0]+AQ[1][1]*Q[1][0]+AQ[2][1]*Q[2][0]; 
-        D[1][1] = AQ[0][1]*Q[0][1]+AQ[1][1]*Q[1][1]+AQ[2][1]*Q[2][1]; 
-        D[1][2] = AQ[0][1]*Q[0][2]+AQ[1][1]*Q[1][2]+AQ[2][1]*Q[2][2]; 
-        D[2][0] = AQ[0][2]*Q[0][0]+AQ[1][2]*Q[1][0]+AQ[2][2]*Q[2][0]; 
-        D[2][1] = AQ[0][2]*Q[0][1]+AQ[1][2]*Q[1][1]+AQ[2][2]*Q[2][1]; 
+        D[0][0] = AQ[0][0]*Q[0][0]+AQ[1][0]*Q[1][0]+AQ[2][0]*Q[2][0];
+        D[0][1] = AQ[0][0]*Q[0][1]+AQ[1][0]*Q[1][1]+AQ[2][0]*Q[2][1];
+        D[0][2] = AQ[0][0]*Q[0][2]+AQ[1][0]*Q[1][2]+AQ[2][0]*Q[2][2];
+        D[1][0] = AQ[0][1]*Q[0][0]+AQ[1][1]*Q[1][0]+AQ[2][1]*Q[2][0];
+        D[1][1] = AQ[0][1]*Q[0][1]+AQ[1][1]*Q[1][1]+AQ[2][1]*Q[2][1];
+        D[1][2] = AQ[0][1]*Q[0][2]+AQ[1][1]*Q[1][2]+AQ[2][1]*Q[2][2];
+        D[2][0] = AQ[0][2]*Q[0][0]+AQ[1][2]*Q[1][0]+AQ[2][2]*Q[2][0];
+        D[2][1] = AQ[0][2]*Q[0][1]+AQ[1][2]*Q[1][1]+AQ[2][2]*Q[2][1];
         D[2][2] = AQ[0][2]*Q[0][2]+AQ[1][2]*Q[1][2]+AQ[2][2]*Q[2][2];
         o[0]    = D[1][2];
         o[1]    = D[0][2];
@@ -77,13 +77,13 @@ void getEigenValuesVectors2(float A[3][3], out float Q[3][3], out float vecD[3])
         sgn     = (thet > 0.0)?1.0:-1.0;
         thet   *= sgn; // make it positive
         t       = sgn /(thet +((thet < 1.E6)?sqrt(thet*thet+1.0):thet)) ; // sign(T)/(|T|+sqrt(T^2+1))
-        c       = 1.0/sqrt(t*t+1.0); //  c= 1/(t^2+1) , t=s/c 
+        c       = 1.0/sqrt(t*t+1.0); //  c= 1/(t^2+1) , t=s/c
         if(c==1.0)
         {
             break;  // no room for improvement - reached machine precision.
         }
         jr[0 ]  = jr[1] = jr[2] = jr[3] = 0.0;
-        jr[k0]  = sgn*sqrt((1.0-c)/2.0);  // using 1/2 angle identity sin(a/2) = sqrt((1-cos(a))/2)  
+        jr[k0]  = sgn*sqrt((1.0-c)/2.0);  // using 1/2 angle identity sin(a/2) = sqrt((1-cos(a))/2)
         jr[k0] *= -1.0; // since our quat-to-matrix convention was for v*M instead of M*v
         jr[3 ]  = sqrt(1.0f - jr[k0] * jr[k0]);
         if(jr[3]==1.0)
@@ -100,74 +100,74 @@ void getEigenValuesVectors2(float A[3][3], out float Q[3][3], out float vecD[3])
         q[2]   /= mq;
         q[3]   /= mq;
     }
-    
+
     vecD[0] = D[0][0];
     vecD[1] = D[1][1];
     vecD[2] = D[2][2];
 }
 
 
-void computeK1K2(float volume, float r, 
+void computeK1K2(float volume, float r,
          vec3 xyz2, vec3 xy_yz_xz, vec3 xyz,
          out vec3 minDir, out vec3 maxDir, out vec3 n, out vec3 val, out float k1, out float k2)
-{ 
+{
   float eigenvectors[3][3];
   float eigenvalues[3];
   float curvmat[3][3];
-  
+
   int min_i = 0;
   int max_i = 1;
   int med_i = 2;
-  
+
   float covxy = xy_yz_xz.x - (xyz.x*xyz.y/volume);
   float covyz = xy_yz_xz.y - (xyz.y*xyz.z/volume);
   float covxz = xy_yz_xz.z - (xyz.x*xyz.z/volume);
-  
+
   //volume = volume;
-  curvmat[0][0] = xyz2.x - ((xyz.x*xyz.x)/(volume)); 
-  curvmat[0][1] = covxy;  
-  curvmat[0][2] = covyz;
-  
-  curvmat[1][0] = covxy; 
+  curvmat[0][0] = xyz2.x - ((xyz.x*xyz.x)/(volume));
+  curvmat[0][1] = covxy;
+  curvmat[0][2] = covxz;
+
+  curvmat[1][0] = covxy;
   curvmat[1][1] = xyz2.y - (xyz.y*xyz.y/volume);
-  curvmat[1][2] = covxz;
-  
+  curvmat[1][2] = covyz;
+
   curvmat[2][0] = covxz;
   curvmat[2][1] = covyz;
   curvmat[2][2] = xyz2.z - (xyz.z*xyz.z/volume);
 
   getEigenValuesVectors2( curvmat, eigenvectors, eigenvalues );
-  
+
   min_i = 0;
   if (eigenvalues[1] < eigenvalues[0] && eigenvalues[1] < eigenvalues[2])
     min_i= 1;
   if (eigenvalues[2] < eigenvalues[0] && eigenvalues[2] < eigenvalues[1])
     min_i= 2;
-    
+
   n = vec3( eigenvectors[0][min_i], eigenvectors[1][min_i], eigenvectors[2][min_i] );
-  
+
   max_i = 0;
   if (eigenvalues[1] > eigenvalues[0] && eigenvalues[1] > eigenvalues[2])
       max_i= 1;
   if (eigenvalues[2] > eigenvalues[0] && eigenvalues[2] > eigenvalues[1])
       max_i= 2;
-  
+
   maxDir = vec3( eigenvectors[0][max_i], eigenvectors[1][max_i], eigenvectors[2][max_i] );
 
   for(int i=0; i<3; i++)
   if (min_i != i && max_i != i)
     med_i = i;
-    
+
   minDir = vec3( eigenvectors[0][med_i], eigenvectors[1][med_i], eigenvectors[2][med_i] );
-  
+
   float l1 = eigenvalues[med_i];
   float l2 = eigenvalues[max_i];
-  
+
   float pi = 3.14159;
   float r6 = r*r*r*r*r*r;
   k1 = (6.0/(pi*r6))*(l2 - 3.0*l1) + (8.0/(5.0*r));
   k2 = (6.0/(pi*r6))*(l1 - 3.0*l2) + (8.0/(5.0*r));
-  
+
   val = vec3( eigenvalues[min_i], eigenvalues[med_i], eigenvalues[max_i] );
 }
 
@@ -187,12 +187,12 @@ void computeK1K2(float volume, float r,
 
 /*
 void getEigenValuesVectors ( in mat3 mat_data, out mat3 vectors, out vec3 values )
-{ 
+{
 	vec3 e = vec3(0);
 
     int dimension = 3;
 	int dimensionMinusOne = 2;
-	
+
 	for( int j = 0; j < dimension; ++j )
 		values[ j ] =  mat_data[dimensionMinusOne][ j ];
 		;
@@ -334,12 +334,12 @@ void getEigenValuesVectors ( in mat3 mat_data, out mat3 vectors, out vec3 values
 
      mat_data[ dimensionMinusOne ][ dimensionMinusOne ] =  1.0;
     e[ 0 ] =  0.0;
-    
+
 	for ( int i = 1; i < dimension; ++i )
 		e[ i - 1 ] = e[ i ];
 
 	e[ dimensionMinusOne ] = 0.0;
-	
+
 	float f = float( 0.0 );
 	float tst1 = float( 0.0 );
 	float eps = float( pow( 2.0, -52.0 ));
@@ -405,7 +405,7 @@ void getEigenValuesVectors ( in mat3 mat_data, out mat3 vectors, out vec3 values
                        mat_data[ k ][ i ] = ( c *  mat_data[ k ][ i ] - s * h );
                     }
                 }
-              
+
               p = - s * s2 * c3 * el1 * e[ l ] / dl1;
               e[ l ] = s * p;
               values[ l ] = c * p;
@@ -416,13 +416,13 @@ void getEigenValuesVectors ( in mat3 mat_data, out mat3 vectors, out vec3 values
       values[ l ] = values[ l ] + f;
       e[ l ] = float( 0.0 );
     }
-  
+
   // Sort eigenvalues and corresponding vectors.
   for ( int i = 0; i < dimensionMinusOne; ++i )
     {
       int k = i;
       float p = values[ i ];
-      
+
       for ( int j = i + 1; j < dimension; ++j )
         {
           if ( values[ j ] < p )
@@ -443,54 +443,54 @@ void getEigenValuesVectors ( in mat3 mat_data, out mat3 vectors, out vec3 values
             }
         }
     }
-    
+
     vectors = mat_data;
 }
 
 
-void computeK1K2(float volume, float r, 
+void computeK1K2(float volume, float r,
 				 vec3 xyz2, vec3 xy_yz_xz, vec3 xyz,
 				 out vec3 minDir, out vec3 maxDir, out vec3 n, out vec3 val, out float k1, out float k2)
-{	
+{
 	mat3 eigenvectors = mat3(0);
   vec3 eigenvalues = vec3(0);
   mat3 curvmat = mat3(0);
 
   if (volume > 0.001)
   {
-    
+
     float covxy = xy_yz_xz.x - (xyz.x*xyz.y/volume);
     float covyz = xy_yz_xz.y - (xyz.y*xyz.z/volume);
     float covxz = xy_yz_xz.z - (xyz.x*xyz.z/volume);
-    
-    
+
+
     //volume = volume;
-    curvmat[0][0] = xyz2.x - ((xyz.x*xyz.x)/(volume)); 
-    curvmat[0][1] = covxy;  
+    curvmat[0][0] = xyz2.x - ((xyz.x*xyz.x)/(volume));
+    curvmat[0][1] = covxy;
     curvmat[0][2] = covyz;
-    
-    curvmat[1][0] = covxy; 
+
+    curvmat[1][0] = covxy;
     curvmat[1][1] = xyz2.y - (xyz.y*xyz.y/volume);
     curvmat[1][2] = covxz;
-    
+
     curvmat[2][0] = covxz;
     curvmat[2][1] = covyz;
     curvmat[2][2] = xyz2.z - (xyz.z*xyz.z/volume);
 
     getEigenValuesVectors( curvmat, eigenvectors, eigenvalues );
-    
+
     n = vec3( eigenvectors[0][0], eigenvectors[1][0], eigenvectors[2][0] );
     maxDir = vec3( eigenvectors[0][2], eigenvectors[1][2], eigenvectors[2][2] );
     minDir = vec3( eigenvectors[0][1], eigenvectors[1][1], eigenvectors[2][1] );
-    
+
     float l1 = eigenvalues[1];
     float l2 = eigenvalues[2];
-    
+
     float pi = 3.14159;
     float r6 = r*r*r*r*r*r;
     k1 = (6.0/(pi*r6))*(l2 - 3.0*l1) + (8.0/(5.0*r));
     k2 = (6.0/(pi*r6))*(l1 - 3.0*l2) + (8.0/(5.0*r));
-    
+
     val = vec3( eigenvalues[0], eigenvalues[1], eigenvalues[2] );
   }
 }
