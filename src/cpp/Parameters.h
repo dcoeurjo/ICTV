@@ -60,6 +60,8 @@ public:
     bool g_radial_length; //use the LoD criteria with radial length
     bool g_regular;
     bool g_radius_show;
+	
+	bool g_compute_min_max;
 	bool g_export;
 
     bool g_gui; //hides/show the gui

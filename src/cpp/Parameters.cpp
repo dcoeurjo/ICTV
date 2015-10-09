@@ -60,6 +60,7 @@ Parameters::Parameters()
     g_isosurface = 0;
 	
 	g_export = false;
+	g_compute_min_max = false;
 
     g_sizetex = 0;
     

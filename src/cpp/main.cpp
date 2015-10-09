@@ -162,10 +162,9 @@ private:
 	//algorithm
 	GPUOctree lodManager;
 	Triangulation extractor;
+	Curvature curver;
 	
 	//Framebuffer
-	Curvature curver;
-	Shading shadator;
 	BlitFramebuffer blitter;
 
 	//radius
@@ -270,7 +269,6 @@ public:
 		curver.init();
 		blitter.init();
 		radiusShower.init();
-		shadator.init();
 		
 		queryResult_lod = 0;
 		queryResult_regular = 0;
@@ -396,8 +394,8 @@ public:
 		if (Parameters::getInstance()->g_draw_triangles)
 		{
 			m_time_shading->begin();
-			
 			curver.run(queryResult_regular, queryResult_transition, &triangles_regular, &triangles_transition, &sync_count_triangles);
+			m_time_shading->end();
 			
 			static int nb_export = 0;
 			if (Parameters::getInstance()->g_export)
@@ -424,6 +422,9 @@ public:
 				glGetBufferSubData(GL_ARRAY_BUFFER, 0, size_totale, data);
 				glBindBuffer(GL_ARRAY_BUFFER, 0);
 				
+				bool minmaxset = false;
+				float min = 0;
+				float max = 0;
 				
 				printf(" [2/2] Writing to file ... \n");
 				int nb = 0;
@@ -434,6 +435,33 @@ public:
 					
 					for(int j=0; j<3; j++)
 					{
+						float k1 = data[nb+3];
+						float k2 = data[nb+4];
+						
+						if (!minmaxset)
+						{
+							if ((int)Parameters::getInstance()->g_curv_val == 1)
+								min = max = (k1+k2)/2.0;
+							if ((int)Parameters::getInstance()->g_curv_val == 2)
+								min = max = (k1*k2);
+							minmaxset = true;
+						}
+						else
+						{
+							float c = 0;
+							if ((int)Parameters::getInstance()->g_curv_val == 1)
+								c = (k1+k2)/2.0;
+							if ((int)Parameters::getInstance()->g_curv_val == 2)
+								c = (k1*k2);
+							
+							if (c < min)
+								min = c;
+							if (c > max)
+								max = c;
+							
+							//printf("%lf\n", c);
+						}
+						
 						for(int d=0; d<size_data; d++)
 							fprintf(plotfd, "%.4lf\t", data[nb++]);
 						fprintf(plotfd, "\n");
@@ -442,24 +470,84 @@ public:
 
 				free(data);
 				
+				printf("Min %lf Max %lf\n", min, max);
 
 				Parameters::getInstance()->g_culling = was_culled;
 				Parameters::getInstance()->g_regular = was_regular_grid;
 				Parameters::getInstance()->g_curv_dir = was_showing_dir;
 				Parameters::getInstance()->g_ground_truth = was_gt;
-				
-				
+
 				fclose(plotfd);
 				printf("Done\n");
 			}
 			
-			/*
-			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-			shadator.run(triangles_regular);
-			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-			*/
-			
-			m_time_shading->end();
+			if (Parameters::getInstance()->g_compute_min_max)
+			{
+				//printf(" Reading curvatures ...\n");
+				
+				int size_data = 3+2+3+3; //vec3 pos, vec2 k1k2, vec3 min_dir, vec3 max_dir
+				int size_totale = sizeof(float)*3*triangles_regular*size_data; //3 vertex/triangles
+				glBindBuffer(GL_ARRAY_BUFFER, Parameters::getInstance()->g_buffers[BUFFER_TRIANGULATION]);
+				float* data = (float*)malloc(size_totale);
+				glGetBufferSubData(GL_ARRAY_BUFFER, 0, size_totale, data);
+				glBindBuffer(GL_ARRAY_BUFFER, 0);
+				
+				bool minmaxset = false;
+				float min = 0;
+				float max = 0;
+				
+				//printf("Compute min max ... \n");
+				int nb = 0;
+				for(unsigned int i=0; i<triangles_regular; i++)
+				{
+					for(int j=0; j<3; j++)
+					{
+						float k1 = data[nb+3];
+						float k2 = data[nb+4];
+						
+						if (!minmaxset)
+						{
+							if ((int)Parameters::getInstance()->g_curv_val == 1)
+								min = max = (k1+k2)/2.0;
+							if ((int)Parameters::getInstance()->g_curv_val == 2)
+								min = max = (k1*k2);
+							if ((int)Parameters::getInstance()->g_curv_val == 3)
+								min = max = k1;
+							if ((int)Parameters::getInstance()->g_curv_val == 4)
+								min = max = k2;
+							minmaxset = true;
+						}
+						else
+						{
+							float c = 0;
+							if ((int)Parameters::getInstance()->g_curv_val == 1)
+								c = (k1+k2)/2.0;
+							if ((int)Parameters::getInstance()->g_curv_val == 2)
+								c = (k1*k2);
+							if ((int)Parameters::getInstance()->g_curv_val == 3)
+								c = k1;
+							if ((int)Parameters::getInstance()->g_curv_val == 4)
+								c = k2;
+							
+							if (c < min)
+								min = c;
+							if (c > max)
+								max = c;
+						}
+						
+						nb+= size_data;
+					}
+				}
+
+				free(data);
+				
+				//printf("Min %lf Max %lf\n", min, max);
+				
+				Parameters::getInstance()->g_curvmin = min;
+				Parameters::getInstance()->g_curvmax = max;
+				
+				//Parameters::getInstance()->g_compute_min_max = false;
+			}
 		}
 		
 		//fprintf(stdout, "%lf %lf %lf -- ", Parameters::getInstance()->g_camera.pos[0], Parameters::getInstance()->g_camera.pos[1], Parameters::getInstance()->g_camera.pos[2]);
@@ -759,8 +847,9 @@ public:
 				
 				if(m_widgets.beginPanel(r_actions, "Actions", &unfold_actions))
 				{
+					m_widgets.doButton(nv::Rect(), "Auto min max", &(Parameters::getInstance()->g_compute_min_max));
 					m_widgets.doButton(nv::Rect(), "Export Data", &(Parameters::getInstance()->g_export));
-					m_widgets.doButton(nv::Rect(), "Read data from texture", &(Parameters::getInstance()->g_fromtexture));
+					//m_widgets.doButton(nv::Rect(), "Read data from texture", &(Parameters::getInstance()->g_fromtexture));
 					m_widgets.doButton(nv::Rect(), "Capture", &(Parameters::getInstance()->g_capture.enabled));
 					m_widgets.doButton(nv::Rect(), "Freeze", &(Parameters::getInstance()->g_geometry.freeze));
 					m_widgets.endPanel();
