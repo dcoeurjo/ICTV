@@ -4,12 +4,12 @@
 
 #include <cstring>
 
-const GLenum MIN_FILT = GL_LINEAR_MIPMAP_LINEAR;
-const GLenum MAG_FILT = GL_LINEAR;
-//const GLenum MIN_FILT = GL_NEAREST_MIPMAP_NEAREST;
-//const GLenum MAG_FILT = GL_NEAREST;
+//const GLenum MIN_FILT = GL_LINEAR_MIPMAP_LINEAR;
+//const GLenum MAG_FILT = GL_LINEAR;
+const GLenum MIN_FILT = GL_NEAREST_MIPMAP_NEAREST;
+const GLenum MAG_FILT = GL_NEAREST;
 
-bool mymipmap = false;
+bool mymipmap = true;
 
 void DataLoader::loadData32BGpu()
 {
@@ -119,6 +119,8 @@ void DataLoader::loadx2y2z2()
 			mip1 = mip0;
 		}
 		free(mip0);
+		
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, lvl-1);
 	}
 	else
 	{
@@ -177,6 +179,8 @@ void DataLoader::loadxyyzxz()
 			mip1 = mip0;
 		}
 		free(mip0);
+		
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, lvl-1);
 	}
 	else
 	{
@@ -240,6 +244,8 @@ void DataLoader::loadxyz()
 			mip1 = mip0;
 		}
 		free(mip0);
+		
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, lvl-1);
 	}
 	else
 	{
