@@ -4,12 +4,12 @@
 
 #include <cstring>
 
-//const GLenum MIN_FILT = GL_LINEAR_MIPMAP_LINEAR;
-//const GLenum MAG_FILT = GL_LINEAR;
-const GLenum MIN_FILT = GL_NEAREST_MIPMAP_NEAREST;
-const GLenum MAG_FILT = GL_NEAREST;
+const GLenum MIN_FILT = GL_LINEAR_MIPMAP_LINEAR;
+const GLenum MAG_FILT = GL_LINEAR;
+//const GLenum MIN_FILT = GL_NEAREST_MIPMAP_NEAREST;
+//const GLenum MAG_FILT = GL_NEAREST;
 
-bool mymipmap = true;
+bool mymipmap = false;
 
 void DataLoader::loadData32BGpu()
 {

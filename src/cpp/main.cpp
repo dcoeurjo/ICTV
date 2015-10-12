@@ -19,6 +19,7 @@
 
 #include <cmath>
 #include <string>
+#include <boost/concept_check.hpp>
 
 #define CAM_SPEED 20
 #define CAM_SPEED_MAX Parameters::getInstance()->g_geometry.scale[0] / 5.0
@@ -177,6 +178,7 @@ private:
 
 	//Bench
 	int frame;
+	int fps;
 	
 	GLuint queryResult_lod;
 	GLuint queryResult_regular;
@@ -205,12 +207,20 @@ private:
 	bool plot;
 	bool transition_cells_displayed;
 	bool reload_fetch;
+	bool movement;
 	
 	//Parameters keep for export
 	bool was_regular_grid;
 	bool was_culled;
 	int was_showing_dir;
 	int was_gt;
+	
+	float last_radius;
+	float last_lvl;
+	float last_scale;
+	bool last_regular;
+	
+	int min_lvl;
 	
 public:
 	Vizo(int _argc, char** _argv) : gk::App()
@@ -277,6 +287,7 @@ public:
 		triangles_transition = 0;
 		unmovedCells = 0;
 		frame = 0;
+		fps = 0;
 		
 		plot = false;
 		transition_cells_displayed = true;
@@ -295,13 +306,50 @@ public:
 		else 
 			load_viewPoint();
 		
+		min_lvl = (int)ceil(log2(Parameters::getInstance()->g_curvradius));
+		printf("Got min lvl %d\n", min_lvl);
+		Parameters::getInstance()->g_lvl = min_lvl;
+		
+		last_radius = Parameters::getInstance()->g_curvradius;
+		last_lvl = Parameters::getInstance()->g_lvl;
+		last_scale = Parameters::getInstance()->g_scale;
+		last_regular = Parameters::getInstance()->g_regular;
+		
 		reload_fetch = Parameters::getInstance()->g_fromtexture;
+		
+		movement = false;
 		
 		return 0;
 	}
     
 	void window_draw ()
 	{
+		if (last_radius != Parameters::getInstance()->g_curvradius ||
+			last_scale != Parameters::getInstance()->g_scale ||
+			last_regular != Parameters::getInstance()->g_regular)
+		{
+			min_lvl = (int)ceil(log2(Parameters::getInstance()->g_curvradius));
+			Parameters::getInstance()->g_compute_min_max = true;
+			Parameters::getInstance()->g_lvl =  min_lvl;
+		}
+		
+		if( last_lvl != Parameters::getInstance()->g_lvl )
+		{
+			min_lvl = (int)ceil(log2(Parameters::getInstance()->g_curvradius));
+			Parameters::getInstance()->g_compute_min_max = true;
+		}
+		
+		if(Parameters::getInstance()->g_auto_refine && movement)
+			Parameters::getInstance()->g_lvl =  min_lvl;
+		
+		last_radius = Parameters::getInstance()->g_curvradius;
+		last_lvl = Parameters::getInstance()->g_lvl;
+		last_scale = Parameters::getInstance()->g_scale;
+		last_regular = Parameters::getInstance()->g_regular;
+		
+		if (Parameters::getInstance()->g_auto_refine && fps > 20 && Parameters::getInstance()->g_lvl > 0)
+			Parameters::getInstance()->g_lvl -= 1;
+			
 		//return;
 		if (Parameters::getInstance()->g_export)
 		{
@@ -461,7 +509,7 @@ public:
 			
 			if (Parameters::getInstance()->g_compute_min_max)
 			{
-				//printf(" Reading curvatures ...\n");
+				printf("Reading curvatures ...\n");
 				
 				int size_data = 3; //vec3 pos
 				size_data += 2; //vec2 k1k2
@@ -482,7 +530,7 @@ public:
 				float min = 0;
 				float max = 0;
 				
-				//printf("Compute min max ... \n");
+				printf("Compute min max ... \n");
 				int nb = 0;
 				for(unsigned int i=0; i<triangles_regular; i++)
 				{
@@ -527,10 +575,10 @@ public:
 
 				free(data);
 				
-				//printf("Min %lf Max %lf\n", min, max);
+				printf("(NB %d) Min %lf Max %lf\n", nb, min, max);
 				
-				Parameters::getInstance()->g_curvmin = min;
-				Parameters::getInstance()->g_curvmax = max;
+				Parameters::getInstance()->g_curvmin = min-0.01;
+				Parameters::getInstance()->g_curvmax = max+0.01;
 				
 				Parameters::getInstance()->g_compute_min_max = false;
 			}
@@ -643,6 +691,8 @@ public:
     
 	void testMovement()
 	{
+		movement = false;
+		
 		int x, y;
 		int button = SDL_GetRelativeMouseState(&x, &y);
 		
@@ -650,12 +700,19 @@ public:
 		{
 			//QUATERNION
 			if(key('s'))
+			{
+				movement = true;
 				cam.moveBackward(cam_speed);//*(gpu_time/1000.0));
+			}
 			if(key('z'))
+			{
+				movement = true;
 				cam.moveForward(cam_speed);//*(gpu_time/1000.0));
+			}
 			
 			if(button & SDL_BUTTON(1))
 			{
+				movement = true;
 				cam.rotate(x, y);
 			}
 			
@@ -667,11 +724,13 @@ public:
 			{
 				if (Parameters::getInstance()->g_mouse == MOUSE_FRAMEBUFFER) 
 				{
+					movement = true;
 					Parameters::getInstance()->g_framebuffer_region.p[0]-= x / Parameters::getInstance()->g_framebuffer_region.mag;
 					Parameters::getInstance()->g_framebuffer_region.p[1]+= y / Parameters::getInstance()->g_framebuffer_region.mag;
 					updateFramebufferRegion ();
 				} else if (Parameters::getInstance()->g_mouse == MOUSE_GEOMETRY) 
 				{
+					movement = true;
 					rotateLocal_noTranslation(Parameters::getInstance()->g_geometry.affine, gk::Vector(0, 1, 0), x*cam_rotate);
 					rotateLocal_noTranslation(Parameters::getInstance()->g_geometry.affine, gk::Vector(1, 0, 0), y*cam_rotate);
 				}
@@ -681,28 +740,34 @@ public:
 			{
 				if(key(SDLK_PAGEDOWN))
 				{
+					movement = true;
 					rotateLocal_noTranslation(Parameters::getInstance()->g_geometry.affine, gk::Vector(1, 0, 0), -4*cam_rotate);
 				}
 				if(key(SDLK_PAGEUP))
 				{
+					movement = true;
 					rotateLocal_noTranslation(Parameters::getInstance()->g_geometry.affine, gk::Vector(1, 0, 0), 4*cam_rotate);
 				}
 				if(key(SDLK_RIGHT))
 				{
+					movement = true;
 					rotateGlobal_noTranslation(Parameters::getInstance()->g_geometry.affine, gk::Vector(0, 1, 0), 4*cam_rotate);
 				}
 				if(key(SDLK_LEFT))
 				{
+					movement = true;
 					rotateGlobal_noTranslation(Parameters::getInstance()->g_geometry.affine, gk::Vector(0, 1, 0), -4*cam_rotate);
 				}
 				if(key(SDLK_UP))
 				{
+					movement = true;
 					Parameters::getInstance()->g_geometry.affine =
 						gk::Translate(gk::Vector(0, 0, cam_speed)) * //*(gpu_time/1000.0))) *
 						Parameters::getInstance()->g_geometry.affine;
 				}
 				if(key(SDLK_DOWN))
 				{
+					movement = true;
 					Parameters::getInstance()->g_geometry.affine =
 						gk::Translate(gk::Vector(0, 0, -cam_speed)) * //*(gpu_time/1000.0))) *
 						Parameters::getInstance()->g_geometry.affine;
@@ -712,24 +777,28 @@ public:
 			{
 				if(key(SDLK_UP))
 				{
+					movement = true;
 					Parameters::getInstance()->g_geometry.affine =
 						gk::Translate(gk::Vector(0, -cam_speed, 0)) * //*(gpu_time/1000.0), 0)) *
 						Parameters::getInstance()->g_geometry.affine;
 				}
 				if(key(SDLK_DOWN))
 				{
+					movement = true;
 					Parameters::getInstance()->g_geometry.affine =
 						gk::Translate(gk::Vector(0, cam_speed, 0)) * //*(gpu_time/1000.0), 0)) *
 						Parameters::getInstance()->g_geometry.affine;
 				}
 				if(key(SDLK_RIGHT))
 				{
+					movement = true;
 					Parameters::getInstance()->g_geometry.affine =
 						gk::Translate(gk::Vector(-cam_speed, 0, 0)) * //*(gpu_time/1000.0), 0, 0)) *
 						Parameters::getInstance()->g_geometry.affine;
 				}
 				if(key(SDLK_LEFT))
 				{
+					movement = true;
 					Parameters::getInstance()->g_geometry.affine =
 						gk::Translate(gk::Vector(cam_speed, 0, 0)) * //*(gpu_time/1000.0), 0, 0)) *
 						Parameters::getInstance()->g_geometry.affine;
@@ -756,7 +825,6 @@ public:
 		gpu_blit_fbo = m_time_blit->result64() / 1000;
 		
 		gpu_time = (gpu_lod_time + gpu_cull_time + gpu_render_time_regular + gpu_render_time_transition + gpu_shading_time)/1000.0;
-		int fps = 0;
 		if (gpu_time == 0)
 			gpu_time = 0.1;
 		
@@ -791,7 +859,7 @@ public:
 				sprintf(tmp, "Isosurface %.2f", Parameters::getInstance()->g_isosurface);
 				m_widgets.doLabel(nv::Rect(), tmp);
 				m_widgets.doHorizontalSlider(nv::Rect(0,0, 200, 0), 0.f, 1.f, &(Parameters::getInstance()->g_isosurface));*/
-				sprintf(tmp, "Mode:\nMean GT (1), Mean GT hierachique (2),\nMean Approx (3)\nCurrent %d", (int)Parameters::getInstance()->g_ground_truth);
+				sprintf(tmp, "Mode:\nGT (1), GT hierachique (2),\nApprox (3)\nCurrent %d", (int)Parameters::getInstance()->g_ground_truth);
 				m_widgets.doLabel(nv::Rect(), tmp);
 				m_widgets.doHorizontalSlider(nv::Rect(0,0, 200, 0), 1.1, 3.9, &(Parameters::getInstance()->g_ground_truth));
 				sprintf(tmp, "Mode:\nNone (0),\nMean curvature (1), Gaussian curvature (2)\nK1 (3), K2(4)\nCurrent %d", (int)Parameters::getInstance()->g_curv_val);
@@ -802,7 +870,10 @@ public:
 				m_widgets.doHorizontalSlider(nv::Rect(0,0, 200, 0), 0.1f, 4.9f, &(Parameters::getInstance()->g_curv_dir));
 				sprintf(tmp, "Ball Radius %.2f", Parameters::getInstance()->g_curvradius);
 				m_widgets.doLabel(nv::Rect(), tmp);
-				m_widgets.doHorizontalSlider(nv::Rect(0,0, 200, 0), 1.f, 30.f, &(Parameters::getInstance()->g_curvradius));
+				m_widgets.doHorizontalSlider(nv::Rect(0,0, 200, 0), 1.f, 20.f, &(Parameters::getInstance()->g_curvradius));
+				sprintf(tmp, "GT Lvl %.2f", Parameters::getInstance()->g_lvl);
+				m_widgets.doLabel(nv::Rect(), tmp);
+				m_widgets.doHorizontalSlider(nv::Rect(0,0, 200, 0), 0.f, 10.f, &(Parameters::getInstance()->g_lvl));
 				sprintf(tmp, "Curvature Min %.2f", Parameters::getInstance()->g_curvmin);
 				m_widgets.doLabel(nv::Rect(), tmp);
 				m_widgets.doHorizontalSlider(nv::Rect(0,0, 200, 0), -5.f, 5.f, &(Parameters::getInstance()->g_curvmin));
@@ -821,12 +892,14 @@ public:
 					m_widgets.doButton(nv::Rect(), "Display Radius", &(Parameters::getInstance()->g_radius_show));
 					m_widgets.doButton(nv::Rect(), "Wireframe", &(Parameters::getInstance()->g_solid_wireframe));
 					m_widgets.doButton(nv::Rect(), "Cull", &(Parameters::getInstance()->g_culling));
-					m_widgets.doButton(nv::Rect(), "Flying camera", &(Parameters::getInstance()->g_controls));
+					//m_widgets.doButton(nv::Rect(), "Flying camera", &(Parameters::getInstance()->g_controls));
 					//m_widgets.doButton(nv::Rect(), "Display textures", &(Parameters::getInstance()->g_textured_data));
 					//m_widgets.doButton(nv::Rect(), "Display background", &(skybox));
-					m_widgets.doButton(nv::Rect(), "Display transitions", &transition_cells_displayed);
-					m_widgets.doButton(nv::Rect(), "LoD Radial", &(Parameters::getInstance()->g_radial_length));
+					//m_widgets.doButton(nv::Rect(), "Display transitions", &transition_cells_displayed);
+					//m_widgets.doButton(nv::Rect(), "LoD Radial", &(Parameters::getInstance()->g_radial_length));
 					m_widgets.doButton(nv::Rect(), "Regular grid", &(Parameters::getInstance()->g_regular));
+					m_widgets.doButton(nv::Rect(), "Auto refine", &(Parameters::getInstance()->g_auto_refine));
+					m_widgets.doButton(nv::Rect(), "k1k2 normals", &(Parameters::getInstance()->g_k1k2_normals));
 					
 					m_widgets.endPanel();
 				}

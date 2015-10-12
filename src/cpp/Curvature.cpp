@@ -93,6 +93,14 @@ void configure_curv(GLuint program, GLuint first_loc)
 	glProgramUniform1i (program,
 			Parameters::getInstance()->g_uniform_locations[first_loc+16],
  			(int)Parameters::getInstance()->g_curv_val);
+	
+	glProgramUniform1f (program,
+			Parameters::getInstance()->g_uniform_locations[first_loc+17],
+ 			Parameters::getInstance()->g_lvl);
+
+	glProgramUniform1i (program,
+			Parameters::getInstance()->g_uniform_locations[first_loc+18],
+ 			Parameters::getInstance()->g_k1k2_normals);
 }
 
 void Curvature::configureProgram()
@@ -149,6 +157,11 @@ void load_curv(GLuint program, GLuint first_loc)
 		glGetUniformLocation(program, "u_curv_dir");
 	Parameters::getInstance()->g_uniform_locations[first_loc+16] = 
 		glGetUniformLocation(program, "u_curv_val");
+		
+	Parameters::getInstance()->g_uniform_locations[first_loc+17] = 
+		glGetUniformLocation(program, "u_lvl");
+	Parameters::getInstance()->g_uniform_locations[first_loc+18] = 
+		glGetUniformLocation(program, "u_k1k2_normals");
 }
 
 void Curvature::loadProgram()
@@ -345,7 +358,7 @@ void Curvature::loadTransformFeedbacks()
 void Curvature::loadBuffers()
 {
 	int res = (int)Parameters::getInstance()->g_tessel;
-	long long int nb_cells = 20000*res*res*res;
+	long long int nb_cells = 30000*res*res*res;
 	int export_data = 3; //vec3 pos
 	export_data += 2; //vec2 k1k2
 	export_data += 3; //vec3 min_dir;

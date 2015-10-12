@@ -19,6 +19,8 @@ public:
 	virtual float* get32BData() { return data; }
 	virtual unsigned char* get8BData() { return data_char; }
 	
+	int getSize() { return sizex; }
+	
 	virtual void loadData32BGpu();
 	virtual void loadData8BGpu();
 	virtual void loadx2y2z2();

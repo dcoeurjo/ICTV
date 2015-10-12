@@ -60,6 +60,8 @@ public:
     bool g_radial_length; //use the LoD criteria with radial length
     bool g_regular;
     bool g_radius_show;
+	bool g_auto_refine;
+	bool g_k1k2_normals;
 	
 	bool g_compute_min_max;
 	bool g_export;
@@ -74,6 +76,7 @@ public:
     float g_curvmax;
 	float g_curv_dir;
 	float g_curv_val;
+	float g_lvl;
     int g_sizetex;
 
     float g_ground_truth;

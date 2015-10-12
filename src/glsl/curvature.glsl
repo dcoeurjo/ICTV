@@ -17,6 +17,7 @@ out vec3 covmatUpper;
 out vec2 vertex_k1_k2;
 
 uniform vec3 u_scene_size;
+uniform float u_lvl;
 
 void main( )
 {
@@ -27,10 +28,9 @@ void main( )
 	vec3 xyz2 = vec3(0);
 	vec3 xy_yz_xz = vec3(0);
 	vec3 xyz = vec3(0);
-	
-	float lvl = 0;
+
 	float volume_approx = 0.0;
-	getVolumeMoments(vertex_position, volume, xyz, xy_yz_xz, xyz2, lvl);
+	getVolumeMoments(vertex_position, volume, xyz, xy_yz_xz, xyz2, u_lvl);
 
 	float k1;
 	float k2;
@@ -41,14 +41,15 @@ void main( )
 				xyz2, xy_yz_xz, xyz,
 				curv_dir_min, curv_dir_max, curv_normale, eigenvalues, k1, k2);
 	
-	float r = u_curv_radius;
-	float fact83r = 8.0/(3.0*r);
-	float fact4pir4 = 4.0 / (3.14159*r*r*r*r);
-	float curvature = fact83r - fact4pir4*volume;
-	
 	curv_value = 0;
 	if(u_curv_val == 1)
+	{
+		float r = u_curv_radius;
+		float fact83r = 8.0/(3.0*r);
+		float fact4pir4 = 4.0 / (3.14159*r*r*r*r);
+		float curvature = fact83r - fact4pir4*volume;
 		curv_value = (k1+k2)/2.0;
+	}
 	else if(u_curv_val == 2)
 		curv_value = (k1*k2);
 	else if(u_curv_val == 3)
@@ -79,8 +80,9 @@ void main( )
 	curv_value = curvature;*/
 
 	//xyz = textureLod(u_xyz_tex, vertex_position, 0).rgb;
-	vertex_color = xyz2/(32.0*32.0*125.0);
+	//vertex_color = vec3(volume/10000.0, 0, 1);
 	//vertex_color = xyz2/(65.0*65.0);
+	vertex_color = vec3(1);
 	
     gl_Position = position;
 }
@@ -177,11 +179,19 @@ void drawTetra( vec3 pts[3], vec3 mean_dir, vec3 color )
 }
 */
 
+vec3 reorientNormal(vec3 pts[3], vec3 given_normale)
+{
+	vec3 normale = normalize(cross(normalize(pts[0]-pts[1]).xyz, normalize(pts[0]-pts[2]).xyz));
+	if (dot(normalize(given_normale), normalize(normale)) < 0)
+		given_normale *= -1;
+	return given_normale;
+}
+
 void drawParallelpitruc( vec3 pts[3], vec3 mean_dir, vec3 color )
 {		
 		vec3 center_face = (pts[0].xyz+pts[1].xyz+pts[2].xyz)/3.0;
 		vec3 normale = normalize(cross(normalize(pts[0]-pts[1]).xyz, normalize(pts[0]-pts[2]).xyz));
-		vec3 tan_dir = normalize(cross(normalize(normale), normalize(mean_dir)));
+		vec3 tan_dir = normalize(pts[0]-pts[1]);
 		vec3 depth = normalize(cross(normalize(tan_dir), normalize(mean_dir)));
 		
 		float l = 0.1* max( max(length(pts[0]-pts[2]), length(pts[0]-pts[1])), length(pts[1]-pts[2]) );
@@ -275,7 +285,7 @@ void main()
 		geometry_max_dir = curv_dir_max[i].xyz;
 		geometry_position = vertex_position[i].xyz;
 		
-		geometry_normale = curv_normale[i];
+		geometry_normale = reorientNormal(pts, curv_normale[i]);
 		geometry_covmatDiag = covmatDiag[i];
 		geometry_covmatUpper = covmatUpper[i];
 		geometry_egv = eigenvalues[i];
@@ -307,12 +317,15 @@ void main()
 
 #ifdef FRAGMENT_SHADER
 
+#define TRANSFORMS_BINDING 0
+
 layout(early_fragment_tests) in;
 
 in vec2 geometry_k1_k2;
 in vec3 geometry_min_dir;
 in vec3 geometry_max_dir;
 in vec3 geometry_position;
+in vec3 geometry_normale;
 
 in vec3 geometry_distance;
 in vec3 geometry_color;
@@ -322,8 +335,17 @@ in flat int geometry_curvdir;
 uniform float u_kmin;
 uniform float u_kmax;
 uniform int solid_wireframe;
+uniform int u_k1k2_normals;
 
 out vec4 fragment_color;
+
+layout (std140, binding = TRANSFORMS_BINDING)
+uniform Transforms {
+	mat4 modelview;
+	mat4 projection;
+	mat4 modelviewprojection;
+	mat4 invmodelview;
+} u_transforms;
 
 vec3 HSVtoRGB(vec3 hsv)
 {
@@ -359,6 +381,27 @@ vec3 colormap(float scale)
   return HSVtoRGB( vec3(hue, 0.9, 1.0) );
 }
 
+vec3 gradientmap( float scale )
+{
+  const int intervals = 2; //3 colors
+  int upper_index = int( ceil( intervals * scale ) );
+  if ( upper_index == 0 ) // Special case when value == min.
+    upper_index = 1;
+    
+  vec3 colors[3];
+  colors[0] = vec3(0, 0, 1);
+  colors[1] = vec3(1, 0, 0);
+  colors[2] = vec3(1, 1, 0);
+  
+  
+  vec3 firstColor = colors[upper_index-1];
+  vec3 lastColor = colors[upper_index];
+	
+  scale = ( scale * intervals ) - (upper_index - 1);
+
+  return firstColor + scale * (lastColor - firstColor);
+}
+
 vec3 colorFromCurv(float c)
 {
 	vec3 color;
@@ -368,14 +411,13 @@ vec3 colorFromCurv(float c)
 
 	if ((gt_curvature<0) || (gt_curvature>1)) color= vec3(0.5,0.5,0.5);
 	else
-		color= colormap(gt_curvature);
+		color= gradientmap(gt_curvature);
 	
 	return color;
 }
 
 void main( )
 {
-	vec3 geometry_normal = normalize(cross( dFdx(geometry_position.xyz), dFdy(geometry_position.xyz)));
 	vec3 color;
 	if (geometry_curvdir == 0)
 	{
@@ -387,9 +429,18 @@ void main( )
 	else
 		color = abs(geometry_color);
 	
+	vec3 normale;
+	if( u_k1k2_normals == 0 )
+		normale = normalize(cross( dFdx(geometry_position.xyz), dFdy(geometry_position.xyz)));
+	else
+		normale = geometry_normale;
+	
 	//Phong
-	float shadow_weight = 0;
-	float dotnormal = clamp(dot(normalize(geometry_normal), normalize(vec3(1, 1, 1))), 0, 1);
+	vec3 light_dir = vec3(1, 1, 1);
+	normale = (u_transforms.modelview * vec4(normale, 0)).xyz;
+	
+	float shadow_weight = 0.5;
+	float dotnormal = clamp(dot(normalize(normale), normalize(light_dir.xyz)), 0, 1);
 	fragment_color = vec4( shadow_weight * color * dotnormal + (1-shadow_weight) * color, 1);
 
 	if (geometry_curvdir == 0 && solid_wireframe == 1)
