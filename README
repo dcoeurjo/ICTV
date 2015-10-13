@@ -4,11 +4,14 @@ Build & run
 	cd src/GKIT
 	premake4 gmake
 	make vizo
-	./vizo
+	./vizo ../../data/raw/octa-flower-130_border.raw 1 130
+	(or any other .raw. 
+	 *1* is ... because.
+	 *130* is the size of the object's bounding box.)
 
 GKIT will lookup the sources with the path "../ICTV/src/cpp"
 
-Dependencies: SDL2, SDL_image, openexr, glew
+Dependencies: SDL2, SDL2_image, SDL2_ttf, openexr, glew
 
 
 
