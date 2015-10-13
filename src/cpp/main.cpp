@@ -164,6 +164,7 @@ private:
 	GPUOctree lodManager;
 	Triangulation extractor;
 	Curvature curver;
+	Shading shadator;
 	
 	//Framebuffer
 	BlitFramebuffer blitter;
@@ -279,6 +280,7 @@ public:
 		curver.init();
 		blitter.init();
 		radiusShower.init();
+		shadator.init();
 		
 		queryResult_lod = 0;
 		queryResult_regular = 0;
@@ -442,7 +444,9 @@ public:
 		if (Parameters::getInstance()->g_draw_triangles)
 		{
 			m_time_shading->begin();
+			glEnable(GL_RASTERIZER_DISCARD);
 			curver.run(queryResult_regular, queryResult_transition, &triangles_regular, &triangles_transition, &sync_count_triangles);
+			glDisable(GL_RASTERIZER_DISCARD);
 			m_time_shading->end();
 			
 			static int nb_export = 0;
@@ -458,28 +462,44 @@ public:
 					perror("fopen");
 				
 				//fprintf(plotfd, "# Frame \t\t TotalCells \t\t RegCells \t\t TrCells \t\t Tgl \t\t LodTime (ms) \t\t CullTime (ms) \t\t RegTglTime (ms) \t\t TrTglTime (ms)\t\t ShadingTime (ms)\t\t ShdLessTime (ms)\t\t TotalTime (ms) \t\t Cpu Time (ns)\n");
-				fprintf(plotfd, "#Vertex \t\tK1 \tK2 \tDir Min \t\tDir Max \t\tNormale \t\tEigenvalues \t\tCovmat Diag \t\tCovmat Upper\n");
+				fprintf(plotfd, "#Vertex \t\tK1 \tK2 \tDir Min \t\tDir Max \t\tNormale\n");// \t\tEigenvalues \t\tCovmat Diag \t\tCovmat Upper\n");
 				fprintf(plotfd, "N %d\n", 3*triangles_regular);
 			
 				printf(" [1/2] Copying from the GPU ... \n");
 				
-				int size_data = 3; //vec3 pos
-				size_data += 2; //vec2 k1k2
-				size_data += 3; //vec3 min_dir;
-				size_data += 3; //vec3 max_dir;
-				size_data += 3; //vec3 normale;
-				size_data += 3; //vec3 eigenvalues
-				size_data += 3; //vec3 covmatup
-				size_data += 3; //vec3 covmatdiag
-				
+				int size_data = 4;
 				int size_totale = sizeof(float)*3*triangles_regular*size_data; //3 vertex/triangles
-				glBindBuffer(GL_ARRAY_BUFFER, Parameters::getInstance()->g_buffers[BUFFER_TRIANGULATION]);
+				glBindBuffer(GL_ARRAY_BUFFER, Parameters::getInstance()->g_buffers[BUFFER_EXPORT_TGL]);
 				float* data = (float*)malloc(size_totale);
 				glGetBufferSubData(GL_ARRAY_BUFFER, 0, size_totale, data);
 				glBindBuffer(GL_ARRAY_BUFFER, 0);
 				
+				int size_data_dirmin = 4;
+				int size_totale_dirmin = sizeof(float)*3*triangles_regular*size_data_dirmin; //3 vertex/triangles
+				glBindBuffer(GL_ARRAY_BUFFER, Parameters::getInstance()->g_buffers[BUFFER_EXPORT_DIRMIN]);
+				float* data_dirmin = (float*)malloc(size_totale_dirmin);
+				glGetBufferSubData(GL_ARRAY_BUFFER, 0, size_totale_dirmin, data_dirmin);
+				glBindBuffer(GL_ARRAY_BUFFER, 0);
+				
+				int size_data_dirmax = 4;
+				int size_totale_dirmax = sizeof(float)*3*triangles_regular*size_data_dirmax; //3 vertex/triangles
+				glBindBuffer(GL_ARRAY_BUFFER, Parameters::getInstance()->g_buffers[BUFFER_EXPORT_DIRMAX]);
+				float* data_dirmax = (float*)malloc(size_totale_dirmax);
+				glGetBufferSubData(GL_ARRAY_BUFFER, 0, size_totale_dirmax, data_dirmax);
+				glBindBuffer(GL_ARRAY_BUFFER, 0);
+				
+				int size_data_normale = 4;
+				int size_totale_normale = sizeof(float)*3*triangles_regular*size_data_normale; //3 vertex/triangles
+				glBindBuffer(GL_ARRAY_BUFFER, Parameters::getInstance()->g_buffers[BUFFER_EXPORT_NORMALES]);
+				float* data_normale = (float*)malloc(size_totale_normale);
+				glGetBufferSubData(GL_ARRAY_BUFFER, 0, size_totale_normale, data_normale);
+				glBindBuffer(GL_ARRAY_BUFFER, 0);
+				
 				printf(" [2/2] Writing to file ... \n");
 				int nb = 0;
+				int nb2 = 0;
+				int nb3 = 0;
+				int nb4 = 0;
 				for(unsigned int i=0; i<triangles_regular; i++)
 				{
 					if (i !=0 && i%100000 == 0)
@@ -487,16 +507,35 @@ public:
 					
 					for(int j=0; j<3; j++)
 					{
-						for(int d=0; d<size_data; d++)
+						for(int d=0; d<3; d++)
 						{
-							//if (d == 14 || d == 15 || d == 16)
 								fprintf(plotfd, "%.4lf\t", data[nb++]);
 						}
+						fprintf(plotfd, "%.4lf\t", data_dirmin[nb+3]);
+						fprintf(plotfd, "%.4lf\t", data_dirmax[nb+3]);
+						for(int d=0; d<3; d++)
+						{
+								fprintf(plotfd, "%.4lf\t", data_dirmin[nb3++]);
+						}
+						nb3++;
+						for(int d=0; d<3; d++)
+						{
+								fprintf(plotfd, "%.4lf\t", data_dirmax[nb4++]);
+						}
+						nb4++;
+						for(int d=0; d<3; d++)
+						{
+								fprintf(plotfd, "%.4lf\t", data_normale[nb2++]);
+						}
+						nb2++;
 						fprintf(plotfd, "\n");
 					}
 				}
 
 				free(data);
+				free(data_normale);
+				free(data_dirmin);
+				free(data_dirmax);
 
 				Parameters::getInstance()->g_culling = was_culled;
 				Parameters::getInstance()->g_regular = was_regular_grid;
@@ -509,35 +548,34 @@ public:
 			
 			if (Parameters::getInstance()->g_compute_min_max)
 			{
-				printf("Reading curvatures ...\n");
+				//printf("Reading curvatures ...\n");
 				
-				int size_data = 3; //vec3 pos
-				size_data += 2; //vec2 k1k2
-				size_data += 3; //vec3 min_dir;
-				size_data += 3; //vec3 max_dir;
-				size_data += 3; //vec3 normale;
-				size_data += 3; //vec3 eigenvalues
-				size_data += 3; //vec3 covmatup
-				size_data += 3; //vec3 covmatdiag
+				int size_data_dirmin = 4;
+				int size_totale_dirmin = sizeof(float)*3*triangles_regular*size_data_dirmin; //3 vertex/triangles
+				glBindBuffer(GL_ARRAY_BUFFER, Parameters::getInstance()->g_buffers[BUFFER_EXPORT_DIRMIN]);
+				float* data_dirmin = (float*)malloc(size_totale_dirmin);
+				glGetBufferSubData(GL_ARRAY_BUFFER, 0, size_totale_dirmin, data_dirmin);
+				glBindBuffer(GL_ARRAY_BUFFER, 0);
 				
-				int size_totale = sizeof(float)*3*triangles_regular*size_data; //3 vertex/triangles
-				glBindBuffer(GL_ARRAY_BUFFER, Parameters::getInstance()->g_buffers[BUFFER_TRIANGULATION]);
-				float* data = (float*)malloc(size_totale);
-				glGetBufferSubData(GL_ARRAY_BUFFER, 0, size_totale, data);
+				int size_data_dirmax = 4;
+				int size_totale_dirmax = sizeof(float)*3*triangles_regular*size_data_dirmax; //3 vertex/triangles
+				glBindBuffer(GL_ARRAY_BUFFER, Parameters::getInstance()->g_buffers[BUFFER_EXPORT_DIRMAX]);
+				float* data_dirmax = (float*)malloc(size_totale_dirmax);
+				glGetBufferSubData(GL_ARRAY_BUFFER, 0, size_totale_dirmax, data_dirmax);
 				glBindBuffer(GL_ARRAY_BUFFER, 0);
 				
 				bool minmaxset = false;
 				float min = 0;
 				float max = 0;
 				
-				printf("Compute min max ... \n");
+				//printf("Compute min max ... \n");
 				int nb = 0;
 				for(unsigned int i=0; i<triangles_regular; i++)
 				{
 					for(int j=0; j<3; j++)
 					{
-						float k1 = data[nb+3];
-						float k2 = data[nb+4];
+						float k1 = data_dirmin[nb+3];
+						float k2 = data_dirmax[nb+3];
 						
 						if (!minmaxset)
 						{
@@ -569,13 +607,14 @@ public:
 								max = c;
 						}
 						
-						nb+= size_data;
+						nb += size_data_dirmax;
 					}
 				}
 
-				free(data);
+				free(data_dirmax);
+				free(data_dirmin);
 				
-				printf("(NB %d) Min %lf Max %lf\n", nb, min, max);
+				//printf("(NB %d) Min %lf Max %lf\n", nb, min, max);
 				
 				Parameters::getInstance()->g_curvmin = min-0.01;
 				Parameters::getInstance()->g_curvmax = max+0.01;
@@ -583,6 +622,8 @@ public:
 				Parameters::getInstance()->g_compute_min_max = false;
 			}
 		}
+		
+		shadator.run(triangles_regular);
 		
 		//fprintf(stdout, "%lf %lf %lf -- ", Parameters::getInstance()->g_camera.pos[0], Parameters::getInstance()->g_camera.pos[1], Parameters::getInstance()->g_camera.pos[2]);
 		fprintf(stdout, "[Cells] Total %d Regular %d Transition %d // [Triangles] Regular %d Transition %d ...\r", 

@@ -184,8 +184,12 @@ void Curvature::loadProgram()
 		load_curv(Parameters::getInstance()->g_programs[PROGRAM_SHADING], LOCATION_SHADING_SIZE);
 	}*/
 	
-	int nb_var = 8;
-	const GLchar *varyings[] = {"geometry_position", "geometry_k1_k2", "geometry_min_dir", "geometry_max_dir", "geometry_normale", "geometry_egv", "geometry_covmatDiag", "geometry_covmatUpper"};
+	int nb_var = 7;
+	const GLchar *varyings[] = {"geometry_position", "gl_NextBuffer", 
+								//"geometry_k1_k2", "gl_NextBuffer",
+								"geometry_min_dir", "gl_NextBuffer",
+								"geometry_max_dir", "gl_NextBuffer",
+								"geometry_normale"};// "geometry_egv", "geometry_covmatDiag", "geometry_covmatUpper"};
 	
 	{
 		GLuint *program = &Parameters::getInstance()->g_programs[PROGRAM_APPROXCURV];
@@ -305,8 +309,28 @@ void Curvature::run(GLuint nbcells_reg, GLuint nbcells_tr, GLuint* nb_triangles_
 	glBindBufferBase (
 		GL_TRANSFORM_FEEDBACK_BUFFER,
 		0u,
-		Parameters::getInstance()->g_buffers[BUFFER_TRIANGULATION]
+		Parameters::getInstance()->g_buffers[BUFFER_EXPORT_TGL]
 	);
+	glBindBufferBase (
+		GL_TRANSFORM_FEEDBACK_BUFFER,
+		1u,
+		Parameters::getInstance()->g_buffers[BUFFER_EXPORT_DIRMIN]
+	);
+	glBindBufferBase (
+		GL_TRANSFORM_FEEDBACK_BUFFER,
+		2u,
+		Parameters::getInstance()->g_buffers[BUFFER_EXPORT_DIRMAX]
+	);
+	glBindBufferBase (
+		GL_TRANSFORM_FEEDBACK_BUFFER,
+		3u,
+		Parameters::getInstance()->g_buffers[BUFFER_EXPORT_NORMALES]
+	);
+	/*glBindBufferBase (
+		GL_TRANSFORM_FEEDBACK_BUFFER,
+		4u,
+		Parameters::getInstance()->g_buffers[BUFFER_EXPORT_NORMALES]
+	);*/
 	glBeginTransformFeedback(GL_TRIANGLES);
 	
 	glMultiDrawElementsIndirect(
@@ -358,18 +382,64 @@ void Curvature::loadTransformFeedbacks()
 void Curvature::loadBuffers()
 {
 	int res = (int)Parameters::getInstance()->g_tessel;
-	long long int nb_cells = 30000*res*res*res;
-	int export_data = 3; //vec3 pos
-	export_data += 2; //vec2 k1k2
-	export_data += 3; //vec3 min_dir;
-	export_data += 3; //vec3 max_dir;
-	export_data += 3; //vec3 normale;
-	export_data += 3; //vec3 eigenvalues
+	long long int nb_cells = 100000*res*res*res;
+	int export_data = 4; //vec3 pos
+	//export_data += 3; //vec2 k1k2
+	//export_data += 3; //vec3 min_dir;
+	//export_data += 3; //vec3 max_dir;
+	//export_data += 3; //vec3 normale;
+	/*export_data += 3; //vec3 eigenvalues
 	export_data += 3; //vec3 covmatup
-	export_data += 3; //vec3 covmatdiag
+	export_data += 3; //vec3 covmatdiag*/
 	
-	glGenBuffers (1, &Parameters::getInstance()->g_buffers[BUFFER_TRIANGULATION]);
-		glBindBuffer (GL_ARRAY_BUFFER, Parameters::getInstance()->g_buffers[BUFFER_TRIANGULATION]);
+	glGenBuffers (1, &Parameters::getInstance()->g_buffers[BUFFER_EXPORT_TGL]);
+		glBindBuffer (GL_ARRAY_BUFFER, Parameters::getInstance()->g_buffers[BUFFER_EXPORT_TGL]);
+		glBufferData (
+				GL_ARRAY_BUFFER,
+				nb_cells*12*export_data*sizeof(float), //12 triangles max for each cell, each made of 3 vec3
+				NULL,
+				GL_DYNAMIC_COPY
+		);
+	glBindBuffer (GL_ARRAY_BUFFER, 0);
+	
+	/*
+	export_data = 4;
+	glGenBuffers (1, &Parameters::getInstance()->g_buffers[BUFFER_EXPORT_K1K2]);
+		glBindBuffer (GL_ARRAY_BUFFER, Parameters::getInstance()->g_buffers[BUFFER_EXPORT_K1K2]);
+		glBufferData (
+				GL_ARRAY_BUFFER,
+				nb_cells*12*export_data*sizeof(float), //12 triangles max for each cell, each made of 3 vec3
+				NULL,
+				GL_DYNAMIC_COPY
+		);
+	glBindBuffer (GL_ARRAY_BUFFER, 0);
+	*/
+	
+	export_data = 4;
+	glGenBuffers (1, &Parameters::getInstance()->g_buffers[BUFFER_EXPORT_DIRMIN]);
+		glBindBuffer (GL_ARRAY_BUFFER, Parameters::getInstance()->g_buffers[BUFFER_EXPORT_DIRMIN]);
+		glBufferData (
+				GL_ARRAY_BUFFER,
+				nb_cells*12*export_data*sizeof(float), //12 triangles max for each cell, each made of 3 vec3
+				NULL,
+				GL_DYNAMIC_COPY
+		);
+	glBindBuffer (GL_ARRAY_BUFFER, 0);
+	
+	export_data = 4;
+	glGenBuffers (1, &Parameters::getInstance()->g_buffers[BUFFER_EXPORT_DIRMAX]);
+		glBindBuffer (GL_ARRAY_BUFFER, Parameters::getInstance()->g_buffers[BUFFER_EXPORT_DIRMAX]);
+		glBufferData (
+				GL_ARRAY_BUFFER,
+				nb_cells*12*export_data*sizeof(float), //12 triangles max for each cell, each made of 3 vec3
+				NULL,
+				GL_DYNAMIC_COPY
+		);
+	glBindBuffer (GL_ARRAY_BUFFER, 0);
+	
+	export_data = 4;
+	glGenBuffers (1, &Parameters::getInstance()->g_buffers[BUFFER_EXPORT_NORMALES]);
+		glBindBuffer (GL_ARRAY_BUFFER, Parameters::getInstance()->g_buffers[BUFFER_EXPORT_NORMALES]);
 		glBufferData (
 				GL_ARRAY_BUFFER,
 				nb_cells*12*export_data*sizeof(float), //12 triangles max for each cell, each made of 3 vec3

@@ -14,7 +14,7 @@ out vec3 curv_normale;
 out vec3 eigenvalues;
 out vec3 covmatDiag;
 out vec3 covmatUpper;
-out vec2 vertex_k1_k2;
+out vec3 vertex_k1_k2;
 
 uniform vec3 u_scene_size;
 uniform float u_lvl;
@@ -41,15 +41,14 @@ void main( )
 				xyz2, xy_yz_xz, xyz,
 				curv_dir_min, curv_dir_max, curv_normale, eigenvalues, k1, k2);
 	
+	float r = u_curv_radius;
+	float fact83r = 8.0/(3.0*r);
+	float fact4pir4 = 4.0 / (3.14159*r*r*r*r);
+	float curvature = fact83r - fact4pir4*volume;
+	
 	curv_value = 0;
 	if(u_curv_val == 1)
-	{
-		float r = u_curv_radius;
-		float fact83r = 8.0/(3.0*r);
-		float fact4pir4 = 4.0 / (3.14159*r*r*r*r);
-		float curvature = fact83r - fact4pir4*volume;
 		curv_value = (k1+k2)/2.0;
-	}
 	else if(u_curv_val == 2)
 		curv_value = (k1*k2);
 	else if(u_curv_val == 3)
@@ -57,8 +56,9 @@ void main( )
 	else if(u_curv_val == 4)
 		curv_value = k2;
 		
-	vertex_k1_k2.x = k1;
-	vertex_k1_k2.y = k2;
+	vertex_k1_k2.x = curvature;
+	vertex_k1_k2.y = k1;
+	vertex_k1_k2.z = k2;
 	
 	
 	covmatDiag[0] = xyz2.x - (xyz.x*xyz.x/volume); 
@@ -93,26 +93,30 @@ void main( )
 #define TRANSFORMS_BINDING 0
 
 layout (triangles) in;
-layout (triangle_strip, max_vertices = 25) out;
+layout (triangle_strip, max_vertices = 10) out;
 
 uniform int u_curv_dir;
 
-in vec2 vertex_k1_k2[];
+in vec3 vertex_k1_k2[];
 in vec3 vertex_position[];
 in vec3 vertex_color[];
 in vec3 curv_dir_max[];
 in vec3 curv_dir_min[];
 in vec3 curv_normale[];
 in float curv_value[];
+/*
 in vec3 eigenvalues[];
 in vec3 covmatDiag[];
 in vec3 covmatUpper[];
+*/
 
-out vec2 geometry_k1_k2;
-out vec3 geometry_min_dir;
-out vec3 geometry_max_dir;
-out vec3 geometry_position;
-out vec3 geometry_normale;
+out vec3 geometry_k1_k2;
+
+out vec4 geometry_min_dir;
+out vec4 geometry_max_dir;
+out vec4 geometry_position;
+out vec4 geometry_normale;
+
 out vec3 geometry_egv;
 out vec3 geometry_covmatDiag;
 out vec3 geometry_covmatUpper;
@@ -137,7 +141,7 @@ void setPoint(vec3 point, vec3 color)
 {
 	geometry_curvdir = 1;
 	gl_Position = u_transforms.modelviewprojection * vec4(point, 1 );
-	geometry_position = point.xyz;
+	geometry_position = vec4(point.xyz, 1);
 	geometry_color = color;
 }
 
@@ -281,14 +285,15 @@ void main()
 		geometry_curvdir = 0;
 		
 		geometry_k1_k2 = vertex_k1_k2[i];
-		geometry_min_dir = curv_dir_min[i].xyz;
-		geometry_max_dir = curv_dir_max[i].xyz;
-		geometry_position = vertex_position[i].xyz;
 		
-		geometry_normale = reorientNormal(pts, curv_normale[i]);
-		geometry_covmatDiag = covmatDiag[i];
+		geometry_min_dir = vec4(curv_dir_min[i], vertex_k1_k2[i].y);
+		geometry_max_dir = vec4(curv_dir_max[i], vertex_k1_k2[i].z);
+		
+		geometry_position = vec4(vertex_position[i], vertex_k1_k2[i].x);
+		geometry_normale = vec4(reorientNormal(pts, curv_normale[i]), 1);
+		/*geometry_covmatDiag = covmatDiag[i];
 		geometry_covmatUpper = covmatUpper[i];
-		geometry_egv = eigenvalues[i];
+		geometry_egv = eigenvalues[i];*/
 		
 		gl_Position = transformed[i];
 		EmitVertex();
@@ -322,10 +327,10 @@ void main()
 layout(early_fragment_tests) in;
 
 in vec2 geometry_k1_k2;
-in vec3 geometry_min_dir;
-in vec3 geometry_max_dir;
-in vec3 geometry_position;
-in vec3 geometry_normale;
+in vec4 geometry_min_dir;
+in vec4 geometry_max_dir;
+in vec4 geometry_position;
+in vec4 geometry_normale;
 
 in vec3 geometry_distance;
 in vec3 geometry_color;
@@ -433,7 +438,7 @@ void main( )
 	if( u_k1k2_normals == 0 )
 		normale = normalize(cross( dFdx(geometry_position.xyz), dFdy(geometry_position.xyz)));
 	else
-		normale = geometry_normale;
+		normale = geometry_normale.xyz;
 	
 	//Phong
 	vec3 light_dir = vec3(1, 1, 1);
