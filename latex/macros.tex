@@ -1,0 +1,56 @@
+%fonts bonanza
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{pifont}% http://ctan.org/pkg/pifont
+\newcommand{\CheckMark}{\ding{51}}%
+\newcommand{\CrossMark}{\ding{55}}%
+% Zapf font
+\usepackage[mathscr]{euscript}
+\DeclareFontFamily{OT1}{pzc}{}
+\DeclareFontShape{OT1}{pzc}{m}{it}%
+              {<-> s * [1.2] pzcmi7t}{}
+\DeclareMathAlphabet{\mathpzc}{OT1}{pzc}{m}{it}
+% rescaling cal to be a touch smaller
+\DeclareFontFamily{OMS}{fcmsy}{\skewchar\font48 }
+\DeclareFontShape{OMS}{fcmsy}{m}{n}{%
+         <-5.5> [.96] cmsy5     <5.5-6.5> [.96] cmsy6
+      <6.5-7.5> [.96] cmsy7     <7.5-8.5> [.96] cmsy8
+      <8.5-9.5> [.96] cmsy9     <9.5->  [.96] cmsy10
+      }{}
+\DeclareFontShape{OMS}{fcmsy}{b}{n}{%
+       <-6> [.96] cmbsy5
+      <6-8> [.96] cmbsy7
+      <8->  [.96] cmbsy10
+      }{}
+\DeclareMathAlphabet{\mathcal}{OMS}{fcmsy}{m}{n}
+\usepackage{bbm}
+
+\usepackage{mathtools}% http://ctan.org/pkg/mathtools
+\usepackage{calc}% http://ctan.org/pkg/calc
+
+\newcommand*{\mytilde}[2][0pt]{%
+  \setbox0=\hbox{$#2$}%
+  \tilde{\mathrlap{\phantom{\rule{\wd0}{\ht0+{#1}}}}\smash{#2}}%
+}
+\newcommand*{\mywidetilde}[2][0pt]{%
+  \setbox0=\hbox{$#2$}%
+  \widetilde{\mathrlap{\phantom{\rule{\wd0}{\ht0+{#1}}}}\smash{#2}}%
+}
+
+%%Space, Lattices
+\newcommand{\Z}{{\mathbb{Z}}}
+\newcommand{\N}{{\mathbb{N}}}
+\newcommand{\R}{{\mathbb{R}}}
+\newcommand{\M}{\mathcal{M}}
+\newcommand{\B}{\mathcal{B}_R}
+
+%%Formulas
+\newcommand{\EqDef}{\!\ensuremath{\mathrel{\mathop:}=}\!}
+%\newcommand{\EqDef}{\smash{\ensuremath{\stackrel{\text{def}}{=}}}}
+
+%% Misc.
+\newcommand{\txtblue}[1]{\textcolor{blue}{ #1}}
+\newcommand{\txtgreen}[1]{\textcolor{green}{ #1}}
+\newcommand{\txtred}[1]{\textcolor{red}{ #1}}
+
+
+\DeclareMathOperator*{\argmin}{arg\,min}
