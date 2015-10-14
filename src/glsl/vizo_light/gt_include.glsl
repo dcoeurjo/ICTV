@@ -6,6 +6,15 @@ uniform sampler3D u_xy_yz_xz_tex;
 uniform sampler3D u_xyz_tex;
 uniform int u_curv_val;
 
+void fetch(in vec3 p, inout float volume, inout vec3 xyz, inout vec3 xyz2, inout vec3 xy_yz_xz)
+{
+	float val = textureLod(densities, p, 0).r;
+	volume += val;
+	xyz += textureLod(u_xyz_tex, p, 0).rgb * val;
+	xyz2 += textureLod(u_xyz2_tex, p, 0).rgb * val;
+	xy_yz_xz += textureLod(u_xy_yz_xz_tex, p, 0).rgb * val;
+}
+
 bool isincube(in vec3 pos)
 {
 	return ((pos[0]>= 0) && (pos[0]<=1) && (pos[1]>= 0)&& (pos[1]<=1) && (pos[2]>= 0)&& (pos[2]<=1));
@@ -19,79 +28,52 @@ void getVolumeMoments(in vec3 vertex_position, out float volume, out vec3 xyz, o
 	xyz = vec3(0);
 
 	float r = u_curv_radius;
-	
-	int l = 0;
-	float step = pow(2, l);
-	
+
 	float nb_probe = 0;
 	float size_obj = u_size_tex;
-	for(float i=0; i<r; i+=step)
-	for(float j=0; j<r; j+=step)
-	for(float k=0; k<r; k+=step)
+	for(float i=0; i<r; i+=1)
+	for(float j=0; j<r; j+=1)
+	for(float k=0; k<r; k+=1)
 	{
-		vec3 probe = vec3(i, j, k);
+		vec3 probe = vec3(i + 0.5, j + 0.5, k + 0.5);
 		if ((length(probe) < r))
 		{
 			probe /= size_obj;
 			
 			vec3 p = vertex_position + probe;
-			volume += textureLod(densities, p, l).r * (step*step*step);
-			xyz += textureLod(u_xyz_tex, p, l).rgb * (step*step*step);
-			xyz2 += textureLod(u_xyz2_tex, p, l).rgb * (step*step*step);
-			xy_yz_xz += textureLod(u_xy_yz_xz_tex, p, l).rgb * (step*step*step);
+			fetch(p, volume, xyz, xyz2, xy_yz_xz);
 			
 			probe.x *= -1;
 			p = vertex_position + probe;
-			volume += textureLod(densities, p, l).r * (step*step*step);
-			xyz += textureLod(u_xyz_tex, p, l).rgb * (step*step*step);
-			xyz2 += textureLod(u_xyz2_tex, p, l).rgb * (step*step*step);
-			xy_yz_xz += textureLod(u_xy_yz_xz_tex, p, l).rgb * (step*step*step);
+			fetch(p, volume, xyz, xyz2, xy_yz_xz);
 			probe.x *= -1;
 			
 			probe.y *= -1;
 			p = vertex_position + probe;
-			volume += textureLod(densities, p, l).r * (step*step*step);
-			xyz += textureLod(u_xyz_tex, p, l).rgb * (step*step*step);
-			xyz2 += textureLod(u_xyz2_tex, p, l).rgb * (step*step*step);
-			xy_yz_xz += textureLod(u_xy_yz_xz_tex, p, l).rgb * (step*step*step);
+			fetch(p, volume, xyz, xyz2, xy_yz_xz);
 			
 			probe.x *=-1;
 			p = vertex_position + probe;
-			volume += textureLod(densities, p, l).r * (step*step*step);
-			xyz += textureLod(u_xyz_tex, p, l).rgb * (step*step*step);
-			xyz2 += textureLod(u_xyz2_tex, p, l).rgb * (step*step*step);
-			xy_yz_xz += textureLod(u_xy_yz_xz_tex, p, l).rgb * (step*step*step);
+			fetch(p, volume, xyz, xyz2, xy_yz_xz);
 			probe.y *= -1;
 			probe.x *= -1;
 			
 			probe.z *= -1;
 			p = vertex_position + probe;
-			volume += textureLod(densities, p, l).r * (step*step*step);
-			xyz += textureLod(u_xyz_tex, p, l).rgb * (step*step*step);
-			xyz2 += textureLod(u_xyz2_tex, p, l).rgb * (step*step*step);
-			xy_yz_xz += textureLod(u_xy_yz_xz_tex, p, l).rgb * (step*step*step);
+			fetch(p, volume, xyz, xyz2, xy_yz_xz);
 			
 			probe.x *= -1;
 			p = vertex_position + probe;
-			volume += textureLod(densities, p, l).r * (step*step*step);
-			xyz += textureLod(u_xyz_tex, p, l).rgb * (step*step*step);
-			xyz2 += textureLod(u_xyz2_tex, p, l).rgb * (step*step*step);
-			xy_yz_xz += textureLod(u_xy_yz_xz_tex, p, l).rgb * (step*step*step);
+			fetch(p, volume, xyz, xyz2, xy_yz_xz);
 			probe.x *= -1;
 			
 			probe.y *= -1;
 			p = vertex_position + probe;
-			volume += textureLod(densities, p, l).r * (step*step*step);
-			xyz += textureLod(u_xyz_tex, p, l).rgb * (step*step*step);
-			xyz2 += textureLod(u_xyz2_tex, p, l).rgb * (step*step*step);
-			xy_yz_xz += textureLod(u_xy_yz_xz_tex, p, l).rgb * (step*step*step);
+			fetch(p, volume, xyz, xyz2, xy_yz_xz);
 			
 			probe.x *=-1;
 			p = vertex_position + probe;
-			volume += textureLod(densities, p, l).r * (step*step*step);
-			xyz += textureLod(u_xyz_tex, p, l).rgb * (step*step*step);
-			xyz2 += textureLod(u_xyz2_tex, p, l).rgb * (step*step*step);
-			xy_yz_xz += textureLod(u_xy_yz_xz_tex, p, l).rgb * (step*step*step);
+			fetch(p, volume, xyz, xyz2, xy_yz_xz);
 			probe.y *= -1;
 			probe.x *= -1;
 		}

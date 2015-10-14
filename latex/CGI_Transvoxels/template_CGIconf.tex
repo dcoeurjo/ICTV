@@ -1,0 +1,100 @@
+\RequirePackage{fix-cm}
+
+%
+%\documentclass{svjour3}                     % onecolumn (standard format)
+%\documentclass[smallcondensed]{svjour3}     % onecolumn (ditto)
+%\documentclass[smallextended]{svjour3}       % onecolumn (second format)
+\documentclass[twocolumn]{cgi2015_latex/svjour3}          % twocolumn
+\smartqed  % flush right qed marks, e.g. at end of proof
+\usepackage{graphicx}
+\usepackage{amsmath, amssymb}
+\journalname{CGI2015} % The correct name will be entered by the editor
+
+\graphicspath{{figures/}}
+
+\begin{document}
+
+\title{Real-time visualisation of volumetric data on the GPU}
+\subtitle{}
+\author{H. Perrier \and J. Dupuy \and J.-C. Iehl \and J.-P. Farrugia}
+\institute{H. Perrier \at helene.perrier@liris.cnrs.fr \and J. Dupuy \at jonathan.dupuy@liris.cnrs.fr \and J.-C. Iehl \at jean-claude.iehl@liris.cnrs.fr \and J.-P. Farrugia \at jean-philippe.farrugia@liris.cnrs.fr}
+\date{ }% The correct dates will be entered by the editor
+
+\maketitle
+
+\begin{figure}
+\centering
+\includegraphics[width=0.7\linewidth]{octree}
+\includegraphics[width=0.7\linewidth]{mesh_muti_res}
+\includegraphics[width=0.7\linewidth]{terrain_potential}
+\caption{Our method is based on Lengyel's algorithm \cite{lengyel2010voxel} combined with a linear restricted octree (top) which allows us to create adaptive meshes (middle) from volumetric data in real-time (bottom).}
+\end{figure}
+
+\begin{abstract}
+We present a tool to visualise volumetric data in real-time by extracting an adaptive triangulated surface from the object.
+We extend an existing adaptive marching cubes solution and increase its execution speed by developing a pipeline that is fully data parallel and implemented on the GPU.
+This lets us visualise in real-time static scenes as well as fully dynamic data.
+Furthermore, we propose a criterion to control the adaptivity of the triangulation that adds control over the projected size of triangles.
+This allow us to remove geometric aliasing in the resulting rendering.
+\keywords{GPU, Real-time, Level of Details, Volumetric Datasets}
+\end{abstract}
+
+\input{introduction}
+%p1 : pourquoi volumes cools et important de les visu
+%p2 : nos contraintes et pk celles là
+%p3 : les methodes actuelles ac leurs objectifs !=
+%p4 : ce qu'on fait
+%p5 : plan
+
+\input{preliminaries} %previous work
+\input{ourmethod} %how/why it works
+\input{results} %how awesome it is
+\input{conclusion} %how it could be more awesome
+
+\bibliographystyle{alpha}
+\bibliography{bibtex}
+
+\appendix
+
+\section{Ensuring a restricted octree}
+
+\paragraph{}
+To partition the space, Dupuy \textit{et al}. use the criterion given in equation (\ref{lod_criterion}).
+They then test the size of the cell over this criterion.
+If equation (\ref{ratio_division}) is verified, it means that the cell will be twice more subdivided than its neighbour.
+To maintain a restricted tree, we need to ensure that it never happens.\\
+\begin{equation}
+\frac{\mathrm{cell\_size}}{2 \cdot s(z)} < 2k
+\label{ratio_division}
+\end{equation}
+
+\paragraph{}
+We illustrate this limit case Figure \ref{proof_constraint}.
+Because the only variable is $\alpha$, we need to bound it.
+From Thales, we can deduce:
+$$
+\frac{2k \cdot s(z)}{s(z)} = \frac{z + s(z)}{z}
+$$
+From this, we can express $z$ in terms of $s(z)$:
+$$
+z = \frac{s(z)}{2k - 1}
+$$
+Finally, trigonometry gives us:
+$$
+tan(\alpha) = 2k - 1
+$$
+As $\alpha$ is half the horizontal viewing angle, the octree is constraint as long as $\alpha < 2\arctan(2k - 1)$
+For $k = 2$, this implies that the fovy must not exceed $142^o$.
+
+
+\begin{figure} [h]
+\centering
+\includegraphics[height=0.2\textheight]{proof1}
+\caption{If this situation happens, the LoD criterion no longer ensures to maintain a restricted tree.
+The parameter $\alpha$ is thus bounded. Over a certain value, a cell can have two level of differences with its neighbours.
+This figure is willingly wrongly scaled for readability purposes.}
+\label{proof_constraint}
+\end{figure}
+
+\end{document}
+

@@ -5,11 +5,12 @@
 #include <cstring>
 
 const GLenum MIN_FILT = GL_LINEAR_MIPMAP_LINEAR;
-const GLenum MAG_FILT = GL_LINEAR;
+//const GLenum MAG_FILT = GL_LINEAR;
 //const GLenum MIN_FILT = GL_NEAREST_MIPMAP_NEAREST;
-//const GLenum MAG_FILT = GL_NEAREST;
+const GLenum MAG_FILT = GL_NEAREST;
 
 bool mymipmap = false;
+bool novolumenomoments = false;
 
 void DataLoader::loadData32BGpu()
 {
@@ -22,7 +23,7 @@ void DataLoader::loadData32BGpu()
 	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 	
-	glTexImage3D(GL_TEXTURE_3D, 0, GL_R16F, sizex, sizey, sizez, 0, GL_RED, GL_FLOAT, data);
+	glTexImage3D(GL_TEXTURE_3D, 0, GL_R32F, sizex, sizey, sizez, 0, GL_RED, GL_FLOAT, data);
         glGenerateMipmap(GL_TEXTURE_3D);
 	
 	glBindTexture(GL_TEXTURE_3D, 0);
@@ -86,9 +87,16 @@ void DataLoader::loadx2y2z2()
 		float norm_j = j;
 		float norm_k = k;
 		
-		mmt[nb*3] = norm_i*norm_i*data[nb];
-		mmt[nb*3 + 1] = norm_j*norm_j*data[nb];
-		mmt[nb*3 + 2] = norm_k*norm_k*data[nb];
+		mmt[nb*3] = norm_i*norm_i;
+		mmt[nb*3 + 1] = norm_j*norm_j;
+		mmt[nb*3 + 2] = norm_k*norm_k;
+		
+		if (novolumenomoments)
+		{
+			mmt[nb*3] = data[nb];
+			mmt[nb*3 + 1] = data[nb];
+			mmt[nb*3 + 2] = data[nb];
+		}
 		nb++;
 	}
 	
@@ -102,7 +110,7 @@ void DataLoader::loadx2y2z2()
 	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 	
 	int lvl = 0;
-	glTexImage3D(GL_TEXTURE_3D, lvl++, GL_RGB16F, sizex, sizey, sizez, 0, GL_RGB, GL_FLOAT, mmt);
+	glTexImage3D(GL_TEXTURE_3D, lvl++, GL_RGB32F, sizex, sizey, sizez, 0, GL_RGB, GL_FLOAT, mmt);
 		
 	
 	if (mymipmap)
@@ -114,7 +122,7 @@ void DataLoader::loadx2y2z2()
 		{
 			loadNxtMipmap(size, mip1, &mip0);
 			size = ceil(size/2.0);
-			glTexImage3D(GL_TEXTURE_3D, lvl++, GL_RGB16F, size, size, size, 0, GL_RGB, GL_FLOAT, mip0);
+			glTexImage3D(GL_TEXTURE_3D, lvl++, GL_RGB32F, size, size, size, 0, GL_RGB, GL_FLOAT, mip0);
 			free(mip1);
 			mip1 = mip0;
 		}
@@ -146,9 +154,16 @@ void DataLoader::loadxyyzxz()
 		float norm_j = j;
 		float norm_k = k;
 		
-		mmt[nb*3] = norm_i*norm_j*data[nb];
-		mmt[nb*3 + 1] = norm_j*norm_k*data[nb];
-		mmt[nb*3 + 2] = norm_k*norm_i*data[nb];
+		mmt[nb*3] = norm_i*norm_j;
+		mmt[nb*3 + 1] = norm_j*norm_k;
+		mmt[nb*3 + 2] = norm_k*norm_i;
+		
+		if (novolumenomoments)
+		{
+			mmt[nb*3] = data[nb];
+			mmt[nb*3 + 1] = data[nb];
+			mmt[nb*3 + 2] = data[nb];
+		}
 		nb++;
 	}
 	
@@ -162,7 +177,7 @@ void DataLoader::loadxyyzxz()
 	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 	
 	int lvl = 0;
-	glTexImage3D(GL_TEXTURE_3D, lvl++, GL_RGB16F, sizex, sizey, sizez, 0, GL_RGB, GL_FLOAT, mmt);
+	glTexImage3D(GL_TEXTURE_3D, lvl++, GL_RGB32F, sizex, sizey, sizez, 0, GL_RGB, GL_FLOAT, mmt);
 		
 		
 	if (mymipmap)
@@ -174,7 +189,7 @@ void DataLoader::loadxyyzxz()
 		{
 			loadNxtMipmap(size, mip1, &mip0);
 			size = ceil(size/2.0);
-			glTexImage3D(GL_TEXTURE_3D, lvl++, GL_RGB16F, size, size, size, 0, GL_RGB, GL_FLOAT, mip0);
+			glTexImage3D(GL_TEXTURE_3D, lvl++, GL_RGB32F, size, size, size, 0, GL_RGB, GL_FLOAT, mip0);
 			free(mip1);
 			mip1 = mip0;
 		}
@@ -207,14 +222,17 @@ void DataLoader::loadxyz()
 		float norm_j = j;
 		float norm_k = k;
 		
-		/*
 		mmt[nb*3] = norm_i;
 		mmt[nb*3 + 1] = norm_j;
 		mmt[nb*3 + 2] = norm_k;
-		*/
-		mmt[nb*3] = norm_i*data[nb];
-		mmt[nb*3 + 1] = norm_j*data[nb];
-		mmt[nb*3 + 2] = norm_k*data[nb];
+		
+		if (novolumenomoments)
+		{
+			mmt[nb*3] = data[nb];
+			mmt[nb*3 + 1] = data[nb];
+			mmt[nb*3 + 2] = data[nb];
+		}
+		
 		nb++;
 	}
 	
@@ -228,7 +246,7 @@ void DataLoader::loadxyz()
 	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 
 	int lvl = 0;
-	glTexImage3D(GL_TEXTURE_3D, lvl++, GL_RGB16F, sizex, sizey, sizez, 0, GL_RGB, GL_FLOAT, mmt);
+	glTexImage3D(GL_TEXTURE_3D, lvl++, GL_RGB32F, sizex, sizey, sizez, 0, GL_RGB, GL_FLOAT, mmt);
 	
 	if(mymipmap)
 	{
@@ -239,7 +257,7 @@ void DataLoader::loadxyz()
 		{
 			loadNxtMipmap(size, mip1, &mip0);
 			size = ceil(size/2.0);
-			glTexImage3D(GL_TEXTURE_3D, lvl++, GL_RGB16F, size, size, size, 0, GL_RGB, GL_FLOAT, mip0);
+			glTexImage3D(GL_TEXTURE_3D, lvl++, GL_RGB32F, size, size, size, 0, GL_RGB, GL_FLOAT, mip0);
 			free(mip1);
 			mip1 = mip0;
 		}

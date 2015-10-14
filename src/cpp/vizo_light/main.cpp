@@ -459,9 +459,9 @@ public:
 		if (Parameters::getInstance()->g_draw_triangles)
 		{
 			m_time_shading->begin();
-			glEnable(GL_RASTERIZER_DISCARD);
+			//glEnable(GL_RASTERIZER_DISCARD);
 			curver.run(queryResult_regular, queryResult_transition, &triangles_regular, &triangles_transition, &sync_count_triangles);
-			glDisable(GL_RASTERIZER_DISCARD);
+			//glDisable(GL_RASTERIZER_DISCARD);
 			m_time_shading->end();
 			
 			static int nb_export = 0;
@@ -638,7 +638,7 @@ public:
 			}
 		}
 		
-		shadator.run(triangles_regular+triangles_transition);
+		//shadator.run(triangles_regular+triangles_transition);
 		
 		//fprintf(stdout, "%lf %lf %lf -- ", Parameters::getInstance()->g_camera.pos[0], Parameters::getInstance()->g_camera.pos[1], Parameters::getInstance()->g_camera.pos[2]);
 		//fprintf(stdout, "[Cells] Total %d Regular %d Transition %d // [Triangles] Regular %d Transition %d ...\r", 

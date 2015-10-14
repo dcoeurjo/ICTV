@@ -57,7 +57,7 @@ void getVolumeMoments(vec3 vertex_position, out float volume, out vec3 xyz, out 
 	for(float j=0; j<r; j+=step)
 	for(float k=0; k<r; k+=step)
 	{
-		vec3 probe = vec3(i, j, k);
+		vec3 probe = vec3(i + step/2.0, j + step/2.0, k + step/2.0);
 		if ((length(probe) < r))
 		{
 			probe /= size_obj;

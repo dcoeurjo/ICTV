@@ -81,8 +81,10 @@ void main( )
 
 	//xyz = textureLod(u_xyz_tex, vertex_position, 0).rgb;
 	//vertex_color = vec3(volume/10000.0, 0, 1);
-	//vertex_color = xyz2/(65.0*65.0);
-	vertex_color = vec3(1);
+	//vertex_color = vertex_position;
+	//vertex_color = textureLod(u_xyz_tex, vertex_position, 0).rgb/(67.0);
+	//vertex_color = abs(curv_normale);
+	//vertex_color = vec3(1);
 	
     gl_Position = position;
 }
