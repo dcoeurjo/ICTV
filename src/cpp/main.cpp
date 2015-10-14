@@ -221,6 +221,7 @@ private:
 	float last_scale;
 	bool last_regular;
 	int last_mode;
+	int last_color;
 	
 	int min_lvl;
 	
@@ -309,7 +310,7 @@ public:
 		else 
 			load_viewPoint();
 		
-		min_lvl = (int)ceil(log2(Parameters::getInstance()->g_curvradius));
+		min_lvl = (int)floor(log2(Parameters::getInstance()->g_curvradius));
 		Parameters::getInstance()->g_lvl = min_lvl;
 		
 		last_radius = Parameters::getInstance()->g_curvradius;
@@ -317,6 +318,7 @@ public:
 		last_scale = Parameters::getInstance()->g_scale;
 		last_regular = Parameters::getInstance()->g_regular;
 		last_mode = Parameters::getInstance()->g_ground_truth;
+		last_color = Parameters::getInstance()->g_curv_val;
 		
 		reload_fetch = Parameters::getInstance()->g_fromtexture;
 		
@@ -327,35 +329,44 @@ public:
     
 	void window_draw ()
 	{
-		if (last_mode != Parameters::getInstance()->g_ground_truth ||
-			last_radius != Parameters::getInstance()->g_curvradius ||
+		/* Min max recompute */
+		if (last_radius != Parameters::getInstance()->g_curvradius ||
 			last_scale != Parameters::getInstance()->g_scale ||
-			last_regular != Parameters::getInstance()->g_regular)
+			last_regular != Parameters::getInstance()->g_regular ||
+			last_lvl != Parameters::getInstance()->g_lvl ||
+			last_mode != Parameters::getInstance()->g_ground_truth ||
+			last_color != Parameters::getInstance()->g_curv_val
+		)
 		{
-			min_lvl = (int)ceil(log2(Parameters::getInstance()->g_curvradius));
 			Parameters::getInstance()->g_compute_min_max = true;
-			if (Parameters::getInstance()->g_auto_refine)
+		}
+		
+		/*Refinement recompute*/
+		if(Parameters::getInstance()->g_auto_refine)
+		{
+			min_lvl = (int)floor(log2(Parameters::getInstance()->g_curvradius));
+			if (movement ||
+				last_scale != Parameters::getInstance()->g_scale ||
+				last_radius != Parameters::getInstance()->g_curvradius ||
+				last_regular != Parameters::getInstance()->g_regular)
+			{
 				Parameters::getInstance()->g_lvl =  min_lvl;
+				Parameters::getInstance()->g_compute_min_max = true;
+			}
+			else if (Parameters::getInstance()->g_auto_refine && fps > 30 && Parameters::getInstance()->g_lvl > 0)
+			{
+				Parameters::getInstance()->g_lvl -= 1;
+				Parameters::getInstance()->g_compute_min_max = true;
+			}
 		}
-		
-		if( last_lvl != Parameters::getInstance()->g_lvl )
-		{
-			min_lvl = (int)ceil(log2(Parameters::getInstance()->g_curvradius));
-			Parameters::getInstance()->g_compute_min_max = true;
-		}
-		
-		if(Parameters::getInstance()->g_auto_refine && movement)
-			Parameters::getInstance()->g_lvl =  min_lvl;
 		
 		last_radius = Parameters::getInstance()->g_curvradius;
 		last_lvl = Parameters::getInstance()->g_lvl;
 		last_scale = Parameters::getInstance()->g_scale;
 		last_regular = Parameters::getInstance()->g_regular;
 		last_mode = Parameters::getInstance()->g_ground_truth;
-		
-		if (Parameters::getInstance()->g_auto_refine && fps > 20 && Parameters::getInstance()->g_lvl > 0)
-			Parameters::getInstance()->g_lvl -= 1;
-			
+		last_color = Parameters::getInstance()->g_curv_val;
+
 		//return;
 		if (Parameters::getInstance()->g_export)
 		{
@@ -630,8 +641,8 @@ public:
 		shadator.run(triangles_regular+triangles_transition);
 		
 		//fprintf(stdout, "%lf %lf %lf -- ", Parameters::getInstance()->g_camera.pos[0], Parameters::getInstance()->g_camera.pos[1], Parameters::getInstance()->g_camera.pos[2]);
-		fprintf(stdout, "[Cells] Total %d Regular %d Transition %d // [Triangles] Regular %d Transition %d ...\r", 
-			queryResult_lod, queryResult_regular, queryResult_transition, triangles_regular, triangles_transition); fflush(stdout);
+		//fprintf(stdout, "[Cells] Total %d Regular %d Transition %d // [Triangles] Regular %d Transition %d ...\r", 
+		//	queryResult_lod, queryResult_regular, queryResult_transition, triangles_regular, triangles_transition); fflush(stdout);
        
 		m_time_blit->begin();
 		

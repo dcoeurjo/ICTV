@@ -60,7 +60,7 @@ void main( )
 	vertex_k1_k2.y = k1;
 	vertex_k1_k2.z = k2;
 	
-	
+	/*
 	covmatDiag[0] = xyz2.x - (xyz.x*xyz.x/volume); 
 	covmatDiag[1] = xyz2.y - (xyz.y*xyz.y/volume);
 	covmatDiag[2] = xyz2.z - (xyz.z*xyz.z/volume);
@@ -71,7 +71,7 @@ void main( )
 	covmatUpper[0] = covxy; 
 	covmatUpper[1] = covyz;
 	covmatUpper[2] = covxz;
-	
+	*/
 		
 	/*float r = u_curv_radius;
 	float fact83r = 8.0/(3.0*r);
@@ -137,6 +137,7 @@ uniform Transforms {
 uniform vec3 u_scene_size;
 uniform vec2 u_viewport;
 
+/*
 void setPoint(vec3 point, vec3 color)
 {
 	geometry_curvdir = 1;
@@ -145,7 +146,6 @@ void setPoint(vec3 point, vec3 color)
 	geometry_color = color;
 }
 
-/*
 void drawTetra( vec3 pts[3], vec3 mean_dir, vec3 color )
 {
 	vec3 normale = normalize(cross(normalize(pts[0]-pts[1]).xyz, normalize(pts[0]-pts[2]).xyz));
@@ -181,7 +181,7 @@ void drawTetra( vec3 pts[3], vec3 mean_dir, vec3 color )
 	
 	EndPrimitive();
 }
-*/
+
 
 vec3 reorientNormal(vec3 pts[3], vec3 given_normale)
 {
@@ -254,6 +254,7 @@ void drawParallelpitruc( vec3 pts[3], vec3 mean_dir, vec3 color )
 		
 		EndPrimitive();
 }
+*/
 
 void main()
 {
@@ -290,7 +291,7 @@ void main()
 		geometry_max_dir = vec4(curv_dir_max[i], vertex_k1_k2[i].z);
 		
 		geometry_position = vec4(vertex_position[i], vertex_k1_k2[i].x);
-		geometry_normale = vec4(reorientNormal(pts, curv_normale[i]), 1);
+		geometry_normale = vec4(curv_normale[i], 1);//vec4(reorientNormal(pts, curv_normale[i]), 1);
 		/*geometry_covmatDiag = covmatDiag[i];
 		geometry_covmatUpper = covmatUpper[i];
 		geometry_egv = eigenvalues[i];*/
@@ -301,6 +302,7 @@ void main()
 	
 	EndPrimitive();
 	
+	/*
 	if (u_curv_dir == 1 || u_curv_dir == 3)
 	{
 		drawParallelpitruc(pts, curv_dir_min[0], vec3(0, 0, 1));
@@ -315,6 +317,7 @@ void main()
 	{
 		drawParallelpitruc(pts, curv_normale[0], curv_normale[0]);
 	}
+	*/
 }
 
 #endif

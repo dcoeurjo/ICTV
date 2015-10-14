@@ -34,7 +34,7 @@ uniform int u_curv_val;
 void main( )
 {
     vertex_position = position.xyz;
-	vertex_color = vec3(1);
+	vertex_color = vec3(0.95, 0.95, 1);
 
     curv_dir_min = mindir.xyz;
 	curv_dir_max = maxdir.xyz;
@@ -426,7 +426,13 @@ void main( )
 	
 	float shadow_weight = 0.5;
 	float dotnormal = clamp(dot(normalize(normale), normalize(light_dir.xyz)), 0, 1);
-	fragment_color = vec4( shadow_weight * color * dotnormal + (1-shadow_weight) * color, 1);
+	vec3 diffuse = shadow_weight * color * dotnormal + (1-shadow_weight) * color;
+	
+	vec3 R = reflect(-normalize(light_dir), normalize(normale));
+	float ER = clamp(dot(normalize(vec3(0, 0, 1)), normalize(R)), 0, 1);
+	vec3 specular = vec3(1) * pow(ER, 100);
+	
+	fragment_color = vec4(diffuse+specular, 1);
 
 	if (geometry_curvdir == 0 && solid_wireframe == 1)
 	{
