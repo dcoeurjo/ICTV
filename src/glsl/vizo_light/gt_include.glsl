@@ -10,9 +10,10 @@ void fetch(in vec3 p, inout float volume, inout vec3 xyz, inout vec3 xyz2, inout
 {
 	float val = textureLod(densities, p, 0).r;
 	volume += val;
-	xyz += textureLod(u_xyz_tex, p, 0).rgb * val;
-	xyz2 += textureLod(u_xyz2_tex, p, 0).rgb * val;
-	xy_yz_xz += textureLod(u_xy_yz_xz_tex, p, 0).rgb * val;
+	vec3 p2 = p*u_size_tex;
+	xyz += p2 * val;
+	xyz2 += p2*p2 * val;
+	xy_yz_xz += vec3(p2.x*p2.y, p2.y*p2.z, p2.x*p2.z) * val;
 }
 
 bool isincube(in vec3 pos)

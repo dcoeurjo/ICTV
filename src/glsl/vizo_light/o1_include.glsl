@@ -8,11 +8,12 @@ uniform int u_curv_val;
 
 void fetch(vec3 p, float step, float l, inout float volume, inout vec3 xyz, inout vec3 xyz2, inout vec3 xy_yz_xz)
 {
-	float val = textureLod(densities, p, l).r;
+	float val = textureLod(densities, p, l).r * (step*step*step);
 	volume += val;
-	xyz += p * 67.0 * val;
-	xyz2 += p * 67.0 * p * 67.0 * val;
-	xy_yz_xz += vec3(p.x*67.0*p.y*67.0, p.y*67.0*p.z*67.0, p.x*67.0+p.z*67.0) * val;
+	vec3 p2 = p*u_size_tex;
+	xyz += p2 * val;
+	xyz2 += p2*p2 * val;
+	xy_yz_xz += vec3(p2.x*p2.y, p2.y*p2.z, p2.x*p2.z) * val;
 }
 
 bool isincube(in vec3 pos)
@@ -31,18 +32,15 @@ void getVolumeMoments(in vec3 vertex_position, out float volume, out vec3 xyz, o
 	
 	int l = int(lvl_tree);
 	float step = pow(2, l);
-	
-	l = 0;
-	step = 1;
 
 	float nb_probe = 0;
 	float size_obj = u_size_tex;
-	for(float i=0; i<r; i+=step)
-	for(float j=0; j<r; j+=step)
-	for(float k=0; k<r; k+=step)
+	for(float i=0; i<=r; i+=step)
+	for(float j=0; j<=r; j+=step)
+	for(float k=0; k<=r; k+=step)
 	{
 		vec3 probe = vec3(i + step/2.0, j + step/2.0, k + step/2.0);
-		if ((length(probe) < r))
+		if ((length(probe) <= r))
 		{
 			probe /= size_obj;
 			

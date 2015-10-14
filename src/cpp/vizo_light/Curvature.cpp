@@ -10,6 +10,7 @@
 #include "ImageIO.h"
 #include "Image.h"
 
+
 void configure_curv(GLuint program, GLuint first_loc)
 {
 	/*
@@ -385,14 +386,7 @@ void Curvature::loadBuffers()
 {
 	int res = (int)Parameters::getInstance()->g_tessel;
 	long long int nb_cells = 300000*res*res*res;
-	int export_data = 4; //vec3 pos
-	//export_data += 3; //vec2 k1k2
-	//export_data += 3; //vec3 min_dir;
-	//export_data += 3; //vec3 max_dir;
-	//export_data += 3; //vec3 normale;
-	/*export_data += 3; //vec3 eigenvalues
-	export_data += 3; //vec3 covmatup
-	export_data += 3; //vec3 covmatdiag*/
+	int export_data = 4;
 	
 	glGenBuffers (1, &Parameters::getInstance()->g_buffers[BUFFER_EXPORT_TGL]);
 		glBindBuffer (GL_ARRAY_BUFFER, Parameters::getInstance()->g_buffers[BUFFER_EXPORT_TGL]);
@@ -403,19 +397,6 @@ void Curvature::loadBuffers()
 				GL_DYNAMIC_COPY
 		);
 	glBindBuffer (GL_ARRAY_BUFFER, 0);
-	
-	/*
-	export_data = 4;
-	glGenBuffers (1, &Parameters::getInstance()->g_buffers[BUFFER_EXPORT_K1K2]);
-		glBindBuffer (GL_ARRAY_BUFFER, Parameters::getInstance()->g_buffers[BUFFER_EXPORT_K1K2]);
-		glBufferData (
-				GL_ARRAY_BUFFER,
-				nb_cells*12*export_data*sizeof(float), //12 triangles max for each cell, each made of 3 vec3
-				NULL,
-				GL_DYNAMIC_COPY
-		);
-	glBindBuffer (GL_ARRAY_BUFFER, 0);
-	*/
 	
 	export_data = 4;
 	glGenBuffers (1, &Parameters::getInstance()->g_buffers[BUFFER_EXPORT_DIRMIN]);

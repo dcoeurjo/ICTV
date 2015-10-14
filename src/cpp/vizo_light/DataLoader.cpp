@@ -5,12 +5,12 @@
 #include <cstring>
 
 const GLenum MIN_FILT = GL_LINEAR_MIPMAP_LINEAR;
-//const GLenum MAG_FILT = GL_LINEAR;
+const GLenum MAG_FILT = GL_LINEAR;
 //const GLenum MIN_FILT = GL_NEAREST_MIPMAP_NEAREST;
-const GLenum MAG_FILT = GL_NEAREST;
+//const GLenum MAG_FILT = GL_NEAREST;
 
 bool mymipmap = false;
-bool novolumenomoments = false;
+bool novolumenomoments = true;
 
 void DataLoader::loadData32BGpu()
 {
@@ -93,9 +93,9 @@ void DataLoader::loadx2y2z2()
 		
 		if (novolumenomoments)
 		{
-			mmt[nb*3] = data[nb];
-			mmt[nb*3 + 1] = data[nb];
-			mmt[nb*3 + 2] = data[nb];
+			mmt[nb*3] *= data[nb];
+			mmt[nb*3 + 1] *= data[nb];
+			mmt[nb*3 + 2] *= data[nb];
 		}
 		nb++;
 	}
@@ -160,9 +160,9 @@ void DataLoader::loadxyyzxz()
 		
 		if (novolumenomoments)
 		{
-			mmt[nb*3] = data[nb];
-			mmt[nb*3 + 1] = data[nb];
-			mmt[nb*3 + 2] = data[nb];
+			mmt[nb*3] *= data[nb];
+			mmt[nb*3 + 1] *= data[nb];
+			mmt[nb*3 + 2] *= data[nb];
 		}
 		nb++;
 	}
@@ -228,9 +228,9 @@ void DataLoader::loadxyz()
 		
 		if (novolumenomoments)
 		{
-			mmt[nb*3] = data[nb];
-			mmt[nb*3 + 1] = data[nb];
-			mmt[nb*3 + 2] = data[nb];
+			mmt[nb*3] *= data[nb];
+			mmt[nb*3 + 1] *= data[nb];
+			mmt[nb*3 + 2] *= data[nb];
 		}
 		
 		nb++;

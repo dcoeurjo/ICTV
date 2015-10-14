@@ -19,12 +19,13 @@
 
 #include <cmath>
 #include <string>
-#include <boost/concept_check.hpp>
 
 #define CAM_SPEED 20
 #define CAM_SPEED_MAX Parameters::getInstance()->g_geometry.scale[0] / 5.0
 #define CAM_ROTATE 0.1f
 #define CAM_ROTATE_MAX 1.0f
+
+//#define MMTS
 
 void updateMatricesAndFrustum()
 {
@@ -93,12 +94,14 @@ void activateTextures()
 	glActiveTexture(GL_TEXTURE0 + TEXTURE_DENSITY);
 	glBindTexture(GL_TEXTURE_3D, Parameters::getInstance()->g_textures[TEXTURE_DENSITY]);
 
+#ifdef MMTS
 	glActiveTexture(GL_TEXTURE0 + TEXTURE_X2Y2Z2);
 	glBindTexture(GL_TEXTURE_3D, Parameters::getInstance()->g_textures[TEXTURE_X2Y2Z2]);
 	glActiveTexture(GL_TEXTURE0 + TEXTURE_XY_YZ_XZ);
 	glBindTexture(GL_TEXTURE_3D, Parameters::getInstance()->g_textures[TEXTURE_XY_YZ_XZ]);
 	glActiveTexture(GL_TEXTURE0 + TEXTURE_XYZ);
 	glBindTexture(GL_TEXTURE_3D, Parameters::getInstance()->g_textures[TEXTURE_XYZ]);
+#endif
 	
 	glActiveTexture(GL_TEXTURE0 + TEXTURE_CODE_CLASS);
 	glBindTexture(GL_TEXTURE_1D, Parameters::getInstance()->g_textures[TEXTURE_CODE_CLASS]);
@@ -273,9 +276,12 @@ public:
 		}
 		dl->loadFile(argv[1]);
 		dl->loadData32BGpu();
+	
+#ifdef MMTS
 		dl->loadx2y2z2();
 		dl->loadxyyzxz();
 		dl->loadxyz();
+#endif
 		
 		lodManager.init();
 		extractor.init();
@@ -459,9 +465,9 @@ public:
 		if (Parameters::getInstance()->g_draw_triangles)
 		{
 			m_time_shading->begin();
-			//glEnable(GL_RASTERIZER_DISCARD);
+			glEnable(GL_RASTERIZER_DISCARD);
 			curver.run(queryResult_regular, queryResult_transition, &triangles_regular, &triangles_transition, &sync_count_triangles);
-			//glDisable(GL_RASTERIZER_DISCARD);
+			glDisable(GL_RASTERIZER_DISCARD);
 			m_time_shading->end();
 			
 			static int nb_export = 0;
@@ -638,7 +644,7 @@ public:
 			}
 		}
 		
-		//shadator.run(triangles_regular+triangles_transition);
+		shadator.run(triangles_regular+triangles_transition);
 		
 		//fprintf(stdout, "%lf %lf %lf -- ", Parameters::getInstance()->g_camera.pos[0], Parameters::getInstance()->g_camera.pos[1], Parameters::getInstance()->g_camera.pos[2]);
 		//fprintf(stdout, "[Cells] Total %d Regular %d Transition %d // [Triangles] Regular %d Transition %d ...\r", 

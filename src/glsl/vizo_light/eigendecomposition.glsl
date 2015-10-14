@@ -1,4 +1,4 @@
-
+/*
 // Slightly modified version of  Stan Melax's code for 3x3 matrix diagonalization (Thanks Stan!)
 // source: http://www.melax.com/diag.html?attredirects=0
 void getEigenValuesVectors2(float A[3][3], out float Q[3][3], out float vecD[3])
@@ -170,6 +170,7 @@ void computeK1K2(float volume, float r,
   
   val = vec3( eigenvalues[min_i], eigenvalues[med_i], eigenvalues[max_i] );
 }
+*/
 
 
 
@@ -185,7 +186,6 @@ void computeK1K2(float volume, float r,
 
 
 
-/*
 void getEigenValuesVectors ( in float mat_data[3][3], out float vectors[3][3], out float values[3] )
 { 
 	vec3 e = vec3(0);
@@ -507,4 +507,3 @@ void computeK1K2(float volume, float r,
     val = vec3( 0 );
   }
 }
-*/
