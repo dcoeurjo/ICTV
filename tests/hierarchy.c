@@ -72,8 +72,10 @@ int nb_iteration_exact     = 0;
 int nb_access_exact        = 0;
 int nb_iteration_hierarchy = 0;
 int nb_access_hierarchy    = 0;
-int nb_iteration_approx[ LVL+1 ] = { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-int nb_access_approx   [ LVL+1 ] = { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+int nb_iteration_approx [ LVL+1 ] = { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+int nb_access_approx    [ LVL+1 ] = { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+int nb_iteration_approx2[ LVL+1 ] = { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+int nb_access_approx2   [ LVL+1 ] = { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
  
 
 
@@ -459,6 +461,100 @@ Value computeApproximateHierarchy( MipMap* M, int x0, int y0, int z0, Value r, i
   return acc;
 }
 
+/*
+  Compute the approximate integration of the mipmap \a M within the ball of
+  radius r and center (x0,y0,z0).
+  
+  The method is an octree traversal which traverses only necessary
+  cells. It stops at cells of height smaller than min_h, hence it
+  explores much less cells than computeHierarchy while computing only
+  an approximation of the result. When it stops at a cell, it computes
+  a kind of proportion of the cell inside the ball to estimate the
+  integral within it.
+
+  It should be noted that 2^min_h should be smaller than r.
+
+  Curiously, does not behave better than computeApproximateHierarchy.
+*/
+Value computeApproximateHierarchy2( MipMap* M, int x0, int y0, int z0, Value r, int min_h )
+{
+  Value weight[ LVL+1 ];
+  Value diag  [ LVL+1 ];
+  int max_k       = M->max_lvl; // number of levels in the hierarchy
+  weight[ max_k ] = (Value) 1;
+  diag  [ max_k ] = (Value) (sqrt(3.0)/2.0);
+  for ( int i = max_k - 1; i >= 0; --i )
+    {
+      weight[ i ] = weight[ i+1 ] * (Value) 8;
+      diag  [ i ] = diag  [ i+1 ] * (Value) 2;
+    }
+
+  int xyzk[ 4 ] = { 0, 0, 0, 0 };
+  Value acc     = 0;
+  Value r2      = r*r;
+  do 
+    {
+      nb_iteration_approx2[ min_h ] += 1;
+      int k = xyzk[ 3 ];  // current level in the hierarchy
+      int h = max_k - k;  // height in hierarchy (max_k - k )
+      // The distance must be computed in a kind of Khalimsky sense
+      // since centers of octree-cells are shifted from the origin (of
+      // (1<<h)/2.0)
+      Value dK2    = distance2( ( 2*xyzk[ 0 ] + 1) << h, ( 2*xyzk[ 1 ] + 1) << h, ( 2*xyzk[ 2 ] + 1 ) << h, 
+                                2*x0+1, 2*y0+1, 2*z0+1 );
+      Value d2     = dK2 / (Value) 4; // Divide by 4 to get back the distance.
+      Value delta2 = square( diag[ k ] );
+      Value upper2 = ( r2 >= delta2 ) ? r2 - 2.0*r*diag[ k ] + delta2 : 0.0; // (r-diag)^2
+      Value lower2 = r2 + 2.0*r*diag[ k ] + delta2; // (r+diag)^2
+      //printf( "[%d] %d %d %d | l2=%f d2=%f u2=%f\n", k, xyzk[ 0 ], xyzk[ 1 ], xyzk[ 2 ], lower2, d2, upper2 );
+      // Takes care of finest cells.
+      if ( h == 0 ) 
+        {
+          if ( d2 <= r2 ) 
+            { // cell is completely inside
+              // printf("[%d] %d %d %d\n", k, xyzk[ 0 ], xyzk[ 1 ], xyzk[ 2 ] );
+              acc += Image_get( MipMap_get_image( M, k ), 
+                                xyzk[ 0 ], xyzk[ 1 ], xyzk[ 2 ] ); 
+              nb_access_approx2[ min_h ] += 1;
+              goNext( xyzk );
+            }
+          else // cell is completely outside
+            goNext( xyzk );
+        }
+      else
+        { // cell is completely inside
+          if ( d2 < upper2 ) 
+            {
+              // printf("[%d] %d %d %d\n", k, xyzk[ 0 ], xyzk[ 1 ], xyzk[ 2 ] );
+              acc += weight[ k ] * Image_get( MipMap_get_image( M, k ), 
+                                              xyzk[ 0 ], xyzk[ 1 ], xyzk[ 2 ] );
+              nb_access_approx2[ min_h ] += 1;
+              goNext( xyzk );
+            }
+          else if ( d2 > lower2 )
+            // cell is completely outside
+            goNext( xyzk );                 
+          else if ( ( h > min_h ) || ( r2 <= delta2 ) )
+            goDown( xyzk );
+          else 
+            { // Compute proportion inside.
+              // double prop = 1.0 - (d2-upper2) / (4.0*r*diag[ k ]); // Without sqrt
+              double prop = ( ( r + diag[ k ] ) - sqrt( d2 ) ) / (2.56158 * diag[ k ] ); // with sqrt
+              // constant is two times int( sqrt(1+y^2+z^2) dy dz ) / 4.0
+              prop = prop > 1.0 ? 1.0 : prop;
+              prop = prop < 0.0 ? 0.0 : prop;
+              //printf("[%d] %d %d %d prop=%f\n", k, xyzk[ 0 ], xyzk[ 1 ], xyzk[ 2 ], prop );
+              acc += prop * weight[ k ] * Image_get( MipMap_get_image( M, k ), 
+                                                     xyzk[ 0 ], xyzk[ 1 ], xyzk[ 2 ] );
+              nb_access_approx2[ min_h ] += 1;
+              goNext( xyzk );                 
+            }
+        }
+    }
+  while ( xyzk[ 3 ] > 0 );
+  return acc;
+}
+
 
 int main( int argc, char* argv[] )
 {
@@ -501,7 +597,12 @@ int main( int argc, char* argv[] )
   for ( int i = 0; i < lvl; ++i )
     {
       Value hier_approx = computeApproximateHierarchy( &vol, x0, y0, z0, r, i );
-      printf("     - hier. approx value [%d] = %f, iter/access %d/%d\n", i, hier_approx, nb_iteration_approx[ i ], nb_access_approx[ i ] );
+      printf("     - hier. approx value [%d]  = %f, iter/access %d/%d\n", i, hier_approx, nb_iteration_approx[ i ], nb_access_approx[ i ] );
+    }
+  for ( int i = 0; i < lvl; ++i )
+    {
+      Value hier_approx2 = computeApproximateHierarchy2( &vol, x0, y0, z0, r, i );
+      printf("     - hier. approx2 value [%d] = %f, iter/access %d/%d\n", i, hier_approx2, nb_iteration_approx2[ i ], nb_access_approx2[ i ] );
     }
   printf("---- Freeing memory ----\n" );
   MipMap_finish( &vol );
