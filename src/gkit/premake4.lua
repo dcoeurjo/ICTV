@@ -97,7 +97,27 @@ project("vizo")
 	language "C++"
 	kind "ConsoleApp"
 	files ( gkit_files )
-	local projectfile = "../cpp/"
+	local projectfile = "../cpp/vizo/"
+	files { projectfile.."main.cpp",
+		projectfile.."GpuOctree.cpp",
+		projectfile.."Parameters.cpp",
+		projectfile.."Utils.cpp",
+		projectfile.."BlitFramebuffer.cpp",
+		projectfile.."DataLoader.cpp",
+		projectfile.."Triangulation.cpp",
+		projectfile.."RegularTriangulation.cpp",
+		projectfile.."TransitionTriangulation.cpp",
+		projectfile.."QuaternionCamera.cpp",
+		projectfile.."PrimitiveDraw.cpp",
+		projectfile.."Curvature.cpp",
+		projectfile.."Shading.cpp"
+	}
+
+project("vizo_light")
+	language "C++"
+	kind "ConsoleApp"
+	files ( gkit_files )
+	local projectfile = "../cpp/vizo_light/"
 	files { projectfile.."main.cpp",
 		projectfile.."GpuOctree.cpp",
 		projectfile.."Parameters.cpp",

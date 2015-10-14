@@ -13,7 +13,7 @@
 #include "Definitions.h"
 #include "Utils.h"
 
-#define SHADER_PATH(x) "../glsl/" x
+#define SHADER_PATH(x) "../glsl/vizo_light/" x
 #define CAPTURE_PATH(x) "./captures/" x
 #define DATA_PATH(x) "../../data/" x
 #define VIEWPOINT_FILE "vp.txt" 
