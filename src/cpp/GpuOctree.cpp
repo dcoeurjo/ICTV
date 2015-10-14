@@ -65,7 +65,7 @@ void GPUOctree::loadBuffers()
         //const size_t cap = 1 << 28;
 		
 		size_t full_tree = 1;
-		long int side = std::pow(2, 6); //lvl 8 max
+		long int side = std::pow(2, 8); //lvl 8 max
 		full_tree += side*side*side; 
 		
 		size_t full_tree_cap = full_tree * sizeof(float) * 8.0; //2 vec4 for each
@@ -73,7 +73,7 @@ void GPUOctree::loadBuffers()
 		printf("LOD CAPACITY %lu (%lu)\n", full_tree, full_tree_cap);
 		
 		size_t tr_cells = 1;
-		tr_cells = full_tree/1000.0; //a lot less than tree cells
+		tr_cells = full_tree/100.0; //a lot less than tree cells
 		printf("TR CAPACITY %lu\n", tr_cells);
 		
 		size_t tr_cells_cap = tr_cells * sizeof(float)*8; //2 vec4 for each

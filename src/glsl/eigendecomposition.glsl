@@ -458,7 +458,7 @@ void computeK1K2(float volume, float r,
   float eigenvalues[3];
   float curvmat[3][3];
 
-  if (volume > 0.01)
+  if (volume > 0.01 && r >= 1.0)
   {
     
     float covxy = xy_yz_xz.x - (xyz.x*xyz.y/volume);

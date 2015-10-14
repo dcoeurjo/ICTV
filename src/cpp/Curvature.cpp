@@ -333,15 +333,13 @@ void Curvature::run(GLuint nbcells_reg, GLuint nbcells_tr, GLuint* nb_triangles_
 	);*/
 	glBeginTransformFeedback(GL_TRIANGLES);
 	
+	
 	glMultiDrawElementsIndirect(
 		GL_TRIANGLES,
 		GL_UNSIGNED_INT,
 		NULL,
 		nbcells_reg*res*res*res,
 		0);
-	
-	glEndTransformFeedback();
-	glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, 0);
 	glEndQuery(GL_PRIMITIVES_GENERATED);
 	
 	
@@ -369,6 +367,10 @@ void Curvature::run(GLuint nbcells_reg, GLuint nbcells_tr, GLuint* nb_triangles_
 	glGetQueryObjectuiv(Parameters::getInstance()->g_query[QUERY_TRIANGLES], GL_QUERY_RESULT, nb_triangles_transition);
 	glGetInteger64v(GL_TIMESTAMP, &stop);
 	
+	
+	glEndTransformFeedback();
+	glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, 0);
+	
 	glUseProgram(0);
 	
 	*sync_time += (stop - start);
@@ -382,7 +384,7 @@ void Curvature::loadTransformFeedbacks()
 void Curvature::loadBuffers()
 {
 	int res = (int)Parameters::getInstance()->g_tessel;
-	long long int nb_cells = 100000*res*res*res;
+	long long int nb_cells = 300000*res*res*res;
 	int export_data = 4; //vec3 pos
 	//export_data += 3; //vec2 k1k2
 	//export_data += 3; //vec3 min_dir;

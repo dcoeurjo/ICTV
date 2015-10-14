@@ -220,6 +220,7 @@ private:
 	float last_lvl;
 	float last_scale;
 	bool last_regular;
+	int last_mode;
 	
 	int min_lvl;
 	
@@ -309,13 +310,13 @@ public:
 			load_viewPoint();
 		
 		min_lvl = (int)ceil(log2(Parameters::getInstance()->g_curvradius));
-		printf("Got min lvl %d\n", min_lvl);
 		Parameters::getInstance()->g_lvl = min_lvl;
 		
 		last_radius = Parameters::getInstance()->g_curvradius;
 		last_lvl = Parameters::getInstance()->g_lvl;
 		last_scale = Parameters::getInstance()->g_scale;
 		last_regular = Parameters::getInstance()->g_regular;
+		last_mode = Parameters::getInstance()->g_ground_truth;
 		
 		reload_fetch = Parameters::getInstance()->g_fromtexture;
 		
@@ -326,13 +327,15 @@ public:
     
 	void window_draw ()
 	{
-		if (last_radius != Parameters::getInstance()->g_curvradius ||
+		if (last_mode != Parameters::getInstance()->g_ground_truth ||
+			last_radius != Parameters::getInstance()->g_curvradius ||
 			last_scale != Parameters::getInstance()->g_scale ||
 			last_regular != Parameters::getInstance()->g_regular)
 		{
 			min_lvl = (int)ceil(log2(Parameters::getInstance()->g_curvradius));
 			Parameters::getInstance()->g_compute_min_max = true;
-			Parameters::getInstance()->g_lvl =  min_lvl;
+			if (Parameters::getInstance()->g_auto_refine)
+				Parameters::getInstance()->g_lvl =  min_lvl;
 		}
 		
 		if( last_lvl != Parameters::getInstance()->g_lvl )
@@ -348,6 +351,7 @@ public:
 		last_lvl = Parameters::getInstance()->g_lvl;
 		last_scale = Parameters::getInstance()->g_scale;
 		last_regular = Parameters::getInstance()->g_regular;
+		last_mode = Parameters::getInstance()->g_ground_truth;
 		
 		if (Parameters::getInstance()->g_auto_refine && fps > 20 && Parameters::getInstance()->g_lvl > 0)
 			Parameters::getInstance()->g_lvl -= 1;
@@ -623,7 +627,7 @@ public:
 			}
 		}
 		
-		shadator.run(triangles_regular);
+		shadator.run(triangles_regular+triangles_transition);
 		
 		//fprintf(stdout, "%lf %lf %lf -- ", Parameters::getInstance()->g_camera.pos[0], Parameters::getInstance()->g_camera.pos[1], Parameters::getInstance()->g_camera.pos[2]);
 		fprintf(stdout, "[Cells] Total %d Regular %d Transition %d // [Triangles] Regular %d Transition %d ...\r", 
