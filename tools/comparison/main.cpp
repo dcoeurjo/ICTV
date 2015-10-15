@@ -60,6 +60,11 @@ public:
   {
     return !(*this == p);
   }
+
+  Position operator-( const Position& p) const
+  {
+    return Position(x-p.x, y-p.y, z-p.z);
+  }
 };
 
 struct convertGPUtoKhalimsky : std::unary_function <unsigned int, double>
@@ -78,18 +83,18 @@ struct convertCPUtoKhalimsky : std::unary_function <unsigned int, double>
 
 template< typename Predicate >
 bool loadFile(  const std::string& filename, std::map<Position,
-                Curvatures>& results, const Predicate& predicate)
+                Curvatures*>& results, const Predicate& predicate)
 {
   std::ifstream file( filename.c_str() );
   std::string line;
 
   if( file.is_open())
   {
-    std::cout << "Collecting data from file ..." << filename << std::endl;
+    std::cout << "Collecting data from file " << filename << " ..."<< std::endl;
     while( getline(file,line) )
     {
-      /// Skip if the line contains a # char or N
-      if(line[0] == '#' || line[0] == 'N')
+      /// Skip if the line contains a # char, or N, or any line too small (avoid the new line a end of file)
+      if(line[0] == '#' || line[0] == 'N' || line.size() < NBDATA)
       {
         continue;
       }
@@ -108,22 +113,23 @@ bool loadFile(  const std::string& filename, std::map<Position,
         return false;
       }
 
-      Position *p = new Position();
-      p->x = predicate( std::atof(words[0].c_str()));
-      p->y = predicate( std::atof(words[1].c_str()));
-      p->z = predicate( std::atof(words[2].c_str()));
+      Position p;
+      p.x = predicate( std::atof(words[0].c_str()));
+      p.y = predicate( std::atof(words[1].c_str()));
+      p.z = predicate( std::atof(words[2].c_str()));
 
       Curvatures *c = new Curvatures();
       c->mean = std::atof(words[3].c_str());
       c->k1   = std::atof(words[4].c_str());
       c->k2   = std::atof(words[5].c_str());
 
-      results[*p] = *c;
+      results[p] = c;
 
-      std::cout << p->x << " " << p->y << " " << p->z << " ";
-      std::cout << c->mean << " " << c->k1 << " " << c->k2 << std::endl;;
+      // std::cout << p.x << " " << p.y << " " << p.z << " ";
+      // std::cout << c->mean << " " << c->k1 << " " << c->k2 << std::endl;
     }
-    std::cout << "... done" << filename << std::endl;
+    std::cout << "... done." << std::endl;
+    file.close();
   }
   else
   {
@@ -131,6 +137,105 @@ bool loadFile(  const std::string& filename, std::map<Position,
     return false;
   }
   return true;
+}
+
+bool normalizeCPU( const std::map<Position, Curvatures*>& mapCPU,
+              const std::map<Position, Curvatures*>& mapGPU,
+              std::map<Position, Curvatures*>& mapCPUnormalized )
+{
+  for(  std::map<Position, Curvatures*>::const_iterator it=mapGPU.begin();
+        it!=mapGPU.end(); ++it )
+  {
+    Position p = it->first;
+    if( mapCPU.find(p) != mapCPU.end() ) /// easy case
+    {
+      Curvatures *temp = mapCPU.at(p);
+      Curvatures *copy = new Curvatures();
+      copy->mean = temp->mean;
+      copy->k1 = temp->k1;
+      copy->k2 = temp->k2;
+      mapCPUnormalized[p] = copy;
+    }
+    else
+    {
+      std::vector<Curvatures*> HalfCurvatureAroundPoint;
+      std::vector<Curvatures*> FullCurvatureAroundPoint;
+
+      /// -1 0 0
+      if( mapCPU.find(p - Position(-1,0,0)) != mapCPU.end() )
+      {
+        HalfCurvatureAroundPoint.push_back(mapCPU.at(p - Position(-1,0,0)));
+      }
+      else if( mapCPU.find(p - Position(-2,0,0)) != mapCPU.end() )
+      {
+        FullCurvatureAroundPoint.push_back(mapCPU.at(p - Position(-2,0,0)));
+      }
+
+      /// 0 -1 0
+      if( mapCPU.find(p - Position(0,-1,0)) != mapCPU.end() )
+      {
+        HalfCurvatureAroundPoint.push_back(mapCPU.at(p - Position(0,-1,0)));
+      }
+      else if( mapCPU.find(p - Position(0,-2,0)) != mapCPU.end() )
+      {
+        FullCurvatureAroundPoint.push_back(mapCPU.at(p - Position(0,-2,0)));
+      }
+
+      /// 0 0 -1
+      if( mapCPU.find(p - Position(0,0,-1)) != mapCPU.end() )
+      {
+        HalfCurvatureAroundPoint.push_back(mapCPU.at(p - Position(0,0,-1)));
+      }
+      else if( mapCPU.find(p - Position(0,0,-2)) != mapCPU.end() )
+      {
+        FullCurvatureAroundPoint.push_back(mapCPU.at(p - Position(0,0,-2)));
+      }
+
+      /// 1 0 0
+      if( mapCPU.find(p - Position(1,0,0)) != mapCPU.end() )
+      {
+        HalfCurvatureAroundPoint.push_back(mapCPU.at(p - Position(1,0,0)));
+      }
+      else if( mapCPU.find(p - Position(2,0,0)) != mapCPU.end() )
+      {
+        FullCurvatureAroundPoint.push_back(mapCPU.at(p - Position(2,0,0)));
+      }
+
+      /// 0 1 0
+      if( mapCPU.find(p - Position(0,1,0)) != mapCPU.end() )
+      {
+        HalfCurvatureAroundPoint.push_back(mapCPU.at(p - Position(0,1,0)));
+      }
+      else if( mapCPU.find(p - Position(0,2,0)) != mapCPU.end() )
+      {
+        FullCurvatureAroundPoint.push_back(mapCPU.at(p - Position(0,2,0)));
+      }
+
+      /// 0 0 1
+      if( mapCPU.find(p - Position(0,0,1)) != mapCPU.end() )
+      {
+        HalfCurvatureAroundPoint.push_back(mapCPU.at(p - Position(0,0,1)));
+      }
+      else if( mapCPU.find(p - Position(0,0,2)) != mapCPU.end() )
+      {
+        FullCurvatureAroundPoint.push_back(mapCPU.at(p - Position(0,0,2)));
+      }
+
+      std::cout << "Size of Half " << HalfCurvatureAroundPoint.size() << std::endl;
+      std::cout << "Size of Full " << FullCurvatureAroundPoint.size() << std::endl;
+    }
+  }
+}
+
+void deleteMap( std::map<Position, Curvatures*>& _map )
+{
+  for(  std::map<Position, Curvatures*>::iterator it=_map.begin();
+        it!=_map.end(); ++it )
+  {
+    delete (it->second);
+  }
+
+  _map.clear();
 }
 
 int main( int argc, char** argv )
@@ -153,15 +258,29 @@ int main( int argc, char** argv )
   uint size = argc > 3 ? std::atoi( argv[ 3 ] ) : 64;
 
   //// Variables initialization
-  std::map<Position, Curvatures> mapGPU;
-  std::map<Position, Curvatures> mapCPU;
+  std::map<Position, Curvatures*> mapGPU;
+  std::map<Position, Curvatures*> mapCPU;
+  std::map<Position, Curvatures*> mapCPUnormalized;
   convertGPUtoKhalimsky predicateGPU;
   convertCPUtoKhalimsky predicateCPU;
 
-  loadFile( fileGPU, mapGPU, predicateGPU );
-  loadFile( fileCPU, mapCPU, predicateCPU );
+  if( !loadFile( fileGPU, mapGPU, predicateGPU ))
+  {
+    deleteMap( mapGPU );
+    return 0;
+  }
+  if( !loadFile( fileCPU, mapCPU, predicateCPU ))
+  {
+    deleteMap( mapGPU );
+    deleteMap( mapCPU );
+    return 0;
+  }
+
+  normalizeCPU( mapCPU, mapGPU, mapCPUnormalized );
+  deleteMap( mapCPU );
 
 
-
+  deleteMap( mapGPU );
+  deleteMap( mapCPUnormalized );
   return 0;
 }
