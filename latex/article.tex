@@ -81,6 +81,72 @@ LAMA, UMR5127, F-73776, France\\
 \subsection{Curvature Tensor Estimation}
 \label{sec:curv-tens-estim}
 
+A {\em cell} $(k,x,y,z)$ is a region of the space of size $2^k \times
+2^k \times 2^k$, characterized by its integer coordinates $x,y,z$,
+with $0 \le x < 2^k$, $0 \le y < 2^k$, $0 \le z < 2^k$. Cells forms an
+octree decomposition of a cubic space. We use functions Up, Down and
+Next to navigate between cells.
+
+
+\begin{algorithm}
+\KwIn{Integers $p,q,r$ \tcp*{the moment orders, with $0 \le p+q+r \le 2$}}
+\KwIn{Integer $k$ \tcp*{$(2^k)^3$ is the size of the digital shape image}}
+\KwIn{Mipmap $V$ \tcp*{array of $k+1$ images of sizes $(2^k)^3,  (2^{k-1})^3, \ldots,  1^3$}}
+\KwIn{Integers $x_0,y_0,z_0$, Real $r$ \tcp*{Ball radius $r$ and center $(x_0,y_0,z_0)$}}
+\KwOut{Real $m$ \tcp*{estimation of the $p,q,r$-moment of $X \cap B_r(x_0,y_0,z_0)$}}
+\KwData{Cell $c :=  (k,0,0,0)$ \tcp*{Starts from biggest cell}}
+\KwData{Integer $n := 2^k$ \tcp*{Size of each cell}}
+\KwData{Real $d,\delta,l$ \tcp*{variables for intermediate computations}}
+\Begin{
+    m := 0 \;
+    \Repeat{$c[0] = k$}{
+      \tcp{Distance between cell and ball centers}
+      $d := \frac{1}{2}\| 2^k(2c[1]+1,2c[2]+1,2c[3]+1) - (2x_0+1,2y_0+1,2z_0+1) \|_2$\;
+      $\delta := \frac{\sqrt{3}}{2}2^{c[0]}$ \tcp*{half-length of cell diagonal}
+      \If(\tcp*[f]{Is it a smallest cell ?}){$c[0] = 0$}{
+        \If(\tcp*[f]{Is cell inside ball ?}){$d^2 \le r^2$}{
+          $m := m + V[c] * (2^k c[1])^p * (2^k c[2])^q * (2^k c[3])^r$
+        }
+        $c := \textsc{Next}(c)$ \tcp*{Go to next cell}
+      } \Else{
+        $l := \max(r-\delta,0)$\;
+        \If(\tcp*[f]{Is cell completely inside ball ?}){$d^2 < l^2$}{
+          $m := m + V[c] * (2^k c[1])^p * (2^k c[2])^q * (2^k c[3])^r$
+          $c := \textsc{Next}(c)$ \tcp*{Go to next cell}
+        }\ElseIf(\tcp*[f]{Is cell outside ball ?}){$d^2 > (r+\delta)^2$}{
+          $c := \textsc{Next}(c)$ \tcp*{Go to next cell}
+        }\lElse(\tcp*[f]{Go to a finer cell}){$c := \textsc{Down}(c)$}
+      }
+    }
+    \Return{m}\;
+  }
+  \caption{Derecursified hierarchical algorithm for computing the
+    $p,q,r$-moment of set $X \cap B_r(x_0,y_0,z_0)$, given a mipmap
+    $V$ that represents the volume of a shape $X$ in each cell, and
+    ball parameters $x_0,y_0,z_0,r$.}
+\end{algorithm}
+
+\begin{function}
+  \caption{Up( Cell $c$ ) : Cell}
+  \Return{Cell( $c[0]+1$, $c[1]/2$, $c[2]/2$, $c[3]/2$ )}
+\end{function}
+\begin{function}
+  \caption{Down( Cell $c$ ) : Cell}
+  \Return{Cell( $c[0]-1$, $c[1]*2$, $c[2]*2$, $c[3]*2$ )}
+\end{function}
+\begin{function}
+  \caption{Next( Cell $c$ ) : Cell}
+  \lWhile{$\mathrm{Odd}(c[1])$ and $\mathrm{Odd}(c[2])$ and $\mathrm{Odd}(c[3])$}{$c := \mathrm{Up}(c)$}
+  \lIf{$\mathrm{Even}(c[1])$}{$c[1] := c[1]+1$}
+  \Else{$c[1] := c[1] - 1$\;
+    \lIf{$\mathrm{Even}(c[2])$}{$c[2] := c[2]+1$}
+    \Else{$c[2] := c[2] - 1$\;
+      $c[3] := c[3]+1$}
+  }
+  \Return{c}
+\end{function}
+
+
 \subsection{Isosurface Extraction on GPU}
 \label{sec:isos-extr-gpu}
 
