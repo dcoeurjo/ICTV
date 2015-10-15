@@ -34,7 +34,7 @@ uniform int u_curv_val;
 void main( )
 {
     vertex_position = position.xyz;
-	vertex_color = vec3(0.95, 0.95, 1);
+	vertex_color = vertex_position;
 
     curv_dir_min = mindir.xyz;
 	curv_dir_max = maxdir.xyz;

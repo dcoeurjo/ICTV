@@ -36,62 +36,62 @@ void getVolumeMoments(in vec3 vertex_position, out float volume, out vec3 xyz, o
 			
 			vec3 p = vertex_position + probe;
 			volume += textureLod(densities, p, l).r * (step*step*step);
-			xyz += textureLod(u_xyz_tex, p, l).rgb * (step*step*step);
-			xyz2 += textureLod(u_xyz2_tex, p, l).rgb * (step*step*step);
-			xy_yz_xz += textureLod(u_xy_yz_xz_tex, p, l).rgb * (step*step*step);
+			xyz += textureLod(u_xyz_tex, p, l).rgb;
+			xyz2 += textureLod(u_xyz2_tex, p, l).rgb;
+			xy_yz_xz += textureLod(u_xy_yz_xz_tex, p, l).rgb;
 			
 			probe.x *= -1;
 			p = vertex_position + probe;
 			volume += textureLod(densities, p, l).r * (step*step*step);
-			xyz += textureLod(u_xyz_tex, p, l).rgb * (step*step*step);
-			xyz2 += textureLod(u_xyz2_tex, p, l).rgb * (step*step*step);
-			xy_yz_xz += textureLod(u_xy_yz_xz_tex, p, l).rgb * (step*step*step);
+			xyz += textureLod(u_xyz_tex, p, l).rgb;
+			xyz2 += textureLod(u_xyz2_tex, p, l).rgb;
+			xy_yz_xz += textureLod(u_xy_yz_xz_tex, p, l).rgb;
 			probe.x *= -1;
 			
 			probe.y *= -1;
 			p = vertex_position + probe;
 			volume += textureLod(densities, p, l).r * (step*step*step);
-			xyz += textureLod(u_xyz_tex, p, l).rgb * (step*step*step);
-			xyz2 += textureLod(u_xyz2_tex, p, l).rgb * (step*step*step);
-			xy_yz_xz += textureLod(u_xy_yz_xz_tex, p, l).rgb * (step*step*step);
+			xyz += textureLod(u_xyz_tex, p, l).rgb;
+			xyz2 += textureLod(u_xyz2_tex, p, l).rgb;
+			xy_yz_xz += textureLod(u_xy_yz_xz_tex, p, l).rgb;
 			
 			probe.x *=-1;
 			p = vertex_position + probe;
 			volume += textureLod(densities, p, l).r * (step*step*step);
-			xyz += textureLod(u_xyz_tex, p, l).rgb * (step*step*step);
-			xyz2 += textureLod(u_xyz2_tex, p, l).rgb * (step*step*step);
-			xy_yz_xz += textureLod(u_xy_yz_xz_tex, p, l).rgb * (step*step*step);
+			xyz += textureLod(u_xyz_tex, p, l).rgb;
+			xyz2 += textureLod(u_xyz2_tex, p, l).rgb;
+			xy_yz_xz += textureLod(u_xy_yz_xz_tex, p, l).rgb;
 			probe.y *= -1;
 			probe.x *= -1;
 			
 			probe.z *= -1;
 			p = vertex_position + probe;
 			volume += textureLod(densities, p, l).r * (step*step*step);
-			xyz += textureLod(u_xyz_tex, p, l).rgb * (step*step*step);
-			xyz2 += textureLod(u_xyz2_tex, p, l).rgb * (step*step*step);
-			xy_yz_xz += textureLod(u_xy_yz_xz_tex, p, l).rgb * (step*step*step);
+			xyz += textureLod(u_xyz_tex, p, l).rgb;
+			xyz2 += textureLod(u_xyz2_tex, p, l).rgb;
+			xy_yz_xz += textureLod(u_xy_yz_xz_tex, p, l).rgb;
 			
 			probe.x *= -1;
 			p = vertex_position + probe;
 			volume += textureLod(densities, p, l).r * (step*step*step);
-			xyz += textureLod(u_xyz_tex, p, l).rgb * (step*step*step);
-			xyz2 += textureLod(u_xyz2_tex, p, l).rgb * (step*step*step);
-			xy_yz_xz += textureLod(u_xy_yz_xz_tex, p, l).rgb * (step*step*step);
+			xyz += textureLod(u_xyz_tex, p, l).rgb;
+			xyz2 += textureLod(u_xyz2_tex, p, l).rgb;
+			xy_yz_xz += textureLod(u_xy_yz_xz_tex, p, l).rgb;
 			probe.x *= -1;
 			
 			probe.y *= -1;
 			p = vertex_position + probe;
 			volume += textureLod(densities, p, l).r * (step*step*step);
-			xyz += textureLod(u_xyz_tex, p, l).rgb * (step*step*step);
-			xyz2 += textureLod(u_xyz2_tex, p, l).rgb * (step*step*step);
-			xy_yz_xz += textureLod(u_xy_yz_xz_tex, p, l).rgb * (step*step*step);
+			xyz += textureLod(u_xyz_tex, p, l).rgb;
+			xyz2 += textureLod(u_xyz2_tex, p, l).rgb;
+			xy_yz_xz += textureLod(u_xy_yz_xz_tex, p, l).rgb;
 			
 			probe.x *=-1;
 			p = vertex_position + probe;
 			volume += textureLod(densities, p, l).r * (step*step*step);
-			xyz += textureLod(u_xyz_tex, p, l).rgb * (step*step*step);
-			xyz2 += textureLod(u_xyz2_tex, p, l).rgb * (step*step*step);
-			xy_yz_xz += textureLod(u_xy_yz_xz_tex, p, l).rgb * (step*step*step);
+			xyz += textureLod(u_xyz_tex, p, l).rgb;
+			xyz2 += textureLod(u_xyz2_tex, p, l).rgb;
+			xy_yz_xz += textureLod(u_xy_yz_xz_tex, p, l).rgb;
 			probe.y *= -1;
 			probe.x *= -1;
 		}

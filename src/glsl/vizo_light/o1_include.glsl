@@ -8,9 +8,19 @@ uniform int u_curv_val;
 
 void fetch(vec3 p, float step, float l, inout float volume, inout vec3 xyz, inout vec3 xyz2, inout vec3 xy_yz_xz)
 {
-	float val = textureLod(densities, p, l).r * (step*step*step);
-	volume += val;
+	float val = textureLod(densities, p, l).r;
 	vec3 p2 = p*u_size_tex;
+	
+	/*
+	if (val >= 0.5)
+		val = 1;
+	else
+		val = 0;
+	*/
+	
+	val *= (step*step*step);
+	
+	volume += val;
 	xyz += p2 * val;
 	xyz2 += p2*p2 * val;
 	xy_yz_xz += vec3(p2.x*p2.y, p2.y*p2.z, p2.x*p2.z) * val;

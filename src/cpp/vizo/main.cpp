@@ -376,7 +376,7 @@ public:
 			was_gt = Parameters::getInstance()->g_ground_truth;
 			
 			Parameters::getInstance()->g_culling = false;
-			//Parameters::getInstance()->g_regular = true;
+			Parameters::getInstance()->g_regular = true;
 			Parameters::getInstance()->g_curv_dir = 0;
 			Parameters::getInstance()->g_ground_truth = 1;
 		}
@@ -459,9 +459,9 @@ public:
 		if (Parameters::getInstance()->g_draw_triangles)
 		{
 			m_time_shading->begin();
-			glEnable(GL_RASTERIZER_DISCARD);
+			//glEnable(GL_RASTERIZER_DISCARD);
 			curver.run(queryResult_regular, queryResult_transition, &triangles_regular, &triangles_transition, &sync_count_triangles);
-			glDisable(GL_RASTERIZER_DISCARD);
+			//glDisable(GL_RASTERIZER_DISCARD);
 			m_time_shading->end();
 			
 			static int nb_export = 0;
@@ -469,15 +469,18 @@ public:
 			{
 				std::string file(argv[1]);
 				file = file.substr(file.find_last_of('/')+1, (file.find_last_of('.')-1)-file.find_last_of('/'));
-				char buf[256];
-				sprintf (buf, "export%d_%s_r%.2lf.txt", nb_export++, file.c_str(), Parameters::getInstance()->g_curvradius);
+				char buf[400];
+				sprintf (buf, "export%d_%s_r%.2lf_s%d_l%d.txt", nb_export++, file.c_str(), 
+						 Parameters::getInstance()->g_curvradius, 
+						 Parameters::getInstance()->g_sizetex, 
+						 (int)Parameters::getInstance()->g_lvl);
 				printf("Exporting to %s...\n", buf);
 				plotfd = fopen(buf,"w");
 				if (plotfd == NULL)
 					perror("fopen");
 				
 				//fprintf(plotfd, "# Frame \t\t TotalCells \t\t RegCells \t\t TrCells \t\t Tgl \t\t LodTime (ms) \t\t CullTime (ms) \t\t RegTglTime (ms) \t\t TrTglTime (ms)\t\t ShadingTime (ms)\t\t ShdLessTime (ms)\t\t TotalTime (ms) \t\t Cpu Time (ns)\n");
-				fprintf(plotfd, "#Vertex \t\tK1 \tK2 \tDir Min \t\tDir Max \t\tNormale\n");// \t\tEigenvalues \t\tCovmat Diag \t\tCovmat Upper\n");
+				fprintf(plotfd, "#Vertex \t\tCurv \tK1 \tK2 \tDir Min \t\tDir Max \t\tNormale\n");// \t\tEigenvalues \t\tCovmat Diag \t\tCovmat Upper\n");
 				fprintf(plotfd, "N %d\n", 3*triangles_regular);
 			
 				printf(" [1/2] Copying from the GPU ... \n");
@@ -524,23 +527,24 @@ public:
 					{
 						for(int d=0; d<3; d++)
 						{
-								fprintf(plotfd, "%.4lf\t", data[nb++]);
+								fprintf(plotfd, "%lf\t", data[nb++]*Parameters::getInstance()->g_sizetex);
 						}
-						fprintf(plotfd, "%.4lf\t", data_dirmin[nb+3]);
-						fprintf(plotfd, "%.4lf\t", data_dirmax[nb+3]);
+						fprintf(plotfd, "%lf\t", data[nb++]);
+						fprintf(plotfd, "%lf\t", data_dirmin[nb+3]);
+						fprintf(plotfd, "%lf\t", data_dirmax[nb+3]);
 						for(int d=0; d<3; d++)
 						{
-								fprintf(plotfd, "%.4lf\t", data_dirmin[nb3++]);
+								fprintf(plotfd, "%lf\t", data_dirmin[nb3++]);
 						}
 						nb3++;
 						for(int d=0; d<3; d++)
 						{
-								fprintf(plotfd, "%.4lf\t", data_dirmax[nb4++]);
+								fprintf(plotfd, "%lf\t", data_dirmax[nb4++]);
 						}
 						nb4++;
 						for(int d=0; d<3; d++)
 						{
-								fprintf(plotfd, "%.4lf\t", data_normale[nb2++]);
+								fprintf(plotfd, "%lf\t", data_normale[nb2++]);
 						}
 						nb2++;
 						fprintf(plotfd, "\n");
@@ -638,7 +642,7 @@ public:
 			}
 		}
 		
-		shadator.run(triangles_regular+triangles_transition);
+		//shadator.run(triangles_regular+triangles_transition);
 		
 		//fprintf(stdout, "%lf %lf %lf -- ", Parameters::getInstance()->g_camera.pos[0], Parameters::getInstance()->g_camera.pos[1], Parameters::getInstance()->g_camera.pos[2]);
 		//fprintf(stdout, "[Cells] Total %d Regular %d Transition %d // [Triangles] Regular %d Transition %d ...\r", 
@@ -742,6 +746,12 @@ public:
 		{
 			Parameters::getInstance()->g_capture.enabled = !Parameters::getInstance()->g_capture.enabled;
 			key('c') = 0;
+		}
+		
+		if (key('e'))
+		{
+			Parameters::getInstance()->g_export = true;
+			key('e') = 0;
 		}
 	}
     

@@ -6,6 +6,118 @@ uniform sampler3D u_xy_yz_xz_tex;
 uniform sampler3D u_xyz_tex;
 uniform int u_curv_val;
 
+void goUp( inout ivec4 xyzk )
+{
+  xyzk[ 0 ] >>= 1;
+  xyzk[ 1 ] >>= 1;
+  xyzk[ 2 ] >>= 1;
+  xyzk[ 3 ]  += 1;
+}
+void goDown( inout ivec4 xyzk )
+{
+  xyzk[ 0 ] <<= 1;
+  xyzk[ 1 ] <<= 1;
+  xyzk[ 2 ] <<= 1;
+  xyzk[ 3 ]  -= 1;
+}
+
+void goNext(inout ivec4 xyzk, int max_lvl)
+{
+	while ( ( (xyzk[ 0 ] & 0x1)>0 ) && ( (xyzk[ 1 ] & 0x1)>0 ) && ( (xyzk[ 2 ] & 0x1)>0 ) )
+		goUp( xyzk );
+		
+	if ( xyzk[ 3 ] == max_lvl ) { xyzk[ 3 ] = max_lvl+1; return; }
+	
+	if ( ( (xyzk[ 0 ] & 0x1) ) == 0 )  
+		xyzk[ 0 ] += 1; 
+	else 
+	{
+		xyzk[ 0 ] &= ~0x1;
+		if ( ( (xyzk[ 1 ] & 0x1) ) == 0 )
+			xyzk[ 1 ] += 1;
+		else 
+		{
+			xyzk[ 1 ] &= ~0x1;
+			xyzk[ 2 ] += 1;
+		}
+	}
+}
+
+void getVolumeMoments(in vec3 vertex_position, out float volume, out vec3 xyz, out vec3 xy_yz_xz, out vec3 xyz2, in float lvl_tree)
+{
+	int limit_lvl = int(lvl_tree);
+	
+	volume = 0.0;
+	xyz2 = vec3(0);
+	xy_yz_xz = vec3(0);
+	xyz = vec3(0);
+	
+	float r = int(u_curv_radius);
+	int max_lvl = int(log2(u_size_tex));//int( ceil(log2(2*r)) );
+	
+	vec3 ball_center = vertex_position*u_size_tex;
+	
+	vec3 first_point = ball_center - r;
+	ivec4 xyzk = ivec4(0,0,0, max_lvl);
+
+	do
+    {
+		ivec3 center_coord = 2*(xyzk.xyz) + 1;
+		vec3 point_coord = center_coord << xyzk.w;
+		point_coord /= 2.0;
+		
+		float d = length(point_coord - ball_center);
+		float upper = -1.0;
+		float delta = sqrt(3.0)/2.0;
+		delta *= pow(2, xyzk.w);
+		if( r >= delta )
+			upper = r - delta;
+		float lower = r + delta;
+		
+		if ( xyzk.w <= limit_lvl ) 
+		{
+			if (d <= u_curv_radius)
+			{ // cell is completely inside
+				float side = pow(2,xyzk.w);
+				float val = textureLod(densities, point_coord/u_size_tex, xyzk.w).r * side*side*side;
+				volume += val;
+				xyz += textureLod(u_xyz_tex, point_coord/u_size_tex, xyzk.w).rgb;
+				xyz2 += textureLod(u_xyz2_tex, point_coord/u_size_tex, xyzk.w).rgb;
+				xy_yz_xz += textureLod(u_xy_yz_xz_tex, point_coord/u_size_tex, xyzk.w).rgb;
+			}
+			goNext( xyzk, max_lvl );
+		}
+		else
+		{ // cell is completely inside
+		    if ( d <= upper ) 
+			{
+				float side = pow(2,xyzk.w);
+				float val = textureLod(densities, point_coord/u_size_tex, xyzk.w).r * side*side*side;
+				volume += val;
+				xyz += textureLod(u_xyz_tex, point_coord/u_size_tex, xyzk.w).rgb;
+				xyz2 += textureLod(u_xyz2_tex, point_coord/u_size_tex, xyzk.w).rgb;
+				xy_yz_xz += textureLod(u_xy_yz_xz_tex, point_coord/u_size_tex, xyzk.w).rgb;
+				goNext( xyzk, max_lvl );
+			}
+			else if ( d > lower ) // cell is completely outside
+				goNext( xyzk, max_lvl );
+			else 
+				goDown( xyzk );
+		}
+    }
+	while ( xyzk[ 3 ] < max_lvl );
+}
+
+
+/*
+uniform float u_curv_radius;
+uniform float u_size_tex;
+uniform sampler3D densities;
+uniform sampler3D u_xyz2_tex;
+uniform sampler3D u_xy_yz_xz_tex;
+uniform sampler3D u_xyz_tex;
+uniform int u_curv_val;
+
 mat3 fromSymToMatrix(vec3 sym)
 {
 	vec3 m0 = vec3(0);
@@ -118,3 +230,4 @@ void getVolumeMoments(in vec3 vertex_position, out float volume, out vec3 xyz, o
 	
 	volume *= vol_boule/total_volume;
 }
+*/
