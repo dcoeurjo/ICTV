@@ -14,6 +14,7 @@ typedef float Value;
 // Useful basic functions
 Value square_int( int x );
 Value square( Value x );
+Value cube( Value x );
 Value distance2( int x1, int y1, int z1, int x2, int y2, int z2 );
 Value distance( int x1, int y1, int z1, int x2, int y2, int z2 );
 
@@ -87,6 +88,10 @@ Value square_int( int x )
 Value square( Value x )
 {
   return x*x;
+}
+Value cube( Value x )
+{
+  return x*x*x;
 }
 
 Value distance2( int x1, int y1, int z1, int x2, int y2, int z2 )
@@ -474,7 +479,7 @@ Value computeApproximateHierarchy( MipMap* M, int x0, int y0, int z0, Value r, i
 
   It should be noted that 2^min_h should be smaller than r.
 
-  Curiously, does not behave better than computeApproximateHierarchy.
+  Last version behaves slightly better than computeApproximateHierarchy.
 */
 Value computeApproximateHierarchy2( MipMap* M, int x0, int y0, int z0, Value r, int min_h )
 {
@@ -539,11 +544,17 @@ Value computeApproximateHierarchy2( MipMap* M, int x0, int y0, int z0, Value r, 
           else 
             { // Compute proportion inside.
               // double prop = 1.0 - (d2-upper2) / (4.0*r*diag[ k ]); // Without sqrt
-              double prop = ( ( r + diag[ k ] ) - sqrt( d2 ) ) / (2.56158 * diag[ k ] ); // with sqrt
+              // double prop = ( ( r + diag[ k ] ) - sqrt( d2 ) ) / (2.56158 * diag[ k ] ); // with sqrt
               // constant is two times int( sqrt(1+y^2+z^2) dy dz ) / 4.0
+              // double prop = ( 1.0 + cube( ( r - sqrt( d2 ) ) / ( 0.73946*diag[ k ] ) ) ) / 2.0; // with sqrt
+              
+              // Works best.
+              // 1.7320508/diag[k] = sqt(3)/diag(k) = 1 / h is the half-size of the cell edge.
+              double prop = cube( ( r - sqrt( d2 ) ) * 1.7320508 / diag[ k ] ); // in [-1,1]
+              prop = (1.0+prop) / 2.0; // in [0,1].
+              //printf("[%d] %d %d %d prop=%f\n", k, xyzk[ 0 ], xyzk[ 1 ], xyzk[ 2 ], prop );
               prop = prop > 1.0 ? 1.0 : prop;
               prop = prop < 0.0 ? 0.0 : prop;
-              //printf("[%d] %d %d %d prop=%f\n", k, xyzk[ 0 ], xyzk[ 1 ], xyzk[ 2 ], prop );
               acc += prop * weight[ k ] * Image_get( MipMap_get_image( M, k ), 
                                                      xyzk[ 0 ], xyzk[ 1 ], xyzk[ 2 ] );
               nb_access_approx2[ min_h ] += 1;
