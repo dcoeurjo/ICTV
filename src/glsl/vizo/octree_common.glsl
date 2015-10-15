@@ -63,7 +63,7 @@ uniform int u_radial; //use radial distance for LoD
 uniform float u_time;
 uniform float u_size_tex;
 
-uint max_level = min( uint( floor(log2(u_size_tex))+1 ) - 1, 7u ); //max octree level; cannot be splitted more than this level
+uint max_level = min( uint( ceil(log2(u_size_tex)) ), 7u ); //max octree level; cannot be splitted more than this level
 float max_tex = max_level;
 
 
@@ -264,8 +264,6 @@ float getPotential(vec3 position, out float isovalue, bool lod)
 		}
 		else
 			ret = textureLod(densities, position, 0).r;
-			
-			ret -= 0.13;
 			
 		//ret += Value3D(position*2000) * 0.05;
 	}

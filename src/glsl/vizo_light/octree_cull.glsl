@@ -139,7 +139,7 @@ void main (void) {
 		}
 		
 		
-		if (level <= max_level)
+		if (level <= (max_level+1))
 		{
 			o_data_tr = i_data[0];
 			for(int i=0; i<3; i++)

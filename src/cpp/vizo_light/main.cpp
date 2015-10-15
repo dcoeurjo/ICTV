@@ -227,6 +227,7 @@ private:
 	int last_color;
 	
 	int min_lvl;
+	int max_lvl;
 	
 public:
 	Vizo(int _argc, char** _argv) : gk::App()
@@ -318,6 +319,7 @@ public:
 		
 		min_lvl = (int)floor(log2(Parameters::getInstance()->g_curvradius));
 		Parameters::getInstance()->g_lvl = min_lvl;
+		max_lvl = 0;
 		
 		last_radius = Parameters::getInstance()->g_curvradius;
 		last_lvl = Parameters::getInstance()->g_lvl;
@@ -358,8 +360,9 @@ public:
 			{
 				Parameters::getInstance()->g_lvl =  min_lvl;
 				Parameters::getInstance()->g_compute_min_max = true;
+				max_lvl = 0;
 			}
-			else if (Parameters::getInstance()->g_auto_refine && fps > 30 && Parameters::getInstance()->g_lvl > 0)
+			else if (Parameters::getInstance()->g_lvl > 0 && Parameters::getInstance()->g_lvl > max_lvl)
 			{
 				Parameters::getInstance()->g_lvl -= 1;
 				Parameters::getInstance()->g_compute_min_max = true;
@@ -1062,6 +1065,12 @@ public:
 	
 				cpu_time
 			);
+		}
+		
+		if (Parameters::getInstance()->g_auto_refine && Parameters::getInstance()->g_lvl < min_lvl && fps < 10)
+		{
+			Parameters::getInstance()->g_lvl+=1;
+			max_lvl = Parameters::getInstance()->g_lvl;
 		}
 		
 		return 1;
