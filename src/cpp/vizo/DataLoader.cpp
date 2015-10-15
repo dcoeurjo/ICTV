@@ -22,7 +22,7 @@ void DataLoader::loadData32BGpu()
 	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 	
-	glTexImage3D(GL_TEXTURE_3D, 0, GL_R16F, sizex, sizey, sizez, 0, GL_RED, GL_FLOAT, data);
+	glTexImage3D(GL_TEXTURE_3D, 0, GL_R32F, sizex, sizey, sizez, 0, GL_RED, GL_FLOAT, data);
         glGenerateMipmap(GL_TEXTURE_3D);
 	
 	glBindTexture(GL_TEXTURE_3D, 0);
@@ -102,7 +102,7 @@ void DataLoader::loadx2y2z2()
 	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 	
 	int lvl = 0;
-	glTexImage3D(GL_TEXTURE_3D, lvl++, GL_RGB16F, sizex, sizey, sizez, 0, GL_RGB, GL_FLOAT, mmt);
+	glTexImage3D(GL_TEXTURE_3D, lvl++, GL_RGB32F, sizex, sizey, sizez, 0, GL_RGB, GL_FLOAT, mmt);
 		
 	
 	if (mymipmap)
@@ -114,7 +114,7 @@ void DataLoader::loadx2y2z2()
 		{
 			loadNxtMipmap(size, mip1, &mip0);
 			size = ceil(size/2.0);
-			glTexImage3D(GL_TEXTURE_3D, lvl++, GL_RGB16F, size, size, size, 0, GL_RGB, GL_FLOAT, mip0);
+			glTexImage3D(GL_TEXTURE_3D, lvl++, GL_RGB32F, size, size, size, 0, GL_RGB, GL_FLOAT, mip0);
 			free(mip1);
 			mip1 = mip0;
 		}
@@ -162,7 +162,7 @@ void DataLoader::loadxyyzxz()
 	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 	
 	int lvl = 0;
-	glTexImage3D(GL_TEXTURE_3D, lvl++, GL_RGB16F, sizex, sizey, sizez, 0, GL_RGB, GL_FLOAT, mmt);
+	glTexImage3D(GL_TEXTURE_3D, lvl++, GL_RGB32F, sizex, sizey, sizez, 0, GL_RGB, GL_FLOAT, mmt);
 		
 		
 	if (mymipmap)
@@ -174,7 +174,7 @@ void DataLoader::loadxyyzxz()
 		{
 			loadNxtMipmap(size, mip1, &mip0);
 			size = ceil(size/2.0);
-			glTexImage3D(GL_TEXTURE_3D, lvl++, GL_RGB16F, size, size, size, 0, GL_RGB, GL_FLOAT, mip0);
+			glTexImage3D(GL_TEXTURE_3D, lvl++, GL_RGB32F, size, size, size, 0, GL_RGB, GL_FLOAT, mip0);
 			free(mip1);
 			mip1 = mip0;
 		}
@@ -228,7 +228,7 @@ void DataLoader::loadxyz()
 	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 
 	int lvl = 0;
-	glTexImage3D(GL_TEXTURE_3D, lvl++, GL_RGB16F, sizex, sizey, sizez, 0, GL_RGB, GL_FLOAT, mmt);
+	glTexImage3D(GL_TEXTURE_3D, lvl++, GL_RGB32F, sizex, sizey, sizez, 0, GL_RGB, GL_FLOAT, mmt);
 	
 	if(mymipmap)
 	{
@@ -239,7 +239,7 @@ void DataLoader::loadxyz()
 		{
 			loadNxtMipmap(size, mip1, &mip0);
 			size = ceil(size/2.0);
-			glTexImage3D(GL_TEXTURE_3D, lvl++, GL_RGB16F, size, size, size, 0, GL_RGB, GL_FLOAT, mip0);
+			glTexImage3D(GL_TEXTURE_3D, lvl++, GL_RGB32F, size, size, size, 0, GL_RGB, GL_FLOAT, mip0);
 			free(mip1);
 			mip1 = mip0;
 		}

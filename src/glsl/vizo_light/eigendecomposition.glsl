@@ -411,7 +411,7 @@ void getEigenValuesVectors ( in float mat_data[3][3], out float vectors[3][3], o
               values[ l ] = c * p;
               // Check for convergence.
             }
-          while ( abs ( e[ l ] ) > eps * tst1 );
+          while ( abs ( e[ l ] ) > eps * tst1 && iter < 30);
         }
       values[ l ] = values[ l ] + f;
       e[ l ] = float( 0.0 );

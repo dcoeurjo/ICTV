@@ -63,8 +63,8 @@ vec3 getVerticesPosition_regularCell(vec3 corners[8], uint edge)
     float d0 = getVolume(corners[corner_id_1]);
     float d1 = getVolume(corners[corner_id_2]);
     
-    float t = 0.5;//d1 / (d1 - d0);
-    vec3 pos_displ = interpolate(t)*pos_orig + (1.0-interpolate(t))*pos_end;
+    float t = d1 / (d1 - d0);
+    vec3 pos_displ = interpolate(t)*pos_end + (1.0-interpolate(t))*pos_orig;
 
     return pos_displ;
 }
