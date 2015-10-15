@@ -82,7 +82,9 @@ void main( )
 	//xyz = textureLod(u_xyz_tex, vertex_position, 0).rgb;
 	//vertex_color = vec3(volume/10000.0, 0, 1);
 	//vertex_color = xyz2/(65.0*65.0);
-	vertex_color = vec3(1);
+	
+	//vertex_color = vec3(volume, 0, 1);
+	vertex_color = xyz;
 	
     gl_Position = position;
 }
@@ -447,7 +449,7 @@ void main( )
 	vec3 light_dir = vec3(1, 1, 1);
 	normale = (u_transforms.modelview * vec4(normale, 0)).xyz;
 	
-	float shadow_weight = 0.5;
+	float shadow_weight = 0;
 	float dotnormal = clamp(dot(normalize(normale), normalize(light_dir.xyz)), 0, 1);
 	fragment_color = vec4( shadow_weight * color * dotnormal + (1-shadow_weight) * color, 1);
 

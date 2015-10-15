@@ -204,8 +204,8 @@ void Curvature::loadProgram()
             exit(-1);
         *program = tmp->name;
 		
-		glTransformFeedbackVaryings (*program, nb_var, varyings, GL_INTERLEAVED_ATTRIBS);
-        glLinkProgram (*program);
+		//glTransformFeedbackVaryings (*program, nb_var, varyings, GL_INTERLEAVED_ATTRIBS);
+        //glLinkProgram (*program);
 		
 		load_curv(Parameters::getInstance()->g_programs[PROGRAM_APPROXCURV], LOCATION_APPROXCURV_SIZE);
 	}
@@ -222,8 +222,8 @@ void Curvature::loadProgram()
             exit(-1);
         *program = tmp->name;
 
-		glTransformFeedbackVaryings (*program, nb_var, varyings, GL_INTERLEAVED_ATTRIBS);
-        glLinkProgram (*program);
+		//glTransformFeedbackVaryings (*program, nb_var, varyings, GL_INTERLEAVED_ATTRIBS);
+        //glLinkProgram (*program);
 		
 		load_curv(Parameters::getInstance()->g_programs[PROGRAM_GTCURV], LOCATION_GTCURV_SIZE);
 	}
@@ -240,8 +240,8 @@ void Curvature::loadProgram()
             exit(-1);
         *program = tmp->name;
 		
-		glTransformFeedbackVaryings (*program, nb_var, varyings, GL_INTERLEAVED_ATTRIBS);
-        glLinkProgram (*program);
+		//glTransformFeedbackVaryings (*program, nb_var, varyings, GL_INTERLEAVED_ATTRIBS);
+        //glLinkProgram (*program);
 		
 		load_curv(Parameters::getInstance()->g_programs[PROGRAM_HIERARCHCURV], LOCATION_HIERARCHCURV_SIZE);
 	}
@@ -306,7 +306,7 @@ void Curvature::run(GLuint nbcells_reg, GLuint nbcells_tr, GLuint* nb_triangles_
 	glBindVertexArray (Parameters::getInstance()->g_vertex_arrays[VERTEX_ARRAY_CURVATURE]);
 
 	
-	glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, Parameters::getInstance()->g_feedbacks[FEEDBACK_TRIANGULATION]);
+	/*glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, Parameters::getInstance()->g_feedbacks[FEEDBACK_TRIANGULATION]);
 	glBindBufferBase (
 		GL_TRANSFORM_FEEDBACK_BUFFER,
 		0u,
@@ -326,13 +326,8 @@ void Curvature::run(GLuint nbcells_reg, GLuint nbcells_tr, GLuint* nb_triangles_
 		GL_TRANSFORM_FEEDBACK_BUFFER,
 		3u,
 		Parameters::getInstance()->g_buffers[BUFFER_EXPORT_NORMALES]
-	);
-	/*glBindBufferBase (
-		GL_TRANSFORM_FEEDBACK_BUFFER,
-		4u,
-		Parameters::getInstance()->g_buffers[BUFFER_EXPORT_NORMALES]
 	);*/
-	glBeginTransformFeedback(GL_TRIANGLES);
+	//glBeginTransformFeedback(GL_TRIANGLES);
 	
 	
 	glMultiDrawElementsIndirect(
@@ -369,8 +364,8 @@ void Curvature::run(GLuint nbcells_reg, GLuint nbcells_tr, GLuint* nb_triangles_
 	glGetInteger64v(GL_TIMESTAMP, &stop);
 	
 	
-	glEndTransformFeedback();
-	glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, 0);
+	//glEndTransformFeedback();
+	//glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, 0);
 	
 	glUseProgram(0);
 	
@@ -388,6 +383,7 @@ void Curvature::loadBuffers()
 	long long int nb_cells = 300000*res*res*res;
 	int export_data = 4;
 	
+	/*
 	glGenBuffers (1, &Parameters::getInstance()->g_buffers[BUFFER_EXPORT_TGL]);
 		glBindBuffer (GL_ARRAY_BUFFER, Parameters::getInstance()->g_buffers[BUFFER_EXPORT_TGL]);
 		glBufferData (
@@ -430,6 +426,7 @@ void Curvature::loadBuffers()
 				GL_DYNAMIC_COPY
 		);
 	glBindBuffer (GL_ARRAY_BUFFER, 0);
+	*/
 }
 
 

@@ -49,12 +49,12 @@ Parameters::Parameters()
 	g_curv_val = 1;
 	g_lvl = 2;
 
-    g_ground_truth = 3;
+    g_ground_truth = 2;
     
     g_regular = false;
     g_radius_show = true;
 
-	g_curvradius = 10.0;
+	g_curvradius = 5.0;
     g_curvmin = -0.5;
     g_curvmax = 0.5;
 
@@ -63,7 +63,7 @@ Parameters::Parameters()
     g_isosurface = 0;
 	
 	g_export = false;
-	g_compute_min_max = false;
+	g_compute_min_max = true;
 
     g_sizetex = 0;
     

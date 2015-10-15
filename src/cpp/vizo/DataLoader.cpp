@@ -4,12 +4,12 @@
 
 #include <cstring>
 
-const GLenum MIN_FILT = GL_LINEAR_MIPMAP_LINEAR;
-const GLenum MAG_FILT = GL_LINEAR;
-//const GLenum MIN_FILT = GL_NEAREST_MIPMAP_NEAREST;
-//const GLenum MAG_FILT = GL_NEAREST;
+//const GLenum MIN_FILT = GL_LINEAR_MIPMAP_LINEAR;
+//const GLenum MAG_FILT = GL_LINEAR;
+const GLenum MIN_FILT = GL_NEAREST_MIPMAP_NEAREST;
+const GLenum MAG_FILT = GL_NEAREST;
 
-bool mymipmap = false;
+bool mymipmap = true;
 
 void DataLoader::loadData32BGpu()
 {
@@ -314,28 +314,36 @@ void DataRaw::loadFile(char* file)
 		perror("Error at file opening");
 		return;
 	}
+	
+	unsigned long int a = 1;
+	while(a < sizex)
+	{
+		a*= 2;
+	}
+	
+	unsigned long int size_p2 = a;
 
-        
-	unsigned long int total = sizex * sizey * sizez;
+	unsigned long int total = size_p2 * size_p2 * size_p2;
     data = (float*) malloc(sizeof(float)*total);
     data_char = (unsigned char*) malloc(sizeof(unsigned char)*total);
-        
-    fread(data_char, sizeof(unsigned char), total, fd);
+    
+	unsigned char* raw_data = (unsigned char*) malloc(sizeof(unsigned char)*sizex*sizex*sizex);
+    fread(raw_data, sizeof(unsigned char), sizex*sizex*sizex, fd);
 	fclose(fd);
 
-	unsigned char min = data_char[0];
-	unsigned char max = data_char[0];
+	unsigned char min = raw_data[0];
+	unsigned char max = raw_data[0];
 
 	unsigned long int i = 0;
 	for(unsigned long int x=0; x < sizex; x++)
 	for(unsigned long int y=0; y < sizey; y++)
 	for(unsigned long int z=0; z < sizez; z++)
 	{
-		if (data_char[i]<min)
-			min = data_char[i];
+		if (raw_data[i]<min)
+			min = raw_data[i];
 
-		if (data_char[i]>max)
-			max = data_char[i];
+		if (raw_data[i]>max)
+			max = raw_data[i];
 
 		i++;
 	}
@@ -345,20 +353,37 @@ void DataRaw::loadFile(char* file)
 	printf("Max %d Min %d\n", max, min);
 
 	i = 0;
-	for(unsigned long int x=0; x < sizex; x++)
-	for(unsigned long int y=0; y < sizey; y++)
-	for(unsigned long int z=0; z < sizez; z++)
+	unsigned int i_rd = 0;
+	for(unsigned long int x=0; x < size_p2; x++)
+	for(unsigned long int y=0; y < size_p2; y++)
+	for(unsigned long int z=0; z < size_p2; z++)
 	{
-		if (data_char[i] == 0)
-			data[i] = 0;
+		if (x < sizex && y < sizex && z < sizex)
+		{
+			if (raw_data[i_rd] == 0)
+			{
+				data[i] = 0;
+				data_char[i] = 0;
+			}
+			else
+			{
+				data[i] = 1;
+				data_char[i] = 1;
+			}
+			i_rd++;
+		}
 		else
-			data[i] = 1;
-
-		//data[i] = ((float)data_char[i] / (float)max);
+		{
+			data[i] = 0;
+			data_char[i] = 0;
+		}
+		
 		i++;
 	}
-
+	sizex = sizey = sizez = size_p2;
+	
 	Parameters::getInstance()->g_sizetex = sizex;
 
+	free(raw_data);
 	printf("Complete\n");
 }

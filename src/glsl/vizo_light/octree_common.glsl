@@ -63,7 +63,7 @@ uniform int u_radial; //use radial distance for LoD
 uniform float u_time;
 uniform float u_size_tex;
 
-uint max_level = min( uint( ceil(log2(u_size_tex))), 7u ); //max octree level; cannot be splitted more than this level
+uint max_level = min( uint( ceil(log2(u_size_tex))), 8u ); //max octree level; cannot be splitted more than this level
 float max_tex = max_level;
 
 
