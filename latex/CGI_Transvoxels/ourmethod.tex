@@ -24,9 +24,11 @@ In the following sections, we present each step of our solution.
 
 \subsection{Maintaining the linear octree}
 
-Our method triangulates a set of cells.
-Therefore, the first step of our pipeline evaluates a LoD criterion on each cell to determine if it is kept, split or merged.
-In this section, we present the GPU representation for those trees, as well as the criterion we use to evaluate the new partition.
+Our method triangulates a set of cells.  Therefore, the first step of
+our pipeline evaluates a LoD criterion on each cell to determine if it
+is kept, split or merged.  In this section, we present the GPU
+representation for those trees, as well as the criterion we use to
+evaluate the new partition.
 
 \subsubsection*{Linear octree on the GPU}
 
