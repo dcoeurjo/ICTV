@@ -84,7 +84,7 @@ void main( )
 	//vertex_color = xyz2/(65.0*65.0);
 	
 	//vertex_color = vec3(volume, 0, 1);
-	vertex_color = xyz;
+	vertex_color = vec3(1);
 	
     gl_Position = position;
 }
