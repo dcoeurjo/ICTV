@@ -246,94 +246,18 @@ vec3 hash3( float n )
 
 float getPotential(vec3 position, out float isovalue, bool lod)
 {
-	float ret = -1;
-	isovalue = 0;
+	//float ret = textureLod(densities, position, 0).r;
 	
-	if(fromtexture == 1)
-	{
-
-		float tree_level = getLevel(position);
-
-		if (lod)
-		{
-			uint mip = uint(max_tex) + 1;
-			//vec3 p = clamp(position, vec3(0), vec3(1));
-			//tree_level = clamp(tree_level, 0, mip);
-			float level = mip - tree_level;
-			ret = textureLod(densities, position, 0).r;
-		}
-		else
-			ret = textureLod(densities, position, 0).r;
-			
-		//ret += Value3D(position*2000) * 0.05;
-	}
-	else
-	{
-
-		//PLANET
-		
-		/*float sphere_radius = 0.4f;
-		position= position-0.5;
-		float amp = 0;
-		float freq = 128;//abs( cos( 0.2 * u_time ) ) * 64 + 64;
-		float noise = amp * (cos (position.x * freq) * cos (position.y * freq) * cos (position.z * freq));
-		ret = length(position) - (sphere_radius + noise)  * (sphere_radius + noise);*/
-		
-		/*ret = position.y - 0.5;
-		ret += Value3D(position*30) * 0.1;
-		ret += Value3D(position*90) * 0.01;
-		ret += Value3D(position*600) * 0.001;*/
-		
-		
-		//OCEAN /*https://www.shadertoy.com/view/Ms2SD1*/
-		//ret = seawaves(position);
-		
-		//METABALLS /**https://www.shadertoy.com/view/ld2GRz**/
-		
-		vec3 pos = (position - 0.5)*10;
-		int numballs = 6;
-		vec4 blobs[6];
-		
-		float time = 0.5 * u_time;
-		
-		float m = 0.0;
-		float p = 0.0;
-		float dmin = 1e20;
-			
-		float h = 1.0; // track Lipschitz constant
-		
-		for( int i=0; i<numballs; i++ )
-		{
-			float h = float(i)/8.0;
-			blobs[i].xyz = 2.0*sin( 6.2831*hash3(h*1.17) + hash3(h*13.7)*time );
-			blobs[i].w = 1.7 + 0.9*sin(6.28*hash1(h*23.13));
-			
-			// bounding sphere for ball
-			float db = length( blobs[i].xyz - pos );
-			if( db < blobs[i].w )
-			{
-				float x = db/blobs[i].w;
-				p += 1.0 - x*x*x*(x*(x*6.0-15.0)+10.0);
-				m += 1.0;
-				h = max( h, 0.5333*blobs[i].w );
-			}
-			else // bouncing sphere distance
-			{
-				dmin = min( dmin, db - blobs[i].w );
-			}
-		}
-		float d = dmin + 0.1;
-		
-		if( m>0.5 )
-		{
-			float th = 0.2;
-			d = h*(th-p);
-		}
-		
-		ret = d;
-	}
 	
-	isovalue = u_isosurface;
+	float size = 128;
+	
+	float r = sin(0.05*u_time)*10 + 20;
+	vec3 c = vec3(0.5);
+	
+	float ret = 0;
+	if( length((position-c)*size) < r )
+		ret = 1;
+		
 	
 	return ret;
 }
