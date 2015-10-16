@@ -54,7 +54,7 @@ LAMA, UMR5127, F-73776, France\\
   to efficiently explore the curvature tensor on the boundary of
   potentially large digital objects. More precisely, we combine a
   fully parallel pipeline on GPU to extract an adaptive triangulated
-  iso-surface of the digital object, with a curvature tensor
+  isosurface of the digital object, with a curvature tensor
   estimation at each surface point based on integral
   invariants. Integral invariants being parametrized by a given ball
   radius, our proposal allows us to explore interactively different
@@ -75,11 +75,131 @@ LAMA, UMR5127, F-73776, France\\
 \textbf{Contributions}
 
 
-\section{Preliminaries}
-\label{sec:preliminaries}
 
-\subsection{Curvature Tensor Estimation}
+
+\section{Curvature Tensor Estimation}
 \label{sec:curv-tens-estim}
+
+
+\section{Isosurface Extraction on GPU}
+\label{sec:isos-extr-gpu}
+
+In this section, we detail the adaptive isosurface extraction
+algorithm. The proposed approach is based on an octree representation
+of the volumetric object on which an efficient adaptive triangulation
+of the isosurface is constructed on GPU. Such approach is motivated by
+the fact that the hierarchical representation of the object allows us
+to handle large datasets and to locally adapt the level of details
+with respect to the geometry or camera position. We first present the
+octree representation and then the isosurface extraction from
+hierarchical octree cells.
+
+\subsection{Linear Octree Representation}
+
+\begin{figure}
+  \begin{center}
+    \subfigure{}{\includegraphics[height=0.17\textheight]{figs/partitioning}}
+    \subfigure{}{\includegraphics[height=0.17\textheight]{figs/quadtree_activefront}}
+  \end{center}
+\caption{In \cite{dupuy2014quadtrees}, a linear quadtree is used to
+  maintain a 2D hierarchical partitioning of space.  (Left) presents
+  such a partitioning.  A cell is more or less subdivided depending on
+  its distance to the camera.  They are also encoded with morton code,
+  that identifies each cell with its position relatively to its
+  parent.  (Right) shows the corresponding active front in the full
+  tree.  This partition is entirely represented by storing the list of
+  codes of the gray cells. }
+\label{fig_quadtree_partitionning}
+\end{figure}
+
+
+
+
+Linear quadtrees or octrees are non-recursive spatial data structure
+to represent classical quadtree/octreee trees (see for instance
+Gargantini \cite{gargantini1982effective}).  Such structures were
+reused by Dupuy \textit{et al.}  \cite{dupuy2014quadtrees} who
+presented a solution to handle them efficiently on the GPU.  Linear
+quadtrees associate a code to each cell, identifying it by its path to
+the root node.  The full tree is thus entirely represented by the list
+of its leaves' codes, which removes the recursivity.  In their
+implementation, Dupuy \textit{et al.} used Morton codes (Figure
+\ref{fig_quadtree_partitionning}).  Those codes store a spatial
+position, encoding the location of the cell relatively to its parent.
+The final code of a cell is thus the succession of locations between
+the cell and the root node.  Therefore, the maximal depth of the tree
+depends on the number of quadrants that can be encoded.  In a
+quadtree, a cell is divided into $2^2$ quadrants, so encoding one
+subdivision requires two bits.  Dupuy \textit{et al.} store for each
+cell its Morton code and its depth within the tree.  Therefore, with a
+code stored on 32 bits, using 28 bits for the locations and 4 bits for
+the depth, the tree is limited to 14 levels.
+
+Dupuy \textit{et al}. used those quadtrees to maintain a 2D
+hierarchical space partition.  They thus encode a front of cells
+within this tree (Figure \ref{fig_quadtree_partitionning}).  To
+determine if a cell is part of the front, they evaluate on each of
+them a LoD criterion.  The criterion they chose is view dependent and
+thus must be evaluated quickly on the GPU.
+
+During an update, there a three possible operations on a cell: it can
+be kept, merged or split.  A merge operation removes the codes of the
+children's cells from the list and replaces them with the code of the
+parent cell.  A split operation removes the code of a cell replacing
+it by the codes of its children.  Therefore, an efficient GPU
+implementation relies on the fact that those operations can be done
+independently on each cell.  This is true as long as the LoD criterion
+is also evaluable independently on each cell.
+
+With this implementation of linear tree, it is possible to maintain a
+quadtree on the GPU.  By generalizing this to the octree, it could be
+used with the triangulation presented by Lengyel \textit{et al.} to
+develop a fully data parallel pipeline.  There is however three
+conditions on the LoD criterion.  It must ensure that the extracted
+triangles will project onto more than one pixel, to ensure a good
+rasterization sampling.  The tree must also stay restricted at all
+times as the transition cells of Lengyel \textit{et al.} only patch
+cells with a single change in resolution.  Finally, this criterion
+must allow to detect if the neighbour of a cell is more subdivided
+than the cell itself in a data parallel manner.  This is mandatory to
+determine where the transition cells should be inserted.
+
+\todo[inline]{work in progress, cleanup needed}
+
+\subsection{Data parallel and adaptive mesh generation}
+
+
+
+
+
+
+\begin{figure}[!htbp]
+\centering
+\subfigure{}{\includegraphics[width=0.4\linewidth]{mesh_muti_res}}
+\subfigure{}{\includegraphics[width=0.4\linewidth]{octree}}
+\caption{Isosurface extraction $(a)$ from a  a linear restricted octree
+  $(b)$ of a volumetric data.\label{fig:isoexample}}
+\end{figure}
+
+
+
+\begin{figure}[!htbp]
+  \centering
+  \includegraphics[width=0.9\textwidth]{figs/pipeline}
+  \caption{ This figure summarizes our GPU pipeline. Data buffers are
+    represented in green and computations in red. Each computation
+    retrieves data from a buffer and fills a new one. }
+  \label{fig_pipeline} 
+\end{figure}
+
+
+
+\section{Interactive Computation on GPU}
+\label{sec:inter-visu-gpu}
+
+
+
+
 
 A {\em cell} is a tuple $(k,x,y,z)$, which represents a region of the space of size $2^k \times
 2^k \times 2^k$, characterized by its integer coordinates $x,y,z$,
@@ -147,11 +267,10 @@ Next to navigate between cells.
 \end{function}
 
 
-\subsection{Isosurface Extraction on GPU}
-\label{sec:isos-extr-gpu}
+\section{Experiments}
+\label{sec:experiments}
 
-\section{Interactive Visualization on GPU}
-\label{sec:inter-visu-gpu}
+
 
 \section{Conclusion and Discussion}
 \label{sec:discussion}

@@ -19,7 +19,6 @@
 
 #include <cmath>
 #include <string>
-#include <boost/concept_check.hpp>
 
 #define CAM_SPEED 20
 #define CAM_SPEED_MAX Parameters::getInstance()->g_geometry.scale[0] / 5.0
@@ -459,9 +458,9 @@ public:
 		if (Parameters::getInstance()->g_draw_triangles)
 		{
 			m_time_shading->begin();
-			//glEnable(GL_RASTERIZER_DISCARD);
+			glEnable(GL_RASTERIZER_DISCARD);
 			curver.run(queryResult_regular, queryResult_transition, &triangles_regular, &triangles_transition, &sync_count_triangles);
-			//glDisable(GL_RASTERIZER_DISCARD);
+			glDisable(GL_RASTERIZER_DISCARD);
 			m_time_shading->end();
 			
 			static int nb_export = 0;
@@ -525,10 +524,17 @@ public:
 					
 					for(int j=0; j<3; j++)
 					{
-						for(int d=0; d<3; d++)
-						{
-								fprintf(plotfd, "%lf\t", data[nb++]*Parameters::getInstance()->g_sizetex);
-						}
+						float x = (data[nb++])*Parameters::getInstance()->g_sizetex;
+						float y = (data[nb++])*Parameters::getInstance()->g_sizetex;
+						float z = (data[nb++])*Parameters::getInstance()->g_sizetex;
+						
+						//x = acos( z/20.0 );
+						//y = asin( y / (20.0*sin(x)) );
+						
+						fprintf(plotfd, "%lf\t", x);
+						fprintf(plotfd, "%lf\t", y);
+						fprintf(plotfd, "%lf\t", z);
+						
 						fprintf(plotfd, "%lf\t", data[nb++]);
 						fprintf(plotfd, "%lf\t", data_dirmin[nb+3]);
 						fprintf(plotfd, "%lf\t", data_dirmax[nb+3]);
@@ -642,7 +648,7 @@ public:
 			}
 		}
 		
-		//shadator.run(triangles_regular+triangles_transition);
+		shadator.run(triangles_regular+triangles_transition);
 		
 		//fprintf(stdout, "%lf %lf %lf -- ", Parameters::getInstance()->g_camera.pos[0], Parameters::getInstance()->g_camera.pos[1], Parameters::getInstance()->g_camera.pos[2]);
 		//fprintf(stdout, "[Cells] Total %d Regular %d Transition %d // [Triangles] Regular %d Transition %d ...\r", 
@@ -872,6 +878,8 @@ public:
 			}
 		}
 
+		Parameters::getInstance()->g_time_elapsed += 0.1;
+		Parameters::getInstance()->g_compute_min_max = true;
 		setShaderCameraPos(Parameters::getInstance()->g_geometry.affine);
 	}
     

@@ -49,7 +49,7 @@ Parameters::Parameters()
 	g_curv_val = 1;
 	g_lvl = 2;
 
-    g_ground_truth = 2;
+    g_ground_truth = 3;
     
     g_regular = false;
     g_radius_show = true;

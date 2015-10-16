@@ -263,6 +263,13 @@ public:
 		m_time_shading = gk::createTimeQuery();
 		m_time_blit = gk::createTimeQuery();
 		
+		lodManager.init();
+		extractor.init();
+		curver.init();
+		blitter.init();
+		radiusShower.init();
+		shadator.init();
+		
 		//init camera parameters
 		cam_speed = CAM_SPEED;
 		cam_rotate = CAM_ROTATE;
@@ -283,13 +290,6 @@ public:
 		dl->loadxyyzxz();
 		dl->loadxyz();
 #endif
-		
-		lodManager.init();
-		extractor.init();
-		curver.init();
-		blitter.init();
-		radiusShower.init();
-		shadator.init();
 		
 		queryResult_lod = 0;
 		queryResult_regular = 0;

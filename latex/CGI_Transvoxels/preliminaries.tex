@@ -1,11 +1,16 @@
 \section{Background}
 
-The solution of Lengyel \textit{et al.} \cite{lengyel2010voxel} is based on extracting an adaptive triangulated surface by applying MC on an octree.
-However, due to its recursive nature, the octree is not suited for the GPU pipeline.
-Hence, to take full advantage ofthe GPU, we must convert this tree to a non recursive structure.
-Such representations were first introduced by Gargantini \cite{gargantini1982effective} and are known as linear quadtrees.
-They have been implemented on the GPU by Dupuy \textit{et al.} \cite{dupuy2014quadtrees}.
-Along with this implementation, they presented a LoD criterion that bounds the projected size of the tree cells.
+The solution of Lengyel \textit{et al.} \cite{lengyel2010voxel} is
+based on extracting an adaptive triangulated surface by applying MC on
+an octree.  However, due to its recursive nature, the octree is not
+suited for the GPU pipeline.  Hence, to take full advantage ofthe GPU,
+we must convert this tree to a non recursive structure.  Such
+representations were first introduced by Gargantini
+\cite{gargantini1982effective} and are known as linear quadtrees.
+They have been implemented on the GPU by Dupuy \textit{et al.}
+\cite{dupuy2014quadtrees}.  Along with this implementation, they
+presented a LoD criterion that bounds the projected size of the tree
+cells.
 
 \subsection{Adaptive surface extraction}
 
