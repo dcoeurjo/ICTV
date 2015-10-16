@@ -13,6 +13,13 @@ Files **should be** in the same format:
 If points aren't matching together on both files, it will find the closest
 point. Coordinates should be in the same scale.
 
+## Compilation
+
+```
+make
+```
+
+It doesn't have any external dependencies.
 
 ## Usage
 
