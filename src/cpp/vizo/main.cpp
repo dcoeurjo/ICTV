@@ -651,8 +651,8 @@ public:
 		shadator.run(triangles_regular+triangles_transition);
 		
 		//fprintf(stdout, "%lf %lf %lf -- ", Parameters::getInstance()->g_camera.pos[0], Parameters::getInstance()->g_camera.pos[1], Parameters::getInstance()->g_camera.pos[2]);
-		//fprintf(stdout, "[Cells] Total %d Regular %d Transition %d // [Triangles] Regular %d Transition %d ...\r", 
-		//	queryResult_lod, queryResult_regular, queryResult_transition, triangles_regular, triangles_transition); fflush(stdout);
+		fprintf(stdout, "[Cells] Total %d Regular %d Transition %d // [Triangles] Regular %d Transition %d ...\r", 
+			queryResult_lod, queryResult_regular, queryResult_transition, triangles_regular, triangles_transition); fflush(stdout);
        
 		m_time_blit->begin();
 		

@@ -6,8 +6,8 @@ uniform int culling_disabled;
 // Vertex shader
 
 #ifdef VERTEX_SHADER
-layout (location = 0) in uvec4 i_data;
-layout (location = 0) out uvec4 o_data;
+layout (location = 0) in uvec2 i_data;
+layout (location = 0) out uvec2 o_data;
 
 void main (void) {
 	o_data = i_data;

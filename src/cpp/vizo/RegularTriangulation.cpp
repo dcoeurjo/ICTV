@@ -200,7 +200,7 @@ void list_indices(std::vector<unsigned int>& id_list)
 void RegularTriangulation::loadBuffers()
 {
 	int res = (int)Parameters::getInstance()->g_tessel;
-	long long int nb_cells = 500000*res*res*res;
+	long long int nb_cells = 300000*res*res*res;
 	
 	glGenBuffers (1, &Parameters::getInstance()->g_buffers[BUFFER_INDIRECT_DRAWS]);
 	glBindBuffer (GL_ARRAY_BUFFER, Parameters::getInstance()->g_buffers[BUFFER_INDIRECT_DRAWS]);
@@ -232,9 +232,9 @@ void RegularTriangulation::runTriangulation(GLuint nbCells)
 	int res = (int)Parameters::getInstance()->g_tessel;
 	
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, Parameters::getInstance()->g_buffers[BUFFER_INDIRECT_DRAWS]);
-	glBindVertexArray (Parameters::getInstance()->g_vertex_arrays[VERTEX_ARRAY_LTREE_RENDER2 - Parameters::getInstance()->g_geometry.pingpong]);
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, Parameters::getInstance()->g_buffers[BUFFER_VERTICES]);
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 3, Parameters::getInstance()->g_buffers[BUFFER_INDIRECT_DRAWS]);
+	glBindVertexArray (Parameters::getInstance()->g_vertex_arrays[VERTEX_ARRAY_LTREE_RENDER2 - Parameters::getInstance()->g_geometry.pingpong]);
 	glDrawArraysInstanced(
 			GL_POINTS,
 			0,

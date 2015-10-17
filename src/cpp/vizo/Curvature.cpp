@@ -340,7 +340,6 @@ void Curvature::run(GLuint nbcells_reg, GLuint nbcells_tr, GLuint* nb_triangles_
 	);*/
 	glBeginTransformFeedback(GL_TRIANGLES);
 	
-	
 	glMultiDrawElementsIndirect(
 		GL_TRIANGLES,
 		GL_UNSIGNED_INT,
@@ -354,6 +353,8 @@ void Curvature::run(GLuint nbcells_reg, GLuint nbcells_tr, GLuint* nb_triangles_
 	glGetInteger64v(GL_TIMESTAMP, &start);
 	glGetQueryObjectuiv(Parameters::getInstance()->g_query[QUERY_TRIANGLES], GL_QUERY_RESULT, nb_triangles_regular);
 	glGetInteger64v(GL_TIMESTAMP, &stop);
+	
+	//printf("After Curv %d\n", *nb_triangles_regular);
 
 	*sync_time = stop - start;
 	

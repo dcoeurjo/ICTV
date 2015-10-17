@@ -22,7 +22,7 @@ struct indirect_draw
 };
 
 #ifdef VERTEX_SHADER
-layout (location = 0) in uvec4 i_key; // translation + scale
+layout (location = 0) in uvec2 i_key; // translation + scale
 layout (location = 1) in vec4 neighboursCell;
 
 layout (binding = 2, std430) buffer vertices

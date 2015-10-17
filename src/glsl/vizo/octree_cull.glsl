@@ -6,8 +6,8 @@ uniform int culling_disabled;
 // Vertex shader
 
 #ifdef VERTEX_SHADER
-layout (location = 0) in uvec4 i_data;
-layout (location = 0) out uvec4 o_data;
+layout (location = 0) in uvec2 i_data;
+layout (location = 0) out uvec2 o_data;
 
 void main (void) {
 	o_data = i_data;
@@ -21,11 +21,11 @@ void main (void) {
 layout (points) in;
 layout (points, max_vertices = 16) out;
 
-layout (location = 0) in uvec4 i_data[];
+layout (location = 0) in uvec2 i_data[];
 
-layout (stream = 0) out uvec4 o_data;
+layout (stream = 0) out uvec2 o_data;
 layout (stream = 0) out vec4 o_code;
-layout (stream = 1) out uvec4 o_data_tr;
+layout (stream = 1) out uvec2 o_data_tr;
 layout (stream = 1) out vec4 o_neighbours;
 
 //determine if a cell is bordered by other cells of a higher resolution (smaller in scale)
@@ -121,7 +121,7 @@ void main (void) {
 	vec3 node_max = node + s * u_scene_size;
 
 	// emit if intersection or inside
-	if (octree_frustum_test (node_min, node_max) || culling_disabled != 0) 
+	//if (octree_frustum_test (node_min, node_max) || culling_disabled != 0) 
 	{
 		uint level = lt_level_3_20(i_data[0].xy);
 		
@@ -130,7 +130,7 @@ void main (void) {
 			neighbours = getSideTransitions(c, s);
 		o_code = vec4( neighbours, 1 );
 		
-		if ( ! isEmptyCell(c, s, level) )
+		//if ( ! isEmptyCell(c, s, level) )
 		{
 			o_data = i_data[0];
 			

@@ -6,6 +6,8 @@
 #include "GL/GLBuffer.h"
 #include "ProgramManager.h"
 
+int sizekey = 2;
+
 //Cube data, used for cells drawing
 const GLfloat g_cubeVertices[] = {  0.5f, -0.5f, -0.5f,   // 0 
 					0.5f,  0.5f, -0.5f,   // 1
@@ -61,14 +63,14 @@ void streamFrustum (void)
 
 void GPUOctree::loadBuffers()
 {
-        const int root[] = {0,0,0,0};
+        const int root[] = {0,0};
         //const size_t cap = 1 << 28;
 		
 		size_t full_tree = 1;
 		long int side = std::pow(2, 8); //lvl 8 max
 		full_tree += side*side*side; 
 		
-		size_t full_tree_cap = full_tree * sizeof(float) * 8.0; //2 vec4 for each
+		size_t full_tree_cap = full_tree * sizeof(float) * 2*sizekey; //1 vec2 for each
 		
 		printf("LOD CAPACITY %lu (%lu)\n", full_tree, full_tree_cap);
 		
@@ -76,10 +78,10 @@ void GPUOctree::loadBuffers()
 		tr_cells = full_tree/100.0; //a lot less than tree cells
 		printf("TR CAPACITY %lu\n", tr_cells);
 		
-		size_t tr_cells_cap = tr_cells * sizeof(float)*8; //2 vec4 for each
+		size_t tr_cells_cap = tr_cells * sizeof(float) * 2*sizekey; //1 vec2 for each
 		
-		size_t tr_neighbours = tr_cells * sizeof(float)*4; //1 vec4 for each
-		size_t full_neighbours = full_tree * sizeof(float)*4; //1 vec4 for each
+		size_t tr_neighbours = tr_cells * sizeof(float) * 4.0; //1 vec4 for each
+		size_t full_neighbours = full_tree * sizeof(float) * 4.0; //1 vec4 for each
 		
 		glGenBuffers (1, &Parameters::getInstance()->g_buffers[BUFFER_FRUSTUM]);
 			glBindBuffer (GL_ARRAY_BUFFER, Parameters::getInstance()->g_buffers[BUFFER_FRUSTUM]);
@@ -189,20 +191,20 @@ void GPUOctree::loadVertexArrays()
         glBindVertexArray (Parameters::getInstance()->g_vertex_arrays[VERTEX_ARRAY_LTREE_UPDATE1]);
                 glEnableVertexAttribArray (0);
                 glBindBuffer (GL_ARRAY_BUFFER, Parameters::getInstance()->g_buffers[BUFFER_LTREE_DATA1]);
-                glVertexAttribIPointer (0, 4, GL_UNSIGNED_INT, 0, 0);
+                glVertexAttribIPointer (0, sizekey, GL_UNSIGNED_INT, 0, 0);
 	glBindVertexArray (0);
         glGenVertexArrays (1, Parameters::getInstance()->g_vertex_arrays + VERTEX_ARRAY_LTREE_UPDATE2);
         glBindVertexArray (Parameters::getInstance()->g_vertex_arrays[VERTEX_ARRAY_LTREE_UPDATE2]);
                 glEnableVertexAttribArray (0);
                 glBindBuffer (GL_ARRAY_BUFFER, Parameters::getInstance()->g_buffers[BUFFER_LTREE_DATA2]);
-                glVertexAttribIPointer (0, 4, GL_UNSIGNED_INT, 0, 0);
+                glVertexAttribIPointer (0, sizekey, GL_UNSIGNED_INT, 0, 0);
         glBindVertexArray (0);
 
         glGenVertexArrays (1, Parameters::getInstance()->g_vertex_arrays + VERTEX_ARRAY_LTREE_RENDER1);
         glBindVertexArray(Parameters::getInstance()->g_vertex_arrays[VERTEX_ARRAY_LTREE_RENDER1]);
                 glEnableVertexAttribArray(0);
                 glBindBuffer(GL_ARRAY_BUFFER, Parameters::getInstance()->g_buffers[BUFFER_LTREE_DATA1]);
-                glVertexAttribIPointer(0, 4, GL_UNSIGNED_INT, 0, 0);
+                glVertexAttribIPointer(0, sizekey, GL_UNSIGNED_INT, 0, 0);
 		glEnableVertexAttribArray(1);
                 glBindBuffer(GL_ARRAY_BUFFER, Parameters::getInstance()->g_buffers[BUFFER_CODE]);
                 glVertexAttribPointer(1, 4, GL_FLOAT, 0, 0, 0);
@@ -212,7 +214,7 @@ void GPUOctree::loadVertexArrays()
         glBindVertexArray(Parameters::getInstance()->g_vertex_arrays[VERTEX_ARRAY_LTREE_RENDER2]);
                 glEnableVertexAttribArray(0);
                 glBindBuffer(GL_ARRAY_BUFFER, Parameters::getInstance()->g_buffers[BUFFER_LTREE_DATA2]);
-                glVertexAttribIPointer(0, 4, GL_UNSIGNED_INT, 0, 0);
+                glVertexAttribIPointer(0, sizekey, GL_UNSIGNED_INT, 0, 0);
 		glEnableVertexAttribArray(1);
                 glBindBuffer(GL_ARRAY_BUFFER, Parameters::getInstance()->g_buffers[BUFFER_CODE]);
                 glVertexAttribPointer(1, 4, GL_FLOAT, 0, 0, 0);
@@ -222,7 +224,7 @@ void GPUOctree::loadVertexArrays()
         glBindVertexArray(Parameters::getInstance()->g_vertex_arrays[VERTEX_ARRAY_LTREE_RENDER1_TR]);
                 glEnableVertexAttribArray(0);
                 glBindBuffer(GL_ARRAY_BUFFER, Parameters::getInstance()->g_buffers[BUFFER_LTREE_DATA1_TR]);
-                glVertexAttribIPointer(0, 4, GL_UNSIGNED_INT, 0, 0);
+                glVertexAttribIPointer(0, sizekey, GL_UNSIGNED_INT, 0, 0);
 		glEnableVertexAttribArray(1);
                 glBindBuffer(GL_ARRAY_BUFFER, Parameters::getInstance()->g_buffers[BUFFER_NEIGHBOURS]);
                 glVertexAttribPointer(1, 4, GL_FLOAT, 0, 0, 0);
@@ -232,7 +234,7 @@ void GPUOctree::loadVertexArrays()
         glBindVertexArray(Parameters::getInstance()->g_vertex_arrays[VERTEX_ARRAY_LTREE_RENDER2_TR]);
                 glEnableVertexAttribArray(0);
                 glBindBuffer(GL_ARRAY_BUFFER, Parameters::getInstance()->g_buffers[BUFFER_LTREE_DATA2_TR]);
-                glVertexAttribIPointer(0, 4, GL_UNSIGNED_INT, 0, 0);
+                glVertexAttribIPointer(0, sizekey, GL_UNSIGNED_INT, 0, 0);
 		glEnableVertexAttribArray(1);
                 glBindBuffer(GL_ARRAY_BUFFER, Parameters::getInstance()->g_buffers[BUFFER_NEIGHBOURS]);
                 glVertexAttribPointer(1, 4, GL_FLOAT, 0, 0, 0);
@@ -243,7 +245,7 @@ void GPUOctree::loadVertexArrays()
 		glEnableVertexAttribArray(0);
 		glEnableVertexAttribArray(1);
 		glBindBuffer(GL_ARRAY_BUFFER, Parameters::getInstance()->g_buffers[BUFFER_LTREE_DATA1]);
-		glVertexAttribIPointer(0, 4, GL_UNSIGNED_INT, 0, 0);
+		glVertexAttribIPointer(0, sizekey, GL_UNSIGNED_INT, 0, 0);
 		glVertexAttribDivisor(0, 1);
 		glBindBuffer (GL_ARRAY_BUFFER, Parameters::getInstance()->g_buffers[BUFFER_VERTEX_CUBE]);
 		glVertexAttribPointer (1, 3, GL_FLOAT, 0, 0, 0);
@@ -257,7 +259,7 @@ void GPUOctree::loadVertexArrays()
 		glEnableVertexAttribArray(0);
 		glEnableVertexAttribArray(1);
 		glBindBuffer(GL_ARRAY_BUFFER, Parameters::getInstance()->g_buffers[BUFFER_LTREE_DATA2]);
-		glVertexAttribIPointer(0, 4, GL_UNSIGNED_INT, 0, 0);
+		glVertexAttribIPointer(0, sizekey, GL_UNSIGNED_INT, 0, 0);
 		glVertexAttribDivisor(0, 1);
 		glBindBuffer (GL_ARRAY_BUFFER, Parameters::getInstance()->g_buffers[BUFFER_VERTEX_CUBE]);
 		glVertexAttribPointer (1, 3, GL_FLOAT, 0, 0, 0);

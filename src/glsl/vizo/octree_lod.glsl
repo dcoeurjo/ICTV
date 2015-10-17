@@ -4,8 +4,8 @@
 // Vertex shader
 
 #ifdef VERTEX_SHADER
-layout (location = 0) in uvec4 i_data;
-layout (location = 0) out uvec4 o_data;
+layout (location = 0) in uvec2 i_data;
+layout (location = 0) out uvec2 o_data;
 void main() {
 	o_data = i_data;
 }
@@ -18,8 +18,8 @@ void main() {
 layout (points) in;
 layout (points, max_vertices = 8) out;
 
-layout (location = 0) in uvec4 i_data[];
-layout (location = 0) out uvec4 o_data;
+layout (location = 0) in uvec2 i_data[];
+layout (location = 0) out uvec2 o_data;
 
 layout (binding = 0, offset = 0) uniform atomic_uint unchanged;
 
