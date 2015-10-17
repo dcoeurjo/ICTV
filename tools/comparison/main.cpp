@@ -167,15 +167,6 @@ bool normalizeCPU( const std::vector< std::pair<Position*, Curvatures*> >& mapCP
         minimal_distance = current_distance;
         minimal_position = elemCPU.first;
         minimal_positionCurvatures = elemCPU.second;
-        // if( minimal_distance <= 0 )
-        // {
-        //   std::cout << "************************"<<std::endl;
-        //   std::cout << "TEST {" << elemGPU.first->x << "," << elemGPU.first->y << "," << elemGPU.first->z << "} : "
-        //             << "(" << elemGPU.second->mean << "," << elemGPU.second->k1 << "," << elemGPU.second->k2 << ")" << std::endl;
-        //   std::cout << "TEST {" << elemCPU.first->x << "," << elemCPU.first->y << "," << elemCPU.first->z << "} : "
-        //             << "(" << elemCPU.second->mean << "," << elemCPU.second->k1 << "," << elemCPU.second->k2 << ")" << std::endl;
-        //   std::cout << "************************"<<std::endl;
-        // }
       }
     }
 
@@ -224,11 +215,6 @@ bool computeDifference( const std::vector< std::pair<Position*, Curvatures*> >& 
     return 0;
   }
 
-  // std::cout << "TEST {" << mapGPU[4].first->x << "," << mapGPU[4].first->y << "," << mapGPU[4].first->z << "} : "
-  //           << "(" << mapGPU[4].second->mean << "," << mapGPU[4].second->k1 << "," << mapGPU[4].second->k2 << ")" << std::endl;
-  // std::cout << "TEST {" << mapCPUnormalized[4].first->x << "," << mapCPUnormalized[4].first->y << "," << mapCPUnormalized[4].first->z << "} : "
-  //           << "(" << mapCPUnormalized[4].second->mean << "," << mapCPUnormalized[4].second->k1 << "," << mapCPUnormalized[4].second->k2 << ")" << std::endl;
-
   double error_mean = 0.0;
   double error_k1 = 0.0;
   double error_k2 = 0.0;
@@ -260,18 +246,6 @@ bool computeDifference( const std::vector< std::pair<Position*, Curvatures*> >& 
       if( error_k2 < std::abs( mapGPU[i].second->k2 - mapCPUnormalized[i].second->k2 ) )
       {
         error_k2 = std::abs( mapGPU[i].second->k2 - mapCPUnormalized[i].second->k2 );
-        // if(error_k2 > 0.000001)
-        // {
-        //   std::cout << "ERROR:" << mapGPU[i].second->k2 << " " << mapCPUnormalized[i].second->k2 << std::endl;
-        //   std::cout << "ERROR:" << mapGPU[i].first->x << " " << mapCPUnormalized[i].first->x << std::endl;
-        //   std::cout << "ERROR:" << mapGPU[i].first->y << " " << mapCPUnormalized[i].first->y << std::endl;
-        //   std::cout << "ERROR:" << mapGPU[i].first->z << " " << mapCPUnormalized[i].first->z << std::endl;
-        // }
-        // std::cout << "TEST {" << mapGPU[4].first->x << "," << mapGPU[4].first->y << "," << mapGPU[4].first->z << "} : "
-        //           << "(" << mapGPU[4].second->mean << "," << mapGPU[4].second->k1 << "," << mapGPU[4].second->k2 << ")" << std::endl;
-        // std::cout << "TEST {" << mapCPUnormalized[4].first->x << "," << mapCPUnormalized[4].first->y << "," << mapCPUnormalized[4].first->z << "} : "
-        //           << "(" << mapCPUnormalized[4].second->mean << "," << mapCPUnormalized[4].second->k1 << "," << mapCPUnormalized[4].second->k2 << ")" << std::endl;
-        // std::cout << "I is " << i << std::endl;
       }
     }
     else
@@ -348,16 +322,12 @@ int main( int argc, char** argv )
     deleteVector( mapGPU );
     return 0;
   }
-  if( !loadFile( fileCPU, mapCPU, predicateGPU ))
+  if( !loadFile( fileCPU, mapCPU, predicateCPU ))
   {
     deleteVector( mapGPU );
     deleteVector( mapCPU );
     return 0;
   }
-  // std::cout << "TEST {" << mapGPU[4].first->x << "," << mapGPU[4].first->y << "," << mapGPU[4].first->z << "} : "
-  //           << "(" << mapGPU[4].second->mean << "," << mapGPU[4].second->k1 << "," << mapGPU[4].second->k2 << ")" << std::endl;
-  // std::cout << "TEST {" << mapCPU[4].first->x << "," << mapCPU[4].first->y << "," << mapCPU[4].first->z << "} : "
-  //           << "(" << mapCPU[4].second->mean << "," << mapCPU[4].second->k1 << "," << mapCPU[4].second->k2 << ")" << std::endl;
 
   //// Normalize inputs
   if( !normalizeCPU( mapCPU, mapGPU, mapCPUnormalized ))
@@ -366,13 +336,7 @@ int main( int argc, char** argv )
     deleteVector( mapCPU );
     return 0;
   }
-  // std::cout << "TEST {" << mapCPUnormalized[4].first->x << "," << mapCPUnormalized[4].first->y << "," << mapCPUnormalized[4].first->z << "} : "
-  //           << "(" << mapCPUnormalized[4].second->mean << "," << mapCPUnormalized[4].second->k1 << "," << mapCPUnormalized[4].second->k2 << ")" << std::endl;
   deleteVector( mapCPU );
-
-  // std::cout << "TEST {" << mapCPUnormalized[4].first->x << "," << mapCPUnormalized[4].first->y << "," << mapCPUnormalized[4].first->z << "} : "
-  //           << "(" << mapCPUnormalized[4].second->mean << "," << mapCPUnormalized[4].second->k1 << "," << mapCPUnormalized[4].second->k2 << ")" << std::endl;
-  // std::cout << "---------------------------------------" << std::endl;
 
   //// Computation some statistics.
   computeDifference( mapGPU, mapCPUnormalized, errorType, mapErrors );
