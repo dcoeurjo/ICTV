@@ -5,9 +5,9 @@
 
 #ifdef VERTEX_SHADER
 layout (location = 0) in uvec2 i_key; // translation + scale
-layout (location = 1) in vec3 position; //cube vertex
-layout (location = 0) out float dist_to_camera;
-layout (location = 1) out vec3 color;
+//layout (location = 1) in vec3 position; //cube vertex
+//layout (location = 0) out float dist_to_camera;
+layout (location = 0) out vec3 color;
 
 #define COLOR_TRANSITION 0
 #define COLOR_LEVEL 1
@@ -65,55 +65,22 @@ vec3 getSideTransitions(vec3 min_c, vec3 parent, float s, float level)
 void main (void) {
 
 	// extract octree position and scale
-	vec3 c, pc; //00 corner
+	vec3 c; //00 corner
 	float s;
-	lt_cell_3_20 (i_key.xy, c, s, pc);
+	lt_cell_3_20 (i_key.xy, c, s);
 	
 	//s *= 0.5;
 	//c = c+vec3(s);
 	
 	float level = lt_level_3_20(i_key.xy);
-	
-#if COLOR_DENSITY
-	//if (c.z != 0)
-	//	s = 0;
-
-	float i;
-	float d = getVolume(c + (position+0.5)*s);//textureLod(densities, c + vec3(0.5*s), max_tex - 5).r;
-
-	if (d > 0)
-		color = vec3(0, 1, 0);
-	else if (d == 0)
-		color = vec3(0, 0, 1);
-	else
-		color = vec3(1, 0, 0);
-	
-	//s*=0.5;
-	
-	/*
-	if ( d == 0 || d == 1)
-		color = vec3(0);
-	else
-		color = vec3(1, 0, 0)*d + vec3(0, 1, 0) * (1-d);
-	*/
-#endif
 
 	// set up varyings
-	vec3 min_corner = (c - 0.5) * u_scene_size;
-	vec3 vert = min_corner + (position+0.5)* s *u_scene_size;
-	dist_to_camera = max(length(u_transforms.modelview * vec4(vert, 1)) - 130, 0);
+	vec3 min_corner = ((c-0.5) + vec3(s/2.0)) * u_scene_size;
+	vec3 vert = min_corner;// + (position+0.5)* s *u_scene_size;
+	//dist_to_camera = max(length(u_transforms.modelview * vec4(vert, 1)) - 130, 0);
     
 	gl_Position = u_transforms.modelviewprojection  * vec4(vert, 1);
-	
-#if COLOR_TRANSITION
-	color = vec3(0);
-	for(int i=1; i<=4; i*=2)
-	{
-		color = abs( getSideTransitions(c, pc, s, level-1) );
-	}
-#endif
-	
-	
+
 #if COLOR_LEVEL
 	/*vec3 color_levels[12] = vec3[12] (
 		vec3 (1, 0, 0),
@@ -151,10 +118,6 @@ void main (void) {
 	color = color_levels[uint(level)%6];
 #endif
 
-#if NO_COLOR
-	color = vec3(0);
-#endif
-	
 }
 #endif
 
@@ -162,8 +125,8 @@ void main (void) {
 // Fragment shader
 
 #ifdef FRAGMENT_SHADER
-layout(location = 0) in float dist;
-layout(location = 1) in vec3 color;
+//layout(location = 0) in float dist;
+layout(location = 0) in vec3 color;
 layout(location = 0) out vec4 o_colour;
 
 void main (void) {

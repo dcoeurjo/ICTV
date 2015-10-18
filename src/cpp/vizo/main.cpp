@@ -208,6 +208,7 @@ private:
 	bool transition_cells_displayed;
 	bool reload_fetch;
 	bool movement;
+	bool animate;
 	
 	//Parameters keep for export
 	bool was_regular_grid;
@@ -322,6 +323,7 @@ public:
 		reload_fetch = Parameters::getInstance()->g_fromtexture;
 		
 		movement = false;
+		animate = true;
 		
 		return 0;
 	}
@@ -385,6 +387,7 @@ public:
 		
 		if(!Parameters::getInstance()->g_geometry.freeze) 
 		{
+			animate = true;
 			/** Update the octree **/
 			lodManager.configurePrograms();
 			
@@ -414,6 +417,10 @@ public:
 			m_time_cull->end();
 				
 			Parameters::getInstance()->g_geometry.pingpong = 1 - Parameters::getInstance()->g_geometry.pingpong;
+		}
+		else
+		{
+			animate = false;
 		}
 		
 		
@@ -878,7 +885,9 @@ public:
 			}
 		}
 
-		Parameters::getInstance()->g_time_elapsed += 0.1;
+		if (animate)
+			Parameters::getInstance()->g_time_elapsed += 1.0/((float)fps+1);
+
 		Parameters::getInstance()->g_compute_min_max = true;
 		setShaderCameraPos(Parameters::getInstance()->g_geometry.affine);
 	}

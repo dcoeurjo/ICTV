@@ -34,7 +34,7 @@ Parameters::Parameters()
 
     g_mouse = MOUSE_GEOMETRY;
     
-    g_draw_cells = false;
+    g_draw_cells = true;
     g_draw_triangles = true;
     g_culling = true;
     g_fromtexture = true;
@@ -58,7 +58,7 @@ Parameters::Parameters()
     g_curvmin = -0.5;
     g_curvmax = 0.5;
 
-    g_scale = 5;
+    g_scale = 2;
     g_tessel = 1.0;
     g_isosurface = 0;
 	

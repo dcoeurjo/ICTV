@@ -246,18 +246,28 @@ vec3 hash3( float n )
 
 float getPotential(vec3 position, out float isovalue, bool lod)
 {
-	float ret = textureLod(densities, position, 0).r;
+	//float ret = textureLod(densities, position, 0).r;
 	
-	/*
 	float size = 128;
 	
-	float r = sin(0.05*u_time)*10 + 20;
-	vec3 c = vec3(0.5);
+	float s = 10;
+	float A = s * 0.1;
+    float w = 2;
+    float theta = 3.14159 / 4.0;
+	float sin_t = sin(theta);
+	float cos_t = cos(theta);
+	
+	float time = u_time*0.5;
+	
+	vec2 k = vec2(cos_t, sin_t);
+	
+	float phi = dot(k,(position.xz)*s) - w*time;
+	
+    float y = A * cos(phi);
 	
 	float ret = 0;
-	if( length((position-c)*size) < r )
+	if ((position.y - 0.5)*s < y)
 		ret = 1;
-	*/
 	
 	return ret;
 }

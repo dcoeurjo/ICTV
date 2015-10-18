@@ -70,7 +70,7 @@ void GPUOctree::loadBuffers()
 		long int side = std::pow(2, 8); //lvl 8 max
 		full_tree += side*side*side; 
 		
-		size_t full_tree_cap = full_tree * sizeof(float) * 2*sizekey; //1 vec2 for each
+		size_t full_tree_cap = full_tree * sizeof(float) * sizekey; //1 vec2 for each
 		
 		printf("LOD CAPACITY %lu (%lu)\n", full_tree, full_tree_cap);
 		
@@ -78,7 +78,7 @@ void GPUOctree::loadBuffers()
 		tr_cells = full_tree/100.0; //a lot less than tree cells
 		printf("TR CAPACITY %lu\n", tr_cells);
 		
-		size_t tr_cells_cap = tr_cells * sizeof(float) * 2*sizekey; //1 vec2 for each
+		size_t tr_cells_cap = tr_cells * sizeof(float) * sizekey; //1 vec2 for each
 		
 		size_t tr_neighbours = tr_cells * sizeof(float) * 4.0; //1 vec4 for each
 		size_t full_neighbours = full_tree * sizeof(float) * 4.0; //1 vec4 for each
@@ -178,93 +178,107 @@ void GPUOctree::loadVertexArrays()
                 glDeleteVertexArrays (1, Parameters::getInstance()->g_vertex_arrays + VERTEX_ARRAY_LTREE_RENDER1);
         if (glIsVertexArray (Parameters::getInstance()->g_vertex_arrays[VERTEX_ARRAY_LTREE_RENDER2]))
                 glDeleteVertexArrays (1, Parameters::getInstance()->g_vertex_arrays + VERTEX_ARRAY_LTREE_RENDER2);
-	if (glIsVertexArray (Parameters::getInstance()->g_vertex_arrays[VERTEX_ARRAY_LTREE_RENDER1_TR]))
+		if (glIsVertexArray (Parameters::getInstance()->g_vertex_arrays[VERTEX_ARRAY_LTREE_RENDER1_TR]))
                 glDeleteVertexArrays (1, Parameters::getInstance()->g_vertex_arrays + VERTEX_ARRAY_LTREE_RENDER1_TR);
         if (glIsVertexArray (Parameters::getInstance()->g_vertex_arrays[VERTEX_ARRAY_LTREE_RENDER2_TR]))
                 glDeleteVertexArrays (1, Parameters::getInstance()->g_vertex_arrays + VERTEX_ARRAY_LTREE_RENDER2_TR);
+		if (glIsVertexArray (Parameters::getInstance()->g_vertex_arrays[VERTEX_ARRAY_OCTREE_RENDER1]))
+                glDeleteVertexArrays (1, Parameters::getInstance()->g_vertex_arrays + VERTEX_ARRAY_OCTREE_RENDER1);
+		if (glIsVertexArray (Parameters::getInstance()->g_vertex_arrays[VERTEX_ARRAY_OCTREE_RENDER2]))
+                glDeleteVertexArrays (1, Parameters::getInstance()->g_vertex_arrays + VERTEX_ARRAY_OCTREE_RENDER2);
 	
 	glGenVertexArrays (1, Parameters::getInstance()->g_vertex_arrays + VERTEX_ARRAY_EMPTY);
         glBindVertexArray (Parameters::getInstance()->g_vertex_arrays[VERTEX_ARRAY_EMPTY]);
         glBindVertexArray (0);
+		
+
+	/*glVertexAttribDivisor(0, 1);
+	glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, Parameters::getInstance()->g_buffers[BUFFER_INDEX_CUBE]);
+	glBindBuffer (GL_ARRAY_BUFFER, Parameters::getInstance()->g_buffers[BUFFER_VERTEX_CUBE]);
+	glVertexAttribPointer (1, 3, GL_FLOAT, 0, 0, 0);*/
+	
 
         glGenVertexArrays (1, Parameters::getInstance()->g_vertex_arrays + VERTEX_ARRAY_LTREE_UPDATE1);
         glBindVertexArray (Parameters::getInstance()->g_vertex_arrays[VERTEX_ARRAY_LTREE_UPDATE1]);
                 glEnableVertexAttribArray (0);
                 glBindBuffer (GL_ARRAY_BUFFER, Parameters::getInstance()->g_buffers[BUFFER_LTREE_DATA1]);
-                glVertexAttribIPointer (0, sizekey, GL_UNSIGNED_INT, 0, 0);
-	glBindVertexArray (0);
+                glVertexAttribIPointer (0, 2, GL_UNSIGNED_INT, 0, 0);
+		glBindVertexArray (0);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		
         glGenVertexArrays (1, Parameters::getInstance()->g_vertex_arrays + VERTEX_ARRAY_LTREE_UPDATE2);
         glBindVertexArray (Parameters::getInstance()->g_vertex_arrays[VERTEX_ARRAY_LTREE_UPDATE2]);
                 glEnableVertexAttribArray (0);
                 glBindBuffer (GL_ARRAY_BUFFER, Parameters::getInstance()->g_buffers[BUFFER_LTREE_DATA2]);
-                glVertexAttribIPointer (0, sizekey, GL_UNSIGNED_INT, 0, 0);
+                glVertexAttribIPointer (0, 2, GL_UNSIGNED_INT, 0, 0);
         glBindVertexArray (0);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
 
         glGenVertexArrays (1, Parameters::getInstance()->g_vertex_arrays + VERTEX_ARRAY_LTREE_RENDER1);
         glBindVertexArray(Parameters::getInstance()->g_vertex_arrays[VERTEX_ARRAY_LTREE_RENDER1]);
                 glEnableVertexAttribArray(0);
                 glBindBuffer(GL_ARRAY_BUFFER, Parameters::getInstance()->g_buffers[BUFFER_LTREE_DATA1]);
-                glVertexAttribIPointer(0, sizekey, GL_UNSIGNED_INT, 0, 0);
+                glVertexAttribIPointer(0, 2, GL_UNSIGNED_INT, 0, 0);
 		glEnableVertexAttribArray(1);
                 glBindBuffer(GL_ARRAY_BUFFER, Parameters::getInstance()->g_buffers[BUFFER_CODE]);
                 glVertexAttribPointer(1, 4, GL_FLOAT, 0, 0, 0);
 	glBindVertexArray (0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
         
         glGenVertexArrays (1, Parameters::getInstance()->g_vertex_arrays + VERTEX_ARRAY_LTREE_RENDER2);
         glBindVertexArray(Parameters::getInstance()->g_vertex_arrays[VERTEX_ARRAY_LTREE_RENDER2]);
                 glEnableVertexAttribArray(0);
                 glBindBuffer(GL_ARRAY_BUFFER, Parameters::getInstance()->g_buffers[BUFFER_LTREE_DATA2]);
-                glVertexAttribIPointer(0, sizekey, GL_UNSIGNED_INT, 0, 0);
+                glVertexAttribIPointer(0, 2, GL_UNSIGNED_INT, 0, 0);
 		glEnableVertexAttribArray(1);
                 glBindBuffer(GL_ARRAY_BUFFER, Parameters::getInstance()->g_buffers[BUFFER_CODE]);
                 glVertexAttribPointer(1, 4, GL_FLOAT, 0, 0, 0);
 	glBindVertexArray (0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	
+	/*glGenVertexArrays (1, Parameters::getInstance()->g_vertex_arrays + VERTEX_ARRAY_OCTREE_RENDER1);
+        glBindVertexArray(Parameters::getInstance()->g_vertex_arrays[VERTEX_ARRAY_OCTREE_RENDER1]);
+                glEnableVertexAttribArray(0);
+                glBindBuffer(GL_ARRAY_BUFFER, Parameters::getInstance()->g_buffers[BUFFER_LTREE_DATA1]);
+                glVertexAttribIPointer(0, 2, GL_UNSIGNED_INT, 0, 0);
+		glEnableVertexAttribArray(1);
+                glBindBuffer(GL_ARRAY_BUFFER, Parameters::getInstance()->g_buffers[BUFFER_CODE]);
+                glVertexAttribPointer(1, 4, GL_FLOAT, 0, 0, 0);
+	glBindVertexArray (0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+        
+        glGenVertexArrays (1, Parameters::getInstance()->g_vertex_arrays + VERTEX_ARRAY_OCTREE_RENDER2);
+        glBindVertexArray(Parameters::getInstance()->g_vertex_arrays[VERTEX_ARRAY_OCTREE_RENDER2]);
+                glEnableVertexAttribArray(0);
+                glBindBuffer(GL_ARRAY_BUFFER, Parameters::getInstance()->g_buffers[BUFFER_LTREE_DATA2]);
+                glVertexAttribIPointer(0, 2, GL_UNSIGNED_INT, 0, 0);
+		glEnableVertexAttribArray(1);
+                glBindBuffer(GL_ARRAY_BUFFER, Parameters::getInstance()->g_buffers[BUFFER_CODE]);
+                glVertexAttribPointer(1, 4, GL_FLOAT, 0, 0, 0);
+	glBindVertexArray (0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);*/
         
 	glGenVertexArrays (1, Parameters::getInstance()->g_vertex_arrays + VERTEX_ARRAY_LTREE_RENDER1_TR);
         glBindVertexArray(Parameters::getInstance()->g_vertex_arrays[VERTEX_ARRAY_LTREE_RENDER1_TR]);
                 glEnableVertexAttribArray(0);
                 glBindBuffer(GL_ARRAY_BUFFER, Parameters::getInstance()->g_buffers[BUFFER_LTREE_DATA1_TR]);
-                glVertexAttribIPointer(0, sizekey, GL_UNSIGNED_INT, 0, 0);
+                glVertexAttribIPointer(0, 2, GL_UNSIGNED_INT, 0, 0);
 		glEnableVertexAttribArray(1);
                 glBindBuffer(GL_ARRAY_BUFFER, Parameters::getInstance()->g_buffers[BUFFER_NEIGHBOURS]);
                 glVertexAttribPointer(1, 4, GL_FLOAT, 0, 0, 0);
 	glBindVertexArray (0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
         
         glGenVertexArrays (1, Parameters::getInstance()->g_vertex_arrays + VERTEX_ARRAY_LTREE_RENDER2_TR);
         glBindVertexArray(Parameters::getInstance()->g_vertex_arrays[VERTEX_ARRAY_LTREE_RENDER2_TR]);
                 glEnableVertexAttribArray(0);
                 glBindBuffer(GL_ARRAY_BUFFER, Parameters::getInstance()->g_buffers[BUFFER_LTREE_DATA2_TR]);
-                glVertexAttribIPointer(0, sizekey, GL_UNSIGNED_INT, 0, 0);
+                glVertexAttribIPointer(0, 2, GL_UNSIGNED_INT, 0, 0);
 		glEnableVertexAttribArray(1);
                 glBindBuffer(GL_ARRAY_BUFFER, Parameters::getInstance()->g_buffers[BUFFER_NEIGHBOURS]);
                 glVertexAttribPointer(1, 4, GL_FLOAT, 0, 0, 0);
         glBindVertexArray(0);
-	
-	glGenVertexArrays (1, Parameters::getInstance()->g_vertex_arrays + VERTEX_ARRAY_OCTREE_RENDER1);
-	glBindVertexArray(Parameters::getInstance()->g_vertex_arrays[VERTEX_ARRAY_OCTREE_RENDER1]);
-		glEnableVertexAttribArray(0);
-		glEnableVertexAttribArray(1);
-		glBindBuffer(GL_ARRAY_BUFFER, Parameters::getInstance()->g_buffers[BUFFER_LTREE_DATA1]);
-		glVertexAttribIPointer(0, sizekey, GL_UNSIGNED_INT, 0, 0);
-		glVertexAttribDivisor(0, 1);
-		glBindBuffer (GL_ARRAY_BUFFER, Parameters::getInstance()->g_buffers[BUFFER_VERTEX_CUBE]);
-		glVertexAttribPointer (1, 3, GL_FLOAT, 0, 0, 0);
-		glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, Parameters::getInstance()->g_buffers[BUFFER_INDEX_CUBE]);
-		glBindBuffer (GL_ARRAY_BUFFER, Parameters::getInstance()->g_buffers[BUFFER_VERTEX_CUBE]);
-		glVertexAttribPointer (1, 3, GL_FLOAT, 0, 0, 0);
-	glBindVertexArray(0);
-	
-	glGenVertexArrays (1, Parameters::getInstance()->g_vertex_arrays + VERTEX_ARRAY_OCTREE_RENDER2);
-	glBindVertexArray(Parameters::getInstance()->g_vertex_arrays[VERTEX_ARRAY_OCTREE_RENDER2]);
-		glEnableVertexAttribArray(0);
-		glEnableVertexAttribArray(1);
-		glBindBuffer(GL_ARRAY_BUFFER, Parameters::getInstance()->g_buffers[BUFFER_LTREE_DATA2]);
-		glVertexAttribIPointer(0, sizekey, GL_UNSIGNED_INT, 0, 0);
-		glVertexAttribDivisor(0, 1);
-		glBindBuffer (GL_ARRAY_BUFFER, Parameters::getInstance()->g_buffers[BUFFER_VERTEX_CUBE]);
-		glVertexAttribPointer (1, 3, GL_FLOAT, 0, 0, 0);
-		glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, Parameters::getInstance()->g_buffers[BUFFER_INDEX_CUBE]);
-	glBindVertexArray(0);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
 void GPUOctree::loadFeedback()
@@ -616,12 +630,17 @@ void GPUOctree::runCull(GLuint* queryResult_regular, GLuint* queryResult_transit
 void GPUOctree::runDisplay(int nb)
 {
 	glLineWidth(2.0);
+	glPointSize(10.0);
 
 	//draw cells
 	glUseProgram (Parameters::getInstance()->g_programs[PROGRAM_CELL_DRAW]);
-	glBindVertexArray (Parameters::getInstance()->g_vertex_arrays[VERTEX_ARRAY_OCTREE_RENDER2 - Parameters::getInstance()->g_geometry.pingpong]);
+	if (Parameters::getInstance()->g_geometry.pingpong == 1)
+		glBindVertexArray (Parameters::getInstance()->g_vertex_arrays[VERTEX_ARRAY_LTREE_RENDER1]);
+	else
+		glBindVertexArray (Parameters::getInstance()->g_vertex_arrays[VERTEX_ARRAY_LTREE_RENDER2]);
 
-	glDrawElementsInstanced (GL_LINES, 48, GL_UNSIGNED_SHORT, 0, nb);
+	glDrawArrays(GL_POINTS, 0, nb);
+	//glDrawElementsInstanced (GL_LINES, 48, GL_UNSIGNED_SHORT, 0, nb);
 
 	glBindVertexArray(0);
 	glUseProgram(0);

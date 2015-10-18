@@ -121,7 +121,7 @@ void main (void) {
 	vec3 node_max = node + s * u_scene_size;
 
 	// emit if intersection or inside
-	//if (octree_frustum_test (node_min, node_max) || culling_disabled != 0) 
+	if (octree_frustum_test (node_min, node_max) || culling_disabled != 0) 
 	{
 		uint level = lt_level_3_20(i_data[0].xy);
 		
@@ -130,7 +130,7 @@ void main (void) {
 			neighbours = getSideTransitions(c, s);
 		o_code = vec4( neighbours, 1 );
 		
-		//if ( ! isEmptyCell(c, s, level) )
+		if ( ! isEmptyCell(c, s, level) )
 		{
 			o_data = i_data[0];
 			
