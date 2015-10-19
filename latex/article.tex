@@ -86,7 +86,7 @@ LAMA, UMR5127, F-73776, France\\
 
 In this section, we detail the adaptive isosurface extraction
 algorithm. The proposed approach is based on an octree representation
-of the volumetric object on which an efficient adaptive triangulation
+of the domain and object on which an efficient adaptive triangulation
 of the isosurface is constructed on GPU. Such approach is motivated by
 the fact that the hierarchical representation of the object allows us
 to handle large datasets and to locally adapt the level of details
@@ -98,17 +98,14 @@ hierarchical octree cells.
 
 \begin{figure}
   \begin{center}
-    \subfigure{}{\includegraphics[height=0.17\textheight]{figs/partitioning}}
-    \subfigure{}{\includegraphics[height=0.17\textheight]{figs/quadtree_activefront}}
+    \subfigure{}{\includegraphics[width=\textwidth]{figs/morton}}
+    %%\subfigure{}{\includegraphics[height=0.17\textheight]{figs/partitioning}}
+    %%\subfigure{}{\includegraphics[height=0.17\textheight]{figs/quadtree_activefront}}
   \end{center}
-\caption{In \cite{dupuy2014quadtrees}, a linear quadtree is used to
-  maintain a 2D hierarchical partitioning of space.  (Left) presents
-  such a partitioning.  A cell is more or less subdivided depending on
-  its distance to the camera.  They are also encoded with morton code,
-  that identifies each cell with its position relatively to its
-  parent.  (Right) shows the corresponding active front in the full
-  tree.  This partition is entirely represented by storing the list of
-  codes of the gray cells. }
+\caption{Morton codes associated to cells of a linear quatree. Each
+  children cell morton code is obtained by adding a suffix to its
+  parent code \emph{(left)}. The adpative representation consists of
+  quadtree cells whose depth is view point dependent \emph{(right)}.}
 \label{fig_quadtree_partitionning}
 \end{figure}
 
