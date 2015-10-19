@@ -1,0 +1,15 @@
+CC = g++
+
+all: comparison joinFiles visuPoints
+
+comparison: comparison.cpp
+	$(CC) comparison.cpp -Wall -Wextra -O3 -DNDEBUG -std=c++11 -o comparison
+
+joinFiles: joinFiles.cpp
+	$(CC) joinFiles.cpp -Wall -Wextra -O3 -DNDEBUG -std=c++11 -o joinFiles
+
+visuPoints: visuPoints.cpp
+	$(CC) visuPoints.cpp -Wall -Wextra -O3 -DNDEBUG -std=c++11 -lDGtalIO -lDGtal -o visuPoints 
+
+clean:
+	rm -f comparison joinFiles visuPoints

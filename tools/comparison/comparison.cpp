@@ -176,18 +176,18 @@ bool normalizeCPU( const std::vector< std::pair<Position*, Curvatures*> >& mapCP
       std::cout << "Leaving now..." << std::endl;
       return false;
     }
-    if( minimal_distance != 0 )
-    {
-      std::cout << "ERROR: The distance between {" << elemGPU.first->x << ","
-                                            << elemGPU.first->y << ","
-                                            << elemGPU.first->z << "} and {"
-                                            << minimal_position->x << ","
-                                            << minimal_position->y << ","
-                                            << minimal_position->z
-                << "} is greater than 1 (exactly " << std::sqrt(minimal_distance) << ")." << std::endl;
-      std::cout << "Leaving now..." << std::endl;
-      return false;
-    }
+    // if( minimal_distance > 1 )
+    // {
+    //   std::cout << "ERROR: The distance between {" << elemGPU.first->x << ","
+    //                                         << elemGPU.first->y << ","
+    //                                         << elemGPU.first->z << "} and {"
+    //                                         << minimal_position->x << ","
+    //                                         << minimal_position->y << ","
+    //                                         << minimal_position->z
+    //             << "} is greater than 1 (exactly " << std::sqrt(minimal_distance) << ")." << std::endl;
+    //   //std::cout << "Leaving now..." << std::endl;
+    //   //return false;
+    // }
 
     Position *copy_pos = new Position();
     Curvatures *copy_curv = new Curvatures();
@@ -204,7 +204,7 @@ bool normalizeCPU( const std::vector< std::pair<Position*, Curvatures*> >& mapCP
 
 bool computeDifference( const std::vector< std::pair<Position*, Curvatures*> >& mapGPU,
                         const std::vector< std::pair<Position*, Curvatures*> >& mapCPUnormalized,
-                        const uint errorType,
+                        // const uint errorType,
                         std::vector< Curvatures* >& mapErrors )
 {
   if( mapGPU.size() != mapCPUnormalized.size())
@@ -215,62 +215,71 @@ bool computeDifference( const std::vector< std::pair<Position*, Curvatures*> >& 
     return 0;
   }
 
-  double error_mean = 0.0;
-  double error_k1 = 0.0;
-  double error_k2 = 0.0;
+  double error_mean_l1 = 0.0;
+  double error_k1_l1 = 0.0;
+  double error_k2_l1 = 0.0;
+
+  double error_mean_l2 = 0.0;
+  double error_k1_l2 = 0.0;
+  double error_k2_l2 = 0.0;
+
+  double error_mean_loo = 0.0;
+  double error_k1_loo = 0.0;
+  double error_k2_loo = 0.0;
 
   for( uint i = 0; i < mapGPU.size(); ++i )
   {
-    if( errorType == 1 ) /// l_1
+    // if( errorType == 1 ) /// l_1
     {
-      error_mean += std::abs( mapGPU[i].second->mean - mapCPUnormalized[i].second->mean );
-      error_k1 += std::abs( mapGPU[i].second->k1 - mapCPUnormalized[i].second->k1 );
-      error_k2 += std::abs( mapGPU[i].second->k2 - mapCPUnormalized[i].second->k2 );
+      error_mean_l1 += std::abs( mapGPU[i].second->mean - mapCPUnormalized[i].second->mean );
+      error_k1_l1 += std::abs( mapGPU[i].second->k1 - mapCPUnormalized[i].second->k1 );
+      error_k2_l1 += std::abs( mapGPU[i].second->k2 - mapCPUnormalized[i].second->k2 );
     }
-    else if( errorType == 2 ) /// l_2
+    // else if( errorType == 2 ) /// l_2
     {
-      error_mean += std::abs( mapGPU[i].second->mean - mapCPUnormalized[i].second->mean ) * std::abs( mapGPU[i].second->mean - mapCPUnormalized[i].second->mean );
-      error_k1 += std::abs( mapGPU[i].second->k1 - mapCPUnormalized[i].second->k1 ) * std::abs( mapGPU[i].second->k1 - mapCPUnormalized[i].second->k1 );
-      error_k2 += std::abs( mapGPU[i].second->k2 - mapCPUnormalized[i].second->k2 ) * std::abs( mapGPU[i].second->k2 - mapCPUnormalized[i].second->k2 );
+      error_mean_l2 += std::abs( mapGPU[i].second->mean - mapCPUnormalized[i].second->mean ) * std::abs( mapGPU[i].second->mean - mapCPUnormalized[i].second->mean );
+      error_k1_l2 += std::abs( mapGPU[i].second->k1 - mapCPUnormalized[i].second->k1 ) * std::abs( mapGPU[i].second->k1 - mapCPUnormalized[i].second->k1 );
+      error_k2_l2 += std::abs( mapGPU[i].second->k2 - mapCPUnormalized[i].second->k2 ) * std::abs( mapGPU[i].second->k2 - mapCPUnormalized[i].second->k2 );
     }
-    else if( errorType == 3 ) /// l_infty
+    // else if( errorType == 3 ) /// l_infty
     {
-      if( error_mean < std::abs( mapGPU[i].second->mean - mapCPUnormalized[i].second->mean ) )
+      if( error_mean_loo < std::abs( mapGPU[i].second->mean - mapCPUnormalized[i].second->mean ) )
       {
-        error_mean = std::abs( mapGPU[i].second->mean - mapCPUnormalized[i].second->mean );
+        error_mean_loo = std::abs( mapGPU[i].second->mean - mapCPUnormalized[i].second->mean );
       }
-      if( error_k1 < std::abs( mapGPU[i].second->k1 - mapCPUnormalized[i].second->k1 ) )
+      if( error_k1_loo < std::abs( mapGPU[i].second->k1 - mapCPUnormalized[i].second->k1 ) )
       {
-        error_k1 = std::abs( mapGPU[i].second->k1 - mapCPUnormalized[i].second->k1 );
+        error_k1_loo = std::abs( mapGPU[i].second->k1 - mapCPUnormalized[i].second->k1 );
       }
-      if( error_k2 < std::abs( mapGPU[i].second->k2 - mapCPUnormalized[i].second->k2 ) )
+      if( error_k2_loo < std::abs( mapGPU[i].second->k2 - mapCPUnormalized[i].second->k2 ) )
       {
-        error_k2 = std::abs( mapGPU[i].second->k2 - mapCPUnormalized[i].second->k2 );
+        error_k2_loo = std::abs( mapGPU[i].second->k2 - mapCPUnormalized[i].second->k2 );
       }
     }
-    else
-    {
-      std::cout << "ERROR: errorType isn't in {1,2,3} (aka l_1, l_2 and l_\\infty error)...";
-      std::cout << "Leaving now..." << std::endl;
-      return 0;
-    }
+    // else
+    // {
+    //   std::cout << "ERROR: errorType isn't in {1,2,3} (aka l_1, l_2 and l_\\infty error)...";
+    //   std::cout << "Leaving now..." << std::endl;
+    //   return 0;
+    // }
   }
-  if( errorType == 1 ) /// l_1
+  // if( errorType == 1 ) /// l_1
   {
-    error_mean /= (double)mapGPU.size();
-    error_k1 /= (double)mapGPU.size();
-    error_k2 /= (double)mapGPU.size();
+    error_mean_l1 /= (double)mapGPU.size();
+    error_k1_l1 /= (double)mapGPU.size();
+    error_k2_l1 /= (double)mapGPU.size();
   }
-  else if( errorType == 2 ) /// l_2
+  // else if( errorType == 2 ) /// l_2
   {
-    error_mean = std::sqrt(error_mean) / (double)mapGPU.size();
-    error_k1 = std::sqrt(error_k1) / (double)mapGPU.size();
-    error_k2 = std::sqrt(error_k2) / (double)mapGPU.size();
+    error_mean_l2 = std::sqrt(error_mean_l2) / (double)mapGPU.size();
+    error_k1_l2 = std::sqrt(error_k1_l2) / (double)mapGPU.size();
+    error_k2_l2 = std::sqrt(error_k2_l2) / (double)mapGPU.size();
   }
 
-  std::cout << "mean: " << error_mean << std::endl;
-  std::cout << "k1: " << error_k1 << std::endl;
-  std::cout << "k2: " << error_k2 << std::endl;
+  std::cout << "# ERROR\t l1\t l2\t l\\inty" << std::endl;
+  std::cout << "mean:\t " << error_mean_l1 << "\t " << error_mean_l2 << "\t " << error_mean_loo << std::endl;
+  std::cout << "k1:\t " << error_k1_l1 << "\t " << error_k1_l2 << "\t " << error_k1_loo << std::endl;
+  std::cout << "k2:\t " << error_k2_l1 << "\t " << error_k2_l2 << "\t " << error_k2_loo << std::endl;
 
   return true;
 }
@@ -339,7 +348,7 @@ int main( int argc, char** argv )
   deleteVector( mapCPU );
 
   //// Computation some statistics.
-  computeDifference( mapGPU, mapCPUnormalized, errorType, mapErrors );
+  computeDifference( mapGPU, mapCPUnormalized, /*errorType,*/ mapErrors );
 
   //// Releasing allocated memory
   deleteVector( mapGPU );
