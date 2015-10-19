@@ -176,41 +176,67 @@ lie inside the same pixel is something we should prevent. Hence,
 distance criterion can be set in order to both control the geometrical
 approximation and to ensure that cells project onto more than one
 pixel. Figure \ref{fig_lod_octree} illustrates the level of details
-(LoD for short criterion) we use.
-
-\begin{figure}
+(LoD for short criterion) we use. More precisely, in dimension 2, if
+$\alpha$ denotes the viewing angle, an object at distance $d$ from the
+camera with diameter greater than $2\cdot d\cdot\tan(\alpha)$ is
+projected into more than one pixel (see
+Figure~\ref{fig_lod_octree}-\emph{left}). Hence, the distance criterion is based
+on the ratio (\emph{visibility ratio} in the following)between the
+cell diameter $l(c)$ (power of 2 depending on the depth), and $2\cdot
+d_c\cdot\tan(\alpha)$, $d_c$ being the distance between the cell
+center and the camera. For a given cell $c$, split and merge decision
+are based on this visibility ratio:
+\begin{itemize}
+\item $c$ is split if its children cells have a visibility ratio
+  greater than  constant $k$\,;
+\item $c$ and its sibling cells are merged if their parent cell $c'$
+  have av visibility ration lower than $k$\;
+\item otherwise, the cell $c$ stays.
+\end{itemize}
+%
+\begin{figure}[!h]
   \begin{center}
-    \includegraphics[width=0.4\linewidth]{viewlod2_small}  
+    \begin{overpic}[width=4cm]{figs/criterion}
+      \put(33,40){$\alpha$}
+      \put(50,45){$d_c$}
+      \put(95,65){$l(c)$}
+    \end{overpic}~~~~~
+    \includegraphics[width=4cm]{viewlod2_small}~~~~~
+    \includegraphics[width=3.5cm]{subdivision}
   \end{center}
-  \caption{Adaptive meshing in dimension 2 using the LoD distance and
-    angular criterion.}
+  \caption{Notations \emph{(left)} and adaptive meshing in dimension 2 using the LoD distance and
+    angular criterion \emph{(middle)}. Based on LoD criterion
+    evaluation, the cell buffer is
+  updated between each frame \emph{(right)}.}
   \label{fig_lod_octree} 
 \end{figure}
+%
+In addition to the distance criterion, we add an angular term in order
+to prevent subdivision of cells far from the camera frustrum (see
+Figure~\ref{fig_lod_octree}-\emph{middle}). We do not go into the
+details but please not that stay, split and merge decisions of all cells are computed in
+parallel from all cell morton codes.
 
+Once decisions have been made, a new set of cells are sent to the mesh
+generation step described above. Updating the cell buffer can be
+efficiently implemented on GPU hardware as illustrated in
+Figure~\ref{fig_lod_octree}-\emph{rigth}.
 
-
-
+Finally, before constructing the triangulation from remaining cells
+and transition cells, geometrical culling is performed in order to
+skip the triangle patch construction which are not visible. Figure
+\ref{fig_pipeline} illustrates the overall fully data parallel
+pipeline.
 
 \begin{figure}[!htbp]
   \centering
   \includegraphics[width=0.9\textwidth]{figs/pipeline}
-  \caption{ This figure summarizes our GPU pipeline. Data buffers are
+  \caption{ Summary our GPU pipeline. Data buffers are
     represented in green and computations in red. Each computation
     retrieves data from a buffer and fills a new one. }
   \label{fig_pipeline} 
 \end{figure}
 
-\begin{figure}
-\centering
-\includegraphics[height=0.2\textheight]{subdivision}
-\caption{The octree at frame $t$ is stored as a list of Morton codes in a buffer. 
-To update the tree, we fill a new buffer representing its state at frame $t+1$. 
-On the GPU, each code of the first buffer is processed in parallel. 
-If the cell is to be subdivided, it writes the codes of its children in the new buffer. 
-If it merges, it writes either nothing, or the code of its parent (if it is the first child).
-If it is kept, it just re-writes its own code. }
-\label{subdivision}
-\end{figure}
 
 
 
