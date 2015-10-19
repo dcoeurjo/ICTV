@@ -116,21 +116,21 @@ Representing a hierachical structure on GPU is usually challenging
 since the GPU memory is limited and non consistent \todo{fix coherent/aligned/coalesced?}
 memory access (\emph{e.g.} tree traversal using pointer dereferencing)
 may lead to huge payload from cache misses.  Efficient spatial tree
-encoding can be achieved using pointerless strictures. We use here
+encoding can be achieved using pointerless structures. We use
 linear quadtrees or octrees to represent classical quadtree/octreee
 trees, see for instance Gargantini
 \cite{gargantini1982effective}. This structure consists in indexing
 each cell by a \emph{Morton code}: the code of children cells are
 defined by the code of the parent suffixed by two bits (in dimension
 2, three bits in dimension 3) (see Figure
-\ref{fig_quadtree_partitionning}-\emph{left}). For a given cell, its
-code encodes its position with respect to its parent cell and its
+\ref{fig_quadtree_partitionning}-\emph{left}). A cell's code encodes
+ its position with respect to its parent cell and its
 complete path to the tree root. Hence, whatever their depth, all cell
 codes are simply stored in a linear vector on memory. Furthermore,
 cell operations such as subdivision, merging, neighbors access can be
 efficiently implemented using bitwise operations on the Morton code.
 In the following, we use the GPU implementation proposed by Dupuy
-\textit{et al.}  \cite{dupuy2014quadtrees}. In such approach, Morton
+\textit{et al.}  \cite{dupuy2014quadtrees}. By using their approach, Morton
 codes and bitwise operations are optimized to match with GPU hardware
 requirements.
 
@@ -171,7 +171,7 @@ dependent criterion to decide if a cell needs to be refined: the
 closer we are to the camera, the finer the cells are. In addition to
 the distance criterion, we define an angular criterion to refine cells
 within the camera frustrum. When rendering a mesh, a key stage is the
-rasterization one which digitizes triangles projected onto the
+rasterization which digitizes triangles projected onto the
 screen. As a consequence, having several triangles whose projections
 lie inside the same pixel is something we should prevent. Hence,
 distance criterion can be set in order to both control the geometrical
@@ -181,13 +181,15 @@ projected into more than one pixel but gives us a fast criterion to
 decide if a cell should be split or not.  Figure \ref{fig_lod_octree}
 illustrates the level of details (LoD for short criterion) we
 use. More precisely, in dimension 2, if $\alpha$ denotes the viewing
-angle, an object at distance $d$ from the camera with diameter greater
-than $2\cdot d\cdot\tan(\alpha)$ is projected into more than one pixel
+angle, an object at distance $d$ from the camera with diameter greater than
+\todo{Extract formulas from text with dots list} $2\cdot d\cdot\tan(\alpha)$
+ is projected into more than one pixel
 (see Figure~\ref{fig_lod_octree}-\emph{left}). Hence, the distance
 criterion is based on the ratio (\emph{visibility ratio} in the
 following)between the cell diameter $l(c)$ (power of 2 depending on
-the depth), and $2\cdot d_c\cdot\tan(\alpha)$, $d_c$ being the
-distance between the cell center and the camera. For a given cell $c$,
+the depth), and 
+$2\cdot d_c\cdot\tan(\alpha)$ \todo{idem}
+,$d_c$ being the distance between the cell center and the camera. For a given cell $c$,
 split and merge decision are based on this visibility ratio:
 \begin{itemize}
 \item $c$ is split if its children cells have a visibility ratio
@@ -217,7 +219,7 @@ split and merge decision are based on this visibility ratio:
 In addition to the distance criterion, we add an angular term in order
 to prevent subdivision of cells far from the camera frustrum (see
 Figure~\ref{fig_lod_octree}-\emph{middle}). We do not go into the
-details but please not that stay, split and merge decisions of all cells are computed in
+details but please note that stay, split and merge decisions of all cells are computed in
 parallel from all cell morton codes.
 
 Once decisions have been made, a new set of cells are sent to the mesh
