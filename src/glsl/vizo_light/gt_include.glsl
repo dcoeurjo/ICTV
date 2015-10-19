@@ -9,10 +9,12 @@ uniform int u_curv_val;
 void fetch(in vec3 p, inout float volume, inout vec3 xyz, inout vec3 xyz2, inout vec3 xy_yz_xz)
 {
 	float val = textureLod(densities, p, 0).r;
-	volume += val;
 	vec3 p2 = p*u_size_tex;
+	float error = 1.0/12.0; // Error term introduce by estimating 2nd order moments (except cross moments) only with the center of cell.
+
+	volume += val * scale;
 	xyz += p2 * val;
-	xyz2 += p2*p2 * val;
+	xyz2 += ( p2 * p2 + error) * val;
 	xy_yz_xz += vec3(p2.x*p2.y, p2.y*p2.z, p2.x*p2.z) * val;
 }
 
@@ -40,38 +42,38 @@ void getVolumeMoments(in vec3 vertex_position, out float volume, out vec3 xyz, o
 		if ((length(probe) < r))
 		{
 			probe /= size_obj;
-			
+
 			vec3 p = vertex_position + probe;
 			fetch(p, volume, xyz, xyz2, xy_yz_xz);
-			
+
 			probe.x *= -1;
 			p = vertex_position + probe;
 			fetch(p, volume, xyz, xyz2, xy_yz_xz);
 			probe.x *= -1;
-			
+
 			probe.y *= -1;
 			p = vertex_position + probe;
 			fetch(p, volume, xyz, xyz2, xy_yz_xz);
-			
+
 			probe.x *=-1;
 			p = vertex_position + probe;
 			fetch(p, volume, xyz, xyz2, xy_yz_xz);
 			probe.y *= -1;
 			probe.x *= -1;
-			
+
 			probe.z *= -1;
 			p = vertex_position + probe;
 			fetch(p, volume, xyz, xyz2, xy_yz_xz);
-			
+
 			probe.x *= -1;
 			p = vertex_position + probe;
 			fetch(p, volume, xyz, xyz2, xy_yz_xz);
 			probe.x *= -1;
-			
+
 			probe.y *= -1;
 			p = vertex_position + probe;
 			fetch(p, volume, xyz, xyz2, xy_yz_xz);
-			
+
 			probe.x *=-1;
 			p = vertex_position + probe;
 			fetch(p, volume, xyz, xyz2, xy_yz_xz);
