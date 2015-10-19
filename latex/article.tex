@@ -59,8 +59,9 @@ LAMA, UMR5127, F-73776, France\\
   invariants. Integral invariants being parametrized by a given ball
   radius, our proposal allows us to explore interactively different
   radii and thus select the appropriate scale to which the computation
-  is performed and visualized (mean and gaussian curvature, principal
-  curvatures, principal directions and normal vector field).
+  is performed and visualized. Mean and gaussian curvature, principal
+  curvatures, principal directions and normal vector field may be interactively
+  visualized with our technique.
 
 
 \keywords{Isosurface Visualization, Digital Geometry, Curvature
@@ -175,23 +176,25 @@ screen. As a consequence, having several triangles whose projections
 lie inside the same pixel is something we should prevent. Hence,
 distance criterion can be set in order to both control the geometrical
 approximation and to ensure that cells project onto more than one
-pixel. Figure \ref{fig_lod_octree} illustrates the level of details
-(LoD for short criterion) we use. More precisely, in dimension 2, if
-$\alpha$ denotes the viewing angle, an object at distance $d$ from the
-camera with diameter greater than $2\cdot d\cdot\tan(\alpha)$ is
-projected into more than one pixel (see
-Figure~\ref{fig_lod_octree}-\emph{left}). Hence, the distance criterion is based
-on the ratio (\emph{visibility ratio} in the following)between the
-cell diameter $l(c)$ (power of 2 depending on the depth), and $2\cdot
-d_c\cdot\tan(\alpha)$, $d_c$ being the distance between the cell
-center and the camera. For a given cell $c$, split and merge decision
-are based on this visibility ratio:
+pixel. This does not prevent all triangles within such cells to be
+projected into more than one pixel but gives us a fast criterion to
+decide if a cell should be split or not.  Figure \ref{fig_lod_octree}
+illustrates the level of details (LoD for short criterion) we
+use. More precisely, in dimension 2, if $\alpha$ denotes the viewing
+angle, an object at distance $d$ from the camera with diameter greater
+than $2\cdot d\cdot\tan(\alpha)$ is projected into more than one pixel
+(see Figure~\ref{fig_lod_octree}-\emph{left}). Hence, the distance
+criterion is based on the ratio (\emph{visibility ratio} in the
+following)between the cell diameter $l(c)$ (power of 2 depending on
+the depth), and $2\cdot d_c\cdot\tan(\alpha)$, $d_c$ being the
+distance between the cell center and the camera. For a given cell $c$,
+split and merge decision are based on this visibility ratio:
 \begin{itemize}
 \item $c$ is split if its children cells have a visibility ratio
   greater than  constant $k$\,;
 \item $c$ and its sibling cells are merged if their parent cell $c'$
-  have av visibility ration lower than $k$\;
-\item otherwise, the cell $c$ stays.
+  have av visibility ratio lower than $k$\;
+\item otherwise, the cell $c$ stays for the next frame.
 \end{itemize}
 %
 \begin{figure}[!h]
