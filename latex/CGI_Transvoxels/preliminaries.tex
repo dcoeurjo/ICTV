@@ -51,7 +51,7 @@ Lengyel \textit{et al}. use a measure based on the distance between the cell and
 \paragraph{}
 On the GPU, recomputing the whole active front from the root node would be too expensive.
 Instead, we update the tree by merging or splitting the cells.
-If this operation could be done on the GPU, it would be possible to extract the adaptive triangulation entirely on the GPU.
+If this operation could be done on the GPU, it would be possible to extract equ adaptive triangulation entirely on the GPU.
 This requires a non recursive representation for the tree, as well as data parallel update operations.
 The LoD must also be evaluable during a data parallel process as it controls the partition.
 Those properties can be found using linear trees \cite{dupuy2014quadtrees}.
