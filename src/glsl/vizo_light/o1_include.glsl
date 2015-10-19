@@ -10,20 +10,13 @@ void fetch(vec3 p, float step, float l, inout float volume, inout vec3 xyz, inou
 {
 	float val = textureLod(densities, p, l).r;
 	vec3 p2 = p*u_size_tex;
-	
-	/*
-	if (val >= 0.5)
-		val = 1;
-	else
-		val = 0;
-	*/
-	
-	val *= (step*step*step);
-	
-	volume += val;
-	xyz += p2 * val;
-	xyz2 += p2*p2 * val;
-	xy_yz_xz += vec3(p2.x*p2.y, p2.y*p2.z, p2.x*p2.z) * val;
+	float scale = step*step*step; // => h^3
+	float error = (step*step)/12.0; // Error term introduce by estimating 2nd order moments (except cross moments) only with the center of cell.
+
+	volume += val * scale;
+	xyz += p2 * scale * val;
+	xyz2 += ( p2 * p2 + error) * scale * val;
+	xy_yz_xz += vec3(p2.x*p2.y, p2.y*p2.z, p2.x*p2.z) * scale * val;
 }
 
 bool isincube(in vec3 pos)
@@ -39,7 +32,7 @@ void getVolumeMoments(in vec3 vertex_position, out float volume, out vec3 xyz, o
 	xyz = vec3(0);
 
 	float r = u_curv_radius;
-	
+
 	int l = int(lvl_tree);
 	float step = pow(2, l);
 
@@ -53,38 +46,38 @@ void getVolumeMoments(in vec3 vertex_position, out float volume, out vec3 xyz, o
 		if ((length(probe) <= r))
 		{
 			probe /= size_obj;
-			
+
 			vec3 p = vertex_position + probe;
 			fetch(p, step, l, volume, xyz, xyz2, xy_yz_xz);
-			
+
 			probe.x *= -1;
 			p = vertex_position + probe;
 			fetch(p, step, l, volume, xyz, xyz2, xy_yz_xz);
 			probe.x *= -1;
-			
+
 			probe.y *= -1;
 			p = vertex_position + probe;
 			fetch(p, step, l, volume, xyz, xyz2, xy_yz_xz);
-			
+
 			probe.x *=-1;
 			p = vertex_position + probe;
 			fetch(p, step, l, volume, xyz, xyz2, xy_yz_xz);
 			probe.y *= -1;
 			probe.x *= -1;
-			
+
 			probe.z *= -1;
 			p = vertex_position + probe;
 			fetch(p, step, l, volume, xyz, xyz2, xy_yz_xz);
-			
+
 			probe.x *= -1;
 			p = vertex_position + probe;
 			fetch(p, step, l, volume, xyz, xyz2, xy_yz_xz);
 			probe.x *= -1;
-			
+
 			probe.y *= -1;
 			p = vertex_position + probe;
 			fetch(p, step, l, volume, xyz, xyz2, xy_yz_xz);
-			
+
 			probe.x *=-1;
 			p = vertex_position + probe;
 			fetch(p, step, l, volume, xyz, xyz2, xy_yz_xz);

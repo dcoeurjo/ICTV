@@ -171,7 +171,7 @@ void drawParallelpitruc( vec3 pts[3], vec3 mean_dir, vec3 color )
 		vec3 tan_dir = normalize(pts[0]-pts[1]);
 		vec3 depth = normalize(cross(normalize(tan_dir), normalize(mean_dir)));
 		
-		float l = 1;//max( max(length(pts[0]-pts[2]), length(pts[0]-pts[1])), length(pts[1]-pts[2]) );
+		float l = 0.1*max( max(length(pts[0]-pts[2]), length(pts[0]-pts[1])), length(pts[1]-pts[2]) );
 		float L = 10*l;
 		float p = l;
 		
@@ -276,7 +276,7 @@ void main()
 	if (u_curv_dir == 1 || u_curv_dir == 3)
 	{
 		//if ( ( int( pts[0].x ) % 10 == 0 ) && ( int( pts[0].z ) % 10 == 0 ) )
-			drawParallelpitruc(pts, curv_dir_min[0], vec3(0, 0, 1));
+		drawParallelpitruc(pts, curv_dir_min[0], vec3(0, 0, 1));
 	}
 	
 	if (u_curv_dir == 2 || u_curv_dir == 3)
