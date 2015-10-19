@@ -80,6 +80,128 @@ LAMA, UMR5127, F-73776, France\\
 \section{Curvature Tensor Estimation}
 \label{sec:curv-tens-estim}
 
+In our context, we consider digital shapes (any subset of $\Z^d$) and boundaries
+of digital shapes. We denote by $\DSh$ the Gauss digitization of
+$\Shape$ in a $d-$dimensional grid with grid step $h$, \emph{i.e.}
+$\DSh = \Shape \cap (h\Z)^d$. For such digitized set $\DigShape$,
+$\Body{\DigShape}{h}$ denotes its topological boundary, seen as a cellular Cartesian
+complex (See Fig. \ref{fig:notations}-b). It is thus composed of $0$-cells and
+$1$-cells (resp. \emph{pointels} and \emph{linels}), and, for $d=3$, with
+$2$-cells ({\em surfels}), embedded in the digital grid.
+
+\begin{figure}[t]{\small
+    \begin{center}
+      \subfigure[]{\begin{overpic}[width=5cm]{figs/integral2D_2}
+          \put(42,28){$\times$}
+          \put(46,31){$\vx$}
+          \put(55,45){$B_R(\vx)$}
+          \put(1,10){$\dS$}
+          \put(20,10){$\Shape$}
+      \end{overpic}}
+      \subfigure[]{\begin{overpic}[width=5cm]{figs/notation_2}
+          \put(44.5,25){$\vp$}
+          \put(42,28.5){$\times$}
+          \put(45,32.5){$\vx$}
+          \put(45,16.5){$h$}
+          %\put(88,39){$\Proj(p)$}
+          \put(3,11){$\partial \Shape$}
+          \put(15,7){$\Body{\DigShape}{h}$}
+      \end{overpic}}
+      \vspace{-0.4cm}
+    \end{center}}
+    \caption{Integral invariant computation $(a)$ and
+      notations $(b)$ in dimension 2 \cite{CVIU2014}.\label{fig:notations}}
+\end{figure}
+
+% We define the volumetric integral as follow:
+% \begin{Definition}
+%   %
+%   Given $\Shape \in \Shapes$ and a radius $R \in \R^{+*}$, the volumetric
+%   integral $V_R(\vx)$ at $\vx \in \dS$ is given by:
+%   %
+%   \begin{equation}
+%     V_R(\vx) \EqDef \int_{B_R(\vx)} \chi(\vp) d\vp \,,
+%   \end{equation}
+%   %
+%   where $B_R(\vx)$ is the Euclidean ball of radius $R$ centered on $\vx$, and $\chi(\cdot)$ the characteristic function of $\Shape$. In dimension 2, we denote $A_R(\vx)$ such quantity.
+%   %
+% \end{Definition}
+
+In \cite{DGCI2013}, we have defined the 2D digital curvature estimator
+$\CurvH{R}$ and the 3D digital mean curvature estimator $\MeanCurvH{R}$ based on
+the digital volumetric integral $V_{R_d}$ (or $A_{R_d}$ in dimension 2) of the
+intersection between the shape $\Shape$ and a ball of digital radius $R_d$:
+
+\begin{Definition}
+  %
+  Given $\DigShape \subset \Z^2$ (or $\Z^3$ for 3D mean curvature estimator) and
+  $h$ a gridstep, {\em digital curvature estimators} are defined for any pointel
+  $\vp \in \Body{\DigShape}{h}$ as:
+  %
+  \begin{align}
+   \CurvH{R}(\DigShape,\vp) &\EqDef \frac{1}{h} \left( \frac{3 \pi}{2 R_d} - \frac{3 A_{R_d}(\vp)}{{R_d}^3} \right),\label{eq:dig-curvature-estimator-k}\\
+   \MeanCurvH{R}(\DigShape,\vp) &\EqDef \frac{1}{h} \left( \frac{8}{3 R_d} - \frac{4V_{R_d}(\vp)}{{\pi R_d}^4} \right),\label{eq:dig-curvature-estimator-H}
+  %  \\
+  %  \hat{\kappa}^{1}(\DigShape,p) &\EqDef \frac{1}{h} \left( \frac{6(\hat{\lambda}_2 - 3\hat{\lambda}_1)}{\pi {{R_d}}^6} + \frac{8}{5{{R_d}}} \right),\label{eq:dig-curvature-estimator-k1}\\
+  %  \hat{\kappa}^{2}(\DigShape,p) &\EqDef \frac{1}{h} \left( \frac{6(\hat{\lambda}_1 - 3\hat{\lambda}_2)}{\pi {{R_d}}^6} + \frac{8}{5{{R_d}}} \right),
+  %  \label{eq:dig-curvature-estimator-k2}
+  \end{align}
+  %
+  where $R_d = \frac{R}{h}$ is the digitized radius of the ball, and
+  $A_{R_d}(p)$ and $V_{R_d}(p)$ are the number of digital points in the
+  intersection between $\DigShape$ and the ball.
+  % Similarly, $\hat{\lambda}_1$
+  % and $\hat{\lambda}_2$ are the two greatest eigenvalues of the covariance
+  % matrix of the digital points in the intersection between $Z$ and the ball.
+  %
+\end{Definition}
+
+We have proved that estimating the 2D curvature and 3D mean curvature on digital
+objets with volumetric integral information achieve to the multigrid convergence
+property (setting $R = kh^\frac{1}{3}$ on convex shapes with at least
+$C^3$-boundary and bounded curvature). For short, when the digital objet become
+finer and finer, \ie when the digitization step $h$ tends to zero, the estimate
+quantity on $\DSh$ should converge (theoretically and experimentally) to the associated one on $\Shape$.
+
+\begin{align}
+  \CurvH{R}(\DSh,\vx,h) &= \Curv(\Shape,\vx) + O(h^{\frac{1}{3}}),\\
+  \MeanCurvH{R}(\DSh,\vx,h) &= \MeanCurv(\Shape,\vx) + O(h^{\frac{1}{3}}) \,.
+\end{align}
+
+In \cite{CVIU2014}
+the 3D digital principal curvature estimators $\kappa^1_{R}$ and $\kappa^2_{R}$
+on $Z\subset\Z^3$
+
+\begin{Definition}
+  %
+  Given $\DigShape \subset \Z^3$ and
+  $h$ a gridstep, {\em 3D digital principal curvature estimators} are defined for any pointel
+  $\vp \in \Body{\DigShape}{h}$ as:
+  %
+  \begin{align}
+    \hat{\kappa}^{1}(\DigShape,p) &\EqDef \frac{1}{h} \left( \frac{6(\hat{\lambda}_2 - 3\hat{\lambda}_1)}{\pi {{R_d}}^6} + \frac{8}{5{{R_d}}} \right),\label{eq:dig-curvature-estimator-k1}\\
+    \hat{\kappa}^{2}(\DigShape,p) &\EqDef \frac{1}{h} \left( \frac{6(\hat{\lambda}_1 - 3\hat{\lambda}_2)}{\pi {{R_d}}^6} + \frac{8}{5{{R_d}}} \right),
+    \label{eq:dig-curvature-estimator-k2}
+  \end{align}
+  %
+  where $R_d = \frac{R}{h}$ is the digitized radius of the ball, and
+  $\hat{\lambda}_1$ and $\hat{\lambda}_2$ are the two greatest eigenvalues of the covariance matrix of the digital points in the intersection between $Z$ and the ball.
+  %
+\end{Definition}
+
+% When dealing with digital data in a multigrid framework, we must pay
+% attention to on how quantities expend where decreasing the grid step
+% $h$. For example, if you fixed $R$, the digital radius will be $R_d
+% = \frac{5}{h}$ and increase when $h$ tends to zero.
+Authors of \cite{CVIU2014} have proved the convergence of these
+estimators when setting the ball radius dependent on the
+grid step $h$: $R = kh^\frac{1}{3}$, where $k$ is a constant related
+to the maximal curvature of the shape. More formally, we get:
+\begin{align}
+  \hat{\kappa}^1_{R}(\DigF{\Shape}{h},p) &= \kappa^1(X,x) + O(h^{\frac{1}{3}}),\\
+  \hat{\kappa}^2_{R}(\DigF{\Shape}{h},p) &= \kappa^2(X,x) + O(h^{\frac{1}{3}}),
+\end{align}
+when the ball radius is $R = kh^\frac{1}{3}$.
 
 \section{Isosurface Extraction on GPU}
 \label{sec:isos-extr-gpu}
@@ -158,7 +280,7 @@ crack-free triangulation.
 
 Similarly to original MC algorithm, this approach is perfectly adapted
 to GPU hardwares: Given a set of cells (a vector of morton codes),
-each triangle patch can be constructed in parallel (done by 
+each triangle patch can be constructed in parallel (done by
 in the \emph{geometry shader} in the GPU graphic pipeline).
 
 \subsection{Level of Details Criteria and Temporal Updates}
@@ -186,7 +308,7 @@ angle, an object at distance $d$ from the camera with diameter greater than
 (see Figure~\ref{fig_lod_octree}-\emph{left}). Hence, the distance
 criterion is based on the ratio (\emph{visibility ratio} in the
 following)between the cell diameter $l(c)$ (power of 2 depending on
-the depth), and 
+the depth), and
 $2\cdot d_c\cdot\tan(\alpha)$ \todo{idem}
 ,$d_c$ being the distance between the cell center and the camera. For a given cell $c$,
 split and merge decision are based on this visibility ratio:
@@ -212,7 +334,7 @@ split and merge decision are based on this visibility ratio:
     angular criterion \emph{(middle)}. Based on LoD criterion
     evaluation, the cell buffer is
   updated between each frame \emph{(right)}.}
-  \label{fig_lod_octree} 
+  \label{fig_lod_octree}
 \end{figure}
 %
 In addition to the distance criterion, we add an angular term in order
@@ -238,7 +360,7 @@ pipeline.
   \caption{ Summary our GPU pipeline. Data buffers are
     represented in green and computations in red. Each computation
     retrieves data from a buffer and fills a new one. }
-  \label{fig_pipeline} 
+  \label{fig_pipeline}
 \end{figure}
 
 

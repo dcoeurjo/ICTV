@@ -36,12 +36,60 @@
   \widetilde{\mathrlap{\phantom{\rule{\wd0}{\ht0+{#1}}}}\smash{#2}}%
 }
 
+\newtheorem{Definition}{Definition}
+\newtheorem{Theorem}{Theorem}
+\newtheorem{Proposition}{Proposition}
+\newtheorem{Corollary}{Corollary}
+\newtheorem{Problem}{Problem}
+\newtheorem{Lemma}{Lemma}
+\newtheorem{Claim}{Claim}
+
 %%Space, Lattices
 \newcommand{\Z}{{\mathbb{Z}}}
 \newcommand{\N}{{\mathbb{N}}}
 \newcommand{\R}{{\mathbb{R}}}
 \newcommand{\M}{\mathcal{M}}
 \newcommand{\B}{\mathcal{B}_R}
+
+\newcommand{\BT}[1]{\ensuremath{\partial #1}}
+\newcommand{\Bd}[1]{\ensuremath{\partial #1}}
+\newcommand{\dS}{\BT X}
+\newcommand{\Body}[2]{\ensuremath{\lbrack #1 \rbrack_{#2}}}
+
+\newcommand{\Shape}{\ensuremath{X}}
+\newcommand{\DigShape}{\ensuremath{Z}}
+\newcommand{\Boundary}[1]{\ensuremath{\partial #1}}
+\newcommand{\DigBoundary}[1]{\ensuremath{Bd(#1)}}
+\newcommand{\Shapes}{\ensuremath{\mathbb{X}}}
+\newcommand{\vx}{\ensuremath{\mathbf{x}}}
+\newcommand{\vp}{\ensuremath{\mathbf{p}}}
+\newcommand{\Dig}{\ensuremath{\mathtt{G}}}
+\newcommand{\DigF}[2]{\ensuremath{\Dig_{#2}\left(#1\right)}}
+\newcommand{\DSh}{\DigF{\Shape}{h}}
+
+%% Curvature notations
+\newcommand{\Curv}{\ensuremath{\kappa}}
+\newcommand{\MeanCurv}{\ensuremath{H}}
+\newcommand{\GaussCurv}{\ensuremath{K}}
+\newcommand{\PrincCurv}[1]{\ensuremath{\kappa_{#1}}}
+\newcommand{\PrincDir}[1]{\ensuremath{\vw_{#1}}}
+\newcommand{\NormalDir}{\ensuremath{\vn}}
+
+%% Pottmann curvature estimators
+\newcommand{\CurvT}[1]{\ensuremath{\tilde{\Curv}^{#1}}}
+\newcommand{\MeanCurvT}[1]{\ensuremath{\tilde{\MeanCurv}^{#1}}}
+\newcommand{\GaussCurvT}[1]{\ensuremath{\tilde{\GaussCurv}^{#1}}}
+\newcommand{\PrincCurvT}[2]{\ensuremath{\tilde{\PrincCurv{}}_{#1}^{#2}}}
+\newcommand{\PrincDirT}[2]{\ensuremath{\tilde{\PrincDir{}}_{#1}^{#2}}}
+\newcommand{\NormalDirT}[1]{\ensuremath{\tilde{\NormalDir{}}^{#1}}}
+
+%% II curvature estimators
+\newcommand{\CurvH}[1]{\ensuremath{\hat{\Curv}^{#1}}}
+\newcommand{\MeanCurvH}[1]{\ensuremath{\hat{\MeanCurv}^{#1}}}
+\newcommand{\GaussCurvH}[1]{\ensuremath{\hat{\GaussCurv}^{#1}}}
+\newcommand{\PrincCurvH}[2]{\ensuremath{\hat{\PrincCurv{}}_{#1}^{#2}}}
+\newcommand{\PrincDirH}[2]{\ensuremath{\hat{\PrincDir{}}_{#1}^{#2}}}
+\newcommand{\NormalDirH}[1]{\ensuremath{\hat{\NormalDir{}}^{#1}}}
 
 %%Formulas
 \newcommand{\EqDef}{\!\ensuremath{\mathrel{\mathop:}=}\!}
