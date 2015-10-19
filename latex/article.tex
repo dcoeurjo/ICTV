@@ -161,16 +161,31 @@ to GPU hardwares: Given a set of cells (a vector of morton codes),
 each triangle patch can be constructed in parallel (done by 
 in the \emph{geometry shader} in the GPU graphic pipeline).
 
-\subsection{LoD Criteria and Temporal Updates}
+\subsection{Level of Details Criteria and Temporal Updates}
 
 
 As illustrated in Figure
 \ref{fig_quadtree_partitionning}-\emph{middle}, we propose a viewpoint
 dependent criterion to decide if a cell needs to be refined: the
 closer we are to the camera, the finer the cells are. In addition to
-the distance criterion, we define an angular criterion to only
-subdivide cells within the field of view. 
+the distance criterion, we define an angular criterion to refine cells
+within the camera frustrum. When rendering a mesh, a key stage is the
+rasterization one which digitizes triangles projected onto the
+screen. As a consequence, having several triangles whose projections
+lie inside the same pixel is something we should prevent. Hence,
+distance criterion can be set in order to both control the geometrical
+approximation and to ensure that cells project onto more than one
+pixel. Figure \ref{fig_lod_octree} illustrates the level of details
+(LoD for short criterion) we use.
 
+\begin{figure}
+  \begin{center}
+    \includegraphics[width=0.4\linewidth]{viewlod2_small}  
+  \end{center}
+  \caption{Adaptive meshing in dimension 2 using the LoD distance and
+    angular criterion.}
+  \label{fig_lod_octree} 
+\end{figure}
 
 
 
