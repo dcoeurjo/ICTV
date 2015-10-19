@@ -86,7 +86,7 @@ LAMA, UMR5127, F-73776, France\\
 
 In this section, we detail the adaptive isosurface extraction
 algorithm. The proposed approach is based on an octree representation
-of the domain and object on which an efficient adaptive triangulation
+of the input object on which an efficient adaptive triangulation
 of the isosurface is constructed on GPU. Such approach is motivated by
 the fact that the hierarchical representation of the object allows us
 to handle large datasets and to locally adapt the level of details
@@ -96,87 +96,73 @@ hierarchical octree cells.
 
 \subsection{Linear Octree Representation}
 
-\begin{figure}
+\begin{figure}[!htbp]
   \begin{center}
     \subfigure{}{\includegraphics[width=\textwidth]{figs/morton}}
     %%\subfigure{}{\includegraphics[height=0.17\textheight]{figs/partitioning}}
     %%\subfigure{}{\includegraphics[height=0.17\textheight]{figs/quadtree_activefront}}
   \end{center}
 \caption{Morton codes associated to cells of a linear quatree. Each
-  children cell morton code is obtained by adding a suffix to its
-  parent code \emph{(left)}. The adpative representation consists of
-  quadtree cells whose depth is view point dependent \emph{(right)}.}
+   morton code of a child cell is obtained by adding a suffix to its
+  parent code \emph{(left)}. The adaptive representation consists of
+  quadtree cells whose depth is view point dependent
+  \emph{(middle)}. Finally, adaptive Marching-Cubes is used to
+  generate the triangulation \emph{(right)}.}
 \label{fig_quadtree_partitionning}
 \end{figure}
 
-
-
-
-Linear quadtrees or octrees are non-recursive spatial data structure
-to represent classical quadtree/octreee trees (see for instance
-Gargantini \cite{gargantini1982effective}).  Such structures were
-reused by Dupuy \textit{et al.}  \cite{dupuy2014quadtrees} who
-presented a solution to handle them efficiently on the GPU.  Linear
-quadtrees associate a code to each cell, identifying it by its path to
-the root node.  The full tree is thus entirely represented by the list
-of its leaves' codes, which removes the recursivity.  In their
-implementation, Dupuy \textit{et al.} used Morton codes (Figure
-\ref{fig_quadtree_partitionning}).  Those codes store a spatial
-position, encoding the location of the cell relatively to its parent.
-The final code of a cell is thus the succession of locations between
-the cell and the root node.  Therefore, the maximal depth of the tree
-depends on the number of quadrants that can be encoded.  In a
-quadtree, a cell is divided into $2^2$ quadrants, so encoding one
-subdivision requires two bits.  Dupuy \textit{et al.} store for each
-cell its Morton code and its depth within the tree.  Therefore, with a
-code stored on 32 bits, using 28 bits for the locations and 4 bits for
-the depth, the tree is limited to 14 levels.
-
-Dupuy \textit{et al}. used those quadtrees to maintain a 2D
-hierarchical space partition.  They thus encode a front of cells
-within this tree (Figure \ref{fig_quadtree_partitionning}).  To
-determine if a cell is part of the front, they evaluate on each of
-them a LoD criterion.  The criterion they chose is view dependent and
-thus must be evaluated quickly on the GPU.
-
-During an update, there a three possible operations on a cell: it can
-be kept, merged or split.  A merge operation removes the codes of the
-children's cells from the list and replaces them with the code of the
-parent cell.  A split operation removes the code of a cell replacing
-it by the codes of its children.  Therefore, an efficient GPU
-implementation relies on the fact that those operations can be done
-independently on each cell.  This is true as long as the LoD criterion
-is also evaluable independently on each cell.
-
-With this implementation of linear tree, it is possible to maintain a
-quadtree on the GPU.  By generalizing this to the octree, it could be
-used with the triangulation presented by Lengyel \textit{et al.} to
-develop a fully data parallel pipeline.  There is however three
-conditions on the LoD criterion.  It must ensure that the extracted
-triangles will project onto more than one pixel, to ensure a good
-rasterization sampling.  The tree must also stay restricted at all
-times as the transition cells of Lengyel \textit{et al.} only patch
-cells with a single change in resolution.  Finally, this criterion
-must allow to detect if the neighbour of a cell is more subdivided
-than the cell itself in a data parallel manner.  This is mandatory to
-determine where the transition cells should be inserted.
-
-\todo[inline]{work in progress, cleanup needed}
+Representing a hierachical structure on GPU is usually challenging
+since the GPU memory is limited and non consistent \todo{fix coherent/aligned/coalesced?}
+memory access (\emph{e.g.} tree traversal using pointer dereferencing)
+may lead to huge payload from cache misses.  Efficient spatial tree
+encoding can be achieved using pointerless strictures. We use here
+linear quadtrees or octrees to represent classical quadtree/octreee
+trees, see for instance Gargantini
+\cite{gargantini1982effective}. This structure consists in indexing
+each cell by a \emph{Morton code}: the code of children cells are
+defined by the code of the parent suffixed by two bits (in dimension
+2, three bits in dimension 3) (see Figure
+\ref{fig_quadtree_partitionning}-\emph{left}). For a given cell, its
+code encodes its position with respect to its parent cell and its
+complete path to the tree root. Hence, whatever their depth, all cell
+codes are simply stored in a linear vector on memory. Furthermore,
+cell operations such as subdivision, merging, neighbors access can be
+efficiently implemented using bitwise operations on the Morton code.
+In the following, we use the GPU implementation proposed by Dupuy
+\textit{et al.}  \cite{dupuy2014quadtrees}. In such approach, Morton
+codes and bitwise operations are optimized to match with GPU hardware
+requirements.
 
 \subsection{Data parallel and adaptive mesh generation}
 
 
+Using this spatial datastructure, triangulated mesh can be constructed
+from a Marching-Cubes approach \cite{lorensen1987marching} (MC for short): the
+triangulation is generated from local triangle patches computed on
+local cell configurations. Since triangle patches are locally
+computed, such approach is fully parallel and easy to implement on GPU
+hardwares. However, since adjacent cells may not have the same depth
+on the octree, original Lorensen and Cline's rules need to be
+updated (see Figure~\ref{fig_quadtree_partitionning}-\emph{right}). Many authors have addressed this problem both for primal and
+dual meshes
+\cite{shu1995adaptive,schaefer2004dual,lengyel2010voxel,DBLP:journals/cgf/LewinerMPPL10,DBLP:journals/cvgip/LobelloDD14}.
+
+In the following, we use the extension of MC configurations to handle
+adaptive structures proposed by Lengyel \emph{et al.}
+\cite{lengyel2010voxel}. First this approach constrains the octree
+structure in order to make sure that the depth difference between any
+two adjacent cells is at most one. Then, Lengyel \emph{et al.} propose
+specific MC configurations for such transition cells,  leading to a
+crack-free triangulation.
+
+Similarly to original MC algorithm, this approach is perfectly adapted
+to GPU hardwares: Given a set of cells (a vector of morton codes),
+each triangle patch can be constructed in parallel (done by 
+in the \emph{geometry shader} in the GPU graphic pipeline).
+
+\subsection{LoD Criteria and Temporal Updates}
 
 
-
-
-\begin{figure}[!htbp]
-\centering
-\subfigure{}{\includegraphics[width=0.4\linewidth]{mesh_muti_res}}
-\subfigure{}{\includegraphics[width=0.4\linewidth]{octree}}
-\caption{Isosurface extraction $(a)$ from a  a linear restricted octree
-  $(b)$ of a volumetric data.\label{fig:isoexample}}
-\end{figure}
 
 
 
@@ -187,6 +173,18 @@ determine where the transition cells should be inserted.
     represented in green and computations in red. Each computation
     retrieves data from a buffer and fills a new one. }
   \label{fig_pipeline} 
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics[height=0.2\textheight]{subdivision}
+\caption{The octree at frame $t$ is stored as a list of Morton codes in a buffer. 
+To update the tree, we fill a new buffer representing its state at frame $t+1$. 
+On the GPU, each code of the first buffer is processed in parallel. 
+If the cell is to be subdivided, it writes the codes of its children in the new buffer. 
+If it merges, it writes either nothing, or the code of its parent (if it is the first child).
+If it is kept, it just re-writes its own code. }
+\label{subdivision}
 \end{figure}
 
 
