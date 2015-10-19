@@ -65,7 +65,7 @@ void GPUOctree::loadBuffers()
         //const size_t cap = 1 << 28;
 		
 		size_t full_tree = 1;
-		unsigned long int side = pow(2, 8);
+		unsigned long int side = pow(2, 9);
 		full_tree += side*side*side;
 		
 		size_t full_tree_cap = full_tree * sizeof(float) * 2.0; //1 vec2 for each
@@ -248,8 +248,6 @@ void GPUOctree::loadVertexArrays()
 		glBindBuffer (GL_ARRAY_BUFFER, Parameters::getInstance()->g_buffers[BUFFER_VERTEX_CUBE]);
 		glVertexAttribPointer (1, 3, GL_FLOAT, 0, 0, 0);
 		glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, Parameters::getInstance()->g_buffers[BUFFER_INDEX_CUBE]);
-		glBindBuffer (GL_ARRAY_BUFFER, Parameters::getInstance()->g_buffers[BUFFER_VERTEX_CUBE]);
-		glVertexAttribPointer (1, 3, GL_FLOAT, 0, 0, 0);
 	glBindVertexArray(0);
 	
 	glGenVertexArrays (1, Parameters::getInstance()->g_vertex_arrays + VERTEX_ARRAY_OCTREE_RENDER2);

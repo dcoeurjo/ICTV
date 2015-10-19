@@ -246,9 +246,9 @@ vec3 hash3( float n )
 
 float getPotential(vec3 position, out float isovalue, bool lod)
 {
-	//float ret = textureLod(densities, position, 0).r;
+	float ret = textureLod(densities, position, 0).r;
 	
-	float size = 128;
+	/*float size = 128;
 	
 	float s = 10;
 	float A = s * 0.1;
@@ -267,7 +267,7 @@ float getPotential(vec3 position, out float isovalue, bool lod)
 	
 	float ret = 0;
 	if ((position.y - 0.5)*s < y)
-		ret = 1;
+		ret = 1;*/
 	
 	return ret;
 }

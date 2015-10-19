@@ -21,11 +21,11 @@ void main (void) {
 layout (points) in;
 layout (points, max_vertices = 16) out;
 
-layout (location = 0) in uvec4 i_data[];
+layout (location = 0) in uvec2 i_data[];
 
-layout (stream = 0) out uvec4 o_data;
+layout (stream = 0) out uvec2 o_data;
 layout (stream = 0) out vec4 o_code;
-layout (stream = 1) out uvec4 o_data_tr;
+layout (stream = 1) out uvec2 o_data_tr;
 layout (stream = 1) out vec4 o_neighbours;
 
 //determine if a cell is bordered by other cells of a higher resolution (smaller in scale)

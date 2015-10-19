@@ -200,7 +200,7 @@ void list_indices(std::vector<unsigned int>& id_list)
 void RegularTriangulation::loadBuffers()
 {
 	int res = (int)Parameters::getInstance()->g_tessel;
-	long long int nb_cells = 1500000*res*res*res;
+	long long int nb_cells = 3000000*res*res*res;
 	
 	glGenBuffers (1, &Parameters::getInstance()->g_buffers[BUFFER_INDIRECT_DRAWS]);
 	glBindBuffer (GL_ARRAY_BUFFER, Parameters::getInstance()->g_buffers[BUFFER_INDIRECT_DRAWS]);

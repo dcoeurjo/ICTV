@@ -34,7 +34,8 @@ uniform int u_curv_val;
 void main( )
 {
     vertex_position = position.xyz;
-	vertex_color = vec3(1);
+	vertex_color = textureLod(u_xyz_tex, position.xyz, 2).rgb / (64.0*67.0);
+	//vertex_color = position.xyz;
 
     curv_dir_min = mindir.xyz;
 	curv_dir_max = maxdir.xyz;

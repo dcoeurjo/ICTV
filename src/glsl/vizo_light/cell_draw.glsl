@@ -4,7 +4,7 @@
 // Vertex shader
 
 #ifdef VERTEX_SHADER
-layout (location = 0) in uvec4 i_key; // translation + scale
+layout (location = 0) in uvec2 i_key; // translation + scale
 layout (location = 1) in vec3 position; //cube vertex
 layout (location = 0) out float dist_to_camera;
 layout (location = 1) out vec3 color;
