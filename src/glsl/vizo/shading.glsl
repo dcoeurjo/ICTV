@@ -34,7 +34,8 @@ uniform int u_curv_val;
 void main( )
 {
     vertex_position = position.xyz;
-	vertex_color = textureLod(u_xyz_tex, position.xyz, 2).rgb / (64.0*67.0);
+	vertex_color = vec3(1);
+	//textureLod(u_xyz_tex, position.xyz, 2).rgb / (64.0*67.0);
 	//vertex_color = position.xyz;
 
     curv_dir_min = mindir.xyz;
@@ -165,12 +166,12 @@ vec3 reorientNormal(vec3 pts[3], vec3 given_normale)
 
 void drawParallelpitruc( vec3 pts[3], vec3 mean_dir, vec3 color )
 {		
-		vec3 center_face = (pts[0].xyz+pts[1].xyz+pts[2].xyz)/3.0;
+		vec3 center_face = vec3(int(pts[0].x), pts[0].y, int(pts[0].z));// (pts[0].xyz+pts[1].xyz+pts[2].xyz)/3.0;
 		vec3 normale = normalize(cross(normalize(pts[0]-pts[1]).xyz, normalize(pts[0]-pts[2]).xyz));
 		vec3 tan_dir = normalize(pts[0]-pts[1]);
 		vec3 depth = normalize(cross(normalize(tan_dir), normalize(mean_dir)));
 		
-		float l = 0.1* max( max(length(pts[0]-pts[2]), length(pts[0]-pts[1])), length(pts[1]-pts[2]) );
+		float l = 1;//max( max(length(pts[0]-pts[2]), length(pts[0]-pts[1])), length(pts[1]-pts[2]) );
 		float L = 10*l;
 		float p = l;
 		
@@ -274,7 +275,8 @@ void main()
 	
 	if (u_curv_dir == 1 || u_curv_dir == 3)
 	{
-		drawParallelpitruc(pts, curv_dir_min[0], vec3(0, 0, 1));
+		//if ( ( int( pts[0].x ) % 10 == 0 ) && ( int( pts[0].z ) % 10 == 0 ) )
+			drawParallelpitruc(pts, curv_dir_min[0], vec3(0, 0, 1));
 	}
 	
 	if (u_curv_dir == 2 || u_curv_dir == 3)

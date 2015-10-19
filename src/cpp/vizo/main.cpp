@@ -722,6 +722,7 @@ public:
 			extractor.loadPrograms();
 			curver.loadProgram();
 			radiusShower.loadProgram();
+			shadator.loadProgram();
 			gk::reloadPrograms();
 			key('r')= 0;
 		}

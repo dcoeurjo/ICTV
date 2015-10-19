@@ -203,6 +203,7 @@ void Curvature::loadProgram()
 
         fprintf (stderr, "loading O(1) curv program... "); fflush (stderr);
         gk::GLCompiler& c = gk::loadProgram( SHADER_PATH("curvature.glsl"));
+		c.include(SHADER_PATH("potential.glsl") );
         c.include(SHADER_PATH("o1_include.glsl") );
 		c.include(SHADER_PATH("eigendecomposition.glsl"));
         GLProgram* tmp = c.make();
@@ -221,6 +222,7 @@ void Curvature::loadProgram()
 
         fprintf (stderr, "loading GT curv program... "); fflush (stderr);
         gk::GLCompiler& c = gk::loadProgram( SHADER_PATH("curvature.glsl"));
+		c.include(SHADER_PATH("potential.glsl") );
         c.include(SHADER_PATH("gt_include.glsl") );
 		c.include(SHADER_PATH("eigendecomposition.glsl"));
         GLProgram* tmp = c.make();
@@ -239,6 +241,7 @@ void Curvature::loadProgram()
 
         fprintf (stderr, "loading hierarchic curv program... "); fflush (stderr);
         gk::GLCompiler& c = gk::loadProgram( SHADER_PATH("curvature.glsl"));
+		c.include(SHADER_PATH("potential.glsl") );
         c.include(SHADER_PATH("hierarch_include.glsl") );
 		c.include(SHADER_PATH("eigendecomposition.glsl"));
         GLProgram* tmp = c.make();

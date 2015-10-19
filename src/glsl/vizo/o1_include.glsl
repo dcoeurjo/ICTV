@@ -1,56 +1,24 @@
 uniform float u_curv_radius;
-uniform float u_size_tex;
-uniform sampler3D densities;
 uniform sampler3D u_xyz2_tex;
 uniform sampler3D u_xy_yz_xz_tex;
 uniform sampler3D u_xyz_tex;
 uniform int u_curv_val;
-uniform float u_time;
-
-float getPotential(vec3 position)
-{
-	float ret = textureLod(densities, position, 0).r;
-	
-	/*
-	float size = 128;
-	
-	float s = 10;
-	float A = s * 0.1;
-    float w = 2;
-    float theta = 3.14159 / 4.0;
-	float sin_t = sin(theta);
-	float cos_t = cos(theta);
-	
-	float time = u_time*0.5;
-	
-	vec2 k = vec2(cos_t, sin_t);
-	
-	float phi = dot(k,(position.xz)*s) - w*time;
-	
-    float y = A * cos(phi);
-	
-	float ret = 0;
-	if ((position.y - 0.5)*s < y)
-		ret = 1;*/
-	
-	return ret;
-}
 
 void fetch(vec3 p, float step, int l, inout float volume, inout vec3 xyz, inout vec3 xyz2, inout vec3 xy_yz_xz)
 {
-	float val = getPotential(p);//textureLod(densities, p, l).r;
+	float val = getPotential(p, u_time);//textureLod(densities, p, l).r;
 	vec3 p2 = p*u_size_tex;
 	val *= (step*step*step);
 	
 	volume += val;
 	
-	xyz += textureLod(u_xyz_tex, p, l).rgb;
+	/*xyz += textureLod(u_xyz_tex, p, l).rgb;
 	xyz2 += textureLod(u_xyz2_tex, p, l).rgb;
-	xy_yz_xz += textureLod(u_xy_yz_xz_tex, p, l).rgb;
+	xy_yz_xz += textureLod(u_xy_yz_xz_tex, p, l).rgb;*/
 	
-	/*xyz += p2 * val;
+	xyz += p2 * val;
 	xyz2 += p2*p2 * val;
-	xy_yz_xz += vec3(p2.x*p2.y, p2.y*p2.z, p2.x*p2.z) * val;*/
+	xy_yz_xz += vec3(p2.x*p2.y, p2.y*p2.z, p2.x*p2.z) * val;
 }
 
 void getVolumeMoments(in vec3 vertex_position, out float volume, out vec3 xyz, out vec3 xy_yz_xz, out vec3 xyz2, in float lvl_tree)

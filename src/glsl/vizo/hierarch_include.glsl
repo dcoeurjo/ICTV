@@ -1,6 +1,4 @@
 uniform float u_curv_radius;
-uniform float u_size_tex;
-uniform sampler3D densities;
 uniform sampler3D u_xyz2_tex;
 uniform sampler3D u_xy_yz_xz_tex;
 uniform sampler3D u_xyz_tex;

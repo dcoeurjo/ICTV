@@ -136,6 +136,7 @@ void RegularTriangulation::loadPrograms()
 	fprintf (stderr, "Loading regular draw program... "); fflush (stderr);
 	gk::GLCompiler& c = gk::loadProgram( SHADER_PATH("regular_render.glsl"));
 	c.include(SHADER_PATH("noise.glsl") );
+	c.include(SHADER_PATH("potential.glsl") );
 	c.include(SHADER_PATH("octree_common.glsl") );
 	c.include(SHADER_PATH("ltree.glsl") );
 

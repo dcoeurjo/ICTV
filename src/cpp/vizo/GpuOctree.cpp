@@ -388,6 +388,7 @@ void GPUOctree::loadPrograms()
 	
         gk::GLCompiler& c = gk::loadProgram( SHADER_PATH("octree_lod.glsl"));
 	   c.include(SHADER_PATH("noise.glsl") );
+	   c.include(SHADER_PATH("potential.glsl") );
 	   c.include(SHADER_PATH("octree_common.glsl") );
 	   c.include(SHADER_PATH("ltree.glsl") );
 
@@ -431,6 +432,7 @@ void GPUOctree::loadPrograms()
         fprintf (stderr, "Loading octree cull program... "); fflush (stderr);
         gk::GLCompiler& c = gk::loadProgram( SHADER_PATH("octree_cull.glsl") );
     	c.include(SHADER_PATH("noise.glsl") );
+		c.include(SHADER_PATH("potential.glsl") );
     	c.include(SHADER_PATH("octree_common.glsl") );
     	c.include(SHADER_PATH("ltree.glsl") );
 
@@ -475,6 +477,7 @@ void GPUOctree::loadPrograms()
 	   fprintf (stderr, "Loading cell draw program... "); fflush (stderr);
         gk::GLCompiler& c = gk::loadProgram( SHADER_PATH("cell_draw.glsl"));
     	c.include(SHADER_PATH("noise.glsl") );
+		c.include(SHADER_PATH("potential.glsl") );
     	c.include(SHADER_PATH("octree_common.glsl") );
     	c.include(SHADER_PATH("ltree.glsl") );
         GLProgram* tmp = c.make();

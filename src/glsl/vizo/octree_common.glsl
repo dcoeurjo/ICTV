@@ -49,8 +49,6 @@ struct cell
 	vec4 block_info;
 };
 
-uniform sampler3D densities;
-
 uniform vec3 u_scene_size; // scale of the scene
 uniform float u_tan_fovy;   // tan of half the fovy
 uniform vec2 u_viewport; // viewport width and height
@@ -60,10 +58,8 @@ uniform float u_isosurface; //isovalue
 uniform int u_tessellation; //voxels to blocks of u_tessellation^3
 uniform float u_scale; //octree levels length
 uniform int u_radial; //use radial distance for LoD
-uniform float u_time;
-uniform float u_size_tex;
 
-uint max_level = min( uint( ceil(log2(u_size_tex)) ), 7u ); //max octree level; cannot be splitted more than this level
+uint max_level = 6u;//min( uint( ceil(log2(u_size_tex)) ), 7u ); //max octree level; cannot be splitted more than this level
 float max_tex = max_level;
 
 
@@ -244,38 +240,10 @@ vec3 hash3( float n )
     return fract(sin(vec3(n,n+1.0,n+2.0))*vec3(43758.5453123,22578.1459123,19642.3490423));
 }
 
-float getPotential(vec3 position, out float isovalue, bool lod)
-{
-	float ret = textureLod(densities, position, 0).r;
-	
-	/*float size = 128;
-	
-	float s = 10;
-	float A = s * 0.1;
-    float w = 2;
-    float theta = 3.14159 / 4.0;
-	float sin_t = sin(theta);
-	float cos_t = cos(theta);
-	
-	float time = u_time*0.5;
-	
-	vec2 k = vec2(cos_t, sin_t);
-	
-	float phi = dot(k,(position.xz)*s) - w*time;
-	
-    float y = A * cos(phi);
-	
-	float ret = 0;
-	if ((position.y - 0.5)*s < y)
-		ret = 1;*/
-	
-	return ret;
-}
-
 float getVolume(vec3 position) //returns the value for a point in space fetching it from mipmapped texture
 {
 	float isovalue = 0;
-	float kernel = getPotential(position, isovalue, true);
+	float kernel = getPotential(position, u_time);//, isovalue, true);
 	float ret = ( kernel - isovalue );
 	return kernel;
 }
@@ -283,7 +251,7 @@ float getVolume(vec3 position) //returns the value for a point in space fetching
 float getVolume0(vec3 position) //returns the value for a point in space fetching it from the lowest mipmap of the texture
 {
 	float isovalue = 0;
-	float kernel = getPotential(position, isovalue, false);
+	float kernel = getPotential(position, u_time);// isovalue, false);
 	float ret = ( kernel - isovalue );
 	return ret;
 }

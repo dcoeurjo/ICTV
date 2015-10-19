@@ -26,6 +26,7 @@ void SphereDraw::loadProgram()
     
     fprintf (stderr, "loading sphere drawing program... "); fflush (stderr);
     gk::GLCompiler& c = gk::loadProgram( SHADER_PATH("drawsphere.glsl"));
+	c.include(SHADER_PATH("potential.glsl"));
     c.include(SHADER_PATH("noise.glsl") );
     c.include(SHADER_PATH("octree_common.glsl") );
     c.include(SHADER_PATH("ltree.glsl") );
