@@ -136,6 +136,7 @@ requirements.
 \subsection{Data parallel and adaptive mesh generation}
 
 
+
 Using this spatial datastructure, triangulated mesh can be constructed
 from a Marching-Cubes approach \cite{lorensen1987marching} (MC for short): the
 triangulation is generated from local triangle patches computed on
@@ -161,6 +162,15 @@ each triangle patch can be constructed in parallel (done by
 in the \emph{geometry shader} in the GPU graphic pipeline).
 
 \subsection{LoD Criteria and Temporal Updates}
+
+
+As illustrated in Figure
+\ref{fig_quadtree_partitionning}-\emph{middle}, we propose a viewpoint
+dependent criterion to decide if a cell needs to be refined: the
+closer we are to the camera, the finer the cells are. In addition to
+the distance criterion, we define an angular criterion to only
+subdivide cells within the field of view. 
+
 
 
 
