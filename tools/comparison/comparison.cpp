@@ -61,10 +61,37 @@ public:
   {
     return !(*this == p);
   }
+  Position& operator= (const Position& p)
+  {
+    x = p.x;
+    y = p.y;
+    z = p.z;
 
+    return *this;
+  }
+  Position& operator+= (const Position& p)
+  {
+    x += p.x;
+    y += p.y;
+    z += p.z;
+
+    return *this;
+  }
+  Position& operator/= (const int& v)
+  {
+    x /= v;
+    y /= v;
+    z /= v;
+
+    return *this;
+  }
   Position operator-( const Position& p) const
   {
     return Position(x-p.x, y-p.y, z-p.z);
+  }
+  Position operator+( const Position& p) const
+  {
+    return Position(x+p.x, y+p.y, z+p.z);
   }
 };
 
@@ -82,9 +109,31 @@ struct convertCPUtoKhalimsky : std::unary_function <unsigned int, double>
   { return std::floor(v); }
 };
 
+class convertCPUtoGPU : std::unary_function <Position, Position>
+{
+public:
+  convertCPUtoGPU( Position* barycenterGPU, Position* barycenterCPU )
+  {
+    offset = *barycenterGPU - *barycenterCPU;
+  }
+
+  Position operator() (const Position v) const
+  {
+    return v + offset;
+  }
+
+  Position getOffset() const
+  {
+    return offset;
+  }
+private:
+  Position offset;
+};
+
 template< typename Predicate >
 bool loadFile(  const std::string& filename,
                 std::vector< std::pair<Position*, Curvatures*> >& results,
+                Position* barycenter,
                 const Predicate& predicate )
 {
   std::ifstream file( filename.c_str(), std::ifstream::in );
@@ -121,6 +170,8 @@ bool loadFile(  const std::string& filename,
       p->y = predicate( std::atof(words[1].c_str()));
       p->z = predicate( std::atof(words[2].c_str()));
 
+      *barycenter += *p;
+
       Curvatures *c = new Curvatures();
       c->mean = std::atof(words[3].c_str());
       c->k1   = std::atof(words[4].c_str());
@@ -128,6 +179,7 @@ bool loadFile(  const std::string& filename,
 
       results.push_back( std::pair<Position*,Curvatures*>(p,c) );
     }
+    *barycenter /= results.size();
     std::cout << "... done." << std::endl;
     file.close();
   }
@@ -140,9 +192,11 @@ bool loadFile(  const std::string& filename,
   return true;
 }
 
+template< typename Predicate >
 bool normalizeCPU( const std::vector< std::pair<Position*, Curvatures*> >& mapCPU,
                    const std::vector< std::pair<Position*, Curvatures*> >& mapGPU,
-                   std::vector< std::pair<Position*, Curvatures*> >& mapCPUnormalized )
+                   std::vector< std::pair<Position*, Curvatures*> >& mapCPUnormalized,
+                   const Predicate& predicate)
 {
   for( std::pair<Position*, Curvatures*> elemGPU : mapGPU )
   {
@@ -154,9 +208,9 @@ bool normalizeCPU( const std::vector< std::pair<Position*, Curvatures*> >& mapCP
       double GPUx = elemGPU.first->x;
       double GPUy = elemGPU.first->y;
       double GPUz = elemGPU.first->z;
-      double CPUx = elemCPU.first->x;
-      double CPUy = elemCPU.first->y;
-      double CPUz = elemCPU.first->z;
+      double CPUx = predicate( *elemCPU.first ).x;
+      double CPUy = predicate( *elemCPU.first ).y;
+      double CPUz = predicate( *elemCPU.first ).z;
 
       double current_distance = std::sqrt((GPUx - CPUx)*(GPUx - CPUx)
                                         + (GPUy - CPUy)*(GPUy - CPUy)
@@ -176,18 +230,6 @@ bool normalizeCPU( const std::vector< std::pair<Position*, Curvatures*> >& mapCP
       std::cout << "Leaving now..." << std::endl;
       return false;
     }
-    // if( minimal_distance > 1 )
-    // {
-    //   std::cout << "ERROR: The distance between {" << elemGPU.first->x << ","
-    //                                         << elemGPU.first->y << ","
-    //                                         << elemGPU.first->z << "} and {"
-    //                                         << minimal_position->x << ","
-    //                                         << minimal_position->y << ","
-    //                                         << minimal_position->z
-    //             << "} is greater than 1 (exactly " << std::sqrt(minimal_distance) << ")." << std::endl;
-    //   //std::cout << "Leaving now..." << std::endl;
-    //   //return false;
-    // }
 
     Position *copy_pos = new Position();
     Curvatures *copy_curv = new Curvatures();
@@ -204,7 +246,6 @@ bool normalizeCPU( const std::vector< std::pair<Position*, Curvatures*> >& mapCP
 
 bool computeDifference( const std::vector< std::pair<Position*, Curvatures*> >& mapGPU,
                         const std::vector< std::pair<Position*, Curvatures*> >& mapCPUnormalized,
-                        // const uint errorType,
                         std::vector< Curvatures* >& mapErrors )
 {
   if( mapGPU.size() != mapCPUnormalized.size())
@@ -229,19 +270,21 @@ bool computeDifference( const std::vector< std::pair<Position*, Curvatures*> >& 
 
   for( uint i = 0; i < mapGPU.size(); ++i )
   {
-    // if( errorType == 1 ) /// l_1
+    //// l_1
     {
       error_mean_l1 += std::abs( mapGPU[i].second->mean - mapCPUnormalized[i].second->mean );
       error_k1_l1 += std::abs( mapGPU[i].second->k1 - mapCPUnormalized[i].second->k1 );
       error_k2_l1 += std::abs( mapGPU[i].second->k2 - mapCPUnormalized[i].second->k2 );
     }
-    // else if( errorType == 2 ) /// l_2
+
+    //// l_2
     {
       error_mean_l2 += std::abs( mapGPU[i].second->mean - mapCPUnormalized[i].second->mean ) * std::abs( mapGPU[i].second->mean - mapCPUnormalized[i].second->mean );
       error_k1_l2 += std::abs( mapGPU[i].second->k1 - mapCPUnormalized[i].second->k1 ) * std::abs( mapGPU[i].second->k1 - mapCPUnormalized[i].second->k1 );
       error_k2_l2 += std::abs( mapGPU[i].second->k2 - mapCPUnormalized[i].second->k2 ) * std::abs( mapGPU[i].second->k2 - mapCPUnormalized[i].second->k2 );
     }
-    // else if( errorType == 3 ) /// l_infty
+
+    //// l_infty
     {
       if( error_mean_loo < std::abs( mapGPU[i].second->mean - mapCPUnormalized[i].second->mean ) )
       {
@@ -256,20 +299,16 @@ bool computeDifference( const std::vector< std::pair<Position*, Curvatures*> >& 
         error_k2_loo = std::abs( mapGPU[i].second->k2 - mapCPUnormalized[i].second->k2 );
       }
     }
-    // else
-    // {
-    //   std::cout << "ERROR: errorType isn't in {1,2,3} (aka l_1, l_2 and l_\\infty error)...";
-    //   std::cout << "Leaving now..." << std::endl;
-    //   return 0;
-    // }
   }
-  // if( errorType == 1 ) /// l_1
+
+  //// l_1
   {
     error_mean_l1 /= (double)mapGPU.size();
     error_k1_l1 /= (double)mapGPU.size();
     error_k2_l1 /= (double)mapGPU.size();
   }
-  // else if( errorType == 2 ) /// l_2
+
+  //// l_2
   {
     error_mean_l2 = std::sqrt(error_mean_l2) / (double)mapGPU.size();
     error_k1_l2 = std::sqrt(error_k1_l2) / (double)mapGPU.size();
@@ -301,21 +340,18 @@ int main( int argc, char** argv )
   //// User's choice
   if ( argc == 1 )
     {
-      std::cout << "Usage: " << argv[0] << "<fileGPU> <fileCPU> <size> <errorType>" << std::endl;
+      std::cout << "Usage: " << argv[0] << "<fileGPU> <fileCPU>" << std::endl;
       std::cout << "       - computes the difference of results between the" << std::endl;
       std::cout << "         CPU version of the estimator and the GPU version" << std::endl;
       std::cout << "         GPU file : positions are between [0;size]." << std::endl;
       std::cout << "         CPU file : positions are between [0;2*size]" << std::endl;
       std::cout << "                                       or [-size;size]." << std::endl;
-      std::cout << "         Error type : 1 is l_1, 2 is l_2, 3 is l_\\infty." << std::endl;
       std::cout << "Example:" << std::endl;
-      std::cout << argv[ 0 ] << " file1.txt file2.txt 64 3" << std::endl;
+      std::cout << argv[ 0 ] << " file1.txt file2.txt" << std::endl;
       return 0;
     }
   std::string fileGPU = argc > 1 ? std::string( argv[ 1 ] ) : "file1.txt";
   std::string fileCPU = argc > 2 ? std::string( argv[ 2 ] ) : "file2.txt";
-  uint size = argc > 3 ? std::atoi( argv[ 3 ] ) : 64;
-  uint errorType = argc > 4 ? std::atoi( argv[ 4 ] ) : 3;
 
   //// Variables initialization
   std::vector< std::pair<Position*, Curvatures*> > mapGPU;
@@ -324,22 +360,29 @@ int main( int argc, char** argv )
   std::vector< Curvatures* > mapErrors;
   convertGPUtoKhalimsky predicateGPU;
   convertCPUtoKhalimsky predicateCPU;
+  Position* barycenterGPU = new Position();
+  Position* barycenterCPU = new Position();
 
   //// Loading files
-  if( !loadFile( fileGPU, mapGPU, predicateGPU ))
+  if( !loadFile( fileGPU, mapGPU, barycenterGPU, predicateGPU ))
   {
     deleteVector( mapGPU );
     return 0;
   }
-  if( !loadFile( fileCPU, mapCPU, predicateCPU ))
+  if( !loadFile( fileCPU, mapCPU, barycenterCPU, predicateCPU ))
   {
     deleteVector( mapGPU );
     deleteVector( mapCPU );
     return 0;
   }
 
+
   //// Normalize inputs
-  if( !normalizeCPU( mapCPU, mapGPU, mapCPUnormalized ))
+  convertCPUtoGPU predicateCPUnormalized(barycenterGPU, barycenterCPU);
+  std::cout << "Barycenter of GPU file : {" << barycenterGPU->x << "," << barycenterGPU->y << "," << barycenterGPU->z << "}" << std::endl;
+  std::cout << "Barycenter of CPU file : {" << barycenterCPU->x << "," << barycenterCPU->y << "," << barycenterCPU->z << "}" << std::endl;
+  std::cout << "Offset : {" << predicateCPUnormalized.getOffset().x << "," << predicateCPUnormalized.getOffset().y << "," << predicateCPUnormalized.getOffset().z << "}" << std::endl;
+  if( !normalizeCPU( mapCPU, mapGPU, mapCPUnormalized, predicateCPUnormalized ))
   {
     deleteVector( mapGPU );
     deleteVector( mapCPU );
@@ -348,10 +391,12 @@ int main( int argc, char** argv )
   deleteVector( mapCPU );
 
   //// Computation some statistics.
-  computeDifference( mapGPU, mapCPUnormalized, /*errorType,*/ mapErrors );
+  computeDifference( mapGPU, mapCPUnormalized, mapErrors );
 
   //// Releasing allocated memory
   deleteVector( mapGPU );
   deleteVector( mapCPUnormalized );
+  delete barycenterGPU;
+  delete barycenterCPU;
   return 0;
 }

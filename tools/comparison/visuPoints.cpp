@@ -15,6 +15,83 @@
 
 typedef unsigned int uint;
 
+class Position
+{
+public:
+  int x;
+  int y;
+  int z;
+
+public:
+  Position(){ x=0; y=0; z=0; }
+  Position(int _x, int _y, int _z){ x=_x; y=_y; z=_z; }
+
+  bool operator< (const Position& p) const
+  {
+    if ( x != p.x )
+    {
+      return x < p.x;
+    }
+    if ( y != p.y )
+    {
+      return y < p.y;
+    }
+    if ( z != p.z )
+    {
+      return z < p.z;
+    }
+    return false;
+  }
+  bool operator> (const Position& p) const
+  {
+    if( *this == p)
+    {
+      return false;
+    }
+    return !(*this < p);
+  }
+  bool operator== (const Position& p) const
+  {
+    return x == p.x && y == p.y && z == p.y;
+  }
+  bool operator!= (const Position& p) const
+  {
+    return !(*this == p);
+  }
+  Position& operator= (const Position& p)
+  {
+    x = p.x;
+    y = p.y;
+    z = p.z;
+
+    return *this;
+  }
+  Position& operator+= (const Position& p)
+  {
+    x += p.x;
+    y += p.y;
+    z += p.z;
+
+    return *this;
+  }
+  Position& operator/= (const int& v)
+  {
+    x /= v;
+    y /= v;
+    z /= v;
+
+    return *this;
+  }
+  Position operator-( const Position& p) const
+  {
+    return Position(x-p.x, y-p.y, z-p.z);
+  }
+  Position operator+( const Position& p) const
+  {
+    return Position(x+p.x, y+p.y, z+p.z);
+  }
+};
+
 struct convertGPUtoKhalimsky : std::unary_function <unsigned int, double>
 {
   inline
@@ -29,11 +106,32 @@ struct convertCPUtoKhalimsky : std::unary_function <unsigned int, double>
   { return std::floor(v); }
 };
 
+class convertCPUtoGPU : std::unary_function <Position, Position>
+{
+public:
+  convertCPUtoGPU( Position* barycenterGPU, Position* barycenterCPU )
+  {
+    offset = *barycenterGPU - *barycenterCPU;
+  }
+
+  Position operator() (const Position v) const
+  {
+    return v + offset;
+  }
+
+  Position getOffset() const
+  {
+    return offset;
+  }
+private:
+  Position offset;
+};
+
 template< typename Predicate >
 bool loadFile(  const std::string& filename,
-                DGtal::Viewer3D<>& viewer,
-                const Predicate& predicate,
-                const double radius )
+                std::vector< Position* >& results,
+                Position* barycenter,
+                const Predicate& predicate )
 {
   std::ifstream file( filename.c_str(), std::ifstream::in );
   std::string line;
@@ -64,10 +162,16 @@ bool loadFile(  const std::string& filename,
         return false;
       }
 
-      viewer.addBall( DGtal::Z3i::Point( predicate( std::atof(words[0].c_str())),
-                                         predicate( std::atof(words[1].c_str())),
-                                         predicate( std::atof(words[2].c_str())) ), radius );
+      Position *p = new Position();
+      p->x = predicate( std::atof(words[0].c_str()));
+      p->y = predicate( std::atof(words[1].c_str()));
+      p->z = predicate( std::atof(words[2].c_str()));
+
+      *barycenter += *p;
+
+      results.push_back( p );
     }
+    *barycenter /= results.size();
     std::cout << "... done." << std::endl;
     file.close();
   }
@@ -78,6 +182,33 @@ bool loadFile(  const std::string& filename,
     return false;
   }
   return true;
+}
+
+template< typename Predicate >
+bool showFile(  const std::vector< Position* >& input,
+                DGtal::Viewer3D<>& viewer,
+                const Predicate& predicate,
+                const double radius )
+{
+  for(  std::vector< Position* >::const_iterator it=input.begin();
+        it!=input.end(); ++it )
+  {
+    viewer.addBall( DGtal::Z3i::Point( predicate( **it ).x,
+                                       predicate( **it ).y,
+                                       predicate( **it ).z ), radius, 5 );
+  }
+  return true;
+}
+
+void deleteVector( std::vector< Position* >& _map )
+{
+  for(  std::vector< Position* >::iterator it=_map.begin();
+        it!=_map.end(); ++it )
+  {
+    delete *it;
+  }
+
+  _map.clear();
 }
 
 int main( int argc, char** argv )
@@ -104,23 +235,38 @@ int main( int argc, char** argv )
   //// Variables initialization
   convertGPUtoKhalimsky predicateGPU;
   convertCPUtoKhalimsky predicateCPU;
+  std::vector< Position* > mapGPU;
+  std::vector< Position* > mapCPU;
+  Position* barycenterGPU = new Position();
+  Position* barycenterCPU = new Position();
 
   QApplication application(argc,argv);
   DGtal::Viewer3D<> viewer;
   viewer.show();
 
   //// Loading files
-  viewer.setFillColor(DGtal::Color::Red);
-  if( !loadFile( fileGPU, viewer, predicateGPU, radiusSphere ))
+  if( !loadFile( fileGPU, mapGPU, barycenterGPU, predicateGPU ))
+  {
+
+    return 0;
+  }
+
+  if( !loadFile( fileCPU, mapCPU, barycenterCPU, predicateCPU ))
   {
     return 0;
   }
 
+  convertCPUtoGPU predicateGPU2(barycenterGPU, barycenterGPU);
+  convertCPUtoGPU predicateCPU2(barycenterGPU, barycenterCPU);
+  std::cout << "Barycenter of GPU file : {" << barycenterGPU->x << "," << barycenterGPU->y << "," << barycenterGPU->z << "}" << std::endl;
+  std::cout << "Barycenter of CPU file : {" << barycenterCPU->x << "," << barycenterCPU->y << "," << barycenterCPU->z << "}" << std::endl;
+  std::cout << "Offset : {" << predicateGPU2.getOffset().x << "," << predicateGPU2.getOffset().y << "," << predicateGPU2.getOffset().z << "}" << std::endl;
+  std::cout << "Offset : {" << predicateCPU2.getOffset().x << "," << predicateCPU2.getOffset().y << "," << predicateCPU2.getOffset().z << "}" << std::endl;
+
+  viewer.setFillColor(DGtal::Color::Red);
+  showFile( mapGPU, viewer, predicateGPU2, radiusSphere );
   viewer.setFillColor(DGtal::Color::Green);
-  if( !loadFile( fileCPU, viewer, predicateCPU, radiusSphere ))
-  {
-    return 0;
-  }
+  showFile( mapCPU, viewer, predicateCPU2, radiusSphere );
 
   viewer << DGtal::Viewer3D<>::updateDisplay;
 
