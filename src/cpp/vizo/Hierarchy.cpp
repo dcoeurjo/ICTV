@@ -33,7 +33,7 @@ Value moment110( Value data, int x, int y, int z );
 Value moment101( Value data, int x, int y, int z );
 Value moment011( Value data, int x, int y, int z );
 
-int xyzk_list[4*1000+1];
+float xyzk_list[4*10000+1];
 
 // A 3D image of size (2^lvl)^3
 struct SImage {
@@ -277,7 +277,7 @@ Value computeExact( MipMap* M, int x0, int y0, int z0, Value r )
   return acc;
 }
 
-Value computeExact(int x0, int y0, int z0, Value r )
+Value computeExact(int x0, int y0, int z0, Value r, int lvl)
 {
   xyzk_list[0] = 0;
   int minx = x0 - (int) ceil( r );
@@ -294,11 +294,11 @@ Value computeExact(int x0, int y0, int z0, Value r )
         {
           if ( distance2( x0, y0, z0, x, y, z ) <= r2 )
             {
-			  xyzk_list[xyzk_list[0]*4+1] = x;
-			  xyzk_list[xyzk_list[0]*4+2] = y;
-			  xyzk_list[xyzk_list[0]*4+3] = z;
-			  xyzk_list[xyzk_list[0]*4+4] = 0;
 			  xyzk_list[0]++;
+              xyzk_list[ (int)xyzk_list[0]*4 ] = x / pow(2, lvl) - 0.5;
+			  xyzk_list[ (int)xyzk_list[0]*4 + 1 ] = y / pow(2, lvl) - 0.5;
+			  xyzk_list[ (int)xyzk_list[0]*4 + 2 ] = z / pow(2, lvl) - 0.5;
+			  xyzk_list[ (int)xyzk_list[0]*4 + 3 ] = 0;
             }
 		}
   return acc;
@@ -499,6 +499,7 @@ Value computeApproximateHierarchy( MipMap* M, int x0, int y0, int z0, Value r, i
 
 Value computeApproximateHierarchy( int lvl, int x0, int y0, int z0, Value r, int min_h )
 {
+  xyzk_list[0] = 0;
   Value weight[ LVL+1 ];
   Value diag  [ LVL+1 ];
   int max_k       = lvl; // number of levels in the hierarchy
@@ -537,11 +538,11 @@ Value computeApproximateHierarchy( int lvl, int x0, int y0, int z0, Value r, int
           if ( d2 <= r2 ) 
             { // cell is completely inside
               // printf("[%d] %d %d %d\n", k, xyzk[ 0 ], xyzk[ 1 ], xyzk[ 2 ] );
-              xyzk_list[ xyzk_list[0]*4 + 1 ] = xyzk[0];
-			  xyzk_list[ xyzk_list[0]*4 + 2 ] = xyzk[1];
-			  xyzk_list[ xyzk_list[0]*4 + 3 ] = xyzk[2];
-			  xyzk_list[ xyzk_list[0]*4 + 4 ] = max_k - xyzk[3];
 			  xyzk_list[0]++;
+              xyzk_list[ (int)xyzk_list[0]*4 ] = (xyzk[0] - pow(2, xyzk[3]-1))/pow(2, xyzk[3]);
+			  xyzk_list[ (int)xyzk_list[0]*4 + 1 ] = (xyzk[1] - pow(2, xyzk[3]-1))/pow(2, xyzk[3]);
+			  xyzk_list[ (int)xyzk_list[0]*4 + 2 ] = (xyzk[2] - pow(2, xyzk[3]-1))/pow(2, xyzk[3]);
+			  xyzk_list[ (int)xyzk_list[0]*4 + 3 ] = max_k - xyzk[3];
               goNext( xyzk );
             }
           else // cell is completely outside
@@ -551,11 +552,11 @@ Value computeApproximateHierarchy( int lvl, int x0, int y0, int z0, Value r, int
         { // cell is completely inside
           if ( d2 <= upper2 ) 
             {
-              xyzk_list[ xyzk_list[0]*4 + 1 ] = xyzk[0];
-			  xyzk_list[ xyzk_list[0]*4 + 2 ] = xyzk[1];
-			  xyzk_list[ xyzk_list[0]*4 + 3 ] = xyzk[2];
-			  xyzk_list[ xyzk_list[0]*4 + 4 ] = max_k - xyzk[3];
-			  xyzk_list[0]++;
+              xyzk_list[0]++;
+              xyzk_list[ (int)xyzk_list[0]*4 ] = (xyzk[0] - pow(2, xyzk[3]-1))/pow(2, xyzk[3]);
+			  xyzk_list[ (int)xyzk_list[0]*4 + 1 ] = (xyzk[1] - pow(2, xyzk[3]-1))/pow(2, xyzk[3]);
+			  xyzk_list[ (int)xyzk_list[0]*4 + 2 ] = (xyzk[2] - pow(2, xyzk[3]-1))/pow(2, xyzk[3]);
+			  xyzk_list[ (int)xyzk_list[0]*4 + 3 ] = max_k - xyzk[3];
 			  
               goNext( xyzk );
             }
@@ -679,9 +680,12 @@ void computeSphereSubdivision(int r, int lvl)
 	int x0 = 1 << (lvl-1); 
 	int y0 = 1 << (lvl-1); 
 	int z0 = 1 << (lvl-1); 
-	//Value exact = computeExact( x0, y0, z0, r );
-	Value exact = computeApproximateHierarchy( lvl, x0, y0, z0, r, 0 );
+	Value exact = computeExact( x0, y0, z0, r, lvl );
+	//Value exact = computeApproximateHierarchy( lvl, x0, y0, z0, r, 0 );
 	printf("Fetch %d cells\n", (int)xyzk_list[0]);
+	
+	for(int i=1; i<=xyzk_list[0]; i++)
+		printf("(%lf %lf %lf) - %lf\n", xyzk_list[i*4], xyzk_list[i*4+1], xyzk_list[i*4+2], xyzk_list[i*4+3]);
 	
 	glGenTextures(1, &Parameters::getInstance()->g_textures[TEXTURE_SUBDIV_SPHERE]);
 	glBindTexture(GL_TEXTURE_1D, Parameters::getInstance()->g_textures[TEXTURE_SUBDIV_SPHERE]);
@@ -689,7 +693,7 @@ void computeSphereSubdivision(int r, int lvl)
 	glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
 
-	glTexImage1D(GL_TEXTURE_1D, 0, GL_RGBA32I, xyzk_list[0], 0, GL_RGBA_INTEGER, GL_INT, xyzk_list+1);
+	glTexImage1D(GL_TEXTURE_1D, 0, GL_RGBA32F, xyzk_list[0]+1, 0, GL_RGBA, GL_FLOAT, xyzk_list);
 	glGenerateMipmap(GL_TEXTURE_1D);
 	
 	return;

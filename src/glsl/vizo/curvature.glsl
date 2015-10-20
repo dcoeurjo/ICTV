@@ -84,7 +84,7 @@ void main( )
 	//vertex_color = xyz2/(65.0*65.0);
 	
 	//vertex_color = vec3(volume, 0, 1);
-	vertex_color = vec3(1);
+	vertex_color = texelFetch(u_spheresubdiv, 2, 0).rgb * -100;
 	
     gl_Position = position;
 }

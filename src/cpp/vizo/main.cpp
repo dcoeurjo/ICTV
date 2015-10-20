@@ -130,6 +130,9 @@ void activateTextures()
 	
 	glActiveTexture(GL_TEXTURE0 + TEXTURE_ENVMAP);
 	glBindTexture(GL_TEXTURE_2D, Parameters::getInstance()->g_textures[TEXTURE_ENVMAP]);
+	
+	glActiveTexture(GL_TEXTURE0 + TEXTURE_SUBDIV_SPHERE);
+	glBindTexture(GL_TEXTURE_1D, Parameters::getInstance()->g_textures[TEXTURE_SUBDIV_SPHERE]);
 }
 
 void setShaderCameraPos(const gk::Transform& tr)
@@ -251,9 +254,8 @@ public:
 	    
 	int init( )
 	{
-		/*computeSphereSubdivision(5, ceil( log2(atoi(argv[3])) ));
-		exit(0);
-		*/
+		computeSphereSubdivision((int)Parameters::getInstance()->g_curvradius, ceil( log2(atoi(argv[3])) ));
+		//exit(0);
 		
 		//Create queries
 		fprintf(stdout, "Status: Using GLEW %s\n", glewGetString(GLEW_VERSION));

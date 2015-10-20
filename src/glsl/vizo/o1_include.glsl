@@ -2,6 +2,7 @@ uniform float u_curv_radius;
 uniform sampler3D u_xyz2_tex;
 uniform sampler3D u_xy_yz_xz_tex;
 uniform sampler3D u_xyz_tex;
+uniform sampler1D u_spheresubdiv;
 uniform int u_curv_val;
 
 void fetch(vec3 p, float step, int l, inout float volume, inout vec3 xyz, inout vec3 xyz2, inout vec3 xy_yz_xz)
