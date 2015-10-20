@@ -90,18 +90,24 @@ to which the computation is performed. For short, such parameter
 (integration radius, convolution kernel size, \ldots) specifies noise
 level on the object surface. As a consequence, exploring interactively
 different values of such parameter is mandatory.
+\vspace{0.2cm}
 
-\noindent\textbf{Contributions}\quad In this work, we propose a framework
-to perform interactive visualization of complex 3D digital structures
-combined with a dynamic curvature tensor estimation. More precisely,
-we define a fully data parallel process on GPU hardware to both
-efficiently extract adaptive isosurface and compute per vertex
-curvature tensor using Integral Invariants estimators. Hence, this system
-allows us to visualize curvature tensor in realtime on large dynamic
-objects.
+\noindent\textbf{Contributions}\quad In this work, we propose a
+framework to perform interactive visualization of complex 3D digital
+structures combined with a dynamic curvature tensor estimation. More
+precisely, we define a fully data parallel process on GPU hardware to
+both efficiently extract adaptive isosurface and compute per vertex
+curvature tensor using Integral Invariants estimators. Hence, this
+system allows us to visualize curvature tensor in realtime on large
+dynamic objects. Our approach combines a GPU implementation of
+pointerless octrees to represent the data, an adaptive
+viewpoint-dependent mesh extraction, and a GPU implementation of
+integral invariant curvature estimations.
 
 
-\noindent\textbf{Related works}\quad Extracting and Visualizing
+\vspace{0.2cm}
+
+\sloppy\noindent\textbf{Related works}\quad Extracting and Visualizing
 isosurface on volumetric data has been widelyo investigated since the
 seminal Marching-Cubes approach by Lorensen and
 Cline~\cite{lorensen1987marching}. This approach being data parallel,
@@ -124,7 +130,20 @@ The triangulation is controlled by a GPU LoD criterion that ensures
 that triangles project onto more than one pixel, thus removing
 geometrical aliasing.
 
-Curvature estimation on digital surface
+Curvature estimation on discrete or digital surface has also been
+widely investigated. In \cite{CVIU2014}, authors propose digital
+versions of Integral Invariant estimators
+\cite{Pottmann2007,Pottmann2009} in order to estimate the complete
+curvature tensor (mean/Gaussian curvatures, principal curvatures,
+principal curvature directions, normal vector field) on digital
+surfaces. Such approaches are based on an integration principle using
+a spherical kernel of a given radius. Additionally, authors have
+demonstrated that these estimators have multigrid convergence
+properties. In this article, we propose an efficient GPU
+implementation of such estimators in order to visualize, in real-time,
+such curvature maps and allowing us to interactively explore different
+values of the spherical kernel radius.
+
 
 
 
