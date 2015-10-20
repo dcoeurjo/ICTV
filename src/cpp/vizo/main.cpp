@@ -10,6 +10,7 @@
 #include "QuaternionCamera.h"
 #include "PrimitiveDraw.h"
 #include "Curvature.h"
+#include "Hierarchy.h"
 
 #include "GL/GLQuery.h"
 #include "GL/GLTexture.h"
@@ -250,6 +251,10 @@ public:
 	    
 	int init( )
 	{
+		/*computeSphereSubdivision(5, ceil( log2(atoi(argv[3])) ));
+		exit(0);
+		*/
+		
 		//Create queries
 		fprintf(stdout, "Status: Using GLEW %s\n", glewGetString(GLEW_VERSION));
 		m_time_lod = gk::createTimeQuery();

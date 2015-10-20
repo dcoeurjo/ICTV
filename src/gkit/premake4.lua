@@ -110,7 +110,8 @@ project("vizo")
 		projectfile.."QuaternionCamera.cpp",
 		projectfile.."PrimitiveDraw.cpp",
 		projectfile.."Curvature.cpp",
-		projectfile.."Shading.cpp"
+		projectfile.."Shading.cpp",
+		projectfile.."Hierarchy.cpp"
 	}
 
 project("vizo_light")

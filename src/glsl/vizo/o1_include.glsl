@@ -15,10 +15,12 @@ void fetch(vec3 p, float step, int l, inout float volume, inout vec3 xyz, inout 
 	/*xyz += textureLod(u_xyz_tex, p, l).rgb;
 	xyz2 += textureLod(u_xyz2_tex, p, l).rgb;
 	xy_yz_xz += textureLod(u_xy_yz_xz_tex, p, l).rgb;*/
+	float error = (step*step)/12.0;
 	
 	xyz += p2 * val;
-	xyz2 += p2*p2 * val;
+	xyz2 += (p2*p2 + error) * val;
 	xy_yz_xz += vec3(p2.x*p2.y, p2.y*p2.z, p2.x*p2.z) * val;
+	
 }
 
 void getVolumeMoments(in vec3 vertex_position, out float volume, out vec3 xyz, out vec3 xy_yz_xz, out vec3 xyz2, in float lvl_tree)

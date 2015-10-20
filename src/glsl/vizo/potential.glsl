@@ -5,7 +5,7 @@ uniform sampler3D densities;
 
 float getPotential(vec3 position, float t)
 {
-	//float ret = textureLod(densities, position, 0).r;
+	float ret = textureLod(densities, position, 0).r;
 	
 	//Wave
 	/*float s = 20;
@@ -55,12 +55,12 @@ float getPotential(vec3 position, float t)
 	y += abc.y *  (xyz2.x + xyz2.y + xyz2.z);
 	y += abc.z;
 	
-	float ret = 0;
+	float ret = 1;
 	if (xyz.y < y)
-		ret = 1;*/
+		ret = 0;*/
 		
 	//Leopold
-	float a = abs(sin(u_time))*30000;
+	/*float a = abs(sin(u_time))*30000;
 	float size = 1.0;
 	
 	vec3 xyz = (position.xyz-0.5)*size;
@@ -69,9 +69,9 @@ float getPotential(vec3 position, float t)
 	y += 3*xyz.y*xyz.y;
 	y += xyz.z*xyz.z;
 	
-	float ret = 0;
+	float ret = 1;
 	if (xyz.y < y)
-		ret = 1;
+		ret = 0;*/
 	
 	return ret;
 }

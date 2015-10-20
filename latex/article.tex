@@ -95,7 +95,7 @@ different values of such parameter is mandatory.
 \noindent\textbf{Contributions}\quad In this work, we propose a
 framework to perform interactive visualization of complex 3D digital
 structures combined with a dynamic curvature tensor estimation. More
-precisely, we define a fully data parallel process on GPU hardware to
+precisely, we define a fully data parallel process on GPU hardware \todo{Definir GPU au cas ou ?} to
 both efficiently extract adaptive isosurface and compute per vertex
 curvature tensor using Integral Invariants estimators. Hence, this
 system allows us to visualize curvature tensor in realtime on large
@@ -108,7 +108,7 @@ integral invariant curvature estimations.
 \vspace{0.2cm}
 
 \sloppy\noindent\textbf{Related works}\quad Extracting and Visualizing
-isosurface on volumetric data has been widelyo investigated since the
+isosurface on volumetric data has been widely investigated since the
 seminal Marching-Cubes approach by Lorensen and
 Cline~\cite{lorensen1987marching}. This approach being data parallel,
 GPU implementation of this method is very efficient
@@ -379,7 +379,7 @@ approximation and to ensure that cells project onto more than one
 pixel. This does not prevent all triangles within such cells to be
 projected into more than one pixel but gives us a fast criterion to
 decide if a cell should be split or not.  Figure \ref{fig_lod_octree}
-illustrates the level of details (LoD for short criterion) we
+illustrates the level of details (LoD for short) criterion we
 use. More precisely, in dimension 2, if $\alpha$ denotes the viewing
 angle, an object at distance $d$ from the camera with diameter greater than
  $2\cdot d\cdot\tan(\alpha)$

@@ -47,7 +47,7 @@ void DataLoader::loadData8BGpu()
 
 void loadNxtMipmap(int size, float* texture, float** miptexture)
 {
-	int sizemip = ceil(size/2.0);
+	int sizemip = size/2;
 	printf("sizemip %d\n", sizemip);
 	
 	*miptexture = (float*)malloc(sizeof(float)*sizemip*sizemip*sizemip*3);
@@ -380,10 +380,25 @@ void DataRaw::loadFile(char* file)
 		
 		i++;
 	}
+	
 	sizex = sizey = sizez = size_p2;
 	
 	Parameters::getInstance()->g_sizetex = sizex;
 
 	free(raw_data);
 	printf("Complete\n");
+	
+	/** 4x4x4 cube
+	data = (float*) malloc(sizeof(float)*4*4*4);
+	for(int i=0; i<4*4*4; i++)
+		data[i] = 0;
+	
+	for(int i=1; i<3; i++)
+	for(int j=1; j<3; j++)
+	for(int k=1; k<3; k++)
+		data[(k*4 + j)*4+i] = 1;
+	
+	sizex = sizey = sizez = 4;
+	Parameters::getInstance()->g_sizetex = sizex;
+	**/
 }
