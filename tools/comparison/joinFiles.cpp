@@ -7,83 +7,12 @@
 #include <cmath>
 #include <limits>
 
+#include "helpers.h"
+
 #define NBDATA 4 /// x y z H k1 k2
 
-typedef unsigned int uint;
-typedef double Value;
-
-struct Curvatures
-{
-  Value mean;
-  Value k1;
-  Value k2;
-};
-class Position
-{
-public:
-  int x;
-  int y;
-  int z;
-
-public:
-  Position(){ x=0; y=0; z=0; }
-  Position(int _x, int _y, int _z){ x=_x; y=_y; z=_z; }
-
-  bool operator< (const Position& p) const
-  {
-    if ( x != p.x )
-    {
-      return x < p.x;
-    }
-    if ( y != p.y )
-    {
-      return y < p.y;
-    }
-    if ( z != p.z )
-    {
-      return z < p.z;
-    }
-    return false;
-  }
-  bool operator> (const Position& p) const
-  {
-    if( *this == p)
-    {
-      return false;
-    }
-    return !(*this < p);
-  }
-  bool operator== (const Position& p) const
-  {
-    return x == p.x && y == p.y && z == p.y;
-  }
-  bool operator!= (const Position& p) const
-  {
-    return !(*this == p);
-  }
-
-  Position operator-( const Position& p) const
-  {
-    return Position(x-p.x, y-p.y, z-p.z);
-  }
-};
-
-struct convertGPUtoKhalimsky : std::unary_function <unsigned int, double>
-{
-  inline
-  unsigned int operator() (const double& v) const
-  { return std::floor(2.0*v); }
-};
-
-struct convertCPUtoKhalimsky : std::unary_function <unsigned int, double>
-{
-  inline
-  unsigned int operator() (const double& v) const
-  { return std::floor(v); }
-};
-
 template< typename Predicate >
-bool loadFile(  const std::string& filename,
+bool loadFile2(  const std::string& filename,
                 std::vector< std::pair<Position*, Value> >& results,
                 const Predicate& predicate )
 {
@@ -200,24 +129,12 @@ void writeFile( const std::string& fileOutput,
   myfile.close();
 }
 
-void deleteVector( std::vector< std::pair<Position*, Value> >& _map )
+void deleteVector2( std::vector< std::pair<Position*, Value> >& _map )
 {
   for(  std::vector< std::pair<Position*, Value> >::iterator it=_map.begin();
         it!=_map.end(); ++it )
   {
     delete (it->first);
-  }
-
-  _map.clear();
-}
-
-void deleteVector2( std::vector< std::pair<Position*, Curvatures*> >& _map )
-{
-  for(  std::vector< std::pair<Position*, Curvatures*> >::iterator it=_map.begin();
-        it!=_map.end(); ++it )
-  {
-    delete (it->first);
-    delete (it->second);
   }
 
   _map.clear();
@@ -244,20 +161,20 @@ int main( int argc, char** argv )
   convertCPUtoKhalimsky predicateCPU;
   std::vector< std::pair<Position*, Curvatures*> > v_export;
   std::vector< std::pair<Position*, Value> > v_temp;
-  loadFile( fileInput, v_temp, predicateCPU );
+  loadFile2( fileInput, v_temp, predicateCPU );
   writeVector(v_temp, v_export, 0 );
-  deleteVector( v_temp );
+  deleteVector2( v_temp );
 
   for(int i = 3; i < argc; ++i)
   {
     fileInput = std::string( argv[ i ] );
-    loadFile( fileInput, v_temp, predicateCPU );
+    loadFile2( fileInput, v_temp, predicateCPU );
     writeVector(v_temp, v_export, i-2);
-    deleteVector( v_temp );
+    deleteVector2( v_temp );
   }
 
   writeFile( fileOutput, v_export );
-  deleteVector2( v_export );
+  deleteVector( v_export );
 
   return 0;
 }

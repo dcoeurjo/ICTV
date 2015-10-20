@@ -45,7 +45,7 @@ SET(ICTVTools_SRC
 )
 
 FOREACH(FILE ${ICTVTools_SRC})
-  add_executable(${FILE} ${FILE})
+  add_executable(${FILE} ${FILE}.cpp)
   target_link_libraries ( ${FILE} ${DGTAL_LIBRARIES} ${ICTVToolsLibDependencies})
   install(TARGETS ${FILE}
       RUNTIME DESTINATION bin

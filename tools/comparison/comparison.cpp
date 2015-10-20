@@ -7,190 +7,7 @@
 #include <cmath>
 #include <limits>
 
-#define NBDATA 6 /// x y z H k1 k2
-
-typedef unsigned int uint;
-typedef double Value;
-
-struct Curvatures
-{
-  Value mean;
-  Value k1;
-  Value k2;
-};
-class Position
-{
-public:
-  int x;
-  int y;
-  int z;
-
-public:
-  Position(){ x=0; y=0; z=0; }
-  Position(int _x, int _y, int _z){ x=_x; y=_y; z=_z; }
-
-  bool operator< (const Position& p) const
-  {
-    if ( x != p.x )
-    {
-      return x < p.x;
-    }
-    if ( y != p.y )
-    {
-      return y < p.y;
-    }
-    if ( z != p.z )
-    {
-      return z < p.z;
-    }
-    return false;
-  }
-  bool operator> (const Position& p) const
-  {
-    if( *this == p)
-    {
-      return false;
-    }
-    return !(*this < p);
-  }
-  bool operator== (const Position& p) const
-  {
-    return x == p.x && y == p.y && z == p.y;
-  }
-  bool operator!= (const Position& p) const
-  {
-    return !(*this == p);
-  }
-  Position& operator= (const Position& p)
-  {
-    x = p.x;
-    y = p.y;
-    z = p.z;
-
-    return *this;
-  }
-  Position& operator+= (const Position& p)
-  {
-    x += p.x;
-    y += p.y;
-    z += p.z;
-
-    return *this;
-  }
-  Position& operator/= (const int& v)
-  {
-    x /= v;
-    y /= v;
-    z /= v;
-
-    return *this;
-  }
-  Position operator-( const Position& p) const
-  {
-    return Position(x-p.x, y-p.y, z-p.z);
-  }
-  Position operator+( const Position& p) const
-  {
-    return Position(x+p.x, y+p.y, z+p.z);
-  }
-};
-
-struct convertGPUtoKhalimsky : std::unary_function <unsigned int, double>
-{
-  inline
-  unsigned int operator() (const double& v) const
-  { return std::floor(2.0*v); }
-};
-
-struct convertCPUtoKhalimsky : std::unary_function <unsigned int, double>
-{
-  inline
-  unsigned int operator() (const double& v) const
-  { return std::floor(v); }
-};
-
-class convertCPUtoGPU : std::unary_function <Position, Position>
-{
-public:
-  convertCPUtoGPU( Position* barycenterGPU, Position* barycenterCPU )
-  {
-    offset = *barycenterGPU - *barycenterCPU;
-  }
-
-  Position operator() (const Position v) const
-  {
-    return v + offset;
-  }
-
-  Position getOffset() const
-  {
-    return offset;
-  }
-private:
-  Position offset;
-};
-
-template< typename Predicate >
-bool loadFile(  const std::string& filename,
-                std::vector< std::pair<Position*, Curvatures*> >& results,
-                Position* barycenter,
-                const Predicate& predicate )
-{
-  std::ifstream file( filename.c_str(), std::ifstream::in );
-  std::string line;
-
-  if( file.is_open())
-  {
-    std::cout << "Collecting data from file " << filename << " ..."<< std::endl;
-    while( getline(file,line) )
-    {
-      /// Skip if the line contains a # char, or N, or any line too small (avoid the new line a end of file)
-      if(line[0] == '#' || line[0] == 'N' || line.size() < NBDATA)
-      {
-        continue;
-      }
-
-      std::vector<std::string> words;
-      boost::split(words, line, boost::is_any_of(" \t"), boost::token_compress_on);
-      if(words.size() < NBDATA)
-      {
-        std::cout << "ERROR: I've got a wrong number of data on this line..." << std::endl;
-        std::cout << "        ";
-        for( uint i_word = 0; i_word < words.size(); ++i_word )
-        {
-            std::cout << words[i_word] << " ##### ";
-        }
-        std::cout << std::endl;
-        std::cout << "Leaving now..." << std::endl;
-        return false;
-      }
-
-      Position *p = new Position();
-      p->x = predicate( std::atof(words[0].c_str()));
-      p->y = predicate( std::atof(words[1].c_str()));
-      p->z = predicate( std::atof(words[2].c_str()));
-
-      *barycenter += *p;
-
-      Curvatures *c = new Curvatures();
-      c->mean = std::atof(words[3].c_str());
-      c->k1   = std::atof(words[4].c_str());
-      c->k2   = std::atof(words[5].c_str());
-
-      results.push_back( std::pair<Position*,Curvatures*>(p,c) );
-    }
-    *barycenter /= results.size();
-    std::cout << "... done." << std::endl;
-    file.close();
-  }
-  else
-  {
-    std::cout << "ERROR: The file " << filename << " can't be opened. Is the file exists ?" << std::endl;
-    std::cout << "Leaving now..." << std::endl;
-    return false;
-  }
-  return true;
-}
+#include "helpers.h"
 
 template< typename Predicate >
 bool normalizeCPU( const std::vector< std::pair<Position*, Curvatures*> >& mapCPU,
@@ -315,24 +132,12 @@ bool computeDifference( const std::vector< std::pair<Position*, Curvatures*> >& 
     error_k2_l2 = std::sqrt(error_k2_l2) / (double)mapGPU.size();
   }
 
-  std::cout << "# ERROR\t l1\t l2\t l\\inty" << std::endl;
+  std::cout << "# ERROR\t l1\t\t l2\t\t l\\inty" << std::endl;
   std::cout << "mean:\t " << error_mean_l1 << "\t " << error_mean_l2 << "\t " << error_mean_loo << std::endl;
   std::cout << "k1:\t " << error_k1_l1 << "\t " << error_k1_l2 << "\t " << error_k1_loo << std::endl;
   std::cout << "k2:\t " << error_k2_l1 << "\t " << error_k2_l2 << "\t " << error_k2_loo << std::endl;
 
   return true;
-}
-
-void deleteVector( std::vector< std::pair<Position*, Curvatures*> >& _map )
-{
-  for(  std::vector< std::pair<Position*, Curvatures*> >::iterator it=_map.begin();
-        it!=_map.end(); ++it )
-  {
-    delete (it->first);
-    delete (it->second);
-  }
-
-  _map.clear();
 }
 
 int main( int argc, char** argv )
@@ -364,18 +169,17 @@ int main( int argc, char** argv )
   Position* barycenterCPU = new Position();
 
   //// Loading files
-  if( !loadFile( fileGPU, mapGPU, barycenterGPU, predicateGPU ))
+  if( !loadFile( fileGPU, mapGPU, barycenterGPU, predicateGPU, 6 ))
   {
     deleteVector( mapGPU );
     return 0;
   }
-  if( !loadFile( fileCPU, mapCPU, barycenterCPU, predicateCPU ))
+  if( !loadFile( fileCPU, mapCPU, barycenterCPU, predicateCPU, 6 ))
   {
     deleteVector( mapGPU );
     deleteVector( mapCPU );
     return 0;
   }
-
 
   //// Normalize inputs
   convertCPUtoGPU predicateCPUnormalized(barycenterGPU, barycenterCPU);
