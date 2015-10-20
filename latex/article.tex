@@ -382,15 +382,13 @@ decide if a cell should be split or not.  Figure \ref{fig_lod_octree}
 illustrates the level of details (LoD for short criterion) we
 use. More precisely, in dimension 2, if $\alpha$ denotes the viewing
 angle, an object at distance $d$ from the camera with diameter greater than
-\todo{Extract formulas from text with dots list}\todo{DC: I don't
-  understand what you mean} $2\cdot d\cdot\tan(\alpha)$
+ $2\cdot d\cdot\tan(\alpha)$
  is projected into more than one pixel
 (see Figure~\ref{fig_lod_octree}-\emph{left}). Hence, the distance
 criterion is based on the ratio (\emph{visibility ratio} in the
 following)between the cell diameter $l(c)$ (power of 2 depending on
 the depth), and
-$2\cdot d_c\cdot\tan(\alpha)$ \todo{idem}
-,$d_c$ being the distance between the cell center and the camera. For a given cell $c$,
+$2\cdot d_c\cdot\tan(\alpha)$, $d_c$ being the distance between the cell center and the camera. For a given cell $c$,
 split and merge decision are based on this visibility ratio:
 \begin{itemize}
 \item $c$ is split if its children cells have a visibility ratio
