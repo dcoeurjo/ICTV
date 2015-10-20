@@ -70,17 +70,68 @@ LAMA, UMR5127, F-73776, France\\
 \section{Introduction}
 \label{sec:introduction}
 
+Volumetric objects are being more and more popular in many
+applications ranging from object modeling and rendering in Computer
+Graphics to geometry processing in Medical Imaging or Material
+Sciences. When considering large volumetric data, interactive
+visualization of such images (or isovalue surfaces) is a complex
+problem. Such issues become even more difficult when dynamic
+volumetric datasets are considered. Beside such isosurface
+visualization, we are also interested in performing geometry
+processing on the digital object and to explore different parameter
+settings of the geometry processing tool.  In this work, we focus on
+interactive visualization of volumetric data isosurfaces combined with
+a curvature tensor (mean/Gaussian curvature, principal curvatures
+directions\ldots) estimation at each point of the digital
+surface. Curvature maps on a given isosurface are key information when
+exploring 3D structures in Material Sciences \todo{REF}. Furthermore,
+since most curvature estimators require a parameter fixing the scale
+to which the computation is performed. For short, such parameter
+(integration radius, convolution kernel size, \ldots) specifies noise
+level on the object surface. As a consequence, exploring interactively
+different values of such parameter is mandatory.
+
+\noindent\textbf{Contributions}\quad In this work, we propose a framework
+to perform interactive visualization of complex 3D digital structures
+combined with a dynamic curvature tensor estimation. More precisely,
+we define a fully data parallel process on GPU hardware to both
+efficiently extract adaptive isosurface and compute per vertex
+curvature tensor using Integral Invariants estimators. Hence, this system
+allows us to visualize curvature tensor in realtime on large dynamic
+objects.
 
 
-\textbf{Contributions}
+\noindent\textbf{Related works}\quad Extracting and Visualizing
+isosurface on volumetric data has been widelyo investigated since the
+seminal Marching-Cubes approach by Lorensen and
+Cline~\cite{lorensen1987marching}. This approach being data parallel,
+GPU implementation of this method is very efficient
+\cite{tatarchuk2007real}. However, such technique generates a lot of
+triangles which is not well suited to large digital data. Hence,
+adaptive approaches have been proposed in order to optimize the
+triangular mesh resolution to the object geometry or depending on the
+viewpoint. In this topic, many solutions have been developed in
+Computer
+Graphics~\cite{shu1995adaptive,schaefer2004dual,lengyel2010voxel,DBLP:journals/cgf/LewinerMPPL10,DBLP:journals/cvgip/LobelloDD14}.
+The method developed by Lengyel \textit{et al.}
+\cite{lengyel2010voxel} is the best suited to our needs.  However, it
+was developed to visualize in real-time static or near static data and
+present a complex CPU implementation.  In this paper we propose a GPU
+pipeline inspired from this method.  It leaves the CPU free for other
+tasks and avoids synchronisation with the GPU.  Our high framerate
+also allows this method to run in real-time on fully dynamic data.
+The triangulation is controlled by a GPU LoD criterion that ensures
+that triangles project onto more than one pixel, thus removing
+geometrical aliasing.
 
+Curvature estimation on digital surface
 
 
 
 \section{Curvature Tensor Estimation}
 \label{sec:curv-tens-estim}
 
-In our context, we consider digital shapes (any subset of $\Z^d$) and
+\sloppy In our context, we consider digital shapes (any subset of $\Z^d$) and
 boundaries of digital shapes. We denote by $\DSh$ the Gauss
 digitization of $\Shape$ in a $d-$dimensional grid with grid step $h$,
 \emph{i.e.}  $\DSh = \Shape \cap (h\Z)^d$. For such digitized set
