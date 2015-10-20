@@ -80,14 +80,16 @@ LAMA, UMR5127, F-73776, France\\
 \section{Curvature Tensor Estimation}
 \label{sec:curv-tens-estim}
 
-In our context, we consider digital shapes (any subset of $\Z^d$) and boundaries
-of digital shapes. We denote by $\DSh$ the Gauss digitization of
-$\Shape$ in a $d-$dimensional grid with grid step $h$, \emph{i.e.}
-$\DSh = \Shape \cap (h\Z)^d$. For such digitized set $\DigShape$,
-$\Body{\DigShape}{h}$ denotes its topological boundary, seen as a cellular Cartesian
-complex (See Fig. \ref{fig:notations}-b). It is thus composed of $0$-cells and
-$1$-cells (resp. \emph{pointels} and \emph{linels}), and, for $d=3$, with
-$2$-cells ({\em surfels}), embedded in the digital grid.
+In our context, we consider digital shapes (any subset of $\Z^d$) and
+boundaries of digital shapes. We denote by $\DSh$ the Gauss
+digitization of $\Shape$ in a $d-$dimensional grid with grid step $h$,
+\emph{i.e.}  $\DSh = \Shape \cap (h\Z)^d$. For such digitized set
+$\DigShape$, $\Body{\DigShape}{h}$ \todo{DC: $\partial\Body{.}{h}$,
+  pas $\Body{.}{h}$, c'est pas un bord fait de i-cell} denotes its
+topological boundary, seen as a cellular Cartesian complex (See
+Fig. \ref{fig:notations}-b). It is thus composed of $0$-cells and
+$1$-cells (resp. \emph{pointels} and \emph{linels}), and, for $d=3$,
+with $2$-cells ({\em surfels}), embedded in the digital grid.
 
 \begin{figure}[t]{\small
     \begin{center}
@@ -157,21 +159,20 @@ intersection between the shape $\Shape$ and a ball of digital radius $R_d$:
 \end{Definition}
 
 We have proved that estimating the 2D curvature and 3D mean curvature on digital
-objets with volumetric integral information achieve to the multigrid convergence
+objets with volumetric integral information have the multigrid convergence
 property (setting $R = kh^\frac{1}{3}$ on convex shapes with at least
-$C^3$-boundary and bounded curvature). For short, when the digital objet become
-finer and finer, \ie when the digitization step $h$ tends to zero, the estimate
-quantity on $\DSh$ should converge (theoretically and experimentally) to the associated one on $\Shape$.
+$C^3$-boundary and bounded curvature) \cite{CVIU2014}. For short, when the digital objet becomes
+finer and finer, \ie when the digitization step $h$ tends to zero, the estimated
+quantity on $\DSh$  converges (theoretically and experimentally) to
+the associated one on $\partial\Shape$. More precisely, we have:
 
 \begin{align}
   \CurvH{R}(\DSh,\vx,h) &= \Curv(\Shape,\vx) + O(h^{\frac{1}{3}}),\\
   \MeanCurvH{R}(\DSh,\vx,h) &= \MeanCurv(\Shape,\vx) + O(h^{\frac{1}{3}}) \,.
 \end{align}
 
-In \cite{CVIU2014}
-the 3D digital principal curvature estimators $\kappa^1_{R}$ and $\kappa^2_{R}$
-on $Z\subset\Z^3$
-
+In \cite{CVIU2014}, we have also defined the 3D digital principal curvature estimators $\kappa^1_{R}$ and $\kappa^2_{R}$
+on $Z\subset\Z^3$:
 \begin{Definition}
   %
   Given $\DigShape \subset \Z^3$ and
@@ -194,14 +195,22 @@ on $Z\subset\Z^3$
 % $h$. For example, if you fixed $R$, the digital radius will be $R_d
 % = \frac{5}{h}$ and increase when $h$ tends to zero.
 Authors of \cite{CVIU2014} have proved the convergence of these
-estimators when setting the ball radius dependent on the
-grid step $h$: $R = kh^\frac{1}{3}$, where $k$ is a constant related
-to the maximal curvature of the shape. More formally, we get:
+estimators when setting the ball radius $h$ in $R = kh^\frac{1}{3}$,
+where $k$ is a constant related to the maximal curvature of the
+shape. More formally, we get:
 \begin{align}
   \hat{\kappa}^1_{R}(\DigF{\Shape}{h},p) &= \kappa^1(X,x) + O(h^{\frac{1}{3}}),\\
   \hat{\kappa}^2_{R}(\DigF{\Shape}{h},p) &= \kappa^2(X,x) + O(h^{\frac{1}{3}}),
 \end{align}
 when the ball radius is $R = kh^\frac{1}{3}$.
+Additionally, eigenvectors associated with $\hat{\lambda}_1$ and
+$\hat{\lambda}_2$ correspond to principal curvature directions. The
+smallest eigvenvector corresponds to the normal direction at $p$.
+\todo[inline]{finir en citant le chapitre (ou CVIU) pour convergence directions}
+
+\todo[inline]{petite phrase pour dire que R depend de la géométrie
+  (citer DGCI pour paramter free, ou SMI pour dire qu'on peut s'en
+  servir pour feature) et qu'il faut explorer R}
 
 \section{Isosurface Extraction on GPU}
 \label{sec:isos-extr-gpu}
