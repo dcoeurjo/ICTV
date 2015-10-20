@@ -52,16 +52,15 @@ LAMA, UMR5127, F-73776, France\\
   complex scientific data or to explore different parameter settings
   for a given processing algorithm. In this article, we present a tool
   to efficiently explore the curvature tensor on the boundary of
-  potentially large digital objects. More precisely, we combine a
-  fully parallel pipeline on GPU to extract an adaptive triangulated
-  isosurface of the digital object, with a curvature tensor
-  estimation at each surface point based on integral
-  invariants. Integral invariants being parametrized by a given ball
-  radius, our proposal allows us to explore interactively different
-  radii and thus select the appropriate scale to which the computation
-  is performed and visualized. Mean and gaussian curvature, principal
-  curvatures, principal directions and normal vector field may be interactively
-  visualized with our technique.
+  potentially large and dynamic digital objects (mean and gaussian curvature,
+  principal curvatures, principal directions and normal vector
+  field). More precisely, we combine a fully parallel pipeline on GPU
+  to extract an adaptive triangulated isosurface of the digital
+  object, with a curvature tensor estimation at each surface point
+  based on integral invariants. Integral invariants being parametrized
+  by a given ball radius, our proposal allows us to explore
+  interactively different radii and thus select the appropriate scale
+  to which the computation is performed and visualized.
 
 
 \keywords{Isosurface Visualization, Digital Geometry, Curvature
@@ -71,9 +70,79 @@ LAMA, UMR5127, F-73776, France\\
 \section{Introduction}
 \label{sec:introduction}
 
+Volumetric objects are being more and more popular in many
+applications ranging from object modeling and rendering in Computer
+Graphics to geometry processing in Medical Imaging or Material
+Sciences. When considering large volumetric data, interactive
+visualization of such images (or isovalue surfaces) is a complex
+problem. Such issues become even more difficult when dynamic
+volumetric datasets are considered. Beside such isosurface
+visualization, we are also interested in performing geometry
+processing on the digital object and to explore different parameter
+settings of the geometry processing tool.  In this work, we focus on
+interactive visualization of volumetric data isosurfaces combined with
+a curvature tensor (mean/Gaussian curvature, principal curvatures
+directions\ldots) estimation at each point of the digital
+surface. Curvature maps on a given isosurface are key information when
+exploring 3D structures in Material Sciences \todo{REF}. Furthermore,
+since most curvature estimators require a parameter fixing the scale
+to which the computation is performed. For short, such parameter
+(integration radius, convolution kernel size, \ldots) specifies noise
+level on the object surface. As a consequence, exploring interactively
+different values of such parameter is mandatory.
+\vspace{0.2cm}
+
+\noindent\textbf{Contributions}\quad In this work, we propose a
+framework to perform interactive visualization of complex 3D digital
+structures combined with a dynamic curvature tensor estimation. More
+precisely, we define a fully data parallel process on GPU hardware to
+both efficiently extract adaptive isosurface and compute per vertex
+curvature tensor using Integral Invariants estimators. Hence, this
+system allows us to visualize curvature tensor in realtime on large
+dynamic objects. Our approach combines a GPU implementation of
+pointerless octrees to represent the data, an adaptive
+viewpoint-dependent mesh extraction, and a GPU implementation of
+integral invariant curvature estimations.
 
 
-\textbf{Contributions}
+\vspace{0.2cm}
+
+\sloppy\noindent\textbf{Related works}\quad Extracting and Visualizing
+isosurface on volumetric data has been widelyo investigated since the
+seminal Marching-Cubes approach by Lorensen and
+Cline~\cite{lorensen1987marching}. This approach being data parallel,
+GPU implementation of this method is very efficient
+\cite{tatarchuk2007real}. However, such technique generates a lot of
+triangles which is not well suited to large digital data. Hence,
+adaptive approaches have been proposed in order to optimize the
+triangular mesh resolution to the object geometry or depending on the
+viewpoint. In this topic, many solutions have been developed in
+Computer
+Graphics~\cite{shu1995adaptive,schaefer2004dual,lengyel2010voxel,DBLP:journals/cgf/LewinerMPPL10,DBLP:journals/cvgip/LobelloDD14}.
+The method developed by Lengyel \textit{et al.}
+\cite{lengyel2010voxel} is the best suited to our needs.  However, it
+was developed to visualize in real-time static or near static data and
+present a complex CPU implementation.  In this paper we propose a GPU
+pipeline inspired from this method.  It leaves the CPU free for other
+tasks and avoids synchronisation with the GPU.  Our high framerate
+also allows this method to run in real-time on fully dynamic data.
+The triangulation is controlled by a GPU LoD criterion that ensures
+that triangles project onto more than one pixel, thus removing
+geometrical aliasing.
+
+Curvature estimation on discrete or digital surface has also been
+widely investigated. In \cite{CVIU2014}, authors propose digital
+versions of Integral Invariant estimators
+\cite{Pottmann2007,Pottmann2009} in order to estimate the complete
+curvature tensor (mean/Gaussian curvatures, principal curvatures,
+principal curvature directions, normal vector field) on digital
+surfaces. Such approaches are based on an integration principle using
+a spherical kernel of a given radius. Additionally, authors have
+demonstrated that these estimators have multigrid convergence
+properties. In this article, we propose an efficient GPU
+implementation of such estimators in order to visualize, in real-time,
+such curvature maps and allowing us to interactively explore different
+values of the spherical kernel radius.
 
 
 
@@ -81,6 +150,137 @@ LAMA, UMR5127, F-73776, France\\
 \section{Curvature Tensor Estimation}
 \label{sec:curv-tens-estim}
 
+\sloppy In our context, we consider digital shapes (any subset of $\Z^d$) and
+boundaries of digital shapes. We denote by $\DSh$ the Gauss
+digitization of $\Shape$ in a $d-$dimensional grid with grid step $h$,
+\emph{i.e.}  $\DSh = \Shape \cap (h\Z)^d$. For such digitized set
+$\DigShape$, $\Body{\DigShape}{h}$ \todo{DC: $\partial\Body{.}{h}$,
+  pas $\Body{.}{h}$, c'est pas un bord fait de i-cell} denotes its
+topological boundary, seen as a cellular Cartesian complex (See
+Fig. \ref{fig:notations}-b). It is thus composed of $0$-cells and
+$1$-cells (resp. \emph{pointels} and \emph{linels}), and, for $d=3$,
+with $2$-cells ({\em surfels}), embedded in the digital grid.
+
+\begin{figure}[t]{\small
+    \begin{center}
+      \subfigure[]{\begin{overpic}[width=5cm]{figs/integral2D_2}
+          \put(42,28){$\times$}
+          \put(46,31){$\vx$}
+          \put(55,45){$B_R(\vx)$}
+          \put(1,10){$\dS$}
+          \put(20,10){$\Shape$}
+      \end{overpic}}
+      \subfigure[]{\begin{overpic}[width=5cm]{figs/notation_2}
+          \put(44.5,25){$\vp$}
+          \put(42,28.5){$\times$}
+          \put(45,32.5){$\vx$}
+          \put(45,16.5){$h$}
+          %\put(88,39){$\Proj(p)$}
+          \put(3,11){$\partial \Shape$}
+          \put(15,7){$\Body{\DigShape}{h}$}
+      \end{overpic}}
+      \vspace{-0.4cm}
+    \end{center}}
+    \caption{Integral invariant computation $(a)$ and
+      notations $(b)$ in dimension 2 \cite{CVIU2014}.\label{fig:notations}}
+\end{figure}
+
+% We define the volumetric integral as follow:
+% \begin{Definition}
+%   %
+%   Given $\Shape \in \Shapes$ and a radius $R \in \R^{+*}$, the volumetric
+%   integral $V_R(\vx)$ at $\vx \in \dS$ is given by:
+%   %
+%   \begin{equation}
+%     V_R(\vx) \EqDef \int_{B_R(\vx)} \chi(\vp) d\vp \,,
+%   \end{equation}
+%   %
+%   where $B_R(\vx)$ is the Euclidean ball of radius $R$ centered on $\vx$, and $\chi(\cdot)$ the characteristic function of $\Shape$. In dimension 2, we denote $A_R(\vx)$ such quantity.
+%   %
+% \end{Definition}
+
+In \cite{DGCI2013}, we have defined the 2D digital curvature estimator
+$\CurvH{R}$ and the 3D digital mean curvature estimator $\MeanCurvH{R}$ based on
+the digital volumetric integral $V_{R_d}$ (or $A_{R_d}$ in dimension 2) of the
+intersection between the shape $\Shape$ and a ball of digital radius $R_d$:
+
+\begin{Definition}
+  %
+  Given $\DigShape \subset \Z^2$ (or $\Z^3$ for 3D mean curvature estimator) and
+  $h$ a gridstep, {\em digital curvature estimators} are defined for any pointel
+  $\vp \in \Body{\DigShape}{h}$ as:
+  %
+  \begin{align}
+   \CurvH{R}(\DigShape,\vp) &\EqDef \frac{1}{h} \left( \frac{3 \pi}{2 R_d} - \frac{3 A_{R_d}(\vp)}{{R_d}^3} \right),\label{eq:dig-curvature-estimator-k}\\
+   \MeanCurvH{R}(\DigShape,\vp) &\EqDef \frac{1}{h} \left( \frac{8}{3 R_d} - \frac{4V_{R_d}(\vp)}{{\pi R_d}^4} \right),\label{eq:dig-curvature-estimator-H}
+  %  \\
+  %  \hat{\kappa}^{1}(\DigShape,p) &\EqDef \frac{1}{h} \left( \frac{6(\hat{\lambda}_2 - 3\hat{\lambda}_1)}{\pi {{R_d}}^6} + \frac{8}{5{{R_d}}} \right),\label{eq:dig-curvature-estimator-k1}\\
+  %  \hat{\kappa}^{2}(\DigShape,p) &\EqDef \frac{1}{h} \left( \frac{6(\hat{\lambda}_1 - 3\hat{\lambda}_2)}{\pi {{R_d}}^6} + \frac{8}{5{{R_d}}} \right),
+  %  \label{eq:dig-curvature-estimator-k2}
+  \end{align}
+  %
+  where $R_d = \frac{R}{h}$ is the digitized radius of the ball, and
+  $A_{R_d}(p)$ and $V_{R_d}(p)$ are the number of digital points in the
+  intersection between $\DigShape$ and the ball, $\DigShape\cap B_{R_d}(\vp)$.
+  % Similarly, $\hat{\lambda}_1$
+  % and $\hat{\lambda}_2$ are the two greatest eigenvalues of the covariance
+  % matrix of the digital points in the intersection between $Z$ and the ball.
+  %
+\end{Definition}
+
+We have proved that estimating the 2D curvature and 3D mean curvature on digital
+objets with volumetric integral information have the multigrid convergence
+property (setting $R = kh^\frac{1}{3}$ on convex shapes with at least
+$C^3$-boundary and bounded curvature) \cite{CVIU2014}. For short, when the digital objet becomes
+finer and finer, \ie when the digitization step $h$ tends to zero, the estimated
+quantity on $\DSh$  converges (theoretically and experimentally) to
+the associated one on $\partial\Shape$. More precisely, we have:
+
+\begin{align}
+  \CurvH{R}(\DSh,\vx,h) &= \Curv(\Shape,\vx) + O(h^{\frac{1}{3}}),\\
+  \MeanCurvH{R}(\DSh,\vx,h) &= \MeanCurv(\Shape,\vx) + O(h^{\frac{1}{3}}) \,.
+\end{align}
+
+In \cite{CVIU2014}, we have also defined the 3D digital principal curvature estimators $\kappa^1_{R}$ and $\kappa^2_{R}$
+on $Z\subset\Z^3$:
+\begin{Definition}
+  %
+  Given $\DigShape \subset \Z^3$ and
+  $h$ a gridstep, {\em 3D digital principal curvature estimators} are defined for any pointel
+  $\vp \in \Body{\DigShape}{h}$ as:
+  %
+  \begin{align}
+    \hat{\kappa}^{1}(\DigShape,p) &\EqDef \frac{1}{h} \left( \frac{6(\hat{\lambda}_2 - 3\hat{\lambda}_1)}{\pi {{R_d}}^6} + \frac{8}{5{{R_d}}} \right),\label{eq:dig-curvature-estimator-k1}\\
+    \hat{\kappa}^{2}(\DigShape,p) &\EqDef \frac{1}{h} \left( \frac{6(\hat{\lambda}_1 - 3\hat{\lambda}_2)}{\pi {{R_d}}^6} + \frac{8}{5{{R_d}}} \right),
+    \label{eq:dig-curvature-estimator-k2}
+  \end{align}
+  %
+  where $R_d = \frac{R}{h}$ is the digitized radius of the ball, and
+  $\hat{\lambda}_1$ and $\hat{\lambda}_2$ are the two greatest eigenvalues of the covariance matrix of the digital points in the intersection between $Z$ and the ball.
+  %
+\end{Definition}
+
+% When dealing with digital data in a multigrid framework, we must pay
+% attention to on how quantities expend where decreasing the grid step
+% $h$. For example, if you fixed $R$, the digital radius will be $R_d
+% = \frac{5}{h}$ and increase when $h$ tends to zero.
+Authors of \cite{CVIU2014} have proved the convergence of these
+estimators when setting the ball radius $h$ in $R = kh^\frac{1}{3}$,
+where $k$ is a constant related to the maximal curvature of the
+shape. More formally, we get:
+\begin{align}
+  \hat{\kappa}^1_{R}(\DigF{\Shape}{h},p) &= \kappa^1(X,x) + O(h^{\frac{1}{3}}),\\
+  \hat{\kappa}^2_{R}(\DigF{\Shape}{h},p) &= \kappa^2(X,x) + O(h^{\frac{1}{3}}),
+\end{align}
+when the ball radius is $R = kh^\frac{1}{3}$.
+Additionally, eigenvectors associated with $\hat{\lambda}_1$ and
+$\hat{\lambda}_2$ correspond to principal curvature directions. The
+smallest eigvenvector corresponds to the normal direction at $p$.
+\todo[inline]{finir en citant le chapitre (ou CVIU) pour convergence directions}
+
+\todo[inline]{petite phrase pour dire que R depend de la géométrie
+  (citer DGCI pour paramter free, ou SMI pour dire qu'on peut s'en
+  servir pour feature) et qu'il faut explorer R}
 
 \section{Isosurface Extraction on GPU}
 \label{sec:isos-extr-gpu}
@@ -159,7 +359,7 @@ crack-free triangulation.
 
 Similarly to original MC algorithm, this approach is perfectly adapted
 to GPU hardwares: Given a set of cells (a vector of morton codes),
-each triangle patch can be constructed in parallel (done by 
+each triangle patch can be constructed in parallel (done by
 in the \emph{geometry shader} in the GPU graphic pipeline).
 
 \subsection{Level of Details Criteria and Temporal Updates}
@@ -182,14 +382,13 @@ decide if a cell should be split or not.  Figure \ref{fig_lod_octree}
 illustrates the level of details (LoD for short criterion) we
 use. More precisely, in dimension 2, if $\alpha$ denotes the viewing
 angle, an object at distance $d$ from the camera with diameter greater than
-\todo{Extract formulas from text with dots list} $2\cdot d\cdot\tan(\alpha)$
+ $2\cdot d\cdot\tan(\alpha)$
  is projected into more than one pixel
 (see Figure~\ref{fig_lod_octree}-\emph{left}). Hence, the distance
 criterion is based on the ratio (\emph{visibility ratio} in the
 following)between the cell diameter $l(c)$ (power of 2 depending on
-the depth), and 
-$2\cdot d_c\cdot\tan(\alpha)$ \todo{idem}
-,$d_c$ being the distance between the cell center and the camera. For a given cell $c$,
+the depth), and
+$2\cdot d_c\cdot\tan(\alpha)$, $d_c$ being the distance between the cell center and the camera. For a given cell $c$,
 split and merge decision are based on this visibility ratio:
 \begin{itemize}
 \item $c$ is split if its children cells have a visibility ratio
@@ -213,7 +412,7 @@ split and merge decision are based on this visibility ratio:
     angular criterion \emph{(middle)}. Based on LoD criterion
     evaluation, the cell buffer is
   updated between each frame \emph{(right)}.}
-  \label{fig_lod_octree} 
+  \label{fig_lod_octree}
 \end{figure}
 %
 In addition to the distance criterion, we add an angular term in order
@@ -239,7 +438,7 @@ pipeline.
   \caption{ Summary our GPU pipeline. Data buffers are
     represented in green and computations in red. Each computation
     retrieves data from a buffer and fills a new one. }
-  \label{fig_pipeline} 
+  \label{fig_pipeline}
 \end{figure}
 
 
@@ -248,7 +447,29 @@ pipeline.
 \section{Interactive Computation on GPU}
 \label{sec:inter-visu-gpu}
 
+\begin{figure}
+  \begin{center}
+    \includegraphics[width=\textwidth]{figs/approx}
+  \end{center}
+  \caption{BALBLABLABLA.}
+  \label{fig:approx}
+\end{figure}
 
+
+
+
+\section{Experiments}
+\label{sec:experiments}
+
+
+
+\section{Conclusion and Discussion}
+\label{sec:discussion}
+
+
+
+\appendix
+\section{Hierarchical Probing Algorithm}
 
 
 
@@ -316,15 +537,6 @@ Next to navigate between cells.
   }
   \Return{c}
 \end{function}
-
-
-\section{Experiments}
-\label{sec:experiments}
-
-
-
-\section{Conclusion and Discussion}
-\label{sec:discussion}
 
 
 
