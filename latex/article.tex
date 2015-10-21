@@ -525,9 +525,13 @@ consider hierarchical decompositions of either $B_R(\vx)$
 (Fig.~\ref{fig:approx2}-$b$). The idea would be to decompose the
 regions into mipmap cells of different resolution in order to limit
 the number of texture access (important bottleneck on GPU hardwares)
-and to get better approximated quantities. Note that for the scenario
-in Fig.~\ref{fig:approx2}-$b$, there is no approximation (\wrt the
-regular grid case) since  geometrical moments are additive quantities.
+and to get better approximated quantities. Note that the scenario in
+Fig.~\ref{fig:approx2}-$b$, is clearly the best approach: the
+volume is exact  (\wrt the regular grid case) since geometrical moments
+are additive quantities, and the number of texture fetches is  optimal
+at this point.
+
+
 \begin{figure}
   \begin{center}
     \subfigure[]{\includegraphics[width=5cm]{figs/approx-bh}}
@@ -539,7 +543,19 @@ regular grid case) since  geometrical moments are additive quantities.
 \end{figure}
 
 
-\subsection{Realtime computation on GPU}
+\subsection{Per Vertex Realtime Computation on GPU}
+
+We describe here two different visualization pipeline on GPU that will
+be evaluated in the next section. 
+
+\paragraph{Hierarchical decomposition}  As discussed above, 
+
+
+\paragraph{Dynamic refinement}
+
+
+
+
 \begin{itemize}
 \item   Variante 1 : hierarchique avec précalcul cells
 \item   Variante 2 : reg avec autoraffinement
