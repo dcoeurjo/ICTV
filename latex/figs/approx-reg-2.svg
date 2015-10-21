@@ -52,6 +52,12 @@
      inkscape:groupmode="layer"
      id="layer1"
      transform="translate(-201.01364,-430.94354)">
+    <circle
+       r="54.842911"
+       cy="505.94339"
+       cx="350.48279"
+       id="path2991-8-9"
+       style="fill:none;fill-opacity:0.22352941;stroke:#e74c3c;stroke-width:1.10809433;stroke-miterlimit:4;stroke-dasharray:4.43237735, 1.10809434000000007;stroke-dashoffset:0;stroke-opacity:1" />
     <path
        sodipodi:nodetypes="ccccc"
        inkscape:connector-curvature="0"
@@ -219,11 +225,5 @@
        height="42.708889"
        x="294.56989"
        y="431.44354" />
-    <circle
-       r="54.842911"
-       cy="505.94339"
-       cx="350.48279"
-       id="path2991-8-9"
-       style="fill:none;fill-opacity:0.22352941;stroke:#e74c3c;stroke-width:1.10809433;stroke-miterlimit:4;stroke-dasharray:4.43237735, 1.10809434000000007;stroke-dashoffset:0;stroke-opacity:1" />
   </g>
 </svg>
