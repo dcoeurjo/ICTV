@@ -495,8 +495,10 @@ public:
 				if (plotfd == NULL)
 					perror("fopen");
 				
+				int nb_geom = -1;
+				
 				//fprintf(plotfd, "# Frame \t\t TotalCells \t\t RegCells \t\t TrCells \t\t Tgl \t\t LodTime (ms) \t\t CullTime (ms) \t\t RegTglTime (ms) \t\t TrTglTime (ms)\t\t ShadingTime (ms)\t\t ShdLessTime (ms)\t\t TotalTime (ms) \t\t Cpu Time (ns)\n");
-				fprintf(plotfd, "#Vertex \t\tCurv \tK1 \tK2 \tDir Min \t\tDir Max \t\tNormale\n");// \t\tEigenvalues \t\tCovmat Diag \t\tCovmat Upper\n");
+				fprintf(plotfd, "#Vertex \t\tCurv \tK1 \tK2 \tDir Min \t\tDir Max \t\tNormale \t\tNb Probe \n");// \t\tEigenvalues \t\tCovmat Diag \t\tCovmat Upper\n");
 				fprintf(plotfd, "N %d\n", 3*triangles_regular);
 			
 				printf(" [1/2] Copying from the GPU ... \n");
@@ -569,7 +571,18 @@ public:
 						{
 								fprintf(plotfd, "%lf\t", data_normale[nb2++]);
 						}
-						nb2++;
+						int p = data_normale[nb2++];
+						if (nb_geom == -1)
+						{
+							//printf("NBPROBE = %d\n", p);
+							nb_geom = p;
+						}
+						else
+						{
+							if (p != nb_geom)
+								printf("ERROR: %d != ref %d\n", p, nb_geom);
+						}
+						fprintf(plotfd, "%lf\t", p);
 						fprintf(plotfd, "\n");
 					}
 				}

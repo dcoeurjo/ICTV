@@ -14,7 +14,7 @@ out vec3 curv_normale;
 out vec3 eigenvalues;
 out vec3 covmatDiag;
 out vec3 covmatUpper;
-out vec3 vertex_k1_k2;
+out vec4 vertex_k1_k2;
 
 uniform vec3 u_scene_size;
 uniform float u_lvl;
@@ -59,6 +59,7 @@ void main( )
 	vertex_k1_k2.x = curvature;
 	vertex_k1_k2.y = k1;
 	vertex_k1_k2.z = k2;
+	vertex_k1_k2.w = nb_probe;
 	
 	/*
 	covmatDiag[0] = xyz2.x - (xyz.x*xyz.x/volume); 
@@ -99,7 +100,7 @@ layout (triangle_strip, max_vertices = 10) out;
 
 uniform int u_curv_dir;
 
-in vec3 vertex_k1_k2[];
+in vec4 vertex_k1_k2[];
 in vec3 vertex_position[];
 in vec3 vertex_color[];
 in vec3 curv_dir_max[];
@@ -287,13 +288,13 @@ void main()
 		geometry_curv_value = curv_value[i];
 		geometry_curvdir = 0;
 		
-		geometry_k1_k2 = vertex_k1_k2[i];
+		geometry_k1_k2 = vertex_k1_k2[i].xyz;
 		
 		geometry_min_dir = vec4(curv_dir_min[i], vertex_k1_k2[i].y);
 		geometry_max_dir = vec4(curv_dir_max[i], vertex_k1_k2[i].z);
 		
 		geometry_position = vec4(vertex_position[i], vertex_k1_k2[i].x);
-		geometry_normale = vec4(curv_normale[i], 1);//vec4(reorientNormal(pts, curv_normale[i]), 1);
+		geometry_normale = vec4(curv_normale[i], vertex_k1_k2[i].w);//vec4(reorientNormal(pts, curv_normale[i]), 1);
 		/*geometry_covmatDiag = covmatDiag[i];
 		geometry_covmatUpper = covmatUpper[i];
 		geometry_egv = eigenvalues[i];*/

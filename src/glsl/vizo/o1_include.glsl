@@ -33,7 +33,7 @@ int getVolumeMoments(in vec3 vertex_position, out float volume, out vec3 xyz, ou
 	float r = u_curv_radius;
 	
 	int l = int(lvl_tree);
-	float step = pow(2, l);
+	int step = int(pow(2, l));
 
 	/*
 	float nb_probe = 0;
@@ -88,18 +88,15 @@ int getVolumeMoments(in vec3 vertex_position, out float volume, out vec3 xyz, ou
 	*/
 	
 	int nb_probe = 0;
-	for(float m=-r; m<r; m +=step)
-	for(float n=-r; n<r; n +=step)
-	for(float o=-r; o<r; o +=step)
+	vec3 c = vertex_position*u_size_tex;
+	for(int m=int(ceil(c.x-r)); m<=int(floor(c.x+r)); m +=step)
+	for(int n=int(ceil(c.y-r)); n<=int(floor(c.y+r)); n +=step)
+	for(int o=int(ceil(c.z-r)); o<=int(floor(c.z+r)); o +=step)
 	{
-		vec3 probe = vec3( m, n, o );
-		vec3 c = vertex_position * u_size_tex;
-		vec3 p = c + probe;
-		vec3 pixel_p = vec3(int(p.x), int(p.y), int(p.z));
-		
+		vec3 pixel_p = vec3( float(m), float(n), float(o) );		
 		if (length(pixel_p - c) <= r)
 		{
-			fetch(pixel_p/u_size_tex, step, l, volume, xyz, xyz2, xy_yz_xz);
+			fetch(pixel_p/u_size_tex, float(step), l, volume, xyz, xyz2, xy_yz_xz);
 			nb_probe++;
 		}
 	}
