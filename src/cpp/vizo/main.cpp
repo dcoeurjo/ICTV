@@ -219,6 +219,7 @@ private:
 	bool was_culled;
 	int was_showing_dir;
 	int was_gt;
+	int was_wireframe;
 	
 	float last_radius;
 	float last_lvl;
@@ -381,12 +382,14 @@ public:
 			was_culled = Parameters::getInstance()->g_culling;
 			was_regular_grid = Parameters::getInstance()->g_regular;
 			was_showing_dir = Parameters::getInstance()->g_curv_dir;
-			was_gt = Parameters::getInstance()->g_ground_truth;
+			//was_gt = Parameters::getInstance()->g_ground_truth;
+			was_wireframe = Parameters::getInstance()->g_solid_wireframe;
 			
 			Parameters::getInstance()->g_culling = false;
 			Parameters::getInstance()->g_regular = true;
 			Parameters::getInstance()->g_curv_dir = 0;
-			Parameters::getInstance()->g_ground_truth = 1;
+			//Parameters::getInstance()->g_ground_truth = 1;
+			Parameters::getInstance()->g_solid_wireframe = 0;
 		}
 		
 		
@@ -469,6 +472,7 @@ public:
 			radiusShower.run();
 		}
 
+		static int nb_export = 0;
 		if (Parameters::getInstance()->g_draw_triangles)
 		{
 			m_time_shading->begin();
@@ -477,23 +481,25 @@ public:
 			glDisable(GL_RASTERIZER_DISCARD);
 			m_time_shading->end();
 			
-			static int nb_export = 0;
 			if (Parameters::getInstance()->g_export)
 			{
 				std::string file(argv[1]);
 				file = file.substr(file.find_last_of('/')+1, (file.find_last_of('.')-1)-file.find_last_of('/'));
 				char buf[400];
-				sprintf (buf, "export%d_%s_r%.2lf_s%d_l%d.txt", nb_export++, file.c_str(), 
+				sprintf (buf, "export%d_%s_r%.2lf_s%d_l%d_m%d.txt", nb_export++, file.c_str(), 
 						 Parameters::getInstance()->g_curvradius, 
 						 Parameters::getInstance()->g_sizetex, 
-						 (int)Parameters::getInstance()->g_lvl);
+						 (int)Parameters::getInstance()->g_lvl,
+						 (int)Parameters::getInstance()->g_ground_truth);
 				printf("Exporting to %s...\n", buf);
 				plotfd = fopen(buf,"w");
 				if (plotfd == NULL)
 					perror("fopen");
 				
+				float nb_geom = -1;
+				
 				//fprintf(plotfd, "# Frame \t\t TotalCells \t\t RegCells \t\t TrCells \t\t Tgl \t\t LodTime (ms) \t\t CullTime (ms) \t\t RegTglTime (ms) \t\t TrTglTime (ms)\t\t ShadingTime (ms)\t\t ShdLessTime (ms)\t\t TotalTime (ms) \t\t Cpu Time (ns)\n");
-				fprintf(plotfd, "#Vertex \t\tCurv \tK1 \tK2 \tDir Min \t\tDir Max \t\tNormale\n");// \t\tEigenvalues \t\tCovmat Diag \t\tCovmat Upper\n");
+				fprintf(plotfd, "#Vertex \t\tCurv \tK1 \tK2 \tDir Min \t\tDir Max \t\tNormale \t\tNb Probe \n");// \t\tEigenvalues \t\tCovmat Diag \t\tCovmat Upper\n");
 				fprintf(plotfd, "N %d\n", 3*triangles_regular);
 			
 				printf(" [1/2] Copying from the GPU ... \n");
@@ -566,7 +572,18 @@ public:
 						{
 								fprintf(plotfd, "%lf\t", data_normale[nb2++]);
 						}
-						nb2++;
+						float p = data_normale[nb2++];
+						if (nb_geom == -1)
+						{
+							//printf("NBPROBE = %d\n", p);
+							nb_geom = p;
+						}
+						else
+						{
+							if (p != nb_geom)
+								printf("ERROR: %lf != ref %lf\n", p, nb_geom);
+						}
+						fprintf(plotfd, "%lf\t", p);
 						fprintf(plotfd, "\n");
 					}
 				}
@@ -579,7 +596,7 @@ public:
 				Parameters::getInstance()->g_culling = was_culled;
 				Parameters::getInstance()->g_regular = was_regular_grid;
 				Parameters::getInstance()->g_curv_dir = was_showing_dir;
-				Parameters::getInstance()->g_ground_truth = was_gt;
+				//Parameters::getInstance()->g_ground_truth = was_gt;
 
 				fclose(plotfd);
 				printf("Done\n");
@@ -673,6 +690,22 @@ public:
 		blitter.blit();
                 
 		m_time_blit->end();
+		
+		if (Parameters::getInstance()->g_export)
+		{
+			std::string file(argv[1]);
+			file = file.substr(file.find_last_of('/')+1, (file.find_last_of('.')-1)-file.find_last_of('/'));
+			char buf[400];
+			sprintf (buf, "capture_export%d_%s_r%.2lf_s%d_l%d_m%d", nb_export-1, file.c_str(), 
+						 Parameters::getInstance()->g_curvradius, 
+						 Parameters::getInstance()->g_sizetex, 
+						(int)Parameters::getInstance()->g_lvl,
+						(int)Parameters::getInstance()->g_ground_truth);
+			std::string str = std::string(buf) + ".bmp";
+			gk::writeFramebuffer(str.c_str());
+			++(Parameters::getInstance()->g_capture.frame);
+			Parameters::getInstance()->g_solid_wireframe = was_wireframe;
+		}
 		
 		if (Parameters::getInstance()->g_export)
 				Parameters::getInstance()->g_export = false;
@@ -1051,9 +1084,9 @@ public:
 		GUI( cpu_time );  
 		
 		/** Screen Recording **/
-		if (Parameters::getInstance()->g_capture.enabled && frame%2 == 0) 
+		if (Parameters::getInstance()->g_capture.enabled) 
 		{
-                        char buf[256];
+            char buf[256];
 			sprintf (buf, "capture_%02i_%09i", Parameters::getInstance()->g_capture.count, Parameters::getInstance()->g_capture.frame);
                         std::string str = std::string(CAPTURE_PATH()) /*+ currentDateTime() + "_"*/ + std::string(buf) + ".bmp";
 			gk::writeFramebuffer(str.c_str());

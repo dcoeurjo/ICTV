@@ -126,20 +126,93 @@ void fetch(vec3 p, float step, int l, inout float volume, inout vec3 xyz, inout 
 	
 }
 
-void getVolumeMoments(in vec3 vertex_position, out float volume, out vec3 xyz, out vec3 xy_yz_xz, out vec3 xyz2, in float lvl_tree)
+int getVolumeMoments(in vec3 vertex_position, out float volume, out vec3 xyz, out vec3 xy_yz_xz, out vec3 xyz2, in float lvl_tree)
 {
 	volume = 0.0;
 	xyz2 = vec3(0);
 	xy_yz_xz = vec3(0);
 	xyz = vec3(0);
 	
+	int nb_probe = 0;
 	float nbfetch = texelFetch(u_spheresubdiv, 0, 0).r;
+	nb_probe++;
 	for(int i=1; i<=nbfetch; i++)
 	{
 		vec4 xyzk = texelFetch(u_spheresubdiv, i, 0).rgba;
-		fetch(vertex_position + xyzk.xyz, int(pow(2, xyzk.w)), int(xyzk.w), volume, xyz, xyz2, xy_yz_xz);
+		nb_probe++;
+		
+		vec3 probe = xyzk.xyz;
+		
+		vec3 init_p = vertex_position + probe;
+		fetch(init_p, int(pow(2, xyzk.w)), int(xyzk.w), volume, xyz, xyz2, xy_yz_xz);
+		
+		probe.x *= -1;
+		vec3 p = vertex_position + probe;
+		if (p.x != init_p.x || p.y != init_p.y || p.z != init_p.z)
+		{
+			fetch(p, int(pow(2, xyzk.w)), int(xyzk.w), volume, xyz, xyz2, xy_yz_xz);
+			nb_probe++;
+		}
+		probe.x *= -1;
+		
+		probe.y *= -1;
+		p = vertex_position + probe;
+		if (p.x != init_p.x || p.y != init_p.y || p.z != init_p.z)
+		{
+			fetch(p, int(pow(2, xyzk.w)), int(xyzk.w), volume, xyz, xyz2, xy_yz_xz);
+			nb_probe++;
+		}
+		
+		probe.x *=-1;
+		p = vertex_position + probe;
+		if (p.x != init_p.x || p.y != init_p.y || p.z != init_p.z)
+		{
+			fetch(p, int(pow(2, xyzk.w)), int(xyzk.w), volume, xyz, xyz2, xy_yz_xz);
+			nb_probe++;
+		}
+		probe.y *= -1;
+		probe.x *= -1;
+		
+		probe.z *= -1;
+		p = vertex_position + probe;
+		if (p.x != init_p.x || p.y != init_p.y || p.z != init_p.z)
+		{
+			fetch(p, int(pow(2, xyzk.w)), int(xyzk.w), volume, xyz, xyz2, xy_yz_xz);
+			nb_probe++;
+		}
+		
+		probe.x *= -1;
+		p = vertex_position + probe;
+		if (p.x != init_p.x || p.y != init_p.y || p.z != init_p.z)
+		{
+			fetch(p, int(pow(2, xyzk.w)), int(xyzk.w), volume, xyz, xyz2, xy_yz_xz);
+			nb_probe++;
+		}
+		probe.x *= -1;
+		
+		probe.y *= -1;
+		p = vertex_position + probe;
+		if (p.x != init_p.x || p.y != init_p.y || p.z != init_p.z)
+		{
+			fetch(p, int(pow(2, xyzk.w)), int(xyzk.w), volume, xyz, xyz2, xy_yz_xz);
+			nb_probe++;
+		}
+		
+		probe.x *=-1;
+		p = vertex_position + probe;
+		if (p.x != init_p.x || p.y != init_p.y || p.z != init_p.z)
+		{
+			fetch(p, int(pow(2, xyzk.w)), int(xyzk.w), volume, xyz, xyz2, xy_yz_xz);
+			nb_probe++;
+		}
+		probe.y *= -1;
+		probe.x *= -1;
+		
+		//fetch(vertex_position + xyzk.xyz, int(pow(2, xyzk.w)), int(xyzk.w), volume, xyz, xyz2, xy_yz_xz);
+		//nb_probe++;
 	}
 	//analytic_hierarch(vertex_position, volume, xyz, xy_yz_xz, xyz2, lvl_tree);
+	return nb_probe;
 }
 
 

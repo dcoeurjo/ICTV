@@ -122,15 +122,15 @@ Computer
 Graphics~\cite{shu1995adaptive,schaefer2004dual,lengyel2010voxel,DBLP:journals/cgf/LewinerMPPL10,DBLP:journals/cvgip/LobelloDD14}.
 The method developed by Lengyel \textit{et al.}
 \cite{lengyel2010voxel} is the best suited to our needs.  However, it
-was developed to visualize in real-time static or near static data and
-present a complex CPU implementation.\todo{DC: rajouter une phrase par
-  rapport à lengyel, Helene ? JP?}  In this paper we propose a GPU
-pipeline inspired from this method.  It leaves the CPU free for other
-tasks and avoids synchronization with the GPU.  Our high framerate
-also allows this method to run in real-time on fully dynamic data.
-The triangulation is controlled by a GPU LoD criterion that ensures
-that triangles project onto more than one pixel, thus removing
-geometrical aliasing.
+was only developed on CPU to visualize in real-time static or near
+static data, combining octree with new Marching-Cubes configurations
+to generate adaptive meshes. In this paper we propose a GPU pipeline
+inspired from this method.  It leaves the CPU free for other tasks and
+avoids synchronization with the GPU.  Our high framerate also allows
+this method to run in real-time on fully dynamic data.  The
+triangulation is controlled by a GPU LoD criterion that ensures that
+triangles project onto more than one pixel, thus removing geometrical
+aliasing.
 
 Curvature estimation on discrete or digital surface has also been
 widely investigated. In \cite{CVIU2014}, authors propose digital
@@ -403,16 +403,7 @@ As illustrated in Figure
 \ref{fig_quadtree_partitionning}-\emph{middle}, we propose a viewpoint
 dependent criterion to decide if a cell needs to be refined: the
 closer we are to the camera, the finer the cells are. In addition to
-the distance criterion, we define an angular criterion to refine cells
-within the camera frustrum. When rendering a mesh, a key stage is the
-rasterization which digitizes triangles projected onto the
-screen. As a consequence, having several triangles whose projections
-lie inside the same pixel is something we should prevent. Hence,
-distance criterion can be set in order to both control the geometrical
-approximation and to ensure that cells project onto more than one
-pixel. This does not prevent all triangles within such cells to be
-projected into more than one pixel but gives us a fast criterion to
-decide if a cell should be split or not.  Figure \ref{fig_lod_octree}
+the distance criterion, we define an angular criterion to prevent refining cells outside the camera frustrum. Using a criterion based on the distance between a cell and the camera is well suited to GPU since it can be evaluated independently on all cells. Hence, we can efficiently determine if a cell must be subdivided or not. Figure \ref{fig_lod_octree}
 illustrates the level of details (LoD for short) criterion we
 use. More precisely, in dimension 2, if $\alpha$ denotes the viewing
 angle, an object at distance $d$ from the camera with diameter greater than
@@ -484,9 +475,9 @@ present our approaches.
 
 \subsection{Design principles}
 
-The general idea is to perform and Integral Invariant computation on
+The general idea is to perform an Integral Invariant computation on
 GPU at each vertex of the generated triangular mesh. First note that
-of the LoD criterion is removed, each MC vertex is exactly centered at
+when the LoD criterion is removed, each MC vertex is exactly centered at
 a surfel center. At different depth of the octree, MC vertices still
 correspond to surfel centers of subsampled versions of the input
 object. Hence, Integral Invariant framework defined in
@@ -504,9 +495,9 @@ To implement the integration on $B_R(\vx)\cap\Shape$\todo{Check ball
 digital points inside such domain (Fig.~\ref{fig:approx}-$b$) and then
 to estimate the geometrical moment as the sum of the geometrical
 moments of each elementary cubes lying in the intersection. On GPU,
-\emph{mipmap} textures to obtain a multiresolution information: if the
+\emph{mipmap} textures are used to obtain a multi-resolution information: if the
 input binary object is stored in a 3D texture, GPU hardware can
-construct a multiresolution pyramid such that 8 neighboring voxel
+construct a multi-resolution pyramid such that 8 neighboring voxel
 intensities at level $l$ are averaged to define the voxel value at
 level $l+1$. If the level 0 corresponds to the binary input object, at
 a given level $l$, a voxel $(x,y,z)$ contains the fraction of $\DSh$
@@ -529,7 +520,7 @@ $B_R(\vx)$.
 \end{figure}
 
 Using the hierachical nature of the mipmap texture, we could also
-consider hierachical decompisitions of either $B_R(\vx)$
+consider hierarchical decompositions of either $B_R(\vx)$
 (Fig.~\ref{fig:approx2}-$a$) or $B_R(\vx)\cap\Shape$
 (Fig.~\ref{fig:approx2}-$b$). The idea would be to decompose the
 regions into mipmap cells of different resolution in order to limit
