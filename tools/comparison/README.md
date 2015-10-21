@@ -24,13 +24,13 @@ It doesn't have any external dependencies.
 ## Usage
 
 ```
-./main <fileGPU> <fileCPU> <size> <errorType>
+./main <fileGPU> <fileCPU> <enableEmbedding>
 ```
 
-- computes the difference of results between the CPU version of the estimator and the GPU version
+Computes the difference of results between the CPU version of the estimator and the GPU version
 - GPU file : positions are between [0;size].
 - CPU file : positions are between [0;2*size].
-- Error type : 1 is l_1, 2 is l_2, 3 is l_oo.
+- enableEmbedding : 1 if the second file is a CPU file, 0 if the second file is a GPU file too.
 
 ## Example
 
