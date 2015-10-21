@@ -105,6 +105,10 @@ void configure_curv(GLuint program, GLuint first_loc)
 	glProgramUniform1f (program,
 			Parameters::getInstance()->g_uniform_locations[first_loc+19],
  			Parameters::getInstance()->g_time_elapsed);
+	
+	glProgramUniform1i (program,
+			Parameters::getInstance()->g_uniform_locations[first_loc+20],
+ 			TEXTURE_SUBDIV_SPHERE);
 }
 
 void Curvature::configureProgram()
@@ -169,6 +173,9 @@ void load_curv(GLuint program, GLuint first_loc)
 		
 	Parameters::getInstance()->g_uniform_locations[first_loc+19] = 
 		glGetUniformLocation(program, "u_time");
+		
+	Parameters::getInstance()->g_uniform_locations[first_loc+20] = 
+		glGetUniformLocation(program, "u_spheresubdiv");
 }
 
 void Curvature::loadProgram()
