@@ -389,16 +389,7 @@ As illustrated in Figure
 \ref{fig_quadtree_partitionning}-\emph{middle}, we propose a viewpoint
 dependent criterion to decide if a cell needs to be refined: the
 closer we are to the camera, the finer the cells are. In addition to
-the distance criterion, we define an angular criterion to refine cells
-within the camera frustrum. When rendering a mesh, a key stage is the
-rasterization which digitizes triangles projected onto the
-screen. As a consequence, having several triangles whose projections
-lie inside the same pixel is something we should prevent. Hence,
-distance criterion can be set in order to both control the geometrical
-approximation and to ensure that cells project onto more than one
-pixel. This does not prevent all triangles within such cells to be
-projected into more than one pixel but gives us a fast criterion to
-decide if a cell should be split or not.  Figure \ref{fig_lod_octree}
+the distance criterion, we define an angular criterion to prevent refining cells outside the camera frustrum. Using a criterion based on the distance between a cell and the camera is well suited to GPU since it can be evaluated independently on all cells. Hence, we can efficiently determine if a cell must be subdivided or not. Figure \ref{fig_lod_octree}
 illustrates the level of details (LoD for short) criterion we
 use. More precisely, in dimension 2, if $\alpha$ denotes the viewing
 angle, an object at distance $d$ from the camera with diameter greater than
