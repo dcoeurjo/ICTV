@@ -465,8 +465,10 @@ illustrates the overall fully data parallel pipeline.
 \section{Interactive Curvature Computation on GPU}
 \label{sec:inter-visu-gpu}
 
+We first present design principles for the GPU implementation and then
+present our approaches.
 
-\subsection{Design principle}
+\subsection{Design principles}
 
 The general idea is to perform and Integral Invariant computation on
 GPU at each vertex of the generated triangular mesh. First note that
@@ -482,23 +484,55 @@ estimators
 (\ref{eq:dig-curvature-estimator-H}), (\ref{eq:dig-curvature-estimator-k1})
 and (\ref{eq:dig-curvature-estimator-k2}).
 
-To implement the integration on $B_R(x)\cap\Shape$
+To implement the integration on $B_R(\vx)\cap\Shape$\todo{fix Z vs X}
 (Fig.~\ref{fig:approx}-$a$), a naive approach consists in scanning all
 digital points inside such domain (Fig.~\ref{fig:approx}-$b$) and then
 to estimate the geometrical moment as the sum of the geometrical
 moments of each elementary cubes lying in the intersection. On GPU,
-
+\emph{mipmap} textures to obtain a multiresolution information: if the
+input binary object is stored in a 3D texture, GPU hardware can
+construct a multiresolution pyramid such that 8 neighboring voxel
+intensities at level $l$ are averaged to define the voxel value at
+level $l+1$. If the level 0 corresponds to the binary input object, at
+a given level $l$, a voxel $(x,y,z)$ contains the fraction of $Z$
+belonging to the cube of center $(x,y,z)$ and edge length $2^l$. As a
+consequence, we can approximate the volume of $B_R(x)\cap\Shape$ by
+considering mipmap values at a given resolution $l$
+(Fig.~\ref{fig:approx}-$c$). In this case, errors only occurs for
+cells lying inside $\Shape$ (with density 1) not entirely covered by
+$B_R(\vx)$.
 \begin{figure}
   \begin{center}
-    \subfigure[]{\includegraphics[width=5cm]{figs/approx1}}
-    \subfigure[]{\includegraphics[width=5cm]{figs/approx-reg-1}}
-    \subfigure[]{\includegraphics[width=5cm]{figs/approx-reg-2}}
+    \subfigure[]{\includegraphics[width=4cm]{figs/approx1}}
+    \subfigure[]{\includegraphics[width=4cm]{figs/approx-reg-1}}
+    \subfigure[]{\includegraphics[width=4cm]{figs/approx-reg-2}}
+  \end{center}
+  \caption{Integral computation with an area estimation from pixel
+    counting $(b)$ or from densities (represented by different
+    grayvalues) in a mipmap approximation of $\Shape$.}
+  \label{fig:approx}
+\end{figure}
+
+Using the hierachical nature of the mipmap texture, we could also
+consider hierachical decompisitions of either $B_R(\vx)$
+(Fig.~\ref{fig:approx2}-$a$) or $B_R(\vx)\cap\Shape$
+(Fig.~\ref{fig:approx2}-$b$). The idea would be to decompose the
+regions into mipmap cells of different resolution in order to limit
+the number of texture access (important bottleneck on GPU hardwares)
+and to get better approximated quantities. Note that for the scenario
+in Fig.~\ref{fig:approx2}-$b$, there is no approximation (\wrt the
+regular grid case) since  geometrical moments are additive quantities.
+\begin{figure}
+  \begin{center}
     \subfigure[]{\includegraphics[width=5cm]{figs/approx-bh}}
     \subfigure[]{\includegraphics[width=5cm]{figs/approx-ada}}
   \end{center}
-  \caption{BALBLABLABLA.}
-  \label{fig:approx}
+  \caption{Adaptive approximation of the integration using a
+    hierarchical decomposition of the ball $B_R(\vx)$ $(a)$, or a decomposition of $B_R(\vx)\cap\Shape$.}
+  \label{fig:approx2}
 \end{figure}
+
+
 
 
 \subsection{Realtime computation on GPU}
