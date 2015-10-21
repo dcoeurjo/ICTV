@@ -152,19 +152,18 @@ values of the spherical kernel radius.
 \section{Curvature Tensor Estimation}
 \label{sec:curv-tens-estim}
 
-\sloppy In our context, we consider digital shapes (any subset $Z$ of
-$\Z^d$) and boundaries of digital shapes $\partial Z$. We denote by $\DSh$ the
-Gauss digitization of $\Shape$ in a $d-$dimensional grid with grid
-step $h$, \emph{i.e.}  $\DSh \EqDef \{ \vz \in \Z^d,\, h\cdot\vz\in\Shape\}$. For such
-digitized set $\DigShape\EqDef\DSh$, $\Body{\DigShape}{h}$ is a subset
-of $\R^d$ corresponding to the union of hypercubes centered at $h\cdot
-\vz$ for $\vz\in Z$ with edge length $h$. By doing so, both
-$\partial\Shape$ and $\partial\Body{Z}{h}$ are topological boundary of
-objects lying in the same space (See Fig. \ref{fig:notations}-b). Note
-that the combinatorial digital boundary of $Z$ made of cells in a
-cellular Cartesian complex (\emph{pointels}, \emph{linels}, {\em
-  surfels}, \ldots), can be trivally embedded into $\R^d$ such that it
-coincides with $\partial\Body{Z}{h}$.
+\sloppy In our context, we consider digital shapes (any subset $Z$ of $\Z^d$)
+and boundaries of digital shapes $\DigBoundary{Z}$. We denote by $\DSh$ the
+Gauss digitization of $\Shape$ in a $d-$dimensional grid with grid step $h$,
+\emph{i.e.}  $\DSh \EqDef \{ \vz \in \Z^d,\, h\cdot\vz\in\Shape\}$. For such
+digitized set $\DigShape\EqDef\DSh$, $\Body{\DigShape}{h}$ is a subset of $\R^d$
+corresponding to the union of hypercubes centered at $h\cdot \vz$ for $\vz\in Z$
+with edge length $h$. By doing so, both $\partial\Shape$ and
+$\partial\Body{Z}{h}$ are topological boundary of objects lying in the same
+space (See Fig. \ref{fig:notations}-b). Note that the combinatorial digital
+boundary $\DigBoundary{Z}$ of $Z$ made of cells in a cellular Cartesian complex
+(\emph{pointels}, \emph{linels}, \emph{surfels}, \ldots), can be trivally
+embedded into $\R^d$ such that it coincides with $\partial\Body{Z}{h}$.
 
 
 \begin{figure}[t]{\small
@@ -194,14 +193,16 @@ coincides with $\partial\Body{Z}{h}$.
 
 In \cite{DGCI2013}, we have defined the 2D digital curvature estimator
 $\CurvH{R}$ and the 3D digital mean curvature estimator $\MeanCurvH{R}$ based on
-the digital volumetric integral $V_{R_d}$ (or $A_{R_d}$ in dimension 2) of the
-intersection between the shape $\Shape$ and a ball of digital radius $R_d$:
+the digital volumetric integral $\VolC(Y,h) \EqDef h^d \MCard(Y)$ with
+$\MCard(Y)$ the number of digital points of $Y$ and $Y \subset \Z^d$ the
+intersection between the digital shape $\DigShape$ and a ball of digital radius
+$R/h$ (we denote such quantity $\AreaC(Y,h)$ in dimension 2):
 %
 \begin{Definition}
   %
   Given the Gauss digitization $Z\EqDef\DSh$ of a shape $\Shape \subset \R^2$
-  (or $\R^3$ for the 3D mean curvature estimator), {\em digital curvature estimators} are defined for any point $\vx
-  \in \R^2$ (or $\R^3$) as:
+  (or $\R^3$ for the 3D mean curvature estimator), {\em digital curvature
+  estimators} are defined for any point $\vx \in \R^2$ (or $\R^3$) as:
   %
   \begin{align}
     \forall 0 < h < R,\quad
@@ -213,12 +214,15 @@ intersection between the shape $\Shape$ and a ball of digital radius $R_d$:
     Z, h)}{\pi R^4}\,.\label{eq:dig-curvature-estimator-H}
   \end{align}
   %
-  where $\AreaC(\Ball{R/h}{\vx/h} \cap \Body{\DSh}{h}, h) \EqDef h^2 \MCard(
-  \Ball{R/h}{\vx/h} \cap \Body{\DSh}{h} )$ and $\VolC(\Ball{R/h}{\vx/h} \cap
-  \Body{\DSh}{h}, h) \EqDef h^3 \MCard( \Ball{R/h}{\vx/h} \cap \Body{\DSh}{h} )$ are
-  the number of digital points in the intersection between $\Body{\DSh}{h}$ and
-  the ball $\Ball{R/h}{\vx/h}$ of radius $R/h$ centered on $\vx/h$, scaled by
-  $h^d$.\todo[inline]{J: Hum... pas top...}
+  where $\Ball{R/h}{\vx/h}$ is the ball of digital radius $R/h$ centered on
+  digital point $(\vx/h) \in Z$.
+  %
+  % \AreaC(\Ball{R/h}{\vx/h} \cap \Body{\DSh}{h}, h) \EqDef h^2 \MCard(
+  % \Ball{R/h}{\vx/h} \cap \Body{\DSh}{h} )$ and $\VolC(\Ball{R/h}{\vx/h} \cap
+  % \Body{\DSh}{h}, h) \EqDef h^3 \MCard( \Ball{R/h}{\vx/h} \cap \Body{\DSh}{h} )$ are
+  % the number of digital points in the intersection between $\Body{\DSh}{h}$ and
+  % the ball $\Ball{R/h}{\vx/h}$ of radius $R/h$ centered on $\vx/h$, scaled by
+  % $h^d$.\todo[inline]{J: Hum... pas top...}
   %
   % Similarly, $\hat{\lambda}_1$
   % and $\hat{\lambda}_2$ are the two greatest eigenvalues of the covariance
@@ -228,12 +232,19 @@ intersection between the shape $\Shape$ and a ball of digital radius $R_d$:
 %
 We have proved that estimating the 2D curvature and 3D mean curvature on digital
 objets with volumetric integral information have the multigrid convergence
-property (setting $R = kh^\frac{1}{3}$ on convex shapes, where $k$ is a constant
-related to the maximal curvature of the shape, with at least $C^3$-boundary and
-bounded curvature) \cite{DGCI2013}. For short, when the digital objet becomes
-finer and finer, \ie when the digitization step $h$ tends to zero, the estimated
-quantity on $\Bd{\Body{\DSh}{h}}$  converges (theoretically and experimentally)
-to the associated one on $\Bd{\Shape}$. More precisely, we have:
+property \cite{DGCI2013}. For short, when the digital objet becomes finer and
+finer, \ie when the digitization step $h$ tends to zero, the estimated quantity
+on $\Bd{\Body{\DSh}{h}}$ converges (theoretically and experimentally) to the
+associated one on $\Bd{\Shape}$.
+%
+%Since our digital estimators are defined on
+%digital shapes, in order to compare results with the exact curvature on
+%Euclidean shape, we need to match points on boundary of the digital
+%shape and points on the border of the Euclidean one.
+%
+Setting $R = kh^\frac{1}{3}$ on convex shapes
+with at least $C^3$-boundary and bounded curvature, where $k$ is a constant
+related to the maximal curvature of the shape, we have:
 %
 \begin{align}
 \forall 0 < h \le h_0,\,\, &\forall \vx \in \Bd{\Shape},\,\,
@@ -248,26 +259,29 @@ on digital moments:
 %
 \begin{Definition}
   %
-  Given the Gauss digitization $\Body{\DSh}{h}$ of a shape $\Shape \subset \R^3$
-  scaled by the digitization step $h$, {\em 3D digital principal curvature
-  estimators} are defined for any point $\vx \in \R^3$ as:
+  Given the Gauss digitization $Z \EqDef \DSh$ of a shape $\Shape \subset \R^3$,
+  {\em 3D digital principal curvature estimators} are defined for any point $\vx
+  \in \R^3$ as:
   %
   \begin{align}
-    \PrincCurvH{1}{R}(\Body{\DSh}{h},\vx,h) &\EqDef \frac{6}{\pi {R}^6}(\hat{\lambda}_2 - 3\hat{\lambda}_1) + \frac{8}{5{{R}}} \,,\label{eq:dig-curvature-estimator-k1}\\
-    \PrincCurvH{2}{R}(\Body{\DSh}{h},\vx,h) &\EqDef \frac{6}{\pi {R}^6}(\hat{\lambda}_1 - 3\hat{\lambda}_2) + \frac{8}{5{{R}}} \,,
+    \forall 0 < h < R,\quad
+    \PrincCurvH{1}{R}(Z,\vx,h) &\EqDef \frac{6}{\pi {R}^6}(\hat{\lambda}_2 - 3\hat{\lambda}_1) + \frac{8}{5 R} \,,\label{eq:dig-curvature-estimator-k1}\\
+    \PrincCurvH{2}{R}(Z,\vx,h) &\EqDef \frac{6}{\pi {R}^6}(\hat{\lambda}_1 - 3\hat{\lambda}_2) + \frac{8}{5 R} \,,
     \label{eq:dig-curvature-estimator-k2}
   \end{align}
   %
-  where $R_d = \frac{R}{h}$ is the digitized radius of the ball, and
-  $\hat{\lambda}_1$ and $\hat{\lambda}_2$ are the two greatest eigenvalues of
-  the covariance matrix of the digital points in the intersection between
-  $\Body{\DSh}{h}$ and the ball $\Ball{R/h}{\vx/h}$ of radius $R/h$ centered on
-  $\vx/h$.\todo[inline]{J: Pareil ici... pas top...}
+  where $\hat{\lambda}_1$ and $\hat{\lambda}_2$ are the two greatest eigenvalues
+  of the covariance matrix of the intersection between the digital shape
+  $\DigShape$ and a ball of digital radius $R/h$ centered on digital point
+  $\vx/h$.
   %
 \end{Definition}
 %
-The covariance matrix needs to compute digital moments of order $0$, $1$ and $2$
-(see Equation~20 of \cite{CVIU2014} for more details). We have also proved the
+The covariance matrix needs to compute digital moments of order $0$
+($\DMom{000}{h}$), of order $1$ ($\DMom{100}{h}$, $\DMom{010}{h}$ and
+$\DMom{001}{h}$) and of order $2$ ($\DMom{200}{h}$, $\DMom{020}{h}$,
+$\DMom{002}{h}$, $\DMom{110}{h}$, $\DMom{011}{h}$ and $\DMom{101}{h}$, see
+Equation~20 of \cite{CVIU2014} for more details). We have also proved the
 convergence of these estimators when setting the ball radius $h$ in $R =
 kh^\frac{1}{3}$, where $k$ is a constant related to the maximal curvature of the
 shape, on convex shapes with at least $C^3$-boundary and bounded curvature
