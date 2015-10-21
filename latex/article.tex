@@ -122,15 +122,15 @@ Computer
 Graphics~\cite{shu1995adaptive,schaefer2004dual,lengyel2010voxel,DBLP:journals/cgf/LewinerMPPL10,DBLP:journals/cvgip/LobelloDD14}.
 The method developed by Lengyel \textit{et al.}
 \cite{lengyel2010voxel} is the best suited to our needs.  However, it
-was developed to visualize in real-time static or near static data and
-present a complex CPU implementation.\todo{DC: rajouter une phrase par
-  rapport à lengyel, Helene ? JP?}  In this paper we propose a GPU
-pipeline inspired from this method.  It leaves the CPU free for other
-tasks and avoids synchronization with the GPU.  Our high framerate
-also allows this method to run in real-time on fully dynamic data.
-The triangulation is controlled by a GPU LoD criterion that ensures
-that triangles project onto more than one pixel, thus removing
-geometrical aliasing.
+was only developed on CPU to visualize in real-time static or near
+static data, combining octree with new Marching-Cubes configurations
+to generate adaptive meshes. In this paper we propose a GPU pipeline
+inspired from this method.  It leaves the CPU free for other tasks and
+avoids synchronization with the GPU.  Our high framerate also allows
+this method to run in real-time on fully dynamic data.  The
+triangulation is controlled by a GPU LoD criterion that ensures that
+triangles project onto more than one pixel, thus removing geometrical
+aliasing.
 
 Curvature estimation on discrete or digital surface has also been
 widely investigated. In \cite{CVIU2014}, authors propose digital
@@ -152,19 +152,19 @@ values of the spherical kernel radius.
 \section{Curvature Tensor Estimation}
 \label{sec:curv-tens-estim}
 
-\sloppy In our context, we consider digital shapes (any subset of $\Z^d$) and
-boundaries of digital shapes. We denote by $\DSh$ the Gauss
-digitization of $\Shape$ in a $d-$dimensional grid with grid step $h$,
-\emph{i.e.}  $\DSh = \Shape \cap (h\Z)^d$. For such digitized set
-$\DigShape\EqDef\DSh$, $\Body{\DigShape}{h}$ is a subset of $\R^d$ corresponding
-to the union of hypercubes centered at $h\cdot \vz$ for  $\vz\in Z$
-with edge length $h$. By doing so, both $\partial\Shape$ and
-$\partial\Body{Z}{h}$ are topological boundary of objects lying in the
-same space (See
-Fig. \ref{fig:notations}-b). Note that the combinatorial digital boundary
-of $Z$ made of cells in a cellular Cartesian complex (\emph{pointels},
-\emph{linels}, {\em surfels}, \ldots), can be trivally embedded into $\R^d$
-such that it coincides with $\partial\Body{Z}{h}$.
+\sloppy In our context, we consider digital shapes (any subset $Z$ of
+$\Z^d$) and boundaries of digital shapes $\partial Z$. We denote by $\DSh$ the
+Gauss digitization of $\Shape$ in a $d-$dimensional grid with grid
+step $h$, \emph{i.e.}  $\DSh \EqDef \{ \vz \in \Z^d,\, h\cdot\vz\in\Shape\}$. For such
+digitized set $\DigShape\EqDef\DSh$, $\Body{\DigShape}{h}$ is a subset
+of $\R^d$ corresponding to the union of hypercubes centered at $h\cdot
+\vz$ for $\vz\in Z$ with edge length $h$. By doing so, both
+$\partial\Shape$ and $\partial\Body{Z}{h}$ are topological boundary of
+objects lying in the same space (See Fig. \ref{fig:notations}-b). Note
+that the combinatorial digital boundary of $Z$ made of cells in a
+cellular Cartesian complex (\emph{pointels}, \emph{linels}, {\em
+  surfels}, \ldots), can be trivally embedded into $\R^d$ such that it
+coincides with $\partial\Body{Z}{h}$.
 
 
 \begin{figure}[t]{\small
@@ -175,9 +175,9 @@ such that it coincides with $\partial\Body{Z}{h}$.
           \put(55,45){$B_R(\vx)$}
           \put(1,10){$\dS$}
           \put(20,10){$\Shape$}
-      \end{overpic}}
+      \end{overpic}}~~~~~~
       \subfigure[]{\begin{overpic}[width=5cm]{figs/notation_2}
-          \put(44.5,25){$\vp$}
+          \put(44.5,25){$h \cdot \vz$}
           \put(55,45){$B_R(\vx)$}
           \put(42,28.5){$\times$}
           \put(45,32.5){$\vx$}
@@ -199,24 +199,23 @@ intersection between the shape $\Shape$ and a ball of digital radius $R_d$:
 %
 \begin{Definition}
   %
-  Given the Gauss digitization $\Body{\DSh}{h}$ of a shape $\Shape \subset \R^2$
-  (or $\R^3$ for the 3D mean curvature estimator) scaled by the digitization
-  step $h$, {\em digital curvature estimators} are defined for any point $\vx
+  Given the Gauss digitization $Z\EqDef\DSh$ of a shape $\Shape \subset \R^2$
+  (or $\R^3$ for the 3D mean curvature estimator), {\em digital curvature estimators} are defined for any point $\vx
   \in \R^2$ (or $\R^3$) as:
   %
   \begin{align}
     \forall 0 < h < R,\quad
-    &\CurvH{R}(\Body{\DSh}{h},\vx,h) \EqDef \frac{3\pi}{2R}
+    &\CurvH{R}(Z,\vx,h) \EqDef \frac{3\pi}{2R}
     - \frac{3\AreaC(\Ball{R/h}{\vx/h} \cap
-    \Body{\DSh}{h}, h)}{R^3}\,,\label{eq:dig-curvature-estimator-k}\\
-    &\MeanCurvH{R}(\Body{\DSh}{h},\vx,h) \EqDef \frac{8}{3R}
+    {Z}, h)}{R^3}\,,\label{eq:dig-curvature-estimator-k}\\
+    &\MeanCurvH{R}(Z,\vx,h) \EqDef \frac{8}{3R}
     - \frac{4\VolC(\Ball{R/h}{\vx/h} \cap
-    \Body{\DSh}{h}, h)}{\pi R^4}\,.\label{eq:dig-curvature-estimator-H}
+    Z, h)}{\pi R^4}\,.\label{eq:dig-curvature-estimator-H}
   \end{align}
   %
-  where $\AreaC(\Ball{R/h}{\vx/h} \cap \Body{\DSh}{h}, h) = h^2 \MCard(
+  where $\AreaC(\Ball{R/h}{\vx/h} \cap \Body{\DSh}{h}, h) \EqDef h^2 \MCard(
   \Ball{R/h}{\vx/h} \cap \Body{\DSh}{h} )$ and $\VolC(\Ball{R/h}{\vx/h} \cap
-  \Body{\DSh}{h}, h) = h^3 \MCard( \Ball{R/h}{\vx/h} \cap \Body{\DSh}{h} )$ are
+  \Body{\DSh}{h}, h) \EqDef h^3 \MCard( \Ball{R/h}{\vx/h} \cap \Body{\DSh}{h} )$ are
   the number of digital points in the intersection between $\Body{\DSh}{h}$ and
   the ball $\Ball{R/h}{\vx/h}$ of radius $R/h$ centered on $\vx/h$, scaled by
   $h^d$.\todo[inline]{J: Hum... pas top...}
@@ -288,15 +287,20 @@ corresponds to the normal direction $\NormalDirH{R}$ at $\vx$. Convergence
 results can be found in \cite{ChapterIICurvature}.\todo[inline]{Changer
 ChapterIICurvature dans le bibtex...}
 
-We have shown that the radius of the ball depends to the geometry of the
-underlying shape. In \cite{DGCI2014}, we proposed a parameter-free estimation of
-the radius of the ball by analyzing the shape \wrt the local geometry through to
-the maximal digital straight segments of the boundary of the digital shape. In
-\cite{SMI2015}, we analyze in scale-space (\ie with a range of radii) curvature
-estimation of our algorithm for a given digital shape. This allows us to detect
-features of the shape thanks to the behavior on singularities. In both methods, we need to explore the radius of the ball at different sizes and the computation time, depending to the size of the digital objet and the radius of the ball, is an obstacle.
-\todo[inline]{Faut faire une transition...}
-Computing curvatures from our algorithm in real-time can be really useful.
+We have shown that the radius of the ball depends on the geometry of
+the underlying shape. In \cite{DGCI2014}, we proposed a parameter-free
+estimation of the radius of the ball by analyzing the shape \wrt the
+local shape geometry using maximal digital straight segments of the
+digital boundary. In \cite{SMI2015}, we analyze in scale-space (\ie
+for a range of radii) curvature estimation of our algorithm for a
+given digital shape. This allows us to detect features of the shape
+thanks to the behavior on singularities.
+
+As a consequence, for all these integral invariant based approaches,
+we need to consider different ball radius which could be time
+consuming when implemented on CPU. We propose here a fully parallel
+implementation on GPU allowing us to change the radius and thus update
+the estimated quantities in realtime.
 
 \section{Isosurface Extraction on GPU}
 \label{sec:isos-extr-gpu}
@@ -440,13 +444,11 @@ parallel from all cell morton codes.
 Once decisions have been made, a new set of cells are sent to the mesh
 generation step described above. Updating the cell buffer can be
 efficiently implemented on GPU hardware as illustrated in
-Figure~\ref{fig_lod_octree}-\emph{right}.
-
-Finally, before constructing the triangulation from remaining cells
-and transition cells, geometrical culling is performed in order to
-skip the triangle patch construction which are not visible. Figure
-\ref{fig_pipeline} illustrates the overall fully data parallel
-pipeline.
+Figure~\ref{fig_lod_octree}-\emph{right}.  Finally, before
+constructing the triangulation from remaining cells and transition
+cells, geometrical culling is performed in order to skip the triangle
+patch construction which are not visible. Figure \ref{fig_pipeline}
+illustrates the overall fully data parallel pipeline.
 
 \begin{figure}[!htbp]
   \centering
@@ -460,16 +462,83 @@ pipeline.
 
 
 
-\section{Interactive Computation on GPU}
+\section{Interactive Curvature Computation on GPU}
 \label{sec:inter-visu-gpu}
 
+We first present design principles for the GPU implementation and then
+present our approaches.
+
+\subsection{Design principles}
+
+The general idea is to perform an Integral Invariant computation on
+GPU at each vertex of the generated triangular mesh. First note that
+when the LoD criterion is removed, each MC vertex is exactly centered at
+a surfel center. At different depth of the octree, MC vertices still
+correspond to surfel centers of subsampled versions of the input
+object. Hence, Integral Invariant framework defined in
+Section~\ref{sec:curv-tens-estim} is consistent with the triangular
+surface obtained on GPU: triangles are used for visualization purposes
+but all computations are performed on the digital object $\DSh$ and thus
+estimators
+(\ref{eq:dig-curvature-estimator-k}),
+(\ref{eq:dig-curvature-estimator-H}), (\ref{eq:dig-curvature-estimator-k1})
+and (\ref{eq:dig-curvature-estimator-k2}).
+
+To implement the integration on $B_R(\vx)\cap\Shape$\todo{Check ball
+  radii w.r.t. notations in sect2}
+(Fig.~\ref{fig:approx}-$a$), a naive approach consists in scanning all
+digital points inside such domain (Fig.~\ref{fig:approx}-$b$) and then
+to estimate the geometrical moment as the sum of the geometrical
+moments of each elementary cubes lying in the intersection. On GPU,
+\emph{mipmap} textures are used to obtain a multi-resolution information: if the
+input binary object is stored in a 3D texture, GPU hardware can
+construct a multi-resolution pyramid such that 8 neighboring voxel
+intensities at level $l$ are averaged to define the voxel value at
+level $l+1$. If the level 0 corresponds to the binary input object, at
+a given level $l$, a voxel $(x,y,z)$ contains the fraction of $\DSh$
+belonging to the cube of center $(x,y,z)$ and edge length $2^l$. As a
+consequence, we can approximate the volume of $B_R(x)\cap\Shape$ by
+considering mipmap values at a given resolution $l$
+(Fig.~\ref{fig:approx}-$c$). In this case, errors only occurs for
+cells lying inside $\Shape$ (with density 1) not entirely covered by
+$B_R(\vx)$.
 \begin{figure}
   \begin{center}
-    \includegraphics[width=\textwidth]{figs/approx}
+    \subfigure[]{\includegraphics[width=4cm]{figs/approx1}}
+    \subfigure[]{\includegraphics[width=4cm]{figs/approx-reg-1}}
+    \subfigure[]{\includegraphics[width=4cm]{figs/approx-reg-2}}
   \end{center}
-  \caption{BALBLABLABLA.}
+  \caption{Integral computation with an area estimation from pixel
+    counting $(b)$ or from densities (represented by different
+    grayvalues) in a mipmap approximation of $\Shape$.}
   \label{fig:approx}
 \end{figure}
+
+Using the hierachical nature of the mipmap texture, we could also
+consider hierarchical decompositions of either $B_R(\vx)$
+(Fig.~\ref{fig:approx2}-$a$) or $B_R(\vx)\cap\Shape$
+(Fig.~\ref{fig:approx2}-$b$). The idea would be to decompose the
+regions into mipmap cells of different resolution in order to limit
+the number of texture access (important bottleneck on GPU hardwares)
+and to get better approximated quantities. Note that for the scenario
+in Fig.~\ref{fig:approx2}-$b$, there is no approximation (\wrt the
+regular grid case) since  geometrical moments are additive quantities.
+\begin{figure}
+  \begin{center}
+    \subfigure[]{\includegraphics[width=5cm]{figs/approx-bh}}
+    \subfigure[]{\includegraphics[width=5cm]{figs/approx-ada}}
+  \end{center}
+  \caption{Adaptive approximation of the integration using a
+    hierarchical decomposition of the ball $B_R(\vx)$ $(a)$, or a decomposition of $B_R(\vx)\cap\Shape$.}
+  \label{fig:approx2}
+\end{figure}
+
+
+\subsection{Realtime computation on GPU}
+\begin{itemize}
+\item   Variante 1 : hierarchique avec précalcul cells
+\item   Variante 2 : reg avec autoraffinement
+\end{itemize}
 
 
 
