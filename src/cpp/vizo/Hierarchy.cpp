@@ -294,7 +294,9 @@ Value computeExact(int x0, int y0, int z0, Value r, int lvl)
         {
           if ( distance2( x0, y0, z0, x, y, z ) <= r2 )
             {
-				if (x >= 0 && y >= 0 && z >= 0)
+				if (x / pow(2, lvl) - 0.5 >= 0 && 
+					y / pow(2, lvl) - 0.5 >= 0 && 
+					z / pow(2, lvl) - 0.5 >= 0)
 				{
 					xyzk_list[0]++;
 					xyzk_list[ (int)xyzk_list[0]*4 ] = x / pow(2, lvl) - 0.5;
@@ -766,8 +768,8 @@ void computeSphereSubdivision(int r, int lvl)
 	int x0 = 1 << (lvl-1); 
 	int y0 = 1 << (lvl-1); 
 	int z0 = 1 << (lvl-1); 
-	//Value exact = computeExact( x0, y0, z0, r, lvl );
-	Value exact = computeHierarchy( lvl, x0, y0, z0, r );
+	Value exact = computeExact( x0, y0, z0, r, lvl );
+	//Value exact = computeHierarchy( lvl, x0, y0, z0, r );
 	printf("Fetch %d cells\n", (int)xyzk_list[0]);
 	
 	//for(int i=1; i<=xyzk_list[0]; i++)

@@ -1,0 +1,35 @@
+#octaflower_130
+vertex
+	fullres : 282396
+	screenshot : 59934
+resolution
+	objet : 130
+	padding : 256
+
+#bunny_67
+vertex
+	fullres : 95460
+	screenshot : 34692
+resolution
+	objet : 67
+	padding : 128
+
+#eg_dragon_252
+vertex
+	fullres : 1127184
+	screenshot : 64284
+resolution
+	objet : 252
+	padding : 256
+
+#fandisk_251
+vertex
+	fullres : 1090038
+	screenshot : 68172
+resolution
+	objet : 251
+	padding : 256
+
+
+
+

@@ -257,7 +257,6 @@ public:
 	int init( )
 	{
 		computeSphereSubdivision((int)Parameters::getInstance()->g_curvradius, ceil( log2(atoi(argv[3])) ));
-		//exit(0);
 		
 		//Create queries
 		fprintf(stdout, "Status: Using GLEW %s\n", glewGetString(GLEW_VERSION));
@@ -333,7 +332,7 @@ public:
 		else 
 			load_viewPoint();
 		
-		min_lvl = (int)floor(log2(Parameters::getInstance()->g_curvradius));
+		min_lvl = 4.0;//(int)floor(log2(Parameters::getInstance()->g_curvradius));
 		Parameters::getInstance()->g_lvl = min_lvl;
 		
 		last_radius = Parameters::getInstance()->g_curvradius;
@@ -498,8 +497,8 @@ public:
 			
 			if (Parameters::getInstance()->g_export)
 			{
-				//m_time_shading->sync();
-				//gpu_shading_time = m_time_shading->result64() / 1000;
+				m_time_shading->sync();
+				gpu_shading_time = m_time_shading->result64() / 1000;
 				
 				std::string file(argv[1]);
 				file = file.substr(file.find_last_of('/')+1, (file.find_last_of('.')-1)-file.find_last_of('/'));
@@ -701,8 +700,8 @@ public:
 		shadator.run(triangles_regular+triangles_transition);
 		
 		//fprintf(stdout, "%lf %lf %lf -- ", Parameters::getInstance()->g_camera.pos[0], Parameters::getInstance()->g_camera.pos[1], Parameters::getInstance()->g_camera.pos[2]);
-		fprintf(stdout, "[Cells] Total %d Regular %d Transition %d // [Triangles] Regular %d Transition %d ...\r", 
-			queryResult_lod, queryResult_regular, queryResult_transition, triangles_regular, triangles_transition); fflush(stdout);
+		//fprintf(stdout, "[Cells] Total %d Regular %d Transition %d // [Triangles] Regular %d Transition %d ... // [Vertices] %d \r", 
+		//	queryResult_lod, queryResult_regular, queryResult_transition, triangles_regular, triangles_transition, (triangles_regular+triangles_transition)*3); fflush(stdout);
        
 		m_time_blit->begin();
 		
@@ -1110,6 +1109,9 @@ public:
 		/** Screen Recording **/
 		if (Parameters::getInstance()->g_capture.enabled) 
 		{
+			fprintf(stdout, "[Cells] Total %d Regular %d Transition %d // [Triangles] Regular %d Transition %d ... // [Vertices] %d \r", 
+			queryResult_lod, queryResult_regular, queryResult_transition, triangles_regular, triangles_transition, (triangles_regular+triangles_transition)*3); fflush(stdout);
+
             char buf[256];
 			sprintf (buf, "capture_%02i_%09i", Parameters::getInstance()->g_capture.count, Parameters::getInstance()->g_capture.frame);
                         std::string str = std::string(CAPTURE_PATH()) /*+ currentDateTime() + "_"*/ + std::string(buf) + ".bmp";

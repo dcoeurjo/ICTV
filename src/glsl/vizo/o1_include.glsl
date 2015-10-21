@@ -7,8 +7,15 @@ uniform int u_curv_val;
 
 void fetch(vec3 p, float step, int l, inout float volume, inout vec3 xyz, inout vec3 xyz2, inout vec3 xy_yz_xz)
 {
-	float val = getPotential(p, u_time);//textureLod(densities, p, l).r;
+	//float val = getPotential(p, u_time);
+	float val = textureLod(densities, p, l).r;
 	vec3 p2 = p*u_size_tex;
+	
+	/*if (val > 0.5)
+		val = 1;
+	else
+		val = 0;*/
+		
 	val *= (step*step*step);
 	
 	volume += val;
