@@ -177,7 +177,7 @@ coincides with $\partial\Body{Z}{h}$.
           \put(20,10){$\Shape$}
       \end{overpic}}~~~~~~
       \subfigure[]{\begin{overpic}[width=5cm]{figs/notation_2}
-          \put(44.5,25){$\vp$}
+          \put(44.5,25){$h \cdot \vz$}
           \put(55,45){$B_R(\vx)$}
           \put(42,28.5){$\times$}
           \put(45,32.5){$\vx$}
@@ -294,7 +294,7 @@ local shape geometry using maximal digital straight segments of the
 digital boundary. In \cite{SMI2015}, we analyze in scale-space (\ie
 for a range of radii) curvature estimation of our algorithm for a
 given digital shape. This allows us to detect features of the shape
-thanks to the behavior on singularities. 
+thanks to the behavior on singularities.
 
 As a consequence, for all these integral invariant based approaches,
 we need to consider different ball radius which could be time
@@ -486,7 +486,7 @@ To implement the integration on $B_R(x)\cap\Shape$
 (Fig.~\ref{fig:approx}-$a$), a naive approach consists in scanning all
 digital points inside such domain (Fig.~\ref{fig:approx}-$b$) and then
 to estimate the geometrical moment as the sum of the geometrical
-moments of each elementary cubes lying in the intersection. On GPU, 
+moments of each elementary cubes lying in the intersection. On GPU,
 
 \begin{figure}
   \begin{center}
