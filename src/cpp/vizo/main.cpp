@@ -486,16 +486,17 @@ public:
 				std::string file(argv[1]);
 				file = file.substr(file.find_last_of('/')+1, (file.find_last_of('.')-1)-file.find_last_of('/'));
 				char buf[400];
-				sprintf (buf, "export%d_%s_r%.2lf_s%d_l%d.txt", nb_export++, file.c_str(), 
+				sprintf (buf, "export%d_%s_r%.2lf_s%d_l%d_m%d.txt", nb_export++, file.c_str(), 
 						 Parameters::getInstance()->g_curvradius, 
 						 Parameters::getInstance()->g_sizetex, 
-						 (int)Parameters::getInstance()->g_lvl);
+						 (int)Parameters::getInstance()->g_lvl,
+						 (int)Parameters::getInstance()->g_ground_truth);
 				printf("Exporting to %s...\n", buf);
 				plotfd = fopen(buf,"w");
 				if (plotfd == NULL)
 					perror("fopen");
 				
-				int nb_geom = -1;
+				float nb_geom = -1;
 				
 				//fprintf(plotfd, "# Frame \t\t TotalCells \t\t RegCells \t\t TrCells \t\t Tgl \t\t LodTime (ms) \t\t CullTime (ms) \t\t RegTglTime (ms) \t\t TrTglTime (ms)\t\t ShadingTime (ms)\t\t ShdLessTime (ms)\t\t TotalTime (ms) \t\t Cpu Time (ns)\n");
 				fprintf(plotfd, "#Vertex \t\tCurv \tK1 \tK2 \tDir Min \t\tDir Max \t\tNormale \t\tNb Probe \n");// \t\tEigenvalues \t\tCovmat Diag \t\tCovmat Upper\n");
@@ -571,7 +572,7 @@ public:
 						{
 								fprintf(plotfd, "%lf\t", data_normale[nb2++]);
 						}
-						int p = data_normale[nb2++];
+						float p = data_normale[nb2++];
 						if (nb_geom == -1)
 						{
 							//printf("NBPROBE = %d\n", p);
@@ -580,7 +581,7 @@ public:
 						else
 						{
 							if (p != nb_geom)
-								printf("ERROR: %d != ref %d\n", p, nb_geom);
+								printf("ERROR: %lf != ref %lf\n", p, nb_geom);
 						}
 						fprintf(plotfd, "%lf\t", p);
 						fprintf(plotfd, "\n");
@@ -695,10 +696,11 @@ public:
 			std::string file(argv[1]);
 			file = file.substr(file.find_last_of('/')+1, (file.find_last_of('.')-1)-file.find_last_of('/'));
 			char buf[400];
-			sprintf (buf, "capture_export%d_%s_r%.2lf_s%d_l%d", nb_export-1, file.c_str(), 
+			sprintf (buf, "capture_export%d_%s_r%.2lf_s%d_l%d_m%d", nb_export-1, file.c_str(), 
 						 Parameters::getInstance()->g_curvradius, 
 						 Parameters::getInstance()->g_sizetex, 
-						(int)Parameters::getInstance()->g_lvl);
+						(int)Parameters::getInstance()->g_lvl,
+						(int)Parameters::getInstance()->g_ground_truth);
 			std::string str = std::string(buf) + ".bmp";
 			gk::writeFramebuffer(str.c_str());
 			++(Parameters::getInstance()->g_capture.frame);
