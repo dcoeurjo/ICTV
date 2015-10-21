@@ -294,11 +294,14 @@ Value computeExact(int x0, int y0, int z0, Value r, int lvl)
         {
           if ( distance2( x0, y0, z0, x, y, z ) <= r2 )
             {
-			  xyzk_list[0]++;
-              xyzk_list[ (int)xyzk_list[0]*4 ] = x / pow(2, lvl) - 0.5;
-			  xyzk_list[ (int)xyzk_list[0]*4 + 1 ] = y / pow(2, lvl) - 0.5;
-			  xyzk_list[ (int)xyzk_list[0]*4 + 2 ] = z / pow(2, lvl) - 0.5;
-			  xyzk_list[ (int)xyzk_list[0]*4 + 3 ] = 0;
+				if (x >= 0 && y >= 0 && z >= 0)
+				{
+					xyzk_list[0]++;
+					xyzk_list[ (int)xyzk_list[0]*4 ] = x / pow(2, lvl) - 0.5;
+					xyzk_list[ (int)xyzk_list[0]*4 + 1 ] = y / pow(2, lvl) - 0.5;
+					xyzk_list[ (int)xyzk_list[0]*4 + 2 ] = z / pow(2, lvl) - 0.5;
+					xyzk_list[ (int)xyzk_list[0]*4 + 3 ] = 0;
+				}
             }
 		}
   return acc;
@@ -449,11 +452,16 @@ Value computeHierarchy( int lvl, int x0, int y0, int z0, Value r )
           if ( d2 <= r2 ) 
             { // cell is completely inside
               // printf("[%d] %d %d %d\n", k, xyzk[ 0 ], xyzk[ 1 ], xyzk[ 2 ] );
-              xyzk_list[0]++;
-              xyzk_list[ (int)xyzk_list[0]*4 ] = (xyzk[0] - pow(2, xyzk[3]-1))/pow(2, xyzk[3]);
-			  xyzk_list[ (int)xyzk_list[0]*4 + 1 ] = (xyzk[1] - pow(2, xyzk[3]-1))/pow(2, xyzk[3]);
-			  xyzk_list[ (int)xyzk_list[0]*4 + 2 ] = (xyzk[2] - pow(2, xyzk[3]-1))/pow(2, xyzk[3]);
-			  xyzk_list[ (int)xyzk_list[0]*4 + 3 ] = max_k - xyzk[3];
+              if ((xyzk[0] - pow(2, xyzk[3]-1))/pow(2, xyzk[3]) >= 0 && 
+				  (xyzk[1] - pow(2, xyzk[3]-1))/pow(2, xyzk[3]) >= 0 && 
+				  (xyzk[2] - pow(2, xyzk[3]-1))/pow(2, xyzk[3]) >= 0)
+				{
+					xyzk_list[0]++;
+					xyzk_list[ (int)xyzk_list[0]*4 ] = (xyzk[0] - pow(2, xyzk[3]-1))/pow(2, xyzk[3]);
+					xyzk_list[ (int)xyzk_list[0]*4 + 1 ] = (xyzk[1] - pow(2, xyzk[3]-1))/pow(2, xyzk[3]);
+					xyzk_list[ (int)xyzk_list[0]*4 + 2 ] = (xyzk[2] - pow(2, xyzk[3]-1))/pow(2, xyzk[3]);
+					xyzk_list[ (int)xyzk_list[0]*4 + 3 ] = max_k - xyzk[3];
+				}
               goNext( xyzk );
             }
           else // cell is completely outside
@@ -464,11 +472,16 @@ Value computeHierarchy( int lvl, int x0, int y0, int z0, Value r )
           if ( d2 <= upper2 ) 
             {
               // printf("[%d] %d %d %d\n", k, xyzk[ 0 ], xyzk[ 1 ], xyzk[ 2 ] );
-              xyzk_list[0]++;
-              xyzk_list[ (int)xyzk_list[0]*4 ] = (xyzk[0] - pow(2, xyzk[3]-1))/pow(2, xyzk[3]);
-			  xyzk_list[ (int)xyzk_list[0]*4 + 1 ] = (xyzk[1] - pow(2, xyzk[3]-1))/pow(2, xyzk[3]);
-			  xyzk_list[ (int)xyzk_list[0]*4 + 2 ] = (xyzk[2] - pow(2, xyzk[3]-1))/pow(2, xyzk[3]);
-			  xyzk_list[ (int)xyzk_list[0]*4 + 3 ] = max_k - xyzk[3];
+              if ((xyzk[0] - pow(2, xyzk[3]-1))/pow(2, xyzk[3]) >= 0 && 
+				  (xyzk[1] - pow(2, xyzk[3]-1))/pow(2, xyzk[3]) >= 0 && 
+				  (xyzk[2] - pow(2, xyzk[3]-1))/pow(2, xyzk[3]) >= 0)
+				{
+					xyzk_list[0]++;
+					xyzk_list[ (int)xyzk_list[0]*4 ] = (xyzk[0] - pow(2, xyzk[3]-1))/pow(2, xyzk[3]);
+					xyzk_list[ (int)xyzk_list[0]*4 + 1 ] = (xyzk[1] - pow(2, xyzk[3]-1))/pow(2, xyzk[3]);
+					xyzk_list[ (int)xyzk_list[0]*4 + 2 ] = (xyzk[2] - pow(2, xyzk[3]-1))/pow(2, xyzk[3]);
+					xyzk_list[ (int)xyzk_list[0]*4 + 3 ] = max_k - xyzk[3];
+				}
               goNext( xyzk );
             }
           else if ( d2 > lower2 )
@@ -606,11 +619,14 @@ Value computeApproximateHierarchy( int lvl, int x0, int y0, int z0, Value r, int
           if ( d2 <= r2 ) 
             { // cell is completely inside
               // printf("[%d] %d %d %d\n", k, xyzk[ 0 ], xyzk[ 1 ], xyzk[ 2 ] );
-			  xyzk_list[0]++;
-              xyzk_list[ (int)xyzk_list[0]*4 ] = (xyzk[0] - pow(2, xyzk[3]-1))/pow(2, xyzk[3]);
-			  xyzk_list[ (int)xyzk_list[0]*4 + 1 ] = (xyzk[1] - pow(2, xyzk[3]-1))/pow(2, xyzk[3]);
-			  xyzk_list[ (int)xyzk_list[0]*4 + 2 ] = (xyzk[2] - pow(2, xyzk[3]-1))/pow(2, xyzk[3]);
-			  xyzk_list[ (int)xyzk_list[0]*4 + 3 ] = max_k - xyzk[3];
+				if (xyzk[0] >= 0 && xyzk[1] >= 0 && xyzk[2] >= 0)
+				{
+					xyzk_list[0]++;
+					xyzk_list[ (int)xyzk_list[0]*4 ] = (xyzk[0] - pow(2, xyzk[3]-1))/pow(2, xyzk[3]);
+					xyzk_list[ (int)xyzk_list[0]*4 + 1 ] = (xyzk[1] - pow(2, xyzk[3]-1))/pow(2, xyzk[3]);
+					xyzk_list[ (int)xyzk_list[0]*4 + 2 ] = (xyzk[2] - pow(2, xyzk[3]-1))/pow(2, xyzk[3]);
+					xyzk_list[ (int)xyzk_list[0]*4 + 3 ] = max_k - xyzk[3];
+				}
               goNext( xyzk );
             }
           else // cell is completely outside
@@ -620,11 +636,14 @@ Value computeApproximateHierarchy( int lvl, int x0, int y0, int z0, Value r, int
         { // cell is completely inside
           if ( d2 <= upper2 ) 
             {
-              xyzk_list[0]++;
-              xyzk_list[ (int)xyzk_list[0]*4 ] = (xyzk[0] - pow(2, xyzk[3]-1))/pow(2, xyzk[3]);
-			  xyzk_list[ (int)xyzk_list[0]*4 + 1 ] = (xyzk[1] - pow(2, xyzk[3]-1))/pow(2, xyzk[3]);
-			  xyzk_list[ (int)xyzk_list[0]*4 + 2 ] = (xyzk[2] - pow(2, xyzk[3]-1))/pow(2, xyzk[3]);
-			  xyzk_list[ (int)xyzk_list[0]*4 + 3 ] = max_k - xyzk[3];
+              if (xyzk[0] >= 0 && xyzk[1] >= 0 && xyzk[2] >= 0)
+				{
+					xyzk_list[0]++;
+					xyzk_list[ (int)xyzk_list[0]*4 ] = (xyzk[0] - pow(2, xyzk[3]-1))/pow(2, xyzk[3]);
+					xyzk_list[ (int)xyzk_list[0]*4 + 1 ] = (xyzk[1] - pow(2, xyzk[3]-1))/pow(2, xyzk[3]);
+					xyzk_list[ (int)xyzk_list[0]*4 + 2 ] = (xyzk[2] - pow(2, xyzk[3]-1))/pow(2, xyzk[3]);
+					xyzk_list[ (int)xyzk_list[0]*4 + 3 ] = max_k - xyzk[3];
+				}
               goNext( xyzk );
             }
           else if ( d2 > lower2 )
