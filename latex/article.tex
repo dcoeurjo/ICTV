@@ -99,7 +99,7 @@ structures combined with a dynamic curvature tensor estimation. More
 precisely, we define a fully data parallel process on GPU hardware \todo{Definir GPU au cas ou ?} to
 both efficiently extract adaptive isosurface and compute per vertex
 curvature tensor using Integral Invariants estimators. Hence, this
-system allows us to visualize curvature tensor in realtime on large
+system allows us to visualize curvature tensor in real-time on large
 dynamic objects. Our approach combines a GPU implementation of
 pointerless octrees to represent the data, an adaptive
 viewpoint-dependent mesh extraction, and a GPU implementation of
@@ -296,7 +296,7 @@ shape, on convex shapes with at least $C^3$-boundary and bounded curvature
 
 Additionally, eigenvectors associated with $\hat{\lambda}_1$ and
 $\hat{\lambda}_2$ of the covariance matrix correspond to principal curvature
-directions $\PrincDirH{1}{R}$ and $\PrincDirH{2}{R}$. The smallest eigvenvector
+directions $\PrincDirH{1}{R}$ and $\PrincDirH{2}{R}$. The smallest eigenvector
 corresponds to the normal direction $\NormalDirH{R}$ at $\vx$. Convergence
 results can be found in \cite{ChapterIICurvature}.\todo[inline]{Changer
 ChapterIICurvature dans le bibtex...}
@@ -314,7 +314,7 @@ As a consequence, for all these integral invariant based approaches,
 we need to consider different ball radius which could be time
 consuming when implemented on CPU. We propose here a fully parallel
 implementation on GPU allowing us to change the radius and thus update
-the estimated quantities in realtime.
+the estimated quantities in real-time.
 
 \section{Isosurface Extraction on GPU}
 \label{sec:isos-extr-gpu}
@@ -543,12 +543,12 @@ at this point.
 \end{figure}
 
 
-\subsection{Per Vertex Realtime Computation on GPU}
+\subsection{Per Vertex Real-time Computation on GPU}
 
 We describe here two different visualization pipeline on GPU that will
-be evaluated in the next section. 
+be evaluated in the next section.
 
-\paragraph{Hierarchical decomposition}  As discussed above, 
+\paragraph{Hierarchical decomposition}  As discussed above,
 
 
 \paragraph{Dynamic refinement}
