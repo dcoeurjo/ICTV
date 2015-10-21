@@ -126,20 +126,23 @@ void fetch(vec3 p, float step, int l, inout float volume, inout vec3 xyz, inout 
 	
 }
 
-void getVolumeMoments(in vec3 vertex_position, out float volume, out vec3 xyz, out vec3 xy_yz_xz, out vec3 xyz2, in float lvl_tree)
+int getVolumeMoments(in vec3 vertex_position, out float volume, out vec3 xyz, out vec3 xy_yz_xz, out vec3 xyz2, in float lvl_tree)
 {
 	volume = 0.0;
 	xyz2 = vec3(0);
 	xy_yz_xz = vec3(0);
 	xyz = vec3(0);
 	
+	int nb_probe = 0;
 	float nbfetch = texelFetch(u_spheresubdiv, 0, 0).r;
 	for(int i=1; i<=nbfetch; i++)
 	{
 		vec4 xyzk = texelFetch(u_spheresubdiv, i, 0).rgba;
 		fetch(vertex_position + xyzk.xyz, int(pow(2, xyzk.w)), int(xyzk.w), volume, xyz, xyz2, xy_yz_xz);
+		nb_probe+=2;
 	}
 	//analytic_hierarch(vertex_position, volume, xyz, xy_yz_xz, xyz2, lvl_tree);
+	return nb_probe;
 }
 
 

@@ -10,7 +10,7 @@ bool isincube(in vec3 pos)
 	return ((pos[0]>= 0) && (pos[0]<=1) && (pos[1]>= 0)&& (pos[1]<=1) && (pos[2]>= 0)&& (pos[2]<=1));
 }
 
-void getVolumeMoments(in vec3 vertex_position, out float volume, out vec3 xyz, out vec3 xy_yz_xz, out vec3 xyz2, in float lvl_tree)
+int getVolumeMoments(in vec3 vertex_position, out float volume, out vec3 xyz, out vec3 xy_yz_xz, out vec3 xyz2, in float lvl_tree)
 {
 	volume = 0.0;
 	xyz2 = vec3(0);
@@ -22,7 +22,7 @@ void getVolumeMoments(in vec3 vertex_position, out float volume, out vec3 xyz, o
 	int l = 0;
 	float step = pow(2, l);
 	
-	float nb_probe = 0;
+	int nb_probe = 0;
 	float size_obj = u_size_tex;
 	for(float i=0; i<r; i+=step)
 	for(float j=0; j<r; j+=step)
@@ -94,5 +94,9 @@ void getVolumeMoments(in vec3 vertex_position, out float volume, out vec3 xyz, o
 			probe.y *= -1;
 			probe.x *= -1;
 		}
+		
+		nb_probe += 8;
 	}
+	
+	return nb_probe;
 }

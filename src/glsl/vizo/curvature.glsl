@@ -30,7 +30,7 @@ void main( )
 	vec3 xyz = vec3(0);
 
 	float volume_approx = 0.0;
-	getVolumeMoments(vertex_position, volume, xyz, xy_yz_xz, xyz2, u_lvl);
+	int nb_probe = getVolumeMoments(vertex_position, volume, xyz, xy_yz_xz, xyz2, u_lvl);
 
 	float k1;
 	float k2;
@@ -48,7 +48,7 @@ void main( )
 	
 	curv_value = 0;
 	if(u_curv_val == 1)
-		curv_value = (k1+k2)/2.0;
+		curv_value = curvature;
 	else if(u_curv_val == 2)
 		curv_value = (k1*k2);
 	else if(u_curv_val == 3)

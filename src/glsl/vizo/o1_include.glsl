@@ -21,10 +21,9 @@ void fetch(vec3 p, float step, int l, inout float volume, inout vec3 xyz, inout 
 	xyz += p2 * val;
 	xyz2 += (p2*p2 + error) * val;
 	xy_yz_xz += vec3(p2.x*p2.y, p2.y*p2.z, p2.x*p2.z) * val;
-	
 }
 
-void getVolumeMoments(in vec3 vertex_position, out float volume, out vec3 xyz, out vec3 xy_yz_xz, out vec3 xyz2, in float lvl_tree)
+int getVolumeMoments(in vec3 vertex_position, out float volume, out vec3 xyz, out vec3 xy_yz_xz, out vec3 xyz2, in float lvl_tree)
 {
 	volume = 0.0;
 	xyz2 = vec3(0);
@@ -36,6 +35,7 @@ void getVolumeMoments(in vec3 vertex_position, out float volume, out vec3 xyz, o
 	int l = int(lvl_tree);
 	float step = pow(2, l);
 
+	/*
 	float nb_probe = 0;
 	float size_obj = u_size_tex;
 	for(float i=0; i<=r; i+=step)
@@ -85,4 +85,24 @@ void getVolumeMoments(in vec3 vertex_position, out float volume, out vec3 xyz, o
 			probe.x *= -1;
 		}
 	}
+	*/
+	
+	int nb_probe = 0;
+	for(float m=-r; m<r; m +=step)
+	for(float n=-r; n<r; n +=step)
+	for(float o=-r; o<r; o +=step)
+	{
+		vec3 probe = vec3( m, n, o );
+		vec3 c = vertex_position * u_size_tex;
+		vec3 p = c + probe;
+		vec3 pixel_p = vec3(int(p.x), int(p.y), int(p.z));
+		
+		if (length(pixel_p - c) <= r)
+		{
+			fetch(pixel_p/u_size_tex, step, l, volume, xyz, xyz2, xy_yz_xz);
+			nb_probe++;
+		}
+	}
+	
+	return nb_probe;
 }
