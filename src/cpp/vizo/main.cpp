@@ -206,6 +206,7 @@ private:
 	
 	//Plot file
 	FILE* plotfd;
+	FILE* plotfd2;
 	
 	//CPU flags
 	bool plot;
@@ -303,6 +304,20 @@ public:
 		
 		plot = false;
 		transition_cells_displayed = true;
+		
+		std::string file(argv[1]);
+		file = file.substr(file.find_last_of('/')+1, (file.find_last_of('.')-1)-file.find_last_of('/'));
+		printf("%s\n", file.c_str());
+		char buf[400];
+		sprintf (buf, "time_plot_%s_r%.2lf_s%d_l%d_m%d.txt", file.c_str(), 
+						 Parameters::getInstance()->g_curvradius, 
+						 Parameters::getInstance()->g_sizetex, 
+						 (int)Parameters::getInstance()->g_lvl,
+						 (int)Parameters::getInstance()->g_ground_truth);
+		plotfd2 = fopen(buf,"w");
+		if (plotfd2 == NULL)
+				perror("fopen");
+		fprintf(plotfd2, "#Lod\t Cull\t Extraction\t Curvature\n");
 		
 		// OpenGL context flags
 		glEnable (GL_DEPTH_TEST);
@@ -483,10 +498,13 @@ public:
 			
 			if (Parameters::getInstance()->g_export)
 			{
+				//m_time_shading->sync();
+				//gpu_shading_time = m_time_shading->result64() / 1000;
+				
 				std::string file(argv[1]);
 				file = file.substr(file.find_last_of('/')+1, (file.find_last_of('.')-1)-file.find_last_of('/'));
 				char buf[400];
-				sprintf (buf, "export%d_%s_r%.2lf_s%d_l%d_m%d.txt", nb_export++, file.c_str(), 
+				sprintf (buf, "export_%s_r%.2lf_s%d_l%d_m%d.txt", file.c_str(), 
 						 Parameters::getInstance()->g_curvradius, 
 						 Parameters::getInstance()->g_sizetex, 
 						 (int)Parameters::getInstance()->g_lvl,
@@ -500,7 +518,8 @@ public:
 				
 				//fprintf(plotfd, "# Frame \t\t TotalCells \t\t RegCells \t\t TrCells \t\t Tgl \t\t LodTime (ms) \t\t CullTime (ms) \t\t RegTglTime (ms) \t\t TrTglTime (ms)\t\t ShadingTime (ms)\t\t ShdLessTime (ms)\t\t TotalTime (ms) \t\t Cpu Time (ns)\n");
 				fprintf(plotfd, "#Vertex \t\tCurv \tK1 \tK2 \tDir Min \t\tDir Max \t\tNormale \t\tNb Probe \n");// \t\tEigenvalues \t\tCovmat Diag \t\tCovmat Upper\n");
-				fprintf(plotfd, "N %d\n", 3*triangles_regular);
+				fprintf(plotfd, "#N %d\n", 3*triangles_regular);
+				fprintf(plotfd, "#total curv ms %d\n", gpu_shading_time / 1000);
 			
 				printf(" [1/2] Copying from the GPU ... \n");
 				
@@ -575,7 +594,7 @@ public:
 						float p = data_normale[nb2++];
 						if (nb_geom == -1)
 						{
-							//printf("NBPROBE = %d\n", p);
+							printf("NBPROBE = %lf\n", p);
 							nb_geom = p;
 						}
 						else
@@ -723,6 +742,7 @@ public:
 		glDeleteTransformFeedbacks(FEEDBACK_COUNT, Parameters::getInstance()->g_feedbacks);
 		glDeleteQueries(1, &Parameters::getInstance()->g_query[QUERY_REGULAR]);
 		glDeleteQueries(1, &Parameters::getInstance()->g_query[QUERY_TRANSITION]);
+		fclose(plotfd2);
 		return 0;
 	}
 
@@ -953,7 +973,11 @@ public:
 			gpu_time = 0.1;
 		
 		fps = 1000 / gpu_time;
+		
+		//printf("Curv time %d\n", gpu_shading_time / 1000);
 
+		//fprintf(plotfd2, "%d\t %d\t %d\t %d\n", gpu_lod_time / 1000, gpu_cull_time / 1000, (gpu_render_time_regular+gpu_render_time_transition) / 1000, gpu_shading_time / 1000);
+		
 		m_widgets.begin();
 		m_widgets.beginGroup(nv::GroupFlags_GrowDownFromLeft);
 		if (Parameters::getInstance()->g_gui)
@@ -1094,6 +1118,7 @@ public:
 			Parameters::getInstance()->g_capture.enabled = !Parameters::getInstance()->g_capture.enabled;
 		}
 
+		//exit(0);
 		present();
              
 		frame++;

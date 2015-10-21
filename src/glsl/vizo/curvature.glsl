@@ -37,6 +37,7 @@ void main( )
 	curv_dir_min = vec3(0, 0, 1);
 	curv_dir_max = vec3(0, 0, 1);
 	curv_normale = vec3(0);
+	
 	computeK1K2(volume, u_curv_radius,
 				xyz2, xy_yz_xz, xyz,
 				curv_dir_min, curv_dir_max, curv_normale, eigenvalues, k1, k2);
