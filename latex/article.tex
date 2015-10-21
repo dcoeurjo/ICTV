@@ -478,13 +478,14 @@ correspond to surfel centers of subsampled versions of the input
 object. Hence, Integral Invariant framework defined in
 Section~\ref{sec:curv-tens-estim} is consistent with the triangular
 surface obtained on GPU: triangles are used for visualization purposes
-but all computations are performed on the digital object $Z$ and thus
+but all computations are performed on the digital object $\DSh$ and thus
 estimators
 (\ref{eq:dig-curvature-estimator-k}),
 (\ref{eq:dig-curvature-estimator-H}), (\ref{eq:dig-curvature-estimator-k1})
 and (\ref{eq:dig-curvature-estimator-k2}).
 
-To implement the integration on $B_R(\vx)\cap\Shape$\todo{fix Z vs X}
+To implement the integration on $B_R(\vx)\cap\Shape$\todo{Check ball
+  radii w.r.t. notations in sect2}
 (Fig.~\ref{fig:approx}-$a$), a naive approach consists in scanning all
 digital points inside such domain (Fig.~\ref{fig:approx}-$b$) and then
 to estimate the geometrical moment as the sum of the geometrical
@@ -494,7 +495,7 @@ input binary object is stored in a 3D texture, GPU hardware can
 construct a multiresolution pyramid such that 8 neighboring voxel
 intensities at level $l$ are averaged to define the voxel value at
 level $l+1$. If the level 0 corresponds to the binary input object, at
-a given level $l$, a voxel $(x,y,z)$ contains the fraction of $Z$
+a given level $l$, a voxel $(x,y,z)$ contains the fraction of $\DSh$
 belonging to the cube of center $(x,y,z)$ and edge length $2^l$. As a
 consequence, we can approximate the volume of $B_R(x)\cap\Shape$ by
 considering mipmap values at a given resolution $l$
@@ -533,10 +534,11 @@ regular grid case) since  geometrical moments are additive quantities.
 \end{figure}
 
 
-
-
 \subsection{Realtime computation on GPU}
-
+\begin{itemize}
+\item   Variante 1 : hierarchique avec précalcul cells
+\item   Variante 2 : reg avec autoraffinement
+\end{itemize}
 
 
 
