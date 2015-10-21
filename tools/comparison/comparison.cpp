@@ -145,7 +145,7 @@ int main( int argc, char** argv )
   //// User's choice
   if ( argc == 1 )
     {
-      std::cout << "Usage: " << argv[0] << "<fileGPU> <fileCPU>" << std::endl;
+      std::cout << "Usage: " << argv[0] << "<fileGPU> <fileCPU> <enableEmbedding>" << std::endl;
       std::cout << "       - computes the difference of results between the" << std::endl;
       std::cout << "         CPU version of the estimator and the GPU version" << std::endl;
       std::cout << "         GPU file : positions are between [0;size]." << std::endl;
@@ -157,6 +157,13 @@ int main( int argc, char** argv )
     }
   std::string fileGPU = argc > 1 ? std::string( argv[ 1 ] ) : "file1.txt";
   std::string fileCPU = argc > 2 ? std::string( argv[ 2 ] ) : "file2.txt";
+  int enableEmbedding = argc > 3 ? std::atoi( argv[ 3 ] ) : 1;
+  if( enableEmbedding != 0 && enableEmbedding != 1 )
+  {
+    std::cout << "EEROR: enableEmbedding must be 0 or 1. Get " << enableEmbedding << " instead." << std::endl;
+    std::cout << "Leaving now..." << std::endl;
+    return 0;
+  }
 
   //// Variables initialization
   std::vector< std::pair<Position*, Curvatures*> > mapGPU;
@@ -169,37 +176,63 @@ int main( int argc, char** argv )
   Position* barycenterCPU = new Position();
 
   //// Loading files
-  if( !loadFile( fileGPU, mapGPU, barycenterGPU, predicateGPU, 6 ))
+  if( enableEmbedding )
   {
+    if( !loadFile( fileGPU, mapGPU, barycenterGPU, predicateGPU, 6 ))
+    {
+      deleteVector( mapGPU );
+      return 0;
+    }
+    if( !loadFile( fileCPU, mapCPU, barycenterCPU, predicateCPU, 6 ))
+    {
+      deleteVector( mapGPU );
+      deleteVector( mapCPU );
+      return 0;
+    }
+
+    //// Normalize inputs
+    convertCPUtoGPU predicateCPUnormalized(barycenterGPU, barycenterCPU);
+    std::cout << "Barycenter of GPU file : {" << barycenterGPU->x << "," << barycenterGPU->y << "," << barycenterGPU->z << "}" << std::endl;
+    std::cout << "Barycenter of CPU file : {" << barycenterCPU->x << "," << barycenterCPU->y << "," << barycenterCPU->z << "}" << std::endl;
+    std::cout << "Offset : {" << predicateCPUnormalized.getOffset().x << "," << predicateCPUnormalized.getOffset().y << "," << predicateCPUnormalized.getOffset().z << "}" << std::endl;
+    if( !normalizeCPU( mapCPU, mapGPU, mapCPUnormalized, predicateCPUnormalized ))
+    {
+      deleteVector( mapGPU );
+      deleteVector( mapCPU );
+      return 0;
+    }
+    deleteVector( mapCPU );
+
+    //// Computation some statistics.
+    computeDifference( mapGPU, mapCPUnormalized, mapErrors );
+
+    //// Releasing allocated memory
     deleteVector( mapGPU );
-    return 0;
+    deleteVector( mapCPUnormalized );
   }
-  if( !loadFile( fileCPU, mapCPU, barycenterCPU, predicateCPU, 6 ))
+  else
   {
+    if( !loadFile( fileGPU, mapGPU, barycenterGPU, predicateGPU, 6 ))
+    {
+      deleteVector( mapGPU );
+      return 0;
+    }
+    if( !loadFile( fileCPU, mapCPU, barycenterCPU, predicateGPU, 6 ))
+    {
+      deleteVector( mapGPU );
+      deleteVector( mapCPU );
+      return 0;
+    }
+
+    //// Computation some statistics.
+    computeDifference( mapGPU, mapCPU, mapErrors );
+
+    //// Releasing allocated memory
     deleteVector( mapGPU );
     deleteVector( mapCPU );
-    return 0;
   }
 
-  //// Normalize inputs
-  convertCPUtoGPU predicateCPUnormalized(barycenterGPU, barycenterCPU);
-  std::cout << "Barycenter of GPU file : {" << barycenterGPU->x << "," << barycenterGPU->y << "," << barycenterGPU->z << "}" << std::endl;
-  std::cout << "Barycenter of CPU file : {" << barycenterCPU->x << "," << barycenterCPU->y << "," << barycenterCPU->z << "}" << std::endl;
-  std::cout << "Offset : {" << predicateCPUnormalized.getOffset().x << "," << predicateCPUnormalized.getOffset().y << "," << predicateCPUnormalized.getOffset().z << "}" << std::endl;
-  if( !normalizeCPU( mapCPU, mapGPU, mapCPUnormalized, predicateCPUnormalized ))
-  {
-    deleteVector( mapGPU );
-    deleteVector( mapCPU );
-    return 0;
-  }
-  deleteVector( mapCPU );
 
-  //// Computation some statistics.
-  computeDifference( mapGPU, mapCPUnormalized, mapErrors );
-
-  //// Releasing allocated memory
-  deleteVector( mapGPU );
-  deleteVector( mapCPUnormalized );
   delete barycenterGPU;
   delete barycenterCPU;
   return 0;
