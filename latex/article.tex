@@ -15,7 +15,7 @@
 \usepackage[ruled,vlined,linesnumbered]{algorithm2e}   % authors: last version of algorithm display
 \usepackage{todonotes}
 
-\usepackage{booktabs} 
+\usepackage{booktabs}
 
 
 \newcommand{\ie}{\emph{i.e.} }
@@ -174,13 +174,13 @@ embedded into $\R^d$ such that it coincides with $\partial\Body{Z}{h}$.
       \subfigure[]{\begin{overpic}[width=5cm]{figs/integral2D_2}
           \put(42,28){$\times$}
           \put(46,31){$\vx$}
-          \put(55,45){$B_R(\vx)$}
+          \put(55,45){$\Ball{R}{\vx}$}
           \put(1,10){$\dS$}
           \put(20,10){$\Shape$}
       \end{overpic}}~~~~~~
       \subfigure[]{\begin{overpic}[width=5cm]{figs/notation_2}
           \put(44.5,25){$h \cdot \vz$}
-          \put(55,45){$B_R(\vx)$}
+          \put(55,45){$\Ball{R}{\vx}$}
           \put(42,28.5){$\times$}
           \put(45,32.5){$\vx$}
           \put(45,16.5){$h$}
@@ -492,8 +492,7 @@ estimators
 (\ref{eq:dig-curvature-estimator-H}), (\ref{eq:dig-curvature-estimator-k1})
 and (\ref{eq:dig-curvature-estimator-k2}).
 
-To implement the integration on $B_R(\vx)\cap\Shape$\todo{Check ball
-  radii w.r.t. notations in sect2}
+To implement the integration on $\Ball{R}{\vx} \cap \Shape$
 (Fig.~\ref{fig:approx}-$a$), a naive approach consists in scanning all
 digital points inside such domain (Fig.~\ref{fig:approx}-$b$) and then
 to estimate the geometrical moment as the sum of the geometrical
@@ -505,11 +504,11 @@ intensities at level $l$ are averaged to define the voxel value at
 level $l+1$. If the level 0 corresponds to the binary input object, at
 a given level $l$, a voxel $(x,y,z)$ contains the fraction of $\DSh$
 belonging to the cube of center $(x,y,z)$ and edge length $2^l$. As a
-consequence, we can approximate the volume of $B_R(x)\cap\Shape$ by
+consequence, we can approximate the volume of $\Ball{R}{\vx}\cap\Shape$ by
 considering mipmap values at a given resolution $l$
 (Fig.~\ref{fig:approx}-$c$). In this case, errors only occurs for
 cells lying inside $\Shape$ (with density 1) not entirely covered by
-$B_R(\vx)$.
+$\Ball{R}{\vx}$.
 \begin{figure}
   \begin{center}
     \subfigure[]{\includegraphics[width=4cm]{figs/approx1}}
@@ -523,8 +522,8 @@ $B_R(\vx)$.
 \end{figure}
 
 Using the hierachical nature of the mipmap texture, we could also
-consider hierarchical decompositions of either $B_R(\vx)$
-(Fig.~\ref{fig:approx2}-$a$) or $B_R(\vx)\cap\Shape$
+consider hierarchical decompositions of either $\Ball{R}{\vx}$
+(Fig.~\ref{fig:approx2}-$a$) or $\Ball{R}{\vx}\cap\Shape$
 (Fig.~\ref{fig:approx2}-$b$). The idea would be to decompose the
 regions into mipmap cells of different resolution in order to limit
 the number of texture access (important bottleneck on GPU hardwares)
@@ -541,7 +540,7 @@ at this point.
     \subfigure[]{\includegraphics[width=4cm]{figs/approx-ada}}
   \end{center}
   \caption{Adaptive approximation of the integration using a
-    hierarchical decomposition of the ball $B_R(\vx)$ $(a)$, or a decomposition of $B_R(\vx)\cap\Shape$.}
+    hierarchical decomposition of the ball $\Ball{R}{\vx}$ $(a)$, or a decomposition of $\Ball{R}{\vx}\cap\Shape$.}
   \label{fig:approx2}
 \end{figure}
 
@@ -558,7 +557,7 @@ results in terms of texture fetch can be obtained by the approach
 presented in Fig.~\ref{fig:approx2}-$b$. At each vertex, the
 computation algorithm would consist in a recursive decomposition of
 the domain such that a cell is subdivided if it does not belong to
-$B_R(\vx)\cap\Shape$. However, on GPU hardware, this approach is
+$\Ball{R}{\vx}\cap\Shape$. However, on GPU hardware, this approach is
 highly inefficient since the hardware optimizes the parallelism only
 when the micro-program described in the shader has a predictive
 execution flow. Hence, implementing the recursive algorithm (or its
@@ -574,7 +573,7 @@ to this cell. Note that cells in the $B_R$ decomposition may not be
 aligned wuth mipmap cells. However, we can use GPU mipmap
 functionalities which interpolates mipmap values if we probe at
 non-discrete positions. For a given radius $R$, the expected number of
-cells on $B_r$ is in $O(\log{R})$. Implementation details on the
+cells on $B_R$ is in $O(\log{R})$. Implementation details on the
 hierarchical octree representation can be found in the supplementary
 material (see Section \ref{sec:discussion}).
 
@@ -676,18 +675,18 @@ generation step.
           legend style={at={(0.5,-0.20)},
             anchor=north,legend columns=-1},
           ylabel={\#Time (in ms)},
-          symbolic x coords={Octa-R1, Octa-R2, Snow-R1, Snow-R2, 
+          symbolic x coords={Octa-R1, Octa-R2, Snow-R1, Snow-R2,
 	    xxx-R1, xxx-R2},
           xtick=data,
           x tick label style={rotate=45,anchor=east},
         ]
-        \addplot+[ybar] plot coordinates {(Octa-R1,0) (Octa-R2,2) 
+        \addplot+[ybar] plot coordinates {(Octa-R1,0) (Octa-R2,2)
           (Snow-R1,2) (Snow-R2,3)  (xxx-R1,2) (xxx-R2,0)};
-        \addplot+[ybar] plot coordinates {(Octa-R1,0) (Octa-R2,0) 
+        \addplot+[ybar] plot coordinates {(Octa-R1,0) (Octa-R2,0)
           (Snow-R1,0) (Snow-R2,3)  (xxx-R1,1) (xxx-R2,0)};
         \addplot+[ybar] plot coordinates {(Octa-R1,6) (Octa-R2,6)
           (Snow-R1,3) (Snow-R2,2) (xxx-R1,2) (xxx-R2,6)};
-        \addplot+[ybar] plot coordinates {(Octa-R1,4) (Octa-R2,2) 
+        \addplot+[ybar] plot coordinates {(Octa-R1,4) (Octa-R2,2)
           (Snow-R1,0) (Snow-R2,2) (xxx-R1,1) (xxx-R2,4)};
         %\legend{\strut Geometry, \strut Curvature, \strut xx, \strut xx}
       \end{axis}
@@ -701,18 +700,18 @@ generation step.
           legend style={at={(0.5,-0.20)},
             anchor=north,legend columns=-1},
          % ylabel={\#Time (in ms)},
-          symbolic x coords={Octa-R1, Octa-R2, Snow-R1, Snow-R2, 
+          symbolic x coords={Octa-R1, Octa-R2, Snow-R1, Snow-R2,
 	    xxx-R1, xxx-R2},
           xtick=data,
           x tick label style={rotate=45,anchor=east},
         ]
-        \addplot+[ybar] plot coordinates {(Octa-R1,0) (Octa-R2,2) 
+        \addplot+[ybar] plot coordinates {(Octa-R1,0) (Octa-R2,2)
           (Snow-R1,2) (Snow-R2,3)  (xxx-R1,2) (xxx-R2,0)};
-        \addplot+[ybar] plot coordinates {(Octa-R1,0) (Octa-R2,0) 
+        \addplot+[ybar] plot coordinates {(Octa-R1,0) (Octa-R2,0)
           (Snow-R1,0) (Snow-R2,3)  (xxx-R1,1) (xxx-R2,0)};
         \addplot+[ybar] plot coordinates {(Octa-R1,6) (Octa-R2,6)
           (Snow-R1,3) (Snow-R2,2) (xxx-R1,2) (xxx-R2,6)};
-        \addplot+[ybar] plot coordinates {(Octa-R1,4) (Octa-R2,2) 
+        \addplot+[ybar] plot coordinates {(Octa-R1,4) (Octa-R2,2)
           (Snow-R1,0) (Snow-R2,2) (xxx-R1,1) (xxx-R2,4)};
        % \legend{\strut Geometry, \strut Curvature, \strut xx, \strut xx}
       \end{axis}
@@ -736,7 +735,7 @@ generation step.
    \subfigure[]{\framebox{DIR1}}
    \subfigure[]{\framebox{DIR2}}
    \subfigure[]{\framebox{normales}}
-   
+
   \end{center}
   \caption{fig illustration complete (adaptative, ...) plusieurs
     objets.. + dynamique.}
@@ -749,7 +748,7 @@ For dynamic datasets, we consider a time varying impicit
 surface. Since it would have been to expensive to update the a mipmap texture
 of densities at each time step, we simply evaluate the implicit
 expression at each vertex of a cell to decide if such cell is included
-or not into $B_R(\vx)\cap X$.
+or not into $\Ball{R}{\vx}\cap \Shape$.
 \todo[inline]{blabla experiments}
 
 
