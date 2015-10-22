@@ -7,12 +7,15 @@
 \usepackage{enumerate}
 \usepackage{graphicx}        % standard LaTeX graphics tool
 \usepackage{tikz}        % standard LaTeX graphics tool
+\usepackage{pgfplots}
+
 %\usetikzlibrary{arrows}
 %\usetikzlibrary{quotes,angles}
 \usepackage{subfigure}                                 % authors: subfigures
 \usepackage[ruled,vlined,linesnumbered]{algorithm2e}   % authors: last version of algorithm display
 \usepackage{todonotes}
 
+\usepackage{booktabs} 
 
 
 \newcommand{\ie}{\emph{i.e.} }
@@ -548,24 +551,160 @@ at this point.
 We describe here two different visualization pipeline on GPU that will
 be evaluated in the next section.
 
-\paragraph{Hierarchical decomposition}  As discussed above,
 
 
-\paragraph{Dynamic refinement}
+\paragraph{Hierarchical Decomposition.}  As discussed above, best
+results in terms of texture fetch can be obtained by the approach
+presented in Fig.~\ref{fig:approx2}-$b$. At each vertex, the
+computation algorithm would consist in a recursive decomposition of
+the domain such that a cell is subdivided if it does not belong to
+$B_R(\vx)\cap\Shape$. However, on GPU hardware, this approach is
+highly inefficient since the hardware optimizes the parallelism only
+when the micro-program described in the shader has a predictive
+execution flow. Hence, implementing the recursive algorithm (or its
+de-recursified version) requires a lot of branches (conditional
+\emph{if} tests) in the flow. Instead of implementing this approach,
+we have considered a fast hierarchical approximation following
+Fig.~\ref{fig:approx2}-$a$: for a given radius $R$, we precompute a
+hierachical decomposition of $B_R$. Such decomposition is made of
+octree cells at different resolutions. At a given MC vertex $\vx$, the
+algorithm becomes simple since we just scan  the ball cells and estimate
+the area (or other moments) from the mipmap values associated to this
+cell. Note that cells in the $B_R$ decomposition may not be aligned
+wuth mipmap cells. However, we can use GPU mipmap functionalities
+which interpolates mipmap values if we probe at non-discrete
+positions. For a given radius $R$, the expected number of cells on
+$B_r$ is in $O(\log{R})$.
+
+
+\todo[inline]{phrase sur approx si on met}
 
 
 
 
-\begin{itemize}
-\item   Variante 1 : hierarchique avec précalcul cells
-\item   Variante 2 : reg avec autoraffinement
-\end{itemize}
 
+\paragraph{Dynamic Refinement.} In this approach, we want to optimize
+the interactivity and the execution flow or parallelism on GPU. The
+integration is simply computed using a regular grid at different
+resolution $l$ (Fig. \ref{fig:approx}-$b$ and $c$). The shader code
+becomes trivial (simple triple loop) and a lot of texture fetched are
+involved, but interactivity can be easily obtained. Indeed, we
+consider the following multi-pass approach:
+\begin{enumerate}
+\item When the surface geometry has been computed,we set the current
+  level $l$ at an high level $l\EqDef l_{max}$ of the mipmap
+  pyramid.
+\item We compute the integrals (and the curvature tensor) at the
+  mipmap level $l$ and  send the estimated quantities to the
+  visualization stage.
+\item If the user changes the camera position or the computation
+  parameters, we return to step 1.
+\item If the current framerate is above a given threshold, we decrease
+  $l$ and return to step 2 if the final $l_0$ level has not been
+  reached yet.
+\end{enumerate}
+A consequence of the multi-pass approach is that is there is no
+interaction (camera settings, parameters), the GPU automatically
+refine the estimation. Even if step 2 is quite expensive, in
+$O\left(\left(\frac{R}{2^l}\right)^3\right)$, the interactive control
+ in step 3 considerably improves the interactive exploration of the
+ tensor with fast preliminary approximations which are quickly refined.
 
+ Compared to the hierarchical approach, no precomputation is required
+ for a given radius $R$. As a consequence, we could even locally adapt
+ the ball radius to the geometry (for instance following the octree
+ depth of the current MC vertex). In the next section, we evaluate the
+ performances of both approaches.
 
 
 \section{Experiments}
 \label{sec:experiments}
+
+\subsection{Full resolution experiment}
+
+
+\begin{table}
+  \begin{center}
+    \begin{tabular}{@{}lrrrrrr@{}}
+      \toprule
+    Quantites  & H & $l_4$ & $l_3$ & $l_2$ & $l_1$ & $l_0$\\
+      \midrule
+      Number of texture fetches & & & & & & \\
+      Time (in ms) & & & & & & \\
+      $L_\infty$ error (\wrt $l_0$) & & & & & & \\
+      \bottomrule
+    \end{tabular}
+  \end{center}
+  \caption{object, size, radius, full res, num of vertices (timings
+    only consider the curvature estimation step).\label{tab:full-res-stat}}
+\end{table}
+
+
+
+
+\subsection{Fully adaptive evaluation}
+
+
+
+\begin{figure}[!htbp]
+  \begin{center}
+    \begin{tikzpicture}[scale=0.7]
+      \begin{axis}[
+          ybar stacked,
+	  bar width=15pt,
+	  nodes near coords,
+          enlargelimits=0.15,
+          legend style={at={(0.5,-0.20)},
+            anchor=north,legend columns=-1},
+          ylabel={\#Time (in ms)},
+          symbolic x coords={Octa-R1, Octa-R2, Snow-R1, Snow-R2, 
+	    xxx-R1, xxx-R2},
+          xtick=data,
+          x tick label style={rotate=45,anchor=east},
+        ]
+        \addplot+[ybar] plot coordinates {(Octa-R1,0) (Octa-R2,2) 
+          (Snow-R1,2) (Snow-R2,3)  (xxx-R1,2) (xxx-R2,0)};
+        \addplot+[ybar] plot coordinates {(Octa-R1,0) (Octa-R2,0) 
+          (Snow-R1,0) (Snow-R2,3)  (xxx-R1,1) (xxx-R2,0)};
+        \addplot+[ybar] plot coordinates {(Octa-R1,6) (Octa-R2,6)
+          (Snow-R1,3) (Snow-R2,2) (xxx-R1,2) (xxx-R2,6)};
+        \addplot+[ybar] plot coordinates {(Octa-R1,4) (Octa-R2,2) 
+          (Snow-R1,0) (Snow-R2,2) (xxx-R1,1) (xxx-R2,4)};
+        %\legend{\strut Geometry, \strut Curvature, \strut xx, \strut xx}
+      \end{axis}
+    \end{tikzpicture}
+     \begin{tikzpicture}[scale=0.7]
+      \begin{axis}[
+          ybar stacked,
+	  bar width=15pt,
+	  nodes near coords,
+          enlargelimits=0.15,
+          legend style={at={(0.5,-0.20)},
+            anchor=north,legend columns=-1},
+         % ylabel={\#Time (in ms)},
+          symbolic x coords={Octa-R1, Octa-R2, Snow-R1, Snow-R2, 
+	    xxx-R1, xxx-R2},
+          xtick=data,
+          x tick label style={rotate=45,anchor=east},
+        ]
+        \addplot+[ybar] plot coordinates {(Octa-R1,0) (Octa-R2,2) 
+          (Snow-R1,2) (Snow-R2,3)  (xxx-R1,2) (xxx-R2,0)};
+        \addplot+[ybar] plot coordinates {(Octa-R1,0) (Octa-R2,0) 
+          (Snow-R1,0) (Snow-R2,3)  (xxx-R1,1) (xxx-R2,0)};
+        \addplot+[ybar] plot coordinates {(Octa-R1,6) (Octa-R2,6)
+          (Snow-R1,3) (Snow-R2,2) (xxx-R1,2) (xxx-R2,6)};
+        \addplot+[ybar] plot coordinates {(Octa-R1,4) (Octa-R2,2) 
+          (Snow-R1,0) (Snow-R2,2) (xxx-R1,1) (xxx-R2,4)};
+       % \legend{\strut Geometry, \strut Curvature, \strut xx, \strut xx}
+      \end{axis}
+    \end{tikzpicture}
+  \end{center}
+  \caption{Adaptive timings H vs. rafined (tout : adaptatif, 2 rayons par formes, 4
+    formes + images).}
+  \label{fig:timings}
+\end{figure}
+
+
 
 
 
@@ -574,78 +713,77 @@ be evaluated in the next section.
 
 
 
-\appendix
-\section{Hierarchical Probing Algorithm}
+%% \appendix
+%% \section{Hierarchical Probing Algorithm}
 
 
 
-A {\em cell} is a tuple $(k,x,y,z)$, which represents a region of the space of size $2^k \times
-2^k \times 2^k$, characterized by its integer coordinates $x,y,z$,
-with $0 \le x < 2^k$, $0 \le y < 2^k$, $0 \le z < 2^k$. Cells forms an
-octree decomposition of a cubic space. We use functions Up, Down and
-Next to navigate between cells.
+%% A {\em cell} is a tuple $(k,x,y,z)$, which represents a region of the space of size $2^k \times
+%% 2^k \times 2^k$, characterized by its integer coordinates $x,y,z$,
+%% with $0 \le x < 2^k$, $0 \le y < 2^k$, $0 \le z < 2^k$. Cells forms an
+%% octree decomposition of a cubic space. We use functions Up, Down and
+%% Next to navigate between cells.
 
 
-\begin{algorithm}
-\KwIn{Integers $p,q,r$ \tcp*{the moment orders, with $0 \le p+q+r \le 2$}}
-\KwIn{Integer $k$ \tcp*{$(2^k)^3$ is the size of the digital shape image}}
-\KwIn{Mipmap $V$ \tcp*{array of $k+1$ images of sizes $(2^k)^3,  (2^{k-1})^3, \ldots,  1^3$}}
-\KwIn{Integers $x_0,y_0,z_0$, Real $r$ \tcp*{Ball radius $r$ and center $(x_0,y_0,z_0)$}}
-\KwOut{Real $m$ \tcp*{estimation of the $p,q,r$-moment of $X \cap B_r(x_0,y_0,z_0)$}}
-\KwData{Cell $c :=  (k,0,0,0)$ \tcp*{Starts from biggest cell}}
-\KwData{Integer $n := 2^k$ \tcp*{Size of each cell}}
-\KwData{Real $d,\delta,l$ \tcp*{variables for intermediate computations}}
-\Begin{
-    m := 0 \;
-    \Repeat{$c[0] = k$}{
-      \tcp{Distance between cell and ball centers}
-      $d := \frac{1}{2}\| 2^k(2c[1]+1,2c[2]+1,2c[3]+1) - (2x_0+1,2y_0+1,2z_0+1) \|_2$\;
-      $\delta := \frac{\sqrt{3}}{2}2^{c[0]}$ \tcp*{half-length of cell diagonal}
-      \If(\tcp*[f]{Is it a unit cell ?}){$c[0] = 0$}{
-        \If(\tcp*[f]{Is cell center inside ball ?}){$d^2 \le r^2$}{
-          $m := m + V[c] * (2^k c[1])^p * (2^k c[2])^q * (2^k c[3])^r$ \;
-        }
-        $c := \textsc{Next}(c)$ \tcp*{Go to next cell}
-      } \Else{
-        $l := \max(r-\delta,0)$\;
-        \If(\tcp*[f]{Is cell completely inside ball ?}){$d^2 < l^2$}{
-          $m := m + V[c] * (2^k c[1])^p * (2^k c[2])^q * (2^k c[3])^r$\;
-          $c := \textsc{Next}(c)$ \tcp*{Go to next cell}
-        }\ElseIf(\tcp*[f]{Is cell outside ball ?}){$d^2 > (r+\delta)^2$}{
-          $c := \textsc{Next}(c)$ \tcp*{Go to next cell}
-        }\lElse(\tcp*[f]{Go to a finer cell}){$c := \textsc{Down}(c)$}
-      }
-    }
-    \Return{m}\;
-  }
-  \caption{Derecursified hierarchical algorithm for computing the
-    $p,q,r$-moment of set $X \cap B_r(x_0,y_0,z_0)$, given a mipmap
-    $V$ that represents the volume of a shape $X$ in each cell, and
-    ball parameters $x_0,y_0,z_0,r$.}
-\end{algorithm}
+%% \begin{algorithm}
+%% \KwIn{Integers $p,q,r$ \tcp*{the moment orders, with $0 \le p+q+r \le 2$}}
+%% \KwIn{Integer $k$ \tcp*{$(2^k)^3$ is the size of the digital shape image}}
+%% \KwIn{Mipmap $V$ \tcp*{array of $k+1$ images of sizes $(2^k)^3,  (2^{k-1})^3, \ldots,  1^3$}}
+%% \KwIn{Integers $x_0,y_0,z_0$, Real $r$ \tcp*{Ball radius $r$ and center $(x_0,y_0,z_0)$}}
+%% \KwOut{Real $m$ \tcp*{estimation of the $p,q,r$-moment of $X \cap B_r(x_0,y_0,z_0)$}}
+%% \KwData{Cell $c :=  (k,0,0,0)$ \tcp*{Starts from biggest cell}}
+%% \KwData{Integer $n := 2^k$ \tcp*{Size of each cell}}
+%% \KwData{Real $d,\delta,l$ \tcp*{variables for intermediate computations}}
+%% \Begin{
+%%     m := 0 \;
+%%     \Repeat{$c[0] = k$}{
+%%       \tcp{Distance between cell and ball centers}
+%%       $d := \frac{1}{2}\| 2^k(2c[1]+1,2c[2]+1,2c[3]+1) - (2x_0+1,2y_0+1,2z_0+1) \|_2$\;
+%%       $\delta := \frac{\sqrt{3}}{2}2^{c[0]}$ \tcp*{half-length of cell diagonal}
+%%       \If(\tcp*[f]{Is it a unit cell ?}){$c[0] = 0$}{
+%%         \If(\tcp*[f]{Is cell center inside ball ?}){$d^2 \le r^2$}{
+%%           $m := m + V[c] * (2^k c[1])^p * (2^k c[2])^q * (2^k c[3])^r$ \;
+%%         }
+%%         $c := \textsc{Next}(c)$ \tcp*{Go to next cell}
+%%       } \Else{
+%%         $l := \max(r-\delta,0)$\;
+%%         \If(\tcp*[f]{Is cell completely inside ball ?}){$d^2 < l^2$}{
+%%           $m := m + V[c] * (2^k c[1])^p * (2^k c[2])^q * (2^k c[3])^r$\;
+%%           $c := \textsc{Next}(c)$ \tcp*{Go to next cell}
+%%         }\ElseIf(\tcp*[f]{Is cell outside ball ?}){$d^2 > (r+\delta)^2$}{
+%%           $c := \textsc{Next}(c)$ \tcp*{Go to next cell}
+%%         }\lElse(\tcp*[f]{Go to a finer cell}){$c := \textsc{Down}(c)$}
+%%       }
+%%     }
+%%     \Return{m}\;
+%%   }
+%%   \caption{Derecursified hierarchical algorithm for computing the
+%%     $p,q,r$-moment of set $X \cap B_r(x_0,y_0,z_0)$, given a mipmap
+%%     $V$ that represents the volume of a shape $X$ in each cell, and
+%%     ball parameters $x_0,y_0,z_0,r$.}
+%% \end{algorithm}
 
-\begin{function}
-  \caption{Up( Cell $c$ ) : Cell}
-  \Return{Cell( $c[0]+1$, $c[1]/2$, $c[2]/2$, $c[3]/2$ )}
-\end{function}
-\begin{function}
-  \caption{Down( Cell $c$ ) : Cell}
-  \Return{Cell( $c[0]-1$, $c[1]*2$, $c[2]*2$, $c[3]*2$ )}
-\end{function}
-\begin{function}
-  \caption{Next( Cell $c$ ) : Cell}
-  \lWhile{$\mathrm{Odd}(c[1])$ and $\mathrm{Odd}(c[2])$ and $\mathrm{Odd}(c[3])$}{$c := \mathrm{Up}(c)$}
-  \lIf{$\mathrm{Even}(c[1])$}{$c[1] := c[1]+1$}
-  \Else{$c[1] := c[1] - 1$\;
-    \lIf{$\mathrm{Even}(c[2])$}{$c[2] := c[2]+1$}
-    \Else{$c[2] := c[2] - 1$\;
-      $c[3] := c[3]+1$}
-  }
-  \Return{c}
-\end{function}
+%% \begin{function}
+%%   \caption{Up( Cell $c$ ) : Cell}
+%%   \Return{Cell( $c[0]+1$, $c[1]/2$, $c[2]/2$, $c[3]/2$ )}
+%% \end{function}
+%% \begin{function}
+%%   \caption{Down( Cell $c$ ) : Cell}
+%%   \Return{Cell( $c[0]-1$, $c[1]*2$, $c[2]*2$, $c[3]*2$ )}
+%% \end{function}
+%% \begin{function}
+%%   \caption{Next( Cell $c$ ) : Cell}
+%%   \lWhile{$\mathrm{Odd}(c[1])$ and $\mathrm{Odd}(c[2])$ and $\mathrm{Odd}(c[3])$}{$c := \mathrm{Up}(c)$}
+%%   \lIf{$\mathrm{Even}(c[1])$}{$c[1] := c[1]+1$}
+%%   \Else{$c[1] := c[1] - 1$\;
+%%     \lIf{$\mathrm{Even}(c[2])$}{$c[2] := c[2]+1$}
+%%     \Else{$c[2] := c[2] - 1$\;
+%%       $c[3] := c[3]+1$}
+%%   }
+%%   \Return{c}
+%% \end{function}
 
 
 
-\bibliographystyle{splncs03}
-\bibliography{ictv}
+\bibliographystyle{splncs03} \bibliography{ictv}
 \end{document}
