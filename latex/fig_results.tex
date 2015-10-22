@@ -60,29 +60,32 @@
     \begin{tikzpicture}[scale=0.7]
       \begin{axis}[
           ybar stacked,
+          ymode = log,
 	  	  bar width=20pt,
-	  	  %nodes near coords,
-	  	  %every node near coord/.style={ at={(0,0)}, font=\tiny, inner sep=0pt},
+	  	  nodes near coords,
+	  	  every node near coord/.style={ at={(0,0)}, font=\tiny, inner sep=0pt},
           enlargelimits=0.15,
           ylabel={\#Time (in ms)},
           symbolic x coords={Octa-R8, Octa-R16, Snow-R1, Snow-R2, 
 	      xxx-R1, xxx-R2},
           xtick=data,
+          point meta=rawy,	
           x tick label style={rotate=45,anchor=east},
         ]
         \addplot+[ybar] plot coordinates {(Octa-R8,11.7) (Octa-R16,11.682000) 
-          (Snow-R1,2) (Snow-R2,3)  (xxx-R1,2) (xxx-R2,0)};
+          (Snow-R1,2) (Snow-R2,3)  (xxx-R1,2) (xxx-R2,1)};
         \addplot+[ybar] plot coordinates {(Octa-R8,7.401000) (Octa-R16,7.666000) 
-          (Snow-R1,0) (Snow-R2,3)  (xxx-R1,1) (xxx-R2,0)};
+          (Snow-R1,1) (Snow-R2,3)  (xxx-R1,1) (xxx-R2,1)};
         \addplot+[ybar] plot coordinates {(Octa-R8,27.226000) (Octa-R16,25.328000)
           (Snow-R1,3) (Snow-R2,2) (xxx-R1,2) (xxx-R2,6)};
         \addplot+[ybar] plot coordinates {(Octa-R8,184.161000) (Octa-R16,169.501000) 
-          (Snow-R1,0) (Snow-R2,2) (xxx-R1,1) (xxx-R2,4)};
+          (Snow-R1,1) (Snow-R2,2) (xxx-R1,1) (xxx-R2,4)};
         \addplot+[ybar] plot coordinates {(Octa-R8,0) (Octa-R16,1189.127000) 
-          (Snow-R1,0) (Snow-R2,0) (xxx-R1,0) (xxx-R2,0)};
+          (Snow-R1,1) (Snow-R2,1) (xxx-R1,1) (xxx-R2,1)};
         %\legend{\strut Geometry, \strut Curvature, \strut xx, \strut xx}
       \end{axis}
-    \end{tikzpicture}
+     
+     \end{tikzpicture}
      \begin{tikzpicture}[scale=0.7]
       \begin{axis}[
           ybar stacked,

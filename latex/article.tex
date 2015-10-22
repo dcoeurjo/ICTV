@@ -620,20 +620,63 @@ We first evaluate the curvature estimation on a full-resolution
 geometry obtained by disabling the LoD criterion at the mesh
 generation step.
 
-
 \begin{table}
   \begin{center}
-    \begin{tabular}{@{}lrrrrrrrrrrrr@{}}
+%    \begin{tabular}{@{}lrrrrrrrrrrr@{}}
+%      \toprule
+%      & \multicolumn{5}{c}{$R=8$}   & \multicolumn{6}{c}{$R=16$}\\
+%      \cmidrule(r){2-12}
+%    Quantities & ~~~H & $l_3$ & $l_2$ & $l_1$ & $l_0$& ~~~H & $l_4$ & $l_3$ & $l_2$ & $l_1$ & $l_0$\\
+%      \midrule
+%      Number of texture fetches &
+%      1468 & 2 & 28 & 260 & 2104 & 
+%      5706 & 2 & 28 & 90 & 2120 & 1780\\
+%      Time (in ms) &
+%      208 & 15 & 26 & 93 & 642 &
+%      826 & 14 & 26 & 252 & 606 & 4801\\
+%      $L_\infty$ error (\wrt $l_0$) &
+%      0.051 & 0.306 & 0.085 & 0.047 & 0 & 
+%      0.053 & 0.146 & 0.041 & 0.017 & 0.005 & 0\\
+%      $L_2$ error (\wrt $l_0$) &
+%      3.51e-05 & 2.67e-04 & 7.57e-05 & 2.02e-05 & 0 & 
+%      4.43e-05 & 1.39e-04 & 4.16e-05 & 1.57e-05 & 2.07e-06 & 0\\
+%      \bottomrule
+%    \end{tabular}
+
+	\begin{tabular}{@{}lrrrrr@{}}
       \toprule
-      & \multicolumn{6}{c}{$R=$}   & \multicolumn{6}{c}{$R=$}\\
-      \cmidrule(r){2-12}
-    Quantities & ~~~H & $l_4$ & $l_3$ & $l_2$ & $l_1$ & $l_0$& ~~~H & $l_4$ & $l_3$ & $l_2$ & $l_1$ & $l_0$\\
+      & \multicolumn{5}{c}{$R=8$}\\
+      \cmidrule(r){2-6}
+    Quantities & ~~~H & $l_3$ & $l_2$ & $l_1$ & $l_0$\\
       \midrule
-      Number of texture fetches & & & & & & & & & & & &\\
-      Time (in ms) & & & & & && & & & & &\\
-      $L_\infty$ error (\wrt $l_0$) & & & & & && & & & & &\\
+      Number of texture fetches &
+      1468 & 2 & 28 & 260 & 2104\\
+      Time (in ms) &
+      208 & 15 & 26 & 93 & 642\\
+      $L_\infty$ error (\wrt $l_0$) &
+      0.051 & 0.306 & 0.085 & 0.047 & 0\\
+      $L_2$ error (\wrt $l_0$) &
+      3.51e-05 & 2.67e-04 & 7.57e-05 & 2.02e-05 & 0\\
       \bottomrule
     \end{tabular}
+
+	\begin{tabular}{@{}lrrrrrr@{}}
+      \toprule
+      & \multicolumn{6}{c}{$R=16$}\\
+      \cmidrule(r){2-7}
+    Quantities & ~~~H & $l_4$ & $l_3$ & $l_2$ & $l_1$ & $l_0$\\
+      \midrule
+      Number of texture fetches &
+      5706 & 2 & 28 & 90 & 2120 & 1780\\
+      Time (in ms) &
+      826 & 14 & 26 & 252 & 606 & 4801\\
+      $L_\infty$ error (\wrt $l_0$) &
+      0.053 & 0.146 & 0.041 & 0.017 & 0.005 & 0\\
+      $L_2$ error (\wrt $l_0$) &
+      4.43e-05 & 1.39e-04 & 4.16e-05 & 1.57e-05 & 2.07e-06 & 0\\
+      \bottomrule
+    \end{tabular}    
+    
   \end{center}
   \caption{object, size, radius, full res, num of vertices (timings
     only consider the curvature estimation step).\label{tab:full-res-stat}}
@@ -662,54 +705,33 @@ generation step.
     \begin{tikzpicture}[scale=0.7]
       \begin{axis}[
           ybar stacked,
-	  bar width=15pt,
-	  nodes near coords,
+          ymode = log,
+	  	  bar width=20pt,
+	  	  nodes near coords,
+	  	  every node near coord/.style={ at={(0,0)}, font=\tiny, inner sep=0pt},
           enlargelimits=0.15,
-          legend style={at={(0.5,-0.20)},
-            anchor=north,legend columns=-1},
           ylabel={\#Time (in ms)},
-          symbolic x coords={Octa-R1, Octa-R2, Snow-R1, Snow-R2,
-	    xxx-R1, xxx-R2},
+          symbolic x coords={Octa-R8, Octa-R16, Snow-R1, Snow-R2, 
+	      xxx-R1, xxx-R2},
           xtick=data,
+          point meta=rawy,	
           x tick label style={rotate=45,anchor=east},
         ]
-        \addplot+[ybar] plot coordinates {(Octa-R1,0) (Octa-R2,2)
-          (Snow-R1,2) (Snow-R2,3)  (xxx-R1,2) (xxx-R2,0)};
-        \addplot+[ybar] plot coordinates {(Octa-R1,0) (Octa-R2,0)
-          (Snow-R1,0) (Snow-R2,3)  (xxx-R1,1) (xxx-R2,0)};
-        \addplot+[ybar] plot coordinates {(Octa-R1,6) (Octa-R2,6)
+        \addplot+[ybar] plot coordinates {(Octa-R8,11.7) (Octa-R16,11.682000) 
+          (Snow-R1,2) (Snow-R2,3)  (xxx-R1,2) (xxx-R2,1)};
+        \addplot+[ybar] plot coordinates {(Octa-R8,7.401000) (Octa-R16,7.666000) 
+          (Snow-R1,1) (Snow-R2,3)  (xxx-R1,1) (xxx-R2,1)};
+        \addplot+[ybar] plot coordinates {(Octa-R8,27.226000) (Octa-R16,25.328000)
           (Snow-R1,3) (Snow-R2,2) (xxx-R1,2) (xxx-R2,6)};
-        \addplot+[ybar] plot coordinates {(Octa-R1,4) (Octa-R2,2)
-          (Snow-R1,0) (Snow-R2,2) (xxx-R1,1) (xxx-R2,4)};
+        \addplot+[ybar] plot coordinates {(Octa-R8,184.161000) (Octa-R16,169.501000) 
+          (Snow-R1,1) (Snow-R2,2) (xxx-R1,1) (xxx-R2,4)};
+        \addplot+[ybar] plot coordinates {(Octa-R8, 1) (Octa-R16,1189.127000) 
+          (Snow-R1,1) (Snow-R2,1) (xxx-R1,1) (xxx-R2,1)};
         %\legend{\strut Geometry, \strut Curvature, \strut xx, \strut xx}
       \end{axis}
-    \end{tikzpicture}
-     \begin{tikzpicture}[scale=0.7]
-      \begin{axis}[
-          ybar stacked,
-	  bar width=15pt,
-	  nodes near coords,
-          enlargelimits=0.15,
-          legend style={at={(0.5,-0.20)},
-            anchor=north,legend columns=-1},
-         % ylabel={\#Time (in ms)},
-          symbolic x coords={Octa-R1, Octa-R2, Snow-R1, Snow-R2,
-	    xxx-R1, xxx-R2},
-          xtick=data,
-          x tick label style={rotate=45,anchor=east},
-        ]
-        \addplot+[ybar] plot coordinates {(Octa-R1,0) (Octa-R2,2)
-          (Snow-R1,2) (Snow-R2,3)  (xxx-R1,2) (xxx-R2,0)};
-        \addplot+[ybar] plot coordinates {(Octa-R1,0) (Octa-R2,0)
-          (Snow-R1,0) (Snow-R2,3)  (xxx-R1,1) (xxx-R2,0)};
-        \addplot+[ybar] plot coordinates {(Octa-R1,6) (Octa-R2,6)
-          (Snow-R1,3) (Snow-R2,2) (xxx-R1,2) (xxx-R2,6)};
-        \addplot+[ybar] plot coordinates {(Octa-R1,4) (Octa-R2,2)
-          (Snow-R1,0) (Snow-R2,2) (xxx-R1,1) (xxx-R2,4)};
-       % \legend{\strut Geometry, \strut Curvature, \strut xx, \strut xx}
-      \end{axis}
-    \end{tikzpicture}
-  \end{center}
+     
+     \end{tikzpicture}
+     \end{center}
   \caption{Adaptive timings H vs. rafined (tout : adaptatif, 2 rayons par formes, 4
     formes + images).}
   \label{fig:timings}

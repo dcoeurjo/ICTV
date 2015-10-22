@@ -80,7 +80,7 @@ void GPUOctree::loadBuffers()
 		
 		
 		size_t full_tree = 1;
-		long int side = std::pow(2, 8); //lvl 8 max
+		long int side = std::pow(2, 7); //lvl 8 max
 		full_tree += side*side*side; 
 		
 		size_t full_tree_cap = full_tree * sizeof(float) * sizekey; //1 vec2 for each
