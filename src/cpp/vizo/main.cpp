@@ -336,7 +336,7 @@ public:
 		else 
 			load_viewPoint();
 		
-		min_lvl = (int)ceil(log2(Parameters::getInstance()->g_curvradius));
+		min_lvl = (int)ceil(log2(Parameters::getInstance()->g_curvradius)) + 2;
 		Parameters::getInstance()->g_lvl = min_lvl;
 		
 		last_radius = Parameters::getInstance()->g_curvradius;
@@ -380,10 +380,10 @@ public:
 				Parameters::getInstance()->g_lvl =  min_lvl;
 				Parameters::getInstance()->g_compute_min_max = true;
 			}
-			else if (Parameters::getInstance()->g_auto_refine && fps > 30 && Parameters::getInstance()->g_lvl > 0)
+			else if (Parameters::getInstance()->g_auto_refine)// && fps > 30 && Parameters::getInstance()->g_lvl > 0)
 			{
-				/*if (Parameters::getInstance()->g_lvl == 0)
-					exit(0);*/
+				if (Parameters::getInstance()->g_lvl == 0)
+					exit(0);
 				Parameters::getInstance()->g_lvl -= 1;
 				Parameters::getInstance()->g_compute_min_max = true;
 			}
@@ -602,11 +602,11 @@ public:
 							printf("NBPROBE = %lf\n", p);
 							nb_geom = p;
 						}
-						else
+						/*else
 						{
 							if (p != nb_geom)
 								printf("ERROR: %lf != ref %lf\n", p, nb_geom);
-						}
+						}*/
 						nb_probe = nb_geom;
 						fprintf(plotfd, "%lf\t", p);
 						fprintf(plotfd, "\n");

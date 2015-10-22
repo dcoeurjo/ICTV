@@ -650,8 +650,8 @@ generation step.
       \midrule
       Number of texture fetches &
       1468 & 2 & 28 & 260 & 2104\\
-      Time (in ms) &
-      208 & 15 & 26 & 93 & 642\\
+      %Time (in ms) &
+      %208 & 15 & 26 & 93 & 642\\
       $L_\infty$ error (\wrt $l_0$) &
       0.051 & 0.306 & 0.085 & 0.047 & 0\\
       $L_2$ error (\wrt $l_0$) &
@@ -667,8 +667,8 @@ generation step.
       \midrule
       Number of texture fetches &
       5706 & 2 & 28 & 90 & 2120 & 1780\\
-      Time (in ms) &
-      826 & 14 & 26 & 252 & 606 & 4801\\
+      %Time (in ms) &
+      %826 & 14 & 26 & 252 & 606 & 4801\\
       $L_\infty$ error (\wrt $l_0$) &
       0.053 & 0.146 & 0.041 & 0.017 & 0.005 & 0\\
       $L_2$ error (\wrt $l_0$) &
@@ -702,6 +702,33 @@ generation step.
 \begin{figure}[!htbp]
   \begin{center}
     \begin{tikzpicture}[scale=0.7]
+%      \begin{axis}[
+%          ybar stacked,
+%          ymode = log,
+%	  	  bar width=20pt,
+%	  	  nodes near coords,
+%	  	  every node near coord/.style={ at={(0,0)}, font=\tiny, inner sep=0pt},
+%          enlargelimits=0.15,
+%          ylabel={\#Time (in ms)},
+%          symbolic x coords={Octa-R8, Octa-R16, Snow-R1, Snow-R2, 
+%	      xxx-R1, xxx-R2},
+%          xtick=data,
+%          point meta=rawy,	
+%          x tick label style={rotate=45,anchor=east},
+%        ]
+%        \addplot+[ybar] plot coordinates {(Octa-R8,11.7) (Octa-R16,11.682000) 
+%          (Snow-R1,2) (Snow-R2,3)  (xxx-R1,2) (xxx-R2,1)};
+%        \addplot+[ybar] plot coordinates {(Octa-R8,7.401000) (Octa-R16,7.666000) 
+%          (Snow-R1,1) (Snow-R2,3)  (xxx-R1,1) (xxx-R2,1)};
+%        \addplot+[ybar] plot coordinates {(Octa-R8,27.226000) (Octa-R16,25.328000)
+%          (Snow-R1,3) (Snow-R2,2) (xxx-R1,2) (xxx-R2,6)};
+%        \addplot+[ybar] plot coordinates {(Octa-R8,184.161000) (Octa-R16,169.501000) 
+%          (Snow-R1,1) (Snow-R2,2) (xxx-R1,1) (xxx-R2,4)};
+%        \addplot+[ybar] plot coordinates {(Octa-R8, 1) (Octa-R16,1189.127000) 
+%          (Snow-R1,1) (Snow-R2,1) (xxx-R1,1) (xxx-R2,1)};
+%        %\legend{\strut Geometry, \strut Curvature, \strut xx, \strut xx}
+%      \end{axis}
+      
       \begin{axis}[
           ybar stacked,
           ymode = log,
@@ -710,22 +737,55 @@ generation step.
 	  	  every node near coord/.style={ at={(0,0)}, font=\tiny, inner sep=0pt},
           enlargelimits=0.15,
           ylabel={\#Time (in ms)},
-          symbolic x coords={Octa-R8, Octa-R16, Snow-R1, Snow-R2, 
+          symbolic x coords={Octa-R8, Octa-R16, Snow-R10, Snow-R20, 
 	      xxx-R1, xxx-R2},
           xtick=data,
           point meta=rawy,	
           x tick label style={rotate=45,anchor=east},
         ]
-        \addplot+[ybar] plot coordinates {(Octa-R8,11.7) (Octa-R16,11.682000) 
-          (Snow-R1,2) (Snow-R2,3)  (xxx-R1,2) (xxx-R2,1)};
-        \addplot+[ybar] plot coordinates {(Octa-R8,7.401000) (Octa-R16,7.666000) 
-          (Snow-R1,1) (Snow-R2,3)  (xxx-R1,1) (xxx-R2,1)};
-        \addplot+[ybar] plot coordinates {(Octa-R8,27.226000) (Octa-R16,25.328000)
-          (Snow-R1,3) (Snow-R2,2) (xxx-R1,2) (xxx-R2,6)};
-        \addplot+[ybar] plot coordinates {(Octa-R8,184.161000) (Octa-R16,169.501000) 
-          (Snow-R1,1) (Snow-R2,2) (xxx-R1,1) (xxx-R2,4)};
-        \addplot+[ybar] plot coordinates {(Octa-R8, 1) (Octa-R16,1189.127000) 
-          (Snow-R1,1) (Snow-R2,1) (xxx-R1,1) (xxx-R2,1)};
+        %Geometry Generation
+        \addplot+[ybar] plot coordinates {(Octa-R8,17.283000) (Octa-R16,18.458000) 
+          (Snow-R10,9.831000) (Snow-R20,9.653000)  (xxx-R1,1) (xxx-R2,1)};
+        %l4
+        \addplot+[ybar] plot coordinates {(Octa-R8,1) (Octa-R16,2.509000) 
+          (Snow-R10,6.085000) (Snow-R20,9.445000)  (xxx-R1,1) (xxx-R2,1)};
+        %l3
+        \addplot+[ybar] plot coordinates {(Octa-R8,2.527000) (Octa-R16,4.159000)
+          (Snow-R10,10.629000) (Snow-R20,11.542000) (xxx-R1,1) (xxx-R2,1)};
+        %l2
+        \addplot+[ybar] plot coordinates {(Octa-R8,3.783000) (Octa-R16,9.006000) 
+          (Snow-R10,13.777000) (Snow-R20,37.700000) (xxx-R1,1) (xxx-R2,1)};
+        %l1
+        \addplot+[ybar] plot coordinates {(Octa-R8, 11.004000) (Octa-R16,38.687000) 
+          (Snow-R10,39.627000) (Snow-R20,217.954000) (xxx-R1,1) (xxx-R2,1)};
+        %l0
+        \addplot+[ybar] plot coordinates {(Octa-R8, 37.273000) (Octa-R16,244.353000) 
+          (Snow-R10,236.194000) (Snow-R20,1655.680000) (xxx-R1,1) (xxx-R2,1)};
+        %\legend{\strut Geometry, \strut Curvature, \strut xx, \strut xx}
+      \end{axis}
+	  \end{tikzpicture}    
+      
+      \begin{tikzpicture}[scale=0.7]
+      \begin{axis}[
+          ybar stacked,
+          ymode = log,
+	  	  bar width=20pt,
+	  	  nodes near coords,
+	  	  every node near coord/.style={ at={(0,0)}, font=\tiny, inner sep=0pt},
+          enlargelimits=0.15,
+          ylabel={\#Time (in ms)},
+          symbolic x coords={Octa-R8, Octa-R16, Snow-R10, Snow-R20, 
+	      xxx-R1, xxx-R2},
+          xtick=data,
+          point meta=rawy,	
+          x tick label style={rotate=45,anchor=east},
+        ]
+        %Geometry Generation
+        \addplot+[ybar] plot coordinates {(Octa-R8,17.283000) (Octa-R16,17.183000) 
+          (Snow-R10,9.383000) (Snow-R20,9.767000)  (xxx-R1,1) (xxx-R2,1)};
+        %Hierarchical measurement
+        \addplot+[ybar] plot coordinates {(Octa-R8,18.095000) (Octa-R16,64.186000) 
+          (Snow-R10,96.747000) (Snow-R20,364.547000)  (xxx-R1,1) (xxx-R2,1)};
         %\legend{\strut Geometry, \strut Curvature, \strut xx, \strut xx}
       \end{axis}
      
