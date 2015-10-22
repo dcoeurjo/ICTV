@@ -629,18 +629,15 @@ generation step.
 
 \begin{table}
   \begin{center}
-    \begin{tabular}{@{}lrrrrrr@{}}
+    \begin{tabular}{@{}lrrrrrrrrrrrr@{}}
       \toprule
-    Quantities & ~~~H & $l_4$ & $l_3$ & $l_2$ & $l_1$ & $l_0$\\
+      & \multicolumn{6}{c}{$R=$}   & \multicolumn{6}{c}{$R=$}\\
+      \cmidrule(r){2-12}
+    Quantities & ~~~H & $l_4$ & $l_3$ & $l_2$ & $l_1$ & $l_0$& ~~~H & $l_4$ & $l_3$ & $l_2$ & $l_1$ & $l_0$\\
       \midrule
-      Number of texture fetches & & & & & &\\
-      Time (in ms) & & & & & &\\
-      $L_\infty$ error (\wrt $l_0$) & & & & & &\\
-            \midrule
-            Number of texture fetches & & & & & &\\
-            Time (in ms) & & & & & &\\
-            $L_\infty$ error (\wrt $l_0$) & & & & & &\\
-            
+      Number of texture fetches & & & & & & & & & & & &\\
+      Time (in ms) & & & & & && & & & & &\\
+      $L_\infty$ error (\wrt $l_0$) & & & & & && & & & & &\\
       \bottomrule
     \end{tabular}
   \end{center}
