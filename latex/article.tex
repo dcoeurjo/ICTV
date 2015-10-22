@@ -607,10 +607,22 @@ $O\left(\left(\frac{R}{2^l}\right)^3\right)$, the interactive control
  in step 3 considerably improves the interactive exploration of the
  tensor with fast preliminary approximations which are quickly refined.
 
+ Compared to the hierarchical approach, no precomputation is required
+ for a given radius $R$. As a consequence, we could even locally adapt
+ the ball radius to the geometry (for instance following the octree
+ depth of the current MC vertex). In the next section, we evaluate the
+ performances of both approaches.
 
 
 \section{Experiments}
 \label{sec:experiments}
+
+\subsection{Full resolution experiment}
+
+
+
+\subsection{Fully adaptive evaluation}
+
 
 
 
@@ -693,6 +705,5 @@ $O\left(\left(\frac{R}{2^l}\right)^3\right)$, the interactive control
 
 
 
-\bibliographystyle{splncs03}
-\bibliography{ictv}
+\bibliographystyle{splncs03} \bibliography{ictv}
 \end{document}
