@@ -17,9 +17,9 @@ $DGTALTOOLS_BUILD_PATH/visualisation/3dCurvatureViewer -i $RAW_PATH/$1 -r $4 -t 
 $DGTALTOOLS_BUILD_PATH/visualisation/3dCurvatureViewer -i $RAW_PATH/$1 -r $4 -t $2 -u 255 --exportDat CPU_k1.txt -m k1
 $DGTALTOOLS_BUILD_PATH/visualisation/3dCurvatureViewer -i $RAW_PATH/$1 -r $4 -t $2 -u 255 --exportDat CPU_k2.txt -m k2
 
-./joinFiles export0_$1:r_r$4.00_cpu.txt CPU_mean.txt CPU_k1.txt CPU_k2.txt
+./joinFiles export_$1:r_r$4.00_cpu.txt CPU_mean.txt CPU_k1.txt CPU_k2.txt
 rm -f CPU_mean.txt
 rm -f CPU_k1.txt
 rm -f CPU_k2.txt
-./visuPoints $VIZO_PATH/export0_$1:r_r$4.00_s$3_l0.txt export0_$1:r_r$4.00_cpu.txt
-./comparison $VIZO_PATH/export0_$1:r_r$4.00_s$3_l0.txt export0_$1:r_r$4.00_cpu.txt
+./visuPoints $VIZO_PATH/export_$1:r_r$4.00_s$3_l0_m3.txt export_$1:r_r$4.00_cpu.txt
+./comparison $VIZO_PATH/export_$1:r_r$4.00_s$3_l0_m3.txt export_$1:r_r$4.00_cpu.txt

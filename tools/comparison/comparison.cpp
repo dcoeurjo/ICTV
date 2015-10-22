@@ -20,11 +20,13 @@ bool normalizeCPU( const std::vector< std::pair<Position*, Curvatures*> >& mapCP
     double minimal_distance = std::numeric_limits<double>::max();
     Position* minimal_position;
     Curvatures* minimal_positionCurvatures;
+
+    double GPUx = elemGPU.first->x;
+    double GPUy = elemGPU.first->y;
+    double GPUz = elemGPU.first->z;
+
     for( std::pair<Position*, Curvatures*> elemCPU : mapCPU )
     {
-      double GPUx = elemGPU.first->x;
-      double GPUy = elemGPU.first->y;
-      double GPUz = elemGPU.first->z;
       double CPUx = predicate( *elemCPU.first ).x;
       double CPUy = predicate( *elemCPU.first ).y;
       double CPUz = predicate( *elemCPU.first ).z;
@@ -44,6 +46,18 @@ bool normalizeCPU( const std::vector< std::pair<Position*, Curvatures*> >& mapCP
     if( minimal_distance == std::numeric_limits<double>::max() )
     {
       std::cout << "ERROR: No point was found. Are you sure that your files aren't empty ?" << std::endl;
+      std::cout << "Leaving now..." << std::endl;
+      return false;
+    }
+
+    if( minimal_distance > 1 )
+    {
+      std::cout << "ERROR: distance is greater than 1 : " << minimal_distance << std::endl;
+      std::cout << "Position 1 : {" << elemGPU.first->x << "," << elemGPU.first->y << "," << elemGPU.first->z << "}" << std::endl;
+      std::cout << "Position 2 : {" << minimal_position->x << "," << minimal_position->y << "," << minimal_position->z << "}" << std::endl;
+      // std::cout << "Val 1 : {" << elemGPU.second->mean << "," << elemGPU.second->k1 << "," << elemGPU.second->k2 << "}" << std::endl;
+      // std::cout << "Val 2 : {" << minimal_positionCurvatures->mean << "," << minimal_positionCurvatures->k1 << "," << minimal_positionCurvatures->k2 << "}" << std::endl;
+
       std::cout << "Leaving now..." << std::endl;
       return false;
     }
@@ -87,52 +101,56 @@ bool computeDifference( const std::vector< std::pair<Position*, Curvatures*> >& 
 
   for( uint i = 0; i < mapGPU.size(); ++i )
   {
+    double tempMean = std::abs( mapGPU[i].second->mean - mapCPUnormalized[i].second->mean );
+    double tempK1 = std::abs( mapGPU[i].second->k1 - mapCPUnormalized[i].second->k1 );
+    double tempK2 = std::abs( mapGPU[i].second->k2 - mapCPUnormalized[i].second->k2 );
     //// l_1
     {
-      error_mean_l1 += std::abs( mapGPU[i].second->mean - mapCPUnormalized[i].second->mean );
-      error_k1_l1 += std::abs( mapGPU[i].second->k1 - mapCPUnormalized[i].second->k1 );
-      error_k2_l1 += std::abs( mapGPU[i].second->k2 - mapCPUnormalized[i].second->k2 );
+      error_mean_l1 += tempMean;
+      error_k1_l1 += tempK1;
+      error_k2_l1 += tempK2;
     }
 
     //// l_2
     {
-      error_mean_l2 += std::abs( mapGPU[i].second->mean - mapCPUnormalized[i].second->mean ) * std::abs( mapGPU[i].second->mean - mapCPUnormalized[i].second->mean );
-      error_k1_l2 += std::abs( mapGPU[i].second->k1 - mapCPUnormalized[i].second->k1 ) * std::abs( mapGPU[i].second->k1 - mapCPUnormalized[i].second->k1 );
-      error_k2_l2 += std::abs( mapGPU[i].second->k2 - mapCPUnormalized[i].second->k2 ) * std::abs( mapGPU[i].second->k2 - mapCPUnormalized[i].second->k2 );
+      error_mean_l2 += tempMean * tempMean;
+      error_k1_l2 += tempK1 * tempK1;
+      error_k2_l2 += tempK2 * tempK2;
     }
 
     //// l_infty
     {
-      if( error_mean_loo < std::abs( mapGPU[i].second->mean - mapCPUnormalized[i].second->mean ) )
+      if( error_mean_loo < tempMean )
       {
-        error_mean_loo = std::abs( mapGPU[i].second->mean - mapCPUnormalized[i].second->mean );
+        error_mean_loo = tempMean;
       }
-      if( error_k1_loo < std::abs( mapGPU[i].second->k1 - mapCPUnormalized[i].second->k1 ) )
+      if( error_k1_loo < tempK1 )
       {
-        error_k1_loo = std::abs( mapGPU[i].second->k1 - mapCPUnormalized[i].second->k1 );
+        error_k1_loo = tempK1;
       }
-      if( error_k2_loo < std::abs( mapGPU[i].second->k2 - mapCPUnormalized[i].second->k2 ) )
+      if( error_k2_loo < tempK2 )
       {
-        error_k2_loo = std::abs( mapGPU[i].second->k2 - mapCPUnormalized[i].second->k2 );
+        error_k2_loo = tempK2;
       }
     }
   }
 
+  double nb_elements = (double)mapGPU.size();
   //// l_1
   {
-    error_mean_l1 /= (double)mapGPU.size();
-    error_k1_l1 /= (double)mapGPU.size();
-    error_k2_l1 /= (double)mapGPU.size();
+    error_mean_l1 /= nb_elements;
+    error_k1_l1 /= nb_elements;
+    error_k2_l1 /= nb_elements;
   }
 
   //// l_2
   {
-    error_mean_l2 = std::sqrt(error_mean_l2) / (double)mapGPU.size();
-    error_k1_l2 = std::sqrt(error_k1_l2) / (double)mapGPU.size();
-    error_k2_l2 = std::sqrt(error_k2_l2) / (double)mapGPU.size();
+    error_mean_l2 = std::sqrt(error_mean_l2) / nb_elements;
+    error_k1_l2 = std::sqrt(error_k1_l2) / nb_elements;
+    error_k2_l2 = std::sqrt(error_k2_l2) / nb_elements;
   }
 
-  std::cout << "# ERROR\t l1\t\t l2\t\t l\\inty" << std::endl;
+  std::cout << "# ERROR\t l1\t\t l2\t\t loo" << std::endl;
   std::cout << "mean:\t " << error_mean_l1 << "\t " << error_mean_l2 << "\t " << error_mean_loo << std::endl;
   std::cout << "k1:\t " << error_k1_l1 << "\t " << error_k1_l2 << "\t " << error_k1_loo << std::endl;
   std::cout << "k2:\t " << error_k2_l1 << "\t " << error_k2_l2 << "\t " << error_k2_loo << std::endl;
