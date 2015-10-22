@@ -7,12 +7,15 @@
 \usepackage{enumerate}
 \usepackage{graphicx}        % standard LaTeX graphics tool
 \usepackage{tikz}        % standard LaTeX graphics tool
+\usepackage{pgfplots}
+
 %\usetikzlibrary{arrows}
 %\usetikzlibrary{quotes,angles}
 \usepackage{subfigure}                                 % authors: subfigures
 \usepackage[ruled,vlined,linesnumbered]{algorithm2e}   % authors: last version of algorithm display
 \usepackage{todonotes}
 
+\usepackage{booktabs} 
 
 
 \newcommand{\ie}{\emph{i.e.} }
@@ -620,9 +623,86 @@ $O\left(\left(\frac{R}{2^l}\right)^3\right)$, the interactive control
 \subsection{Full resolution experiment}
 
 
+\begin{table}
+  \begin{center}
+    \begin{tabular}{@{}lrrrrrr@{}}
+      \toprule
+    Quantites  & H & $l_4$ & $l_3$ & $l_2$ & $l_1$ & $l_0$\\
+      \midrule
+      Number of texture fetches & & & & & & \\
+      Time (in ms) & & & & & & \\
+      $L_\infty$ error (\wrt $l_0$) & & & & & & \\
+      \bottomrule
+    \end{tabular}
+  \end{center}
+  \caption{object, size, radius, full res, num of vertices (timings
+    only consider the curvature estimation step).\label{tab:full-res-stat}}
+\end{table}
+
+
+
 
 \subsection{Fully adaptive evaluation}
 
+
+
+\begin{figure}[!htbp]
+  \begin{center}
+    \begin{tikzpicture}[scale=0.7]
+      \begin{axis}[
+          ybar stacked,
+	  bar width=15pt,
+	  nodes near coords,
+          enlargelimits=0.15,
+          legend style={at={(0.5,-0.20)},
+            anchor=north,legend columns=-1},
+          ylabel={\#Time (in ms)},
+          symbolic x coords={Octa-R1, Octa-R2, Snow-R1, Snow-R2, 
+	    xxx-R1, xxx-R2},
+          xtick=data,
+          x tick label style={rotate=45,anchor=east},
+        ]
+        \addplot+[ybar] plot coordinates {(Octa-R1,0) (Octa-R2,2) 
+          (Snow-R1,2) (Snow-R2,3)  (xxx-R1,2) (xxx-R2,0)};
+        \addplot+[ybar] plot coordinates {(Octa-R1,0) (Octa-R2,0) 
+          (Snow-R1,0) (Snow-R2,3)  (xxx-R1,1) (xxx-R2,0)};
+        \addplot+[ybar] plot coordinates {(Octa-R1,6) (Octa-R2,6)
+          (Snow-R1,3) (Snow-R2,2) (xxx-R1,2) (xxx-R2,6)};
+        \addplot+[ybar] plot coordinates {(Octa-R1,4) (Octa-R2,2) 
+          (Snow-R1,0) (Snow-R2,2) (xxx-R1,1) (xxx-R2,4)};
+        %\legend{\strut Geometry, \strut Curvature, \strut xx, \strut xx}
+      \end{axis}
+    \end{tikzpicture}
+     \begin{tikzpicture}[scale=0.7]
+      \begin{axis}[
+          ybar stacked,
+	  bar width=15pt,
+	  nodes near coords,
+          enlargelimits=0.15,
+          legend style={at={(0.5,-0.20)},
+            anchor=north,legend columns=-1},
+         % ylabel={\#Time (in ms)},
+          symbolic x coords={Octa-R1, Octa-R2, Snow-R1, Snow-R2, 
+	    xxx-R1, xxx-R2},
+          xtick=data,
+          x tick label style={rotate=45,anchor=east},
+        ]
+        \addplot+[ybar] plot coordinates {(Octa-R1,0) (Octa-R2,2) 
+          (Snow-R1,2) (Snow-R2,3)  (xxx-R1,2) (xxx-R2,0)};
+        \addplot+[ybar] plot coordinates {(Octa-R1,0) (Octa-R2,0) 
+          (Snow-R1,0) (Snow-R2,3)  (xxx-R1,1) (xxx-R2,0)};
+        \addplot+[ybar] plot coordinates {(Octa-R1,6) (Octa-R2,6)
+          (Snow-R1,3) (Snow-R2,2) (xxx-R1,2) (xxx-R2,6)};
+        \addplot+[ybar] plot coordinates {(Octa-R1,4) (Octa-R2,2) 
+          (Snow-R1,0) (Snow-R2,2) (xxx-R1,1) (xxx-R2,4)};
+       % \legend{\strut Geometry, \strut Curvature, \strut xx, \strut xx}
+      \end{axis}
+    \end{tikzpicture}
+  \end{center}
+  \caption{Adaptive timings H vs. rafined (tout : adaptatif, 2 rayons par formes, 4
+    formes + images).}
+  \label{fig:timings}
+\end{figure}
 
 
 
