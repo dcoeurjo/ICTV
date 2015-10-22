@@ -624,7 +624,7 @@ $O\left(\left(\frac{R}{2^l}\right)^3\right)$, the interactive control
 
 We first evaluate the curvature estimation on a full-resolution
 geometry obtained by disabling the LoD criterion at the mesh
-generation step. 
+generation step.
 
 
 \begin{table}
@@ -645,7 +645,17 @@ generation step.
     only consider the curvature estimation step).\label{tab:full-res-stat}}
 \end{table}
 
-
+\begin{figure}
+  \begin{center}
+    \subfigure[]{\framebox{octa $l_4$}}
+   \subfigure[]{\framebox{octa $l_3$}}
+   \subfigure[]{\framebox{octa $l_2$}}
+   \subfigure[]{\framebox{octa $l_1$}}
+   \subfigure[]{\framebox{octa $l_0$}}
+  \end{center}
+  \caption{fig multiresolution, courbure moyenne par ex}
+  \label{fig:refine}
+\end{figure}
 
 
 \subsection{Fully adaptive evaluation}
@@ -708,6 +718,26 @@ generation step.
   \caption{Adaptive timings H vs. rafined (tout : adaptatif, 2 rayons par formes, 4
     formes + images).}
   \label{fig:timings}
+\end{figure}
+
+
+\begin{figure}
+  \begin{center}
+    \subfigure[]{\framebox{K}}
+   \subfigure[]{\framebox{H}}
+   \subfigure[]{\framebox{DIR1}}
+   \subfigure[]{\framebox{DIR2}}
+   \subfigure[]{\framebox{normales}}\\
+    \subfigure[]{\framebox{K}}
+   \subfigure[]{\framebox{H}}
+   \subfigure[]{\framebox{DIR1}}
+   \subfigure[]{\framebox{DIR2}}
+   \subfigure[]{\framebox{normales}}
+   
+  \end{center}
+  \caption{fig illustration complete (adaptative, ...) plusieurs
+    objets.. + dynamique.}
+  \label{fig:full}
 \end{figure}
 
 
