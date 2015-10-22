@@ -568,13 +568,15 @@ we have considered a fast hierarchical approximation following
 Fig.~\ref{fig:approx2}-$a$: for a given radius $R$, we precompute a
 hierachical decomposition of $B_R$. Such decomposition is made of
 octree cells at different resolutions. At a given MC vertex $\vx$, the
-algorithm becomes simple since we just scan  the ball cells and estimate
-the area (or other moments) from the mipmap values associated to this
-cell. Note that cells in the $B_R$ decomposition may not be aligned
-wuth mipmap cells. However, we can use GPU mipmap functionalities
-which interpolates mipmap values if we probe at non-discrete
-positions. For a given radius $R$, the expected number of cells on
-$B_r$ is in $O(\log{R})$.
+algorithm becomes simple since we just scan the ball cells and
+estimate the area (or other moments) from the mipmap values associated
+to this cell. Note that cells in the $B_R$ decomposition may not be
+aligned wuth mipmap cells. However, we can use GPU mipmap
+functionalities which interpolates mipmap values if we probe at
+non-discrete positions. For a given radius $R$, the expected number of
+cells on $B_r$ is in $O(\log{R})$. Implementation details on the
+hierarchical octree representation can be found in the supplementary
+material (see Section \ref{sec:discussion}).
 
 
 \todo[inline]{phrase sur approx si on met}
@@ -656,6 +658,7 @@ generation step.
   \caption{fig multiresolution, courbure moyenne par ex}
   \label{fig:refine}
 \end{figure}
+\todo[inline]{blabla experiments}
 
 
 \subsection{Fully adaptive evaluation}
@@ -740,7 +743,14 @@ generation step.
   \label{fig:full}
 \end{figure}
 
+\todo[inline]{blabla experiments}
 
+For dynamic datasets, we consider a time varying impicit
+surface. Since it would have been to expensive to update the a mipmap texture
+of densities at each time step, we simply evaluate the implicit
+expression at each vertex of a cell to decide if such cell is included
+or not into $B_R(\vx)\cap X$.
+\todo[inline]{blabla experiments}
 
 
 
