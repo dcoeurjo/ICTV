@@ -695,7 +695,7 @@ public:
 				free(data_dirmax);
 				free(data_dirmin);
 				
-				printf("(NB %d) Min %lf Max %lf\n", nb, min, max);
+				//printf("(NB %d) Min %lf Max %lf\n", nb, min, max);
 				
 				Parameters::getInstance()->g_curvmin = min-0.01;
 				Parameters::getInstance()->g_curvmax = max+0.01;
