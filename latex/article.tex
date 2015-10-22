@@ -29,7 +29,7 @@
 \title{Interactive Curvature Tensor Visualization on Digital
 Surfaces\thanks{This work has been mainly funded by XXXXXXX research grants.}}
 
-\author{H\'el\`ene Perrier\inst{1}\and J\'eré\'emy Levallois\inst{1,2}\and David
+\author{H\'el\`ene Perrier\inst{1}\and J\'er\'emy Levallois\inst{1,2}\and David
 Coeurjolly\inst{1}\and Jean-Philippe Farrugia\inst{1}\and Jean-Claude
 Iehl\inst{1}\and Jacques-Olivier Lachaud\inst{2} }
 
@@ -172,20 +172,20 @@ embedded into $\R^d$ such that it coincides with $\partial\Body{Z}{h}$.
     \begin{center}
       \subfigure[]{\begin{overpic}[width=5cm]{figs/integral2D_2}
           \put(42,28){$\times$}
-          \put(46,31){$\vx$}
+          \put(46,32){$\vx$}
           \put(55,45){$\Ball{R}{\vx}$}
           \put(1,10){$\dS$}
-          \put(20,10){$\Shape$}
+          \put(15,5){$\Shape$}
       \end{overpic}}~~~~~~
       \subfigure[]{\begin{overpic}[width=5cm]{figs/notation_2}
-          \put(44.5,25){$h \cdot \vz$}
+          \put(62,0.5){$h \cdot \vz \in \Shape \cap \Ball{R}{\vx}$}
           \put(55,45){$\Ball{R}{\vx}$}
           \put(42,28.5){$\times$}
           \put(45,32.5){$\vx$}
           \put(45,16.5){$h$}
           %\put(88,39){$\Proj(p)$}
-          \put(3,11){$\partial \Shape$}
-          \put(15,7){$\partial \Body{\DigShape}{h}$}
+          \put(1.5,10){$\partial \Shape$}
+          \put(15,7){$\partial \Body{\DSh}{h}$}
       \end{overpic}}
       \vspace{-0.4cm}
     \end{center}}
@@ -193,7 +193,7 @@ embedded into $\R^d$ such that it coincides with $\partial\Body{Z}{h}$.
       notations $(b)$ in dimension 2 \cite{CVIU2014}.\label{fig:notations}}
 \end{figure}
 
-In \cite{DGCI2013}, we have defined the 2D digital curvature estimator
+In \cite{DGCI2013}, authors have defined the 2D digital curvature estimator
 $\CurvH{R}$ and the 3D digital mean curvature estimator $\MeanCurvH{R}$ based on
 the digital volumetric integral $\VolC(Y,h) \EqDef h^d \MCard(Y)$ with
 $\MCard(Y)$ the number of digital points of $Y$ and $Y \subset \Z^d$ the
@@ -232,7 +232,7 @@ $R/h$ (we denote such quantity $\AreaC(Y,h)$ in dimension 2):
   %
 \end{Definition}
 %
-We have proved that estimating the 2D curvature and 3D mean curvature on digital
+They have proved that estimating the 2D curvature and 3D mean curvature on digital
 objets with volumetric integral information have the multigrid convergence
 property \cite{DGCI2013}. For short, when the digital objet becomes finer and
 finer, \ie when the digitization step $h$ tends to zero, the estimated quantity
@@ -246,7 +246,7 @@ associated one on $\Bd{\Shape}$.
 %
 Setting $R = kh^\frac{1}{3}$ on convex shapes
 with at least $C^3$-boundary and bounded curvature, where $k$ is a constant
-related to the maximal curvature of the shape, we have:
+related to the maximal curvature of the shape, they have:
 %
 \begin{align}
 \forall 0 < h \le h_0,\,\, &\forall \vx \in \Bd{\Shape},\,\,
@@ -255,7 +255,7 @@ related to the maximal curvature of the shape, we have:
 &\MeanCurvH{R}(\DSh, \vxH, h) = \MeanCurv(\Shape, \vx) + O\left(h^{\frac{1}{3}}\right)\,.
 \end{align}
 
-In \cite{CVIU2014}, we have also defined the 3D digital principal curvature
+In \cite{CVIU2014}, authors have also defined the 3D digital principal curvature
 estimators $\PrincCurvH{1}{R}$ and $\PrincCurvH{2}{R}$ on $Z\subset\Z^3$ based
 on digital moments:
 %
@@ -283,11 +283,11 @@ The covariance matrix needs to compute digital moments of order $0$
 ($\DMom{000}{h}$), of order $1$ ($\DMom{100}{h}$, $\DMom{010}{h}$ and
 $\DMom{001}{h}$) and of order $2$ ($\DMom{200}{h}$, $\DMom{020}{h}$,
 $\DMom{002}{h}$, $\DMom{110}{h}$, $\DMom{011}{h}$ and $\DMom{101}{h}$, see
-Equation~20 of \cite{CVIU2014} for more details). We have also proved the
+Equation~20 of \cite{CVIU2014} for more details). They have also proved the
 convergence of these estimators when setting the ball radius $h$ in $R =
 kh^\frac{1}{3}$, where $k$ is a constant related to the maximal curvature of the
 shape, on convex shapes with at least $C^3$-boundary and bounded curvature
-\cite{CVIU2014}. More formally, we get:
+\cite{CVIU2014}. More formally, they get:
 %
 \begin{align}
   \forall 0 < h \le h_0,\,\, &\forall \vx \in \Bd{\Shape},\,\,
@@ -303,20 +303,18 @@ corresponds to the normal direction $\NormalDirH{R}$ at $\vx$. Convergence
 results can be found in \cite{ChapterIICurvature}.\todo[inline]{Changer
 ChapterIICurvature dans le bibtex...}
 
-We have shown that the radius of the ball depends on the geometry of
-the underlying shape. In \cite{DGCI2014}, we proposed a parameter-free
-estimation of the radius of the ball by analyzing the shape \wrt the
-local shape geometry using maximal digital straight segments of the
-digital boundary. In \cite{SMI2015}, we analyze in scale-space (\ie
-for a range of radii) curvature estimation of our algorithm for a
-given digital shape. This allows us to detect features of the shape
-thanks to the behavior on singularities.
+It has been shown that the radius of the ball depends on the geometry of the
+underlying shape. In \cite{DGCI2014}, authors proposed a parameter-free
+estimation of the radius of the ball by analyzing the shape \wrt the local shape
+geometry using maximal digital straight segments of the digital boundary. In
+\cite{SMI2015}, authors analyzed in scale-space (for a range of radii) these
+estimators for a given digital shape. This allows them to detect features of the
+shape thanks to the behavior of the estimators on singularities.
 
-As a consequence, for all these integral invariant based approaches,
-we need to consider different ball radius which could be time
-consuming when implemented on CPU. We propose here a fully parallel
-implementation on GPU allowing us to change the radius and thus update
-the estimated quantities in real-time.
+As a consequence, for all these integral invariant based approaches, we need to
+consider different ball radius which could be time consuming when implemented on
+CPU. We propose here a fully parallel implementation on GPU allowing us to
+change the radius and thus update the estimated quantities in real-time.
 
 \section{Isosurface Extraction on GPU}
 \label{sec:isos-extr-gpu}
