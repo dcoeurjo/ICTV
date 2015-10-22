@@ -27,7 +27,9 @@
 \newcommand{\E}{\ensuremath{\mathcal{E}}}
 
 \title{Interactive Curvature Tensor Visualization on Digital
-Surfaces\thanks{This work has been mainly funded by XXXXXXX research grants.}}
+Surfaces\thanks{This work has been mainly funded by \textsc{DigitalSnow}
+ANR-11-BS02-009, \textsc{KIDICO} ANR-2010-BLAN-0205 and \textsc{PRIMES Labex}
+ANR-11-LABX-0063/ ANR-11-IDEX-0007 research grants.}}
 
 \author{H\'el\`ene Perrier\inst{1}\and J\'er\'emy Levallois\inst{1,2}\and David
 Coeurjolly\inst{1}\and Jean-Philippe Farrugia\inst{1}\and Jean-Claude
@@ -86,7 +88,7 @@ processing on the digital object and to explore different parameter
 settings of the geometry processing tool.  In this work, we focus on
 interactive visualization of volumetric data isosurfaces combined with
 a curvature tensor (mean/Gaussian curvature, principal curvatures
-directions\ldots) estimation at each point of the digital
+directions, \ldots) estimation at each point of the digital
 surface. Curvature maps on a given isosurface are key information when
 exploring 3D structures in Material Sciences \todo{REF}. Furthermore,
 most curvature estimators require a parameter fixing the scale
@@ -112,8 +114,8 @@ invariant curvature estimators.
 
 \sloppy\noindent\textbf{Related works}\quad Extracting and Visualizing
 isosurface on volumetric data has been widely investigated since the
-seminal Marching-Cubes approach by Lorensen and
-Cline~\cite{lorensen1987marching}. This approach being data parallel,
+seminal Marching Cubes approach by \textsc{Lorensen} and
+\textsc{Cline}~\cite{lorensen1987marching}. This approach being data parallel,
 GPU implementation of this method is very efficient
 \cite{tatarchuk2007real}. However, such technique generates a lot of
 triangles which is not well suited to large digital data. Hence,
@@ -122,10 +124,10 @@ triangular mesh resolution to the object geometry or depending on the
 viewpoint. In this topic, many solutions have been developed in
 Computer
 Graphics~\cite{shu1995adaptive,schaefer2004dual,lengyel2010voxel,DBLP:journals/cgf/LewinerMPPL10,DBLP:journals/cvgip/LobelloDD14}.
-The method developed by Lengyel \textit{et al.}
+The method developed by \textsc{Lengyel} \textit{et al.}
 \cite{lengyel2010voxel} is the best suited to our needs.  However, it
 was only developed on CPU to visualize in real-time static or near
-static data, combining octree with new Marching-Cubes configurations
+static data, combining octree with new Marching Cubes configurations
 to generate adaptive meshes. In this paper we propose a GPU pipeline
 inspired from this method.  It leaves the CPU free for other tasks and
 avoids synchronization with the GPU.  Our high framerate also allows
@@ -279,15 +281,16 @@ on digital moments:
   %
 \end{Definition}
 %
-The covariance matrix needs to compute digital moments of order $0$
-($\DMom{000}{h}$), of order $1$ ($\DMom{100}{h}$, $\DMom{010}{h}$ and
-$\DMom{001}{h}$) and of order $2$ ($\DMom{200}{h}$, $\DMom{020}{h}$,
-$\DMom{002}{h}$, $\DMom{110}{h}$, $\DMom{011}{h}$ and $\DMom{101}{h}$, see
-Equation~20 of \cite{CVIU2014} for more details). They have also proved the
-convergence of these estimators when setting the ball radius $h$ in $R =
-kh^\frac{1}{3}$, where $k$ is a constant related to the maximal curvature of the
-shape, on convex shapes with at least $C^3$-boundary and bounded curvature
-\cite{CVIU2014}. More formally, they get:
+The covariance matrix needs to compute digital moments of order $0$, order $1$
+and order $2$ (see Equation~20 of \cite{CVIU2014} for more details).
+% ($\DMom{000}{h}$), of order $1$ ($\DMom{100}{h}$, $\DMom{010}{h}$ and
+% $\DMom{001}{h}$) and of order $2$ ($\DMom{200}{h}$, $\DMom{020}{h}$,
+% $\DMom{002}{h}$, $\DMom{110}{h}$, $\DMom{011}{h}$ and $\DMom{101}{h}$, see
+% Equation~20 of \cite{CVIU2014} for more details).
+They have also proved the convergence of these estimators when setting the ball
+radius $h$ in $R = kh^\frac{1}{3}$, where $k$ is a constant related to the
+maximal curvature of the shape, on convex shapes with at least $C^3$-boundary
+and bounded curvature \cite{CVIU2014}. More formally, they get:
 %
 \begin{align}
   \forall 0 < h \le h_0,\,\, &\forall \vx \in \Bd{\Shape},\,\,
@@ -300,7 +303,7 @@ Additionally, eigenvectors associated with $\hat{\lambda}_1$ and
 $\hat{\lambda}_2$ of the covariance matrix correspond to principal curvature
 directions $\PrincDirH{1}{R}$ and $\PrincDirH{2}{R}$. The smallest eigenvector
 corresponds to the normal direction $\NormalDirH{R}$ at $\vx$. Convergence
-results can be found in \cite{ChapterIICurvature}.\todo[inline]{Changer
+results can be found in \cite{ChapterIICurvature}.\todo{Changer
 ChapterIICurvature dans le bibtex...}
 
 It has been shown that the radius of the ball depends on the geometry of the
@@ -325,7 +328,7 @@ of the input object on which an efficient adaptive triangulation
 of the isosurface is constructed on GPU. Such approach is motivated by
 the fact that the hierarchical representation of the object allows us
 to handle large datasets and to locally adapt the level of details
-with respect to the geometry or camera position. We first present the
+\wrt the geometry or camera position. We first present the
 octree representation and then the isosurface extraction from
 hierarchical octree cells.
 
@@ -341,53 +344,47 @@ hierarchical octree cells.
    morton code of a child cell is obtained by adding a suffix to its
   parent code \emph{(left)}. The adaptive representation consists of
   quadtree cells whose depth is view point dependent
-  \emph{(middle)}. Finally, adaptive Marching-Cubes is used to
+  \emph{(middle)}. Finally, adaptive Marching Cubes is used to
   generate the triangulation \emph{(right)}.}
 \label{fig_quadtree_partitionning}
 \end{figure}
 
-Representing a hierachical structure on GPU is usually challenging
-since the GPU memory is limited and non consistent \todo{fix coherent/aligned/coalesced?}
-memory access (\emph{e.g.} tree traversal using pointer dereferencing)
-may lead to huge payload from cache misses.  Efficient spatial tree
-encoding can be achieved using pointerless structures. We use
-linear quadtrees or octrees to represent classical quadtree/octreee
-trees, see for instance Gargantini
-\cite{gargantini1982effective}. This structure consists in indexing
-each cell by a \emph{Morton code}: the code of children cells are
-defined by the code of the parent suffixed by two bits (in dimension
-2, three bits in dimension 3) (see Figure
-\ref{fig_quadtree_partitionning}-\emph{left}). A cell's code encodes
- its position with respect to its parent cell and its
-complete path to the tree root. Hence, whatever their depth, all cell
-codes are simply stored in a linear vector on memory. Furthermore,
-cell operations such as subdivision, merging, neighbors access can be
-efficiently implemented using bitwise operations on the Morton code.
-In the following, we use the GPU implementation proposed by Dupuy
-\textit{et al.}  \cite{dupuy2014quadtrees}. By using their approach, Morton
-codes and bitwise operations are optimized to match with GPU hardware
-requirements.
+Representing a hierachical structure on GPU is usually challenging since the GPU
+memory is limited and non consistent \todo{fix coherent/aligned/coalesced?}
+memory access (\emph{e.g.} tree traversal using pointer dereferencing) may lead
+to huge payload from cache misses.  Efficient spatial tree encoding can be
+achieved using pointerless structures. We use linear quadtrees or octrees to
+represent classical quadtree/octree trees, see for instance
+\textsc{Gargantini}~\cite{gargantini1982effective}. This structure consists in
+indexing each cell by a \emph{Morton code}: the code of children cells are
+defined by the code of the parent suffixed by two bits (in dimension 2, three
+bits in dimension 3) (see Figure \ref{fig_quadtree_partitionning}-\emph{left}).
+A cell's code encodes its position with respect to its parent cell and its
+complete path to the tree root. Hence, whatever their depth, all cell codes are
+simply stored in a linear vector on memory. Furthermore, cell operations such as
+subdivision, merging, neighbors access can be efficiently implemented using
+bitwise operations on the Morton code. In the following, we use the GPU
+implementation proposed by \textsc{Dupuy} \textit{et al.}~\cite{dupuy2014quadtrees}. By
+using their approach, Morton codes and bitwise operations are optimized to match
+with GPU hardware requirements.
 
 \subsection{Data parallel and adaptive mesh generation}
 
-
-
 Using this spatial datastructure, triangulated mesh can be constructed
-from a Marching-Cubes approach \cite{lorensen1987marching} (MC for short): the
+from a Marching Cubes approach \cite{lorensen1987marching} (MC for short): the
 triangulation is generated from local triangle patches computed on
 local cell configurations. Since triangle patches are locally
 computed, such approach is fully parallel and easy to implement on GPU
 hardwares. However, since adjacent cells may not have the same depth
-on the octree, original Lorensen and Cline's rules need to be
+on the octree, original \textsc{Lorensen} and \textsc{Cline}'s rules need to be
 updated (see Figure~\ref{fig_quadtree_partitionning}-\emph{right}). Many authors have addressed this problem both for primal and
 dual meshes
 \cite{shu1995adaptive,schaefer2004dual,lengyel2010voxel,DBLP:journals/cgf/LewinerMPPL10,DBLP:journals/cvgip/LobelloDD14}.
 
 In the following, we use the extension of MC configurations to handle
-adaptive structures proposed by Lengyel \emph{et al.}
-\cite{lengyel2010voxel}. First this approach constrains the octree
+adaptive structures proposed by \textsc{Lengyel} \emph{et al.}~\cite{lengyel2010voxel}. First this approach constrains the octree
 structure in order to make sure that the depth difference between any
-two adjacent cells is at most one. Then, Lengyel \emph{et al.} propose
+two adjacent cells is at most one. Then, \textsc{Lengyel} \emph{et al.} propose
 specific MC configurations for such transition cells,  leading to a
 crack-free triangulation.
 
@@ -567,7 +564,7 @@ octree cells at different resolutions. At a given MC vertex $\vx$, the
 algorithm becomes simple since we just scan the ball cells and
 estimate the area (or other moments) from the mipmap values associated
 to this cell. Note that cells in the $B_R$ decomposition may not be
-aligned wuth mipmap cells. However, we can use GPU mipmap
+aligned with mipmap cells. However, we can use GPU mipmap
 functionalities which interpolates mipmap values if we probe at
 non-discrete positions. For a given radius $R$, the expected number of
 cells on $B_R$ is in $O(\log{R})$. Implementation details on the
@@ -761,7 +758,7 @@ measurements (mean, Gaussian, principal directions) with different
 ball radii on potentially large dynamic dataset. Our proposal relies
 on both a linear octree representation with Morton codes and an
 efficient integral computation on GPU.  The source code and additional
-material (video\ldots) are available on the project website
+material (video, \ldots) are available on the project website
 (\url{https://github.com/dcoeurjo/ICTV}).
 
 %% \appendix
