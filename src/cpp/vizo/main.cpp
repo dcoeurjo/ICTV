@@ -231,6 +231,8 @@ private:
 	
 	int min_lvl;
 	
+	int nb_probe;
+	
 public:
 	Vizo(int _argc, char** _argv) : gk::App()
 	{
@@ -300,8 +302,9 @@ public:
 		unmovedCells = 0;
 		frame = 0;
 		fps = 0;
+		nb_probe = 0;
 		
-		plot = false;
+		plot = true;
 		transition_cells_displayed = true;
 		
 		std::string file(argv[1]);
@@ -316,7 +319,8 @@ public:
 		plotfd2 = fopen(buf,"w");
 		if (plotfd2 == NULL)
 				perror("fopen");
-		fprintf(plotfd2, "#Lod\t Cull\t Extraction\t Curvature\n");
+		fprintf(plotfd2, "# Frame Lvl \t\t TotalCells \t\t RegCells \t\t TrCells \t\t Tgl \t\t LodTime (ms) \t\t CullTime (ms) \t\t RegTglTime (ms) \t\t TrTglTime (ms)\t\t ShadingTime (ms)\t\t ShdLessTime (ms)\t\t TotalTime (ms) \t\t Cpu Time (ns)\n");
+		
 		
 		// OpenGL context flags
 		glEnable (GL_DEPTH_TEST);
@@ -332,7 +336,7 @@ public:
 		else 
 			load_viewPoint();
 		
-		min_lvl = 4.0;//(int)floor(log2(Parameters::getInstance()->g_curvradius));
+		min_lvl = (int)ceil(log2(Parameters::getInstance()->g_curvradius));
 		Parameters::getInstance()->g_lvl = min_lvl;
 		
 		last_radius = Parameters::getInstance()->g_curvradius;
@@ -378,6 +382,8 @@ public:
 			}
 			else if (Parameters::getInstance()->g_auto_refine && fps > 30 && Parameters::getInstance()->g_lvl > 0)
 			{
+				/*if (Parameters::getInstance()->g_lvl == 0)
+					exit(0);*/
 				Parameters::getInstance()->g_lvl -= 1;
 				Parameters::getInstance()->g_compute_min_max = true;
 			}
@@ -393,14 +399,14 @@ public:
 		//return;
 		if (Parameters::getInstance()->g_export)
 		{
-			was_culled = Parameters::getInstance()->g_culling;
-			was_regular_grid = Parameters::getInstance()->g_regular;
+			//was_culled = Parameters::getInstance()->g_culling;
+			//was_regular_grid = Parameters::getInstance()->g_regular;
 			was_showing_dir = Parameters::getInstance()->g_curv_dir;
 			//was_gt = Parameters::getInstance()->g_ground_truth;
 			was_wireframe = Parameters::getInstance()->g_solid_wireframe;
 			
-			Parameters::getInstance()->g_culling = false;
-			Parameters::getInstance()->g_regular = true;
+			//Parameters::getInstance()->g_culling = false;
+			//Parameters::getInstance()->g_regular = true;
 			Parameters::getInstance()->g_curv_dir = 0;
 			//Parameters::getInstance()->g_ground_truth = 1;
 			Parameters::getInstance()->g_solid_wireframe = 0;
@@ -601,6 +607,7 @@ public:
 							if (p != nb_geom)
 								printf("ERROR: %lf != ref %lf\n", p, nb_geom);
 						}
+						nb_probe = nb_geom;
 						fprintf(plotfd, "%lf\t", p);
 						fprintf(plotfd, "\n");
 					}
@@ -611,8 +618,8 @@ public:
 				free(data_dirmin);
 				free(data_dirmax);
 
-				Parameters::getInstance()->g_culling = was_culled;
-				Parameters::getInstance()->g_regular = was_regular_grid;
+				//Parameters::getInstance()->g_culling = was_culled;
+				//Parameters::getInstance()->g_regular = was_regular_grid;
 				Parameters::getInstance()->g_curv_dir = was_showing_dir;
 				//Parameters::getInstance()->g_ground_truth = was_gt;
 
@@ -688,7 +695,7 @@ public:
 				free(data_dirmax);
 				free(data_dirmin);
 				
-				//printf("(NB %d) Min %lf Max %lf\n", nb, min, max);
+				printf("(NB %d) Min %lf Max %lf\n", nb, min, max);
 				
 				Parameters::getInstance()->g_curvmin = min-0.01;
 				Parameters::getInstance()->g_curvmax = max+0.01;
@@ -725,8 +732,8 @@ public:
 			Parameters::getInstance()->g_solid_wireframe = was_wireframe;
 		}
 		
-		if (Parameters::getInstance()->g_export)
-				Parameters::getInstance()->g_export = false;
+		//if (Parameters::getInstance()->g_export)
+		//		Parameters::getInstance()->g_export = false;
 	}
     
 	int quit( )
@@ -1128,9 +1135,9 @@ public:
 		if (plot)
 		{
 			
-				fprintf(plotfd, "%d \t\t %d \t\t %d \t\t %d \t\t %d \t\t %lf \t\t %lf \t\t %lf \t\t %lf \t\t %lf \t\t %lf \t\t %lf \t\t %lf\n",
+				fprintf(plotfd2, "%d %d \t\t %d \t\t %d \t\t %d \t\t %d \t\t %lf \t\t %lf \t\t %lf \t\t %lf \t\t %lf \t\t %lf \t\t %lf \t\t %lf\n",
 					
-				frame,
+				frame, (int)Parameters::getInstance()->g_lvl, 
 				queryResult_lod,
 				queryResult_regular,
 				queryResult_transition,

@@ -49,7 +49,7 @@ void main( )
 	
 	curv_value = 0;
 	if(u_curv_val == 1)
-		curv_value = position.w;//(k1+k2)/2.0;
+		curv_value = (k1+k2)/2.0;
 	else if(u_curv_val == 2)
 		curv_value = (k1*k2);
 	else if(u_curv_val == 3)
