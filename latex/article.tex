@@ -89,24 +89,23 @@ a curvature tensor (mean/Gaussian curvature, principal curvatures
 directions\ldots) estimation at each point of the digital
 surface. Curvature maps on a given isosurface are key information when
 exploring 3D structures in Material Sciences \todo{REF}. Furthermore,
-since most curvature estimators require a parameter fixing the scale
+most curvature estimators require a parameter fixing the scale
 to which the computation is performed. For short, such parameter
 (integration radius, convolution kernel size, \ldots) specifies noise
 level on the object surface. As a consequence, exploring interactively
 different values of such parameter is mandatory.
 \vspace{0.2cm}
 
-\noindent\textbf{Contributions}\quad In this work, we propose a
-framework to perform interactive visualization of complex 3D digital
-structures combined with a dynamic curvature tensor estimation. More
-precisely, we define a fully data parallel process on GPU hardware \todo{Definir GPU au cas ou ?} to
-both efficiently extract adaptive isosurface and compute per vertex
-curvature tensor using Integral Invariants estimators. Hence, this
-system allows us to visualize curvature tensor in real-time on large
-dynamic objects. Our approach combines a GPU implementation of
-pointerless octrees to represent the data, an adaptive
-viewpoint-dependent mesh extraction, and a GPU implementation of
-integral invariant curvature estimations.
+\noindent\textbf{Contributions}\quad In this work, we propose a framework to
+perform interactive visualization of complex 3D digital structures combined with
+a dynamic curvature tensor estimation. More precisely, we define a fully data
+parallel process on GPU (Graphics Processor Unit) hardware to both efficiently
+extract adaptive isosurface and compute per vertex curvature tensor using
+Integral Invariants estimators. Hence, this system allows us to visualize
+curvature tensor in real-time on large dynamic objects. Our approach combines a
+GPU implementation of pointerless octrees to represent the data, an adaptive
+viewpoint-dependent mesh extraction, and a GPU implementation of integral
+invariant curvature estimators.
 
 
 \vspace{0.2cm}
