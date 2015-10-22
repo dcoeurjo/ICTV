@@ -277,7 +277,7 @@ Value computeExact( MipMap* M, int x0, int y0, int z0, Value r )
   return acc;
 }
 
-Value computeExact(int x0, int y0, int z0, Value r, int lvl)
+Value computeExact(float x0, float y0, float z0, Value r, int lvl)
 {
   xyzk_list[0] = 0;
   int minx = x0 - (int) ceil( r );
@@ -768,8 +768,8 @@ void computeSphereSubdivision(int r, int lvl)
 	int x0 = 1 << (lvl-1); 
 	int y0 = 1 << (lvl-1); 
 	int z0 = 1 << (lvl-1); 
-	Value exact = computeExact( x0, y0, z0, r, lvl );
-	//Value exact = computeHierarchy( lvl, x0, y0, z0, r );
+	//Value exact = computeExact( x0+0.5, y0, z0, r, lvl );
+	Value exact = computeHierarchy( lvl, x0, y0, z0, r );
 	printf("Fetch %d cells\n", (int)xyzk_list[0]);
 	
 	//for(int i=1; i<=xyzk_list[0]; i++)
