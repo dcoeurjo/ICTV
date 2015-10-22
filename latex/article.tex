@@ -358,7 +358,7 @@ represent classical quadtree/octree trees, see for instance
 indexing each cell by a \emph{Morton code}: the code of children cells are
 defined by the code of the parent suffixed by two bits (in dimension 2, three
 bits in dimension 3) (see Figure \ref{fig_quadtree_partitionning}-\emph{left}).
-A cell's code encodes its position with respect to its parent cell and its
+A cell's code encodes its position \wrt its parent cell and its
 complete path to the tree root. Hence, whatever their depth, all cell codes are
 simply stored in a linear vector on memory. Furthermore, cell operations such as
 subdivision, merging, neighbors access can be efficiently implemented using
@@ -369,7 +369,7 @@ with GPU hardware requirements.
 
 \subsection{Data parallel and adaptive mesh generation}
 
-Using this spatial datastructure, triangulated mesh can be constructed
+Using this spatial data structure, triangulated mesh can be constructed
 from a Marching Cubes approach \cite{lorensen1987marching} (MC for short): the
 triangulation is generated from local triangle patches computed on
 local cell configurations. Since triangle patches are locally
@@ -381,7 +381,7 @@ dual meshes
 \cite{shu1995adaptive,schaefer2004dual,lengyel2010voxel,DBLP:journals/cgf/LewinerMPPL10,DBLP:journals/cvgip/LobelloDD14}.
 
 In the following, we use the extension of MC configurations to handle
-adaptive structures proposed by \textsc{Lengyel} \emph{et al.}~\cite{lengyel2010voxel}. First this approach constrains the octree
+adaptive structures proposed by \textsc{Lengyel} \emph{et al.}~\cite{lengyel2010voxel}. First, this approach constrains the octree
 structure in order to make sure that the depth difference between any
 two adjacent cells is at most one. Then, \textsc{Lengyel} \emph{et al.} propose
 specific MC configurations for such transition cells,  leading to a
@@ -390,7 +390,7 @@ crack-free triangulation.
 Similarly to original MC algorithm, this approach is perfectly adapted
 to GPU hardwares: Given a set of cells (a vector of morton codes),
 each triangle patch can be constructed in parallel (done by
-in the \emph{geometry shader} in the GPU graphic pipeline).
+the \emph{geometry shader} in the GPU graphic pipeline).
 
 \subsection{Level of Details Criteria and Temporal Updates}
 
