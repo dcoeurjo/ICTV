@@ -336,7 +336,7 @@ hierarchical octree cells.
 
 \begin{figure}[!htbp]
   \begin{center}
-    \subfigure{}{\includegraphics[width=\textwidth]{figs/morton}}
+    \subfigure{}{\includegraphics[width=0.9\textwidth]{figs/morton}}
     %%\subfigure{}{\includegraphics[height=0.17\textheight]{figs/partitioning}}
     %%\subfigure{}{\includegraphics[height=0.17\textheight]{figs/quadtree_activefront}}
   \end{center}
@@ -428,13 +428,13 @@ split and merge decision are based on this visibility ratio:
 %
 \begin{figure}[!h]
   \begin{center}
-    \begin{overpic}[width=4cm]{figs/criterion}
+    \begin{overpic}[width=3.5cm]{figs/criterion}
       \put(33,40){$\alpha$}
       \put(50,45){$d_c$}
       \put(95,65){$l(c)$}
     \end{overpic}~~~~~
-    \includegraphics[width=4cm]{viewlod2_small}~~~~~
-    \includegraphics[width=3.5cm]{subdivision}
+    \includegraphics[width=3.5cm]{viewlod2_small}~~~~~
+    \includegraphics[width=3cm]{subdivision}
   \end{center}
   \caption{Notations \emph{(left)} and adaptive meshing in dimension 2 using the LoD distance and
     angular criterion \emph{(middle)}. Based on LoD criterion
@@ -537,8 +537,8 @@ at this point.
 
 \begin{figure}
   \begin{center}
-    \subfigure[]{\includegraphics[width=5cm]{figs/approx-bh}}
-    \subfigure[]{\includegraphics[width=5cm]{figs/approx-ada}}
+    \subfigure[]{\includegraphics[width=4cm]{figs/approx-bh}}
+    \subfigure[]{\includegraphics[width=4cm]{figs/approx-ada}}
   \end{center}
   \caption{Adaptive approximation of the integration using a
     hierarchical decomposition of the ball $B_R(\vx)$ $(a)$, or a decomposition of $B_R(\vx)\cap\Shape$.}
@@ -622,16 +622,25 @@ $O\left(\left(\frac{R}{2^l}\right)^3\right)$, the interactive control
 
 \subsection{Full resolution experiment}
 
+We first evaluate the curvature estimation on a full-resolution
+geometry obtained by disabling the LoD criterion at the mesh
+generation step. 
+
 
 \begin{table}
   \begin{center}
     \begin{tabular}{@{}lrrrrrr@{}}
       \toprule
-    Quantities & H & $l_4$ & $l_3$ & $l_2$ & $l_1$ & $l_0$\\
+    Quantities & ~~~H & $l_4$ & $l_3$ & $l_2$ & $l_1$ & $l_0$\\
       \midrule
       Number of texture fetches & & & & & &\\
       Time (in ms) & & & & & &\\
       $L_\infty$ error (\wrt $l_0$) & & & & & &\\
+            \midrule
+            Number of texture fetches & & & & & &\\
+            Time (in ms) & & & & & &\\
+            $L_\infty$ error (\wrt $l_0$) & & & & & &\\
+            
       \bottomrule
     \end{tabular}
   \end{center}
