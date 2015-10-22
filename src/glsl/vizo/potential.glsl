@@ -31,7 +31,6 @@ float getPotential(vec3 position, float t)
 	/*float size = 20.0;
 	vec3 p = (position-0.5)*size;
 	
-	//SinCard
 	float y = 1.0;
 	float d = (abs(sin(0.5*t))+0.5) * sqrt( p.x*p.x + p.z*p.z );
 	if (d!=0)

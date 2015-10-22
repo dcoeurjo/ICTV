@@ -699,7 +699,7 @@ public:
 				
 				Parameters::getInstance()->g_curvmin = min-0.01;
 				Parameters::getInstance()->g_curvmax = max+0.01;
-				
+			
 				Parameters::getInstance()->g_compute_min_max = false;
 			}
 		}
