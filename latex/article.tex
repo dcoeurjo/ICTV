@@ -15,7 +15,7 @@
 \usepackage[ruled,vlined,linesnumbered]{algorithm2e}   % authors: last version of algorithm display
 \usepackage{todonotes}
 
-\usepackage{booktabs} 
+\usepackage{booktabs}
 
 
 \newcommand{\ie}{\emph{i.e.} }
@@ -89,24 +89,23 @@ a curvature tensor (mean/Gaussian curvature, principal curvatures
 directions\ldots) estimation at each point of the digital
 surface. Curvature maps on a given isosurface are key information when
 exploring 3D structures in Material Sciences \todo{REF}. Furthermore,
-since most curvature estimators require a parameter fixing the scale
+most curvature estimators require a parameter fixing the scale
 to which the computation is performed. For short, such parameter
 (integration radius, convolution kernel size, \ldots) specifies noise
 level on the object surface. As a consequence, exploring interactively
 different values of such parameter is mandatory.
 \vspace{0.2cm}
 
-\noindent\textbf{Contributions}\quad In this work, we propose a
-framework to perform interactive visualization of complex 3D digital
-structures combined with a dynamic curvature tensor estimation. More
-precisely, we define a fully data parallel process on GPU hardware \todo{Definir GPU au cas ou ?} to
-both efficiently extract adaptive isosurface and compute per vertex
-curvature tensor using Integral Invariants estimators. Hence, this
-system allows us to visualize curvature tensor in real-time on large
-dynamic objects. Our approach combines a GPU implementation of
-pointerless octrees to represent the data, an adaptive
-viewpoint-dependent mesh extraction, and a GPU implementation of
-integral invariant curvature estimations.
+\noindent\textbf{Contributions}\quad In this work, we propose a framework to
+perform interactive visualization of complex 3D digital structures combined with
+a dynamic curvature tensor estimation. More precisely, we define a fully data
+parallel process on GPU (Graphics Processor Unit) hardware to both efficiently
+extract adaptive isosurface and compute per vertex curvature tensor using
+Integral Invariants estimators. Hence, this system allows us to visualize
+curvature tensor in real-time on large dynamic objects. Our approach combines a
+GPU implementation of pointerless octrees to represent the data, an adaptive
+viewpoint-dependent mesh extraction, and a GPU implementation of integral
+invariant curvature estimators.
 
 
 \vspace{0.2cm}
@@ -174,13 +173,13 @@ embedded into $\R^d$ such that it coincides with $\partial\Body{Z}{h}$.
       \subfigure[]{\begin{overpic}[width=5cm]{figs/integral2D_2}
           \put(42,28){$\times$}
           \put(46,31){$\vx$}
-          \put(55,45){$B_R(\vx)$}
+          \put(55,45){$\Ball{R}{\vx}$}
           \put(1,10){$\dS$}
           \put(20,10){$\Shape$}
       \end{overpic}}~~~~~~
       \subfigure[]{\begin{overpic}[width=5cm]{figs/notation_2}
           \put(44.5,25){$h \cdot \vz$}
-          \put(55,45){$B_R(\vx)$}
+          \put(55,45){$\Ball{R}{\vx}$}
           \put(42,28.5){$\times$}
           \put(45,32.5){$\vx$}
           \put(45,16.5){$h$}
@@ -336,7 +335,7 @@ hierarchical octree cells.
 
 \begin{figure}[!htbp]
   \begin{center}
-    \subfigure{}{\includegraphics[width=\textwidth]{figs/morton}}
+    \subfigure{}{\includegraphics[width=0.9\textwidth]{figs/morton}}
     %%\subfigure{}{\includegraphics[height=0.17\textheight]{figs/partitioning}}
     %%\subfigure{}{\includegraphics[height=0.17\textheight]{figs/quadtree_activefront}}
   \end{center}
@@ -428,13 +427,13 @@ split and merge decision are based on this visibility ratio:
 %
 \begin{figure}[!h]
   \begin{center}
-    \begin{overpic}[width=4cm]{figs/criterion}
+    \begin{overpic}[width=3.5cm]{figs/criterion}
       \put(33,40){$\alpha$}
       \put(50,45){$d_c$}
       \put(95,65){$l(c)$}
     \end{overpic}~~~~~
-    \includegraphics[width=4cm]{viewlod2_small}~~~~~
-    \includegraphics[width=3.5cm]{subdivision}
+    \includegraphics[width=3.5cm]{viewlod2_small}~~~~~
+    \includegraphics[width=3cm]{subdivision}
   \end{center}
   \caption{Notations \emph{(left)} and adaptive meshing in dimension 2 using the LoD distance and
     angular criterion \emph{(middle)}. Based on LoD criterion
@@ -492,8 +491,7 @@ estimators
 (\ref{eq:dig-curvature-estimator-H}), (\ref{eq:dig-curvature-estimator-k1})
 and (\ref{eq:dig-curvature-estimator-k2}).
 
-To implement the integration on $B_R(\vx)\cap\Shape$\todo{Check ball
-  radii w.r.t. notations in sect2}
+To implement the integration on $\Ball{R}{\vx} \cap \Shape$
 (Fig.~\ref{fig:approx}-$a$), a naive approach consists in scanning all
 digital points inside such domain (Fig.~\ref{fig:approx}-$b$) and then
 to estimate the geometrical moment as the sum of the geometrical
@@ -505,11 +503,11 @@ intensities at level $l$ are averaged to define the voxel value at
 level $l+1$. If the level 0 corresponds to the binary input object, at
 a given level $l$, a voxel $(x,y,z)$ contains the fraction of $\DSh$
 belonging to the cube of center $(x,y,z)$ and edge length $2^l$. As a
-consequence, we can approximate the volume of $B_R(x)\cap\Shape$ by
+consequence, we can approximate the volume of $\Ball{R}{\vx}\cap\Shape$ by
 considering mipmap values at a given resolution $l$
 (Fig.~\ref{fig:approx}-$c$). In this case, errors only occurs for
 cells lying inside $\Shape$ (with density 1) not entirely covered by
-$B_R(\vx)$.
+$\Ball{R}{\vx}$.
 \begin{figure}
   \begin{center}
     \subfigure[]{\includegraphics[width=4cm]{figs/approx1}}
@@ -523,8 +521,8 @@ $B_R(\vx)$.
 \end{figure}
 
 Using the hierachical nature of the mipmap texture, we could also
-consider hierarchical decompositions of either $B_R(\vx)$
-(Fig.~\ref{fig:approx2}-$a$) or $B_R(\vx)\cap\Shape$
+consider hierarchical decompositions of either $\Ball{R}{\vx}$
+(Fig.~\ref{fig:approx2}-$a$) or $\Ball{R}{\vx}\cap\Shape$
 (Fig.~\ref{fig:approx2}-$b$). The idea would be to decompose the
 regions into mipmap cells of different resolution in order to limit
 the number of texture access (important bottleneck on GPU hardwares)
@@ -537,11 +535,11 @@ at this point.
 
 \begin{figure}
   \begin{center}
-    \subfigure[]{\includegraphics[width=5cm]{figs/approx-bh}}
-    \subfigure[]{\includegraphics[width=5cm]{figs/approx-ada}}
+    \subfigure[]{\includegraphics[width=4cm]{figs/approx-bh}}
+    \subfigure[]{\includegraphics[width=4cm]{figs/approx-ada}}
   \end{center}
   \caption{Adaptive approximation of the integration using a
-    hierarchical decomposition of the ball $B_R(\vx)$ $(a)$, or a decomposition of $B_R(\vx)\cap\Shape$.}
+    hierarchical decomposition of the ball $\Ball{R}{\vx}$ $(a)$, or a decomposition of $\Ball{R}{\vx}\cap\Shape$.}
   \label{fig:approx2}
 \end{figure}
 
@@ -558,7 +556,7 @@ results in terms of texture fetch can be obtained by the approach
 presented in Fig.~\ref{fig:approx2}-$b$. At each vertex, the
 computation algorithm would consist in a recursive decomposition of
 the domain such that a cell is subdivided if it does not belong to
-$B_R(\vx)\cap\Shape$. However, on GPU hardware, this approach is
+$\Ball{R}{\vx}\cap\Shape$. However, on GPU hardware, this approach is
 highly inefficient since the hardware optimizes the parallelism only
 when the micro-program described in the shader has a predictive
 execution flow. Hence, implementing the recursive algorithm (or its
@@ -568,13 +566,15 @@ we have considered a fast hierarchical approximation following
 Fig.~\ref{fig:approx2}-$a$: for a given radius $R$, we precompute a
 hierachical decomposition of $B_R$. Such decomposition is made of
 octree cells at different resolutions. At a given MC vertex $\vx$, the
-algorithm becomes simple since we just scan  the ball cells and estimate
-the area (or other moments) from the mipmap values associated to this
-cell. Note that cells in the $B_R$ decomposition may not be aligned
-wuth mipmap cells. However, we can use GPU mipmap functionalities
-which interpolates mipmap values if we probe at non-discrete
-positions. For a given radius $R$, the expected number of cells on
-$B_r$ is in $O(\log{R})$.
+algorithm becomes simple since we just scan the ball cells and
+estimate the area (or other moments) from the mipmap values associated
+to this cell. Note that cells in the $B_R$ decomposition may not be
+aligned wuth mipmap cells. However, we can use GPU mipmap
+functionalities which interpolates mipmap values if we probe at
+non-discrete positions. For a given radius $R$, the expected number of
+cells on $B_R$ is in $O(\log{R})$. Implementation details on the
+hierarchical octree representation can be found in the supplementary
+material (see Section \ref{sec:discussion}).
 
 
 \todo[inline]{phrase sur approx si on met}
@@ -622,16 +622,22 @@ $O\left(\left(\frac{R}{2^l}\right)^3\right)$, the interactive control
 
 \subsection{Full resolution experiment}
 
+We first evaluate the curvature estimation on a full-resolution
+geometry obtained by disabling the LoD criterion at the mesh
+generation step.
+
 
 \begin{table}
   \begin{center}
-    \begin{tabular}{@{}lrrrrrr@{}}
+    \begin{tabular}{@{}lrrrrrrrrrrrr@{}}
       \toprule
-    Quantites  & H & $l_4$ & $l_3$ & $l_2$ & $l_1$ & $l_0$\\
+      & \multicolumn{6}{c}{$R=$}   & \multicolumn{6}{c}{$R=$}\\
+      \cmidrule(r){2-12}
+    Quantities & ~~~H & $l_4$ & $l_3$ & $l_2$ & $l_1$ & $l_0$& ~~~H & $l_4$ & $l_3$ & $l_2$ & $l_1$ & $l_0$\\
       \midrule
-      Number of texture fetches & & & & & & \\
-      Time (in ms) & & & & & & \\
-      $L_\infty$ error (\wrt $l_0$) & & & & & & \\
+      Number of texture fetches & & & & & & & & & & & &\\
+      Time (in ms) & & & & & && & & & & &\\
+      $L_\infty$ error (\wrt $l_0$) & & & & & && & & & & &\\
       \bottomrule
     \end{tabular}
   \end{center}
@@ -639,7 +645,18 @@ $O\left(\left(\frac{R}{2^l}\right)^3\right)$, the interactive control
     only consider the curvature estimation step).\label{tab:full-res-stat}}
 \end{table}
 
-
+\begin{figure}
+  \begin{center}
+    \subfigure[]{\framebox{octa $l_4$}}
+   \subfigure[]{\framebox{octa $l_3$}}
+   \subfigure[]{\framebox{octa $l_2$}}
+   \subfigure[]{\framebox{octa $l_1$}}
+   \subfigure[]{\framebox{octa $l_0$}}
+  \end{center}
+  \caption{fig multiresolution, courbure moyenne par ex}
+  \label{fig:refine}
+\end{figure}
+\todo[inline]{blabla experiments}
 
 
 \subsection{Fully adaptive evaluation}
@@ -657,18 +674,18 @@ $O\left(\left(\frac{R}{2^l}\right)^3\right)$, the interactive control
           legend style={at={(0.5,-0.20)},
             anchor=north,legend columns=-1},
           ylabel={\#Time (in ms)},
-          symbolic x coords={Octa-R1, Octa-R2, Snow-R1, Snow-R2, 
+          symbolic x coords={Octa-R1, Octa-R2, Snow-R1, Snow-R2,
 	    xxx-R1, xxx-R2},
           xtick=data,
           x tick label style={rotate=45,anchor=east},
         ]
-        \addplot+[ybar] plot coordinates {(Octa-R1,0) (Octa-R2,2) 
+        \addplot+[ybar] plot coordinates {(Octa-R1,0) (Octa-R2,2)
           (Snow-R1,2) (Snow-R2,3)  (xxx-R1,2) (xxx-R2,0)};
-        \addplot+[ybar] plot coordinates {(Octa-R1,0) (Octa-R2,0) 
+        \addplot+[ybar] plot coordinates {(Octa-R1,0) (Octa-R2,0)
           (Snow-R1,0) (Snow-R2,3)  (xxx-R1,1) (xxx-R2,0)};
         \addplot+[ybar] plot coordinates {(Octa-R1,6) (Octa-R2,6)
           (Snow-R1,3) (Snow-R2,2) (xxx-R1,2) (xxx-R2,6)};
-        \addplot+[ybar] plot coordinates {(Octa-R1,4) (Octa-R2,2) 
+        \addplot+[ybar] plot coordinates {(Octa-R1,4) (Octa-R2,2)
           (Snow-R1,0) (Snow-R2,2) (xxx-R1,1) (xxx-R2,4)};
         %\legend{\strut Geometry, \strut Curvature, \strut xx, \strut xx}
       \end{axis}
@@ -682,18 +699,18 @@ $O\left(\left(\frac{R}{2^l}\right)^3\right)$, the interactive control
           legend style={at={(0.5,-0.20)},
             anchor=north,legend columns=-1},
          % ylabel={\#Time (in ms)},
-          symbolic x coords={Octa-R1, Octa-R2, Snow-R1, Snow-R2, 
+          symbolic x coords={Octa-R1, Octa-R2, Snow-R1, Snow-R2,
 	    xxx-R1, xxx-R2},
           xtick=data,
           x tick label style={rotate=45,anchor=east},
         ]
-        \addplot+[ybar] plot coordinates {(Octa-R1,0) (Octa-R2,2) 
+        \addplot+[ybar] plot coordinates {(Octa-R1,0) (Octa-R2,2)
           (Snow-R1,2) (Snow-R2,3)  (xxx-R1,2) (xxx-R2,0)};
-        \addplot+[ybar] plot coordinates {(Octa-R1,0) (Octa-R2,0) 
+        \addplot+[ybar] plot coordinates {(Octa-R1,0) (Octa-R2,0)
           (Snow-R1,0) (Snow-R2,3)  (xxx-R1,1) (xxx-R2,0)};
         \addplot+[ybar] plot coordinates {(Octa-R1,6) (Octa-R2,6)
           (Snow-R1,3) (Snow-R2,2) (xxx-R1,2) (xxx-R2,6)};
-        \addplot+[ybar] plot coordinates {(Octa-R1,4) (Octa-R2,2) 
+        \addplot+[ybar] plot coordinates {(Octa-R1,4) (Octa-R2,2)
           (Snow-R1,0) (Snow-R2,2) (xxx-R1,1) (xxx-R2,4)};
        % \legend{\strut Geometry, \strut Curvature, \strut xx, \strut xx}
       \end{axis}
@@ -705,6 +722,33 @@ $O\left(\left(\frac{R}{2^l}\right)^3\right)$, the interactive control
 \end{figure}
 
 
+\begin{figure}
+  \begin{center}
+    \subfigure[]{\framebox{K}}
+   \subfigure[]{\framebox{H}}
+   \subfigure[]{\framebox{DIR1}}
+   \subfigure[]{\framebox{DIR2}}
+   \subfigure[]{\framebox{normales}}\\
+    \subfigure[]{\framebox{K}}
+   \subfigure[]{\framebox{H}}
+   \subfigure[]{\framebox{DIR1}}
+   \subfigure[]{\framebox{DIR2}}
+   \subfigure[]{\framebox{normales}}
+
+  \end{center}
+  \caption{fig illustration complete (adaptative, ...) plusieurs
+    objets.. + dynamique.}
+  \label{fig:full}
+\end{figure}
+
+\todo[inline]{blabla experiments}
+
+For dynamic datasets, we consider a time varying impicit
+surface. Since it would have been to expensive to update the a mipmap texture
+of densities at each time step, we simply evaluate the implicit
+expression at each vertex of a cell to decide if such cell is included
+or not into $\Ball{R}{\vx}\cap \Shape$.
+\todo[inline]{blabla experiments}
 
 
 
