@@ -395,28 +395,29 @@ the \emph{geometry shader} in the GPU graphic pipeline).
 \subsection{Level of Details Criteria and Temporal Updates}
 
 
-As illustrated in Figure
-\ref{fig_quadtree_partitionning}-\emph{middle}, we propose a viewpoint
-dependent criterion to decide if a cell needs to be refined: the
-closer we are to the camera, the finer the cells are. In addition to
-the distance criterion, we define an angular criterion to prevent refining cells outside the camera frustrum. Using a criterion based on the distance between a cell and the camera is well suited to GPU since it can be evaluated independently on all cells. Hence, we can efficiently determine if a cell must be subdivided or not. Figure \ref{fig_lod_octree}
-illustrates the level of details (LoD for short) criterion we
-use. More precisely, in dimension 2, if $\alpha$ denotes the viewing
-angle, an object at distance $d$ from the camera with diameter greater than
- $2\cdot d\cdot\tan(\alpha)$
- is projected into more than one pixel
-(see Figure~\ref{fig_lod_octree}-\emph{left}). Hence, the distance
-criterion is based on the ratio (\emph{visibility ratio} in the
-following)between the cell diameter $l(c)$ (power of 2 depending on
-the depth), and
-$2\cdot d_c\cdot\tan(\alpha)$, $d_c$ being the distance between the cell center and the camera. For a given cell $c$,
-split and merge decision are based on this visibility ratio:
+As illustrated in Figure~\ref{fig_quadtree_partitionning}-\emph{middle}, we
+propose a viewpoint dependent criterion to decide if a cell needs to be refined:
+the closer we are to the camera, the finer the cells are. In addition to the
+distance criterion, we define an angular criterion to prevent refining cells
+outside the camera frustrum. Using a criterion based on the distance between a
+cell and the camera is well suited to GPU since it can be evaluated
+independently on all cells. Hence, we can efficiently determine if a cell must
+be subdivided or not. Figure~\ref{fig_lod_octree} illustrates the level of
+details (LoD for short) criterion we use. More precisely, in dimension 2, if
+$\alpha$ denotes the viewing angle, an object at distance $d$ from the camera
+with diameter greater than $2\cdot d\cdot\tan(\alpha)$ is projected into more
+than one pixel (see Figure~\ref{fig_lod_octree}-\emph{left}). Hence, the
+distance criterion is based on the ratio (\emph{visibility ratio} in the
+following) between the cell diameter $l(c)$ (power of 2 depending on the depth),
+and $2\cdot d_c\cdot\tan(\alpha)$, $d_c$ being the distance between the cell
+center and the camera. For a given cell $c$, split and merge decision are based
+on this visibility ratio:
+%
 \begin{itemize}
-\item $c$ is split if its children cells have a visibility ratio
-  greater than  constant $k$\,;
-\item $c$ and its sibling cells are merged if their parent cell $c'$
-  have av visibility ratio lower than $k$\;
-\item otherwise, the cell $c$ stays for the next frame.
+  \item $c$ is split if its children
+cells have a visibility ratio greater than  constant $k$\,;
+  \item $c$ and its sibling cells are merged if their parent cell $c'$ have a visibility ratio lower than $k$\;
+  \item otherwise, the cell $c$ stays for the next frame.
 \end{itemize}
 %
 \begin{figure}[!h]
@@ -429,10 +430,8 @@ split and merge decision are based on this visibility ratio:
     \includegraphics[width=3.5cm]{viewlod2_small}~~~~~
     \includegraphics[width=3cm]{subdivision}
   \end{center}
-  \caption{Notations \emph{(left)} and adaptive meshing in dimension 2 using the LoD distance and
-    angular criterion \emph{(middle)}. Based on LoD criterion
-    evaluation, the cell buffer is
-  updated between each frame \emph{(right)}.}
+  \caption{Notations \emph{(left)} and adaptive meshing in dimension 2 using the LoD distance and angular criterion \emph{(middle)}. Based on LoD criterion
+    evaluation, the cell buffer is updated between each frame \emph{(right)}.}
   \label{fig_lod_octree}
 \end{figure}
 %
@@ -448,7 +447,7 @@ efficiently implemented on GPU hardware as illustrated in
 Figure~\ref{fig_lod_octree}-\emph{right}.  Finally, before
 constructing the triangulation from remaining cells and transition
 cells, geometrical culling is performed in order to skip the triangle
-patch construction which are not visible. Figure \ref{fig_pipeline}
+patch construction which are not visible. Figure~\ref{fig_pipeline}
 illustrates the overall fully data parallel pipeline.
 
 \begin{figure}[!htbp]
