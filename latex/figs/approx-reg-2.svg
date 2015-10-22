@@ -26,7 +26,7 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="2"
-     inkscape:cx="250.45889"
+     inkscape:cx="165.45889"
      inkscape:cy="55.722726"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
@@ -48,7 +48,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -98,13 +98,6 @@
        width="42.708889"
        height="42.708889"
        x="379.98065"
-       y="516.86267" />
-    <rect
-       style="opacity:0.98000004;fill:#424242;fill-opacity:1;stroke:#717171;stroke-width:1;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
-       id="rect4531-0-8-8-0-79"
-       width="42.708889"
-       height="42.708889"
-       x="294.56989"
        y="516.86267" />
     <rect
        style="opacity:0.98000004;fill:#212121;fill-opacity:1;stroke:#717171;stroke-width:1;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
@@ -157,12 +150,13 @@
        height="42.708889"
        x="294.56989"
        y="431.44293" />
-    <circle
-       r="54.842911"
-       cy="505.94339"
-       cx="350.48279"
-       id="path2991-8-9"
-       style="fill:none;fill-opacity:0.22352941;stroke:#e74c3c;stroke-width:1.10809433;stroke-miterlimit:4;stroke-dasharray:4.43237735, 1.10809434000000007;stroke-dashoffset:0;stroke-opacity:1" />
+    <rect
+       style="opacity:0.98000004;fill:#373737;fill-opacity:1;stroke:#717171;stroke-width:1;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="rect4531-0-8-8-0-79"
+       width="42.708889"
+       height="42.708889"
+       x="294.56989"
+       y="516.86267" />
     <path
        sodipodi:nodetypes="ccccc"
        inkscape:connector-curvature="0"
@@ -183,5 +177,11 @@
        height="2.5"
        x="201.01364"
        y="610.83368" />
+    <circle
+       r="54.842911"
+       cy="505.94339"
+       cx="350.48279"
+       id="path2991-8-9"
+       style="fill:none;fill-opacity:0.22352941;stroke:#e74c3c;stroke-width:1.10809433;stroke-miterlimit:4;stroke-dasharray:4.43237735, 1.10809434000000007;stroke-dashoffset:0;stroke-opacity:1" />
   </g>
 </svg>

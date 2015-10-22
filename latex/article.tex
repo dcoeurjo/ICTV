@@ -500,7 +500,7 @@ consequence, we can approximate the volume of $\Ball{R}{\vx}\cap\Shape$ by
 considering mipmap values at a given resolution $l$
 (Fig.~\ref{fig:approx}-$c$). In this case, errors only occurs for
 cells lying inside $\Shape$ (with density 1) not entirely covered by
-$\Ball{R}{\vx}$.
+$\Ball{R}{\vx}$. Furthermore, \emph{mipmap} textures give us a fast method to know if a voxel is inside $\Shape$, for all levels. Indeed, if the mipmap value is greater than $0.5$, the voxel associated is \emph{at least} half inside $\Shape$.
 \begin{figure}
   \begin{center}
     \subfigure[]{\includegraphics[width=4cm]{figs/approx1}}
@@ -509,9 +509,9 @@ $\Ball{R}{\vx}$.
   \end{center}
   \caption{Integral computation with an area estimation from pixel
     counting $(b)$ or from densities (represented by different
-    grayvalues) in a mipmap approximation of $\Shape$.}
+    gray values) in a mipmap approximation of $\Shape$.}
   \label{fig:approx}
-\end{figure}
+\end{figure} 
 
 Using the hierachical nature of the mipmap texture, we could also
 consider hierarchical decompositions of either $\Ball{R}{\vx}$
