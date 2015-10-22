@@ -757,6 +757,20 @@ or not into $B_R(\vx)\cap X$.
 \section{Conclusion and Discussion}
 \label{sec:discussion}
 
+In this article, we have propose a full data parallel framework on GPU
+hardware which combines an adaptive isosurface construction from
+digital data with a curvature tensor estimation at each vertex. Using
+this approach, we can explore in realtime different curvature
+measurements (mean, Gaussian, principal directions) with different
+ball radii on potentially large dynamic dataset. Our proposal relies
+on both a linear octree representation with Morton codes and an
+efficient integral computation on GPU.  The source code and additional
+material (video\ldots) are available on the project website
+(\url{https://github.com/dcoeurjo/ICVT}).
+
+
+
+
 
 
 %% \appendix
