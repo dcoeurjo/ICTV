@@ -506,7 +506,7 @@ occurs for cells lying inside $\Shape$ (with density 1) not entirely covered by
 $\Ball{R}{\vx}$. Furthermore, the \emph{mipmap} texture can be used to design,
 using a single texture probe, a fast inclusion test of a given cell $c$ at level
 $l$ into the shapes: we say that $c$ is in $\Shape$ if its density (retrieved
-from the texture probe at level l) is greater than $1/2$. The idea here is to
+from the texture probe at level $l$) is greater than $1/2$. The idea here is to
 mimic a lend of adaptive Gauss digitization process.
 
 \begin{figure}
@@ -657,7 +657,7 @@ dynamic object. For all illustrations, we use directly normal vectors computed
 by algorithm discussed in Section~\ref{sec:curv-tens-estim}.
 
 Then, we compare the approximation made by computing curvature from level $l >
-l_0$ in order to accelerate visualisation with the ground truth result obtained
+l_0$ in order to accelerate visualization with the ground truth result obtained
 at level $l_0$. We also compare them with the hierarchical algorithm discussed
 in Section~\ref{sec:hierarchical}. The results are presented in
 Table~\ref{tab:full-res-stat}, and illustrated in Figure~\ref{fig:refine}.
@@ -675,7 +675,7 @@ They are presented here to illustrate how the refining process converges to
 the $l_0$ level.
 Thanks to this low error, higher approximation levels are visually
 very similar to the $l_0$ level. We can therefore use them for exploring our
-datasets in real time, changing the radii on the fly and visualising dynamic datasets.
+datasets in real time, changing the radii on the fly and visualizing dynamic datasets.
 
 Bare in mind that those results were measured on a full resolution triangulation.
 Since we compute the curvature of each vertices of the final mesh, a highly triangulated object will
@@ -837,7 +837,7 @@ when it is closer from the camera and thus reducing the number of vertices to co
 
      \end{tikzpicture}
      \end{center}
-  \caption{Timings obtained while visualising an adaptive triangulation of an object (left) computing the curvature with a regular grid and (right) computing it with the hierarchical algorithm.
+  \caption{Timings obtained while visualizing an adaptive triangulation of an object (left) computing the curvature with a regular grid and (right) computing it with the hierarchical algorithm.
   With a regular grid, the curvature computation refines at every frame until it reaches the ground truth result.
   We measured three datasets, OctaFlower (digital domain of $130^3$ ), snow micro structures($233^3$) and the XYZ Dragon ($510^3$)}
   \label{fig:timings}
