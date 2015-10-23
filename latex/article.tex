@@ -551,8 +551,6 @@ at this point.
 We describe here two different visualization pipeline on GPU that will
 be evaluated in the next section.
 
-
-
 \paragraph{Hierarchical Decomposition.}  As discussed above, best
 results in terms of texture fetch can be obtained by the approach
 presented in Fig.~\ref{fig:approx2}-$b$. At each vertex, the
@@ -690,9 +688,6 @@ be much slower to process.
 We therefore use in practice an adaptive triangulation of the object, refining the mesh
 when it is closer from the camera and thus reducing the number of vertices to compute.
 
-For all illustrations, we use directly normal vectors computed by algorithm
-discussed in Section~\ref{sec:curv-tens-estim}
-
 \begin{table}
   \begin{center}
 
@@ -732,7 +727,7 @@ discussed in Section~\ref{sec:curv-tens-estim}
 
   \end{center}
   \caption{Comparison of number of texture fetches, $L_2$ and $L_\infty$ error obtained on OctaFlower with a digital domain of $130^3$. We measured it using radii of 8 and 16.
-  The object was triangulated at full resolution with a regular grid and contains 282396 vertices. The timings
+  The object was triangulated at full resolution with a regular grid and contains 282,396 vertices. The timings
     only consider the curvature estimation step.\label{tab:full-res-stat}}
 \end{table}
 
@@ -852,14 +847,14 @@ compute all the above levels. Using approximations is thus mandatory, since for
 big objects such as the XYZ-Dragon ($510^3$) with big radii the approximate
 computation is faster than the $l_0$ while results are enough close to the
 $l_0$. For example, with $R=20$, the approximated visualization at $l_2$ takes
-only $300$ms while the $l_0$ visualization takes more than $4$ seconds.
+only 300ms while the $l_0$ visualization takes more than 4 seconds.
 
 We can thus get an approximated visualisation of our object as soon as we run
 the application, allowing for real time interactions with the object (changing
-the visualized value, the curvature radius, \cdots). It is also clear on those
+the visualized value, curvature radius, \cdots). It is also clear on those
 graphs that using a hierarchical decomposition reduces the curvature computation
-time. For the XYZ-Dragon with $R=20$, it needs almost $4$ seconds to compute the
-$l_0$ level, whereas using the hierarchical algorithm, it only needs $700$ms.
+time. For the XYZ-Dragon with $R=20$, it needs almost 4 seconds to compute the
+$l_0$ level, whereas using the hierarchical algorithm, it only needs 700ms.
 However, due to the precomputation, this algorithm is biased and creates an
 error (presented in Table~\ref{tab:full-res-stat}) that needs to be considered.
 
@@ -877,7 +872,9 @@ error (presented in Table~\ref{tab:full-res-stat}) that needs to be considered.
   \label{fig:adaptive}
 \end{figure}
 
-
+Figure~\ref{fig:adaptive} shows curvature computation and exploration in
+real-time on large datasets: XYZ-Dragon (with digital domain of $512^3$) and
+Snow microstructures ($233^3$).
 
 \section{Conclusion and Discussion}
 \label{sec:discussion}
