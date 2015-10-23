@@ -584,8 +584,6 @@ at this point.
 We describe here two different visualization pipeline on GPU that will
 be evaluated in the next section.
 
-
-
 \paragraph{Hierarchical Decomposition.}  As discussed above, best
 results in terms of texture fetch can be obtained by the approach
 presented in Fig.~\ref{fig:approx2}-$b$. At each vertex, the
@@ -675,7 +673,7 @@ $O\left(\left(\frac{R}{2^l}\right)^3\right)$, the interactive control
     {\includegraphics[width=2.2cm]{figs/function_mean_3}}
     {\includegraphics[width=2.2cm]{figs/function_mean_4}}
   \end{center}
-  \caption{\emph{Third row:} Mean, Gaussian, first and second principal curvature estimation on an OctaFlower with a digital domain of $130^3$.
+  \caption{\emph{First row:} Mean, Gaussian, first and second principal curvature estimation on an OctaFlower with a digital domain of $130^3$.
   \emph{Second row:} First and second principal directions estimation (and zoom) on an OctaFlower.
   \emph{Third row:} Mean curvature computed in real-time on a dynamic object.}
   \label{fig:full}
@@ -687,8 +685,11 @@ Figure~\ref{fig:full}-top and middle shows results of curvature tensor
 estimation (mean, Gaussian, first and second principal curvatures, first and
 second principal directions) on an OctaFlower at level $l_0$ (ground truth).
 Figure~\ref{fig:full}-bottom shows mean curvature estimation in real-time on a
-dynamic object. For all illustrations, we use directly normal vectors computed
-by algorithm discussed in Section~\ref{sec:curv-tens-estim}.
+dynamic object. For this case, we simply evaluate the implicit expression at
+each vertex of a cell to decide if such cell is included or not into
+$\Ball{R}{\vx}\cap \Shape$ instead of updating the \emph{mipmap texture} of
+densities at each time step. For all illustrations, we use directly normal
+vectors computed by algorithm discussed in Section~\ref{sec:curv-tens-estim}.
 
 Then, we compare the approximation made by computing curvature from level $l >
 l_0$ in order to accelerate visualisation with the ground truth result obtained
@@ -699,14 +700,14 @@ Table~\ref{tab:full-res-stat}, and illustrated in Figure~\ref{fig:refine}.
 We can first see that the number of texel fetch required to compute
 the curvature reduces drastically when computing the approximations.
 This is mandatory if we want to increase the framerate.
-However, we can also note that the error increases quite slowly. 
+However, we can also note that the error increases quite slowly.
 The errors obtained comparing $l_1$, or for bigger radii $l_2$ approximations
 with the $l_0$ level are small. The errors measured comparing higher levels
 are of course much bigger and those level are thus never used in practice.
-They are presented here to illustrate how the refining process converges to 
+They are presented here to illustrate how the refining process converges to
 the $l_0$ level.
-Thanks to this low error, higher approximation levels are visually 
-very similar to the $l_0$ level. We can therefore use them for exploring our 
+Thanks to this low error, higher approximation levels are visually
+very similar to the $l_0$ level. We can therefore use them for exploring our
 datasets in real time, changing the radii on the fly and visualising dynamic datasets.
 
 When computing results using the hierachical algorithm, a higher error can be noted.
@@ -719,9 +720,6 @@ Since we compute the curvature of each vertices of the final mesh, a highly tria
 be much slower to process.
 We therefore use in practice an adaptive triangulation of the object, refining the mesh
 when it is closer from the camera and thus reducing the number of vertices to compute.
-
-For all illustrations, we use directly normal vectors computed by algorithm
-discussed in Section~\ref{sec:curv-tens-estim}
 
 \begin{table}
   \begin{center}
@@ -762,7 +760,7 @@ discussed in Section~\ref{sec:curv-tens-estim}
 
   \end{center}
   \caption{Comparison of number of texture fetches, $L_2$ and $L_\infty$ error obtained on OctaFlower with a digital domain of $130^3$. We measured it using radii of 8 and 16.
-  The object was triangulated at full resolution with a regular grid and contains 282396 vertices. The timings
+  The object was triangulated at full resolution with a regular grid and contains 282,396 vertices. The timings
     only consider the curvature estimation step.\label{tab:full-res-stat}}
 \end{table}
 
@@ -801,22 +799,22 @@ discussed in Section~\ref{sec:curv-tens-estim}
           x tick label style={rotate=45,anchor=east},
         ]
         %Geometry Generation
-        \addplot+[ybar, color=black, fill=cgeometry] plot coordinates {(Octa-R8,17.283000) (Octa-R16,18.458000) 
+        \addplot+[ybar, color=black, fill=cgeometry] plot coordinates {(Octa-R8,17.283000) (Octa-R16,18.458000)
           (Snow-R10,9.831000) (Snow-R20,9.653000)  (Dragon-R8,136.300000) (Dragon-R20,145.450000)};
         %l4
-        \addplot+[ybar, color=black, fill=clquatre] plot coordinates {(Octa-R8,1) (Octa-R16,2.509000) 
+        \addplot+[ybar, color=black, fill=clquatre] plot coordinates {(Octa-R8,1) (Octa-R16,2.509000)
           (Snow-R10,6.085000) (Snow-R20,9.445000)  (Dragon-R8,3.389000) (Dragon-R20,20.228000)};
         %l3
         \addplot+[ybar, color=black, fill=cltrois] plot coordinates {(Octa-R8,2.527000) (Octa-R16,4.159000)
           (Snow-R10,10.629000) (Snow-R20,11.542000) (Dragon-R8,20.397000) (Dragon-R20,26.710000)};
         %l2
-        \addplot+[ybar, color=black, fill=cldeux] plot coordinates {(Octa-R8,3.783000) (Octa-R16,9.006000) 
+        \addplot+[ybar, color=black, fill=cldeux] plot coordinates {(Octa-R8,3.783000) (Octa-R16,9.006000)
           (Snow-R10,13.777000) (Snow-R20,37.700000) (Dragon-R8,29.967000) (Dragon-R20,92.435000)};
         %l1
-        \addplot+[ybar, color=black, fill=clun] plot coordinates {(Octa-R8, 11.004000) (Octa-R16,38.687000) 
+        \addplot+[ybar, color=black, fill=clun] plot coordinates {(Octa-R8, 11.004000) (Octa-R16,38.687000)
           (Snow-R10,39.627000) (Snow-R20,217.954000) (Dragon-R8,59.840000) (Dragon-R20,506.549000)};
         %l0
-        \addplot+[ybar, color=black, fill=clzero] plot coordinates {(Octa-R8, 37.273000) (Octa-R16,244.353000) 
+        \addplot+[ybar, color=black, fill=clzero] plot coordinates {(Octa-R8, 37.273000) (Octa-R16,244.353000)
           (Snow-R10,236.194000) (Snow-R20,1655.680000) (Dragon-R8,322.674000) (Dragon-R20,3763.422000)};
         %\legend{\strut Geometry, \strut Curvature, \strut xx, \strut xx}
       \end{axis}
@@ -832,24 +830,24 @@ discussed in Section~\ref{sec:curv-tens-estim}
 	  	  every node near coord/.style={ at={(0,0)}, font=\tiny, inner sep=0pt},
           enlargelimits=0.15,
           %ylabel={\#Time (in ms)},
-          symbolic x coords={Octa-R8, Octa-R16, Snow-R10, Snow-R20, 
+          symbolic x coords={Octa-R8, Octa-R16, Snow-R10, Snow-R20,
 	      Dragon-R8, Dragon-R20},
           xtick=data,
           point meta=rawy,
           x tick label style={rotate=45,anchor=east},
         ]
         %Geometry Generation
-        \addplot+[ybar,color=black, fill=cgeometry] plot coordinates {(Octa-R8,17.283000) (Octa-R16,17.183000) 
+        \addplot+[ybar,color=black, fill=cgeometry] plot coordinates {(Octa-R8,17.283000) (Octa-R16,17.183000)
           (Snow-R10,9.383000) (Snow-R20,9.767000)  (Dragon-R8,127.347000) (Dragon-R20,127.166000)};
         %Hierarchical measurement
-        \addplot+[ybar, color=black, fill=clzero] plot coordinates {(Octa-R8,18.095000) (Octa-R16,64.186000) 
+        \addplot+[ybar, color=black, fill=clzero] plot coordinates {(Octa-R8,18.095000) (Octa-R16,64.186000)
           (Snow-R10,96.747000) (Snow-R20,364.547000)  (Dragon-R8,147.662000) (Dragon-R20,787.459000)};
         %\legend{\strut Geometry, \strut Curvature, \strut xx, \strut xx}
       \end{axis}
      \end{tikzpicture}
      \end{center}
   %
-  \caption{Timings in milliseconds obtained while visualizing an adaptive
+  \caption{Timings in milliseconds (in logscale) obtained while visualizing an adaptive
   triangulation on three objects -- OctaFlower (digital domain of $130^3$ ), Snow
   Microstructures ($233^3$) and XYZ-Dragon ($510^3$) --  by computing the
   curvature with a regular grid (\emph{left}) and with hierarchical
@@ -860,42 +858,39 @@ discussed in Section~\ref{sec:curv-tens-estim}
   In \emph{blue color}: time required to compute the curvature tensor at
   different levels: from $l_4$ (light blue) to $l_0$ (dark blue).
   %
+  Timings are given using a NVIDIA GeForce GTX 850M GPU.
   }
   %
   \label{fig:timings}
 \end{figure}
 
-In this experiments, we measure the timings obtained when running our framework on a
-GeForce GTX 850M. Here, the triangulation is dynamically refining according to its distance to the camera.
-At each frame, both the curvature and the triangulation are recomputed.
-If the visualisation stays unchanged, we compute the curvature at a level $l-1$ until the level $l_0$ is reached.
-We measured those timings using the regular and the hierarchical algorithm. The results are presented in 
-logarithmic scale figure \ref{fig:timings}.
+When dealing with large datasets, we can not expect real-time curvature tensor
+estimation due to the huge amount of data to process. By computing an
+dynamically refined approximate curvature tensor estimation joined with an
+adaptive triangulation (as discussed in Section~\ref{sec:hierarchical}), we
+manage to maintain a real time framerate by giving control over the amount of
+data to process at each frame. In Figure~\ref{fig:timings}, we compare timings
+(in logarithmic scale) when the triangulation is dynamically refining according
+to its distance to the camera. We measured those timings using the regular and
+the hierarchical algorithm.
 
-We can first note that the required time for an object to compute ground truth curvature is usually
-as high as the time required to extract the geometry and compute all the above levels.
-Using approximations is thus mandatory, since for big objects such as the XYZ Dragon (Digital Domain $510^3$)
-with high radii, the computation is seconds faster, the $l_0$ visualisation takes more than 4 seconds to compute, whereas
-the approximated visualisation at $l_2$ takes only 300ms.
-We can thus get an approximated visualisation of our object as soon as we run the application, allowing for
-real time interactions with the object (changing the visualised value, the curvature radius, etc ...).
-Once an interesting portion if the object is reached, it only takes a few seconds to the application to display
-ground truth curvature estimation.
+We can first note that the required time for an object to compute ground truth
+curvature is usually as high as the time required to extract the geometry and
+compute all the above levels. Using approximations is thus mandatory, since for
+big objects such as the XYZ-Dragon ($510^3$) with big radii the approximate
+computation is faster than the $l_0$ while results are enough close to the
+$l_0$. For example, with $R=20$, the approximated visualization at $l_2$ takes
+only 300ms while the $l_0$ visualization takes more than 4 seconds.
 
-It is also clear on those graphs that using a hierarchical decomposition reduces the curvature computation time.
-For the XYZ Dragon with a radius of 20, it needs almost 4 seconds to compute the $l_0$ level, whereas using the
-hierarchical algorithm, it only needs 700ms. However, due to the precomputation, this algorithm is biased and
-creates an error (presented in Table~\ref{tab:full-res-stat}) that needs to be considered
-
-
-%\subsection{Visualisation}
-%
-%For dynamic datasets, we consider a time varying implicit
-%surface. Since it would have been to expensive to update the a mipmap texture
-%of densities at each time step, we simply evaluate the implicit
-%expression at each vertex of a cell to decide if such cell is included
-%or not into $\Ball{R}{\vx}\cap \Shape$.
-%\todo[inline]{blabla experiments}
+We can thus get an approximated visualisation of our object as soon as we run
+the application, allowing for real time interactions with the object (changing
+the visualized value, curvature radius, \ldots). It is also clear on those
+graphs that using a hierarchical decomposition reduces the curvature computation
+time, especially with big radii. For the XYZ-Dragon with $R=20$, it needs almost
+4 seconds to compute the $l_0$ level, whereas using the hierarchical algorithm,
+it only needs 700ms. However, due to the precomputation and current hierarchical
+structure, this algorithm is biased and creates an error (presented in
+Table~\ref{tab:full-res-stat}) that needs to be considered.
 
 \begin{figure}
   \begin{center}
@@ -910,7 +905,9 @@ creates an error (presented in Table~\ref{tab:full-res-stat}) that needs to be c
   \label{fig:adaptive}
 \end{figure}
 
-
+Figure~\ref{fig:adaptive} shows curvature computation and exploration in
+real-time on large datasets: XYZ-Dragon (with digital domain of $512^3$) and
+Snow microstructures ($233^3$).
 
 \section{Conclusion and Discussion}
 \label{sec:discussion}
@@ -918,11 +915,11 @@ creates an error (presented in Table~\ref{tab:full-res-stat}) that needs to be c
 In this article, we have propose a full data parallel framework on GPU
 hardware which combines an adaptive isosurface construction from
 digital data with a curvature tensor estimation at each vertex. Using
-this approach, we can explore in realtime different curvature
+this approach, we can explore in real-time different curvature
 measurements (mean, Gaussian, principal directions) with different
 ball radii on potentially large dynamic dataset. Our proposal relies
 on both a linear octree representation with Morton codes and an
-efficient integral computation on GPU.  The source code and additional
+efficient integral computation on GPU. The source code and additional
 material (video, \ldots) are available on the project website
 (\url{https://github.com/dcoeurjo/ICTV}).
 
