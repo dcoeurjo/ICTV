@@ -676,12 +676,16 @@ Thanks to this low error, higher approximation levels are visually
 very similar to the $l_0$ level. We can therefore use them for exploring our 
 datasets in real time, changing the radii on the fly and visualising dynamic datasets.
 
-Bare in mind that those results were measured on a full resolution triangulation.
+When computing results using the hierachical algorithm, a higher error can be noted.
+This is due to the precomputation of the subdivision that no longer ensures to fetch data
+at the center of a mipmap cell. The interpolation done by the GPU reduces the bias but
+does not remove it.
+
+Bear also in mind that those results were measured on a full resolution triangulation.
 Since we compute the curvature of each vertices of the final mesh, a highly triangulated object will
 be much slower to process.
 We therefore use in practice an adaptive triangulation of the object, refining the mesh
 when it is closer from the camera and thus reducing the number of vertices to compute.
-
 
 For all illustrations, we use directly normal vectors computed by algorithm
 discussed in Section~\ref{sec:curv-tens-estim}
