@@ -197,9 +197,9 @@ embedded into $\R^d$ such that it coincides with $\partial\Body{Z}{h}$.
 In \cite{DGCI2013}, authors have defined the 2D digital curvature estimator
 $\CurvH{R}$ and the 3D digital mean curvature estimator $\MeanCurvH{R}$ based on
 the digital volumetric integral $\VolC(Y,h) \EqDef h^d \MCard(Y)$ with
-$\MCard(Y)$ the number of digital points of $Y$ and $Y \subset \Z^d$ the
-intersection between the digital shape $\DigShape$ and a ball of digital radius
-$R/h$ (we denote such quantity $\AreaC(Y,h)$ in dimension 2):
+$\MCard(Y)$ the number of digital points of the intersection between a ball
+$\Ball{R/h}{\vx/h}$ of digital radius $R/h$ and $\DigShape$ (we denote such
+quantity $\AreaC(Y,h)$ in dimension 2):
 %
 \begin{Definition}
   %
@@ -511,7 +511,7 @@ $\Ball{R}{\vx}$. Furthermore, \emph{mipmap} textures give us a fast method to kn
     counting $(b)$ or from densities (represented by different
     gray values) in a mipmap approximation of $\Shape$.}
   \label{fig:approx}
-\end{figure} 
+\end{figure}
 
 Using the hierachical nature of the mipmap texture, we could also
 consider hierarchical decompositions of either $\Ball{R}{\vx}$
@@ -628,16 +628,16 @@ generation step.
 %    Quantities & ~~~H & $l_3$ & $l_2$ & $l_1$ & $l_0$& ~~~H & $l_4$ & $l_3$ & $l_2$ & $l_1$ & $l_0$\\
 %      \midrule
 %      Number of texture fetches &
-%      1468 & 2 & 28 & 260 & 2104 & 
+%      1468 & 2 & 28 & 260 & 2104 &
 %      5706 & 2 & 28 & 90 & 2120 & 1780\\
 %      Time (in ms) &
 %      208 & 15 & 26 & 93 & 642 &
 %      826 & 14 & 26 & 252 & 606 & 4801\\
 %      $L_\infty$ error (\wrt $l_0$) &
-%      0.051 & 0.306 & 0.085 & 0.047 & 0 & 
+%      0.051 & 0.306 & 0.085 & 0.047 & 0 &
 %      0.053 & 0.146 & 0.041 & 0.017 & 0.005 & 0\\
 %      $L_2$ error (\wrt $l_0$) &
-%      3.51e-05 & 2.67e-04 & 7.57e-05 & 2.02e-05 & 0 & 
+%      3.51e-05 & 2.67e-04 & 7.57e-05 & 2.02e-05 & 0 &
 %      4.43e-05 & 1.39e-04 & 4.16e-05 & 1.57e-05 & 2.07e-06 & 0\\
 %      \bottomrule
 %    \end{tabular}
@@ -674,8 +674,8 @@ generation step.
       $L_2$ error (\wrt $l_0$) &
       4.43e-05 & 1.39e-04 & 4.16e-05 & 1.57e-05 & 2.07e-06 & 0\\
       \bottomrule
-    \end{tabular}    
-    
+    \end{tabular}
+
   \end{center}
   \caption{object, size, radius, full res, num of vertices (timings
     only consider the curvature estimation step).\label{tab:full-res-stat}}
@@ -689,7 +689,9 @@ generation step.
    \subfigure[]{\framebox{octa $l_1$}}
    \subfigure[]{\framebox{octa $l_0$}}
   \end{center}
-  \caption{fig multiresolution, courbure moyenne par ex}
+  \caption{Illustration of mean curvature computation on an OctaFlower using mipmap approximation of different levels : $l_4$, $l_3$, $l_2$, $l_1$ and $l_0$ (\ie no approximation).
+  %
+  For all illustrations, we use directly normal vectors computed by algorithm discussed in Section~\ref{sec:curv-tens-estim}}
   \label{fig:refine}
 \end{figure}
 \todo[inline]{blabla experiments}
@@ -710,25 +712,25 @@ generation step.
 %	  	  every node near coord/.style={ at={(0,0)}, font=\tiny, inner sep=0pt},
 %          enlargelimits=0.15,
 %          ylabel={\#Time (in ms)},
-%          symbolic x coords={Octa-R8, Octa-R16, Snow-R1, Snow-R2, 
+%          symbolic x coords={Octa-R8, Octa-R16, Snow-R1, Snow-R2,
 %	      xxx-R1, xxx-R2},
 %          xtick=data,
-%          point meta=rawy,	
+%          point meta=rawy,
 %          x tick label style={rotate=45,anchor=east},
 %        ]
-%        \addplot+[ybar] plot coordinates {(Octa-R8,11.7) (Octa-R16,11.682000) 
+%        \addplot+[ybar] plot coordinates {(Octa-R8,11.7) (Octa-R16,11.682000)
 %          (Snow-R1,2) (Snow-R2,3)  (xxx-R1,2) (xxx-R2,1)};
-%        \addplot+[ybar] plot coordinates {(Octa-R8,7.401000) (Octa-R16,7.666000) 
+%        \addplot+[ybar] plot coordinates {(Octa-R8,7.401000) (Octa-R16,7.666000)
 %          (Snow-R1,1) (Snow-R2,3)  (xxx-R1,1) (xxx-R2,1)};
 %        \addplot+[ybar] plot coordinates {(Octa-R8,27.226000) (Octa-R16,25.328000)
 %          (Snow-R1,3) (Snow-R2,2) (xxx-R1,2) (xxx-R2,6)};
-%        \addplot+[ybar] plot coordinates {(Octa-R8,184.161000) (Octa-R16,169.501000) 
+%        \addplot+[ybar] plot coordinates {(Octa-R8,184.161000) (Octa-R16,169.501000)
 %          (Snow-R1,1) (Snow-R2,2) (xxx-R1,1) (xxx-R2,4)};
-%        \addplot+[ybar] plot coordinates {(Octa-R8, 1) (Octa-R16,1189.127000) 
+%        \addplot+[ybar] plot coordinates {(Octa-R8, 1) (Octa-R16,1189.127000)
 %          (Snow-R1,1) (Snow-R2,1) (xxx-R1,1) (xxx-R2,1)};
 %        %\legend{\strut Geometry, \strut Curvature, \strut xx, \strut xx}
 %      \end{axis}
-      
+
       \begin{axis}[
           ybar stacked,
           ymode = log,
@@ -737,34 +739,34 @@ generation step.
 	  	  every node near coord/.style={ at={(0,0)}, font=\tiny, inner sep=0pt},
           enlargelimits=0.15,
           ylabel={\#Time (in ms)},
-          symbolic x coords={Octa-R8, Octa-R16, Snow-R10, Snow-R20, 
+          symbolic x coords={Octa-R8, Octa-R16, Snow-R10, Snow-R20,
 	      xxx-R1, xxx-R2},
           xtick=data,
-          point meta=rawy,	
+          point meta=rawy,
           x tick label style={rotate=45,anchor=east},
         ]
         %Geometry Generation
-        \addplot+[ybar] plot coordinates {(Octa-R8,17.283000) (Octa-R16,18.458000) 
+        \addplot+[ybar] plot coordinates {(Octa-R8,17.283000) (Octa-R16,18.458000)
           (Snow-R10,9.831000) (Snow-R20,9.653000)  (xxx-R1,1) (xxx-R2,1)};
         %l4
-        \addplot+[ybar] plot coordinates {(Octa-R8,1) (Octa-R16,2.509000) 
+        \addplot+[ybar] plot coordinates {(Octa-R8,1) (Octa-R16,2.509000)
           (Snow-R10,6.085000) (Snow-R20,9.445000)  (xxx-R1,1) (xxx-R2,1)};
         %l3
         \addplot+[ybar] plot coordinates {(Octa-R8,2.527000) (Octa-R16,4.159000)
           (Snow-R10,10.629000) (Snow-R20,11.542000) (xxx-R1,1) (xxx-R2,1)};
         %l2
-        \addplot+[ybar] plot coordinates {(Octa-R8,3.783000) (Octa-R16,9.006000) 
+        \addplot+[ybar] plot coordinates {(Octa-R8,3.783000) (Octa-R16,9.006000)
           (Snow-R10,13.777000) (Snow-R20,37.700000) (xxx-R1,1) (xxx-R2,1)};
         %l1
-        \addplot+[ybar] plot coordinates {(Octa-R8, 11.004000) (Octa-R16,38.687000) 
+        \addplot+[ybar] plot coordinates {(Octa-R8, 11.004000) (Octa-R16,38.687000)
           (Snow-R10,39.627000) (Snow-R20,217.954000) (xxx-R1,1) (xxx-R2,1)};
         %l0
-        \addplot+[ybar] plot coordinates {(Octa-R8, 37.273000) (Octa-R16,244.353000) 
+        \addplot+[ybar] plot coordinates {(Octa-R8, 37.273000) (Octa-R16,244.353000)
           (Snow-R10,236.194000) (Snow-R20,1655.680000) (xxx-R1,1) (xxx-R2,1)};
         %\legend{\strut Geometry, \strut Curvature, \strut xx, \strut xx}
       \end{axis}
-	  \end{tikzpicture}    
-      
+	  \end{tikzpicture}
+
       \begin{tikzpicture}[scale=0.7]
       \begin{axis}[
           ybar stacked,
@@ -774,21 +776,21 @@ generation step.
 	  	  every node near coord/.style={ at={(0,0)}, font=\tiny, inner sep=0pt},
           enlargelimits=0.15,
           ylabel={\#Time (in ms)},
-          symbolic x coords={Octa-R8, Octa-R16, Snow-R10, Snow-R20, 
+          symbolic x coords={Octa-R8, Octa-R16, Snow-R10, Snow-R20,
 	      xxx-R1, xxx-R2},
           xtick=data,
-          point meta=rawy,	
+          point meta=rawy,
           x tick label style={rotate=45,anchor=east},
         ]
         %Geometry Generation
-        \addplot+[ybar] plot coordinates {(Octa-R8,17.283000) (Octa-R16,17.183000) 
+        \addplot+[ybar] plot coordinates {(Octa-R8,17.283000) (Octa-R16,17.183000)
           (Snow-R10,9.383000) (Snow-R20,9.767000)  (xxx-R1,1) (xxx-R2,1)};
         %Hierarchical measurement
-        \addplot+[ybar] plot coordinates {(Octa-R8,18.095000) (Octa-R16,64.186000) 
+        \addplot+[ybar] plot coordinates {(Octa-R8,18.095000) (Octa-R16,64.186000)
           (Snow-R10,96.747000) (Snow-R20,364.547000)  (xxx-R1,1) (xxx-R2,1)};
         %\legend{\strut Geometry, \strut Curvature, \strut xx, \strut xx}
       \end{axis}
-     
+
      \end{tikzpicture}
      \end{center}
   \caption{Adaptive timings H vs. rafined (tout : adaptatif, 2 rayons par formes, 4
@@ -811,8 +813,10 @@ generation step.
    \subfigure[]{\framebox{normales}}
 
   \end{center}
-  \caption{fig illustration complete (adaptative, ...) plusieurs
-    objets.. + dynamique.}
+  \caption{Illustration fig illustration complete (adaptative, ...) plusieurs
+    objets.. + dynamique.
+    %
+    For all illustrations, we use directly normal vectors computed by algorithm discussed in Section~\ref{sec:curv-tens-estim}}
   \label{fig:full}
 \end{figure}
 
