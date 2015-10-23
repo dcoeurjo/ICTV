@@ -747,33 +747,6 @@ discussed in Section~\ref{sec:curv-tens-estim}
 \begin{figure}[!htbp]
   \begin{center}
     \begin{tikzpicture}[scale=0.7]
-%      \begin{axis}[
-%          ybar stacked,
-%          ymode = log,
-%	  	  bar width=20pt,
-%	  	  nodes near coords,
-%	  	  every node near coord/.style={ at={(0,0)}, font=\tiny, inner sep=0pt},
-%          enlargelimits=0.15,
-%          ylabel={\#Time (in ms)},
-%          symbolic x coords={Octa-R8, Octa-R16, Snow-R1, Snow-R2,
-%	      xxx-R1, xxx-R2},
-%          xtick=data,
-%          point meta=rawy,
-%          x tick label style={rotate=45,anchor=east},
-%        ]
-%        \addplot+[ybar] plot coordinates {(Octa-R8,11.7) (Octa-R16,11.682000)
-%          (Snow-R1,2) (Snow-R2,3)  (xxx-R1,2) (xxx-R2,1)};
-%        \addplot+[ybar] plot coordinates {(Octa-R8,7.401000) (Octa-R16,7.666000)
-%          (Snow-R1,1) (Snow-R2,3)  (xxx-R1,1) (xxx-R2,1)};
-%        \addplot+[ybar] plot coordinates {(Octa-R8,27.226000) (Octa-R16,25.328000)
-%          (Snow-R1,3) (Snow-R2,2) (xxx-R1,2) (xxx-R2,6)};
-%        \addplot+[ybar] plot coordinates {(Octa-R8,184.161000) (Octa-R16,169.501000)
-%          (Snow-R1,1) (Snow-R2,2) (xxx-R1,1) (xxx-R2,4)};
-%        \addplot+[ybar] plot coordinates {(Octa-R8, 1) (Octa-R16,1189.127000)
-%          (Snow-R1,1) (Snow-R2,1) (xxx-R1,1) (xxx-R2,1)};
-%        %\legend{\strut Geometry, \strut Curvature, \strut xx, \strut xx}
-%      \end{axis}
-
       \begin{axis}[
           ybar stacked,
           ymode = log,
@@ -835,12 +808,22 @@ discussed in Section~\ref{sec:curv-tens-estim}
           (Snow-R10,96.747000) (Snow-R20,364.547000)  (Dragon-R8,147.662000) (Dragon-R20,787.459000)};
         %\legend{\strut Geometry, \strut Curvature, \strut xx, \strut xx}
       \end{axis}
-
      \end{tikzpicture}
      \end{center}
-  \caption{Timings obtained while visualizing an adaptive triangulation of an object (left) computing the curvature with a regular grid and (right) computing it with the hierarchical algorithm.
-  Orange is the required time to extract the triangulation, and blue are the curvature computations from level $l_4$ (light blue) to level $l_0$ (dark blue).
-  We measured three datasets, OctaFlower (digital domain of $130^3$ ), snow micro structures($233^3$) and the XYZ Dragon ($510^3$), with different radii ($8$, $10$, $16$ and $20$)}
+  %
+  \caption{Timings in milliseconds obtained while visualizing an adaptive
+  triangulation on three objects -- OctaFlower (digital domain of $130^3$ ), Snow
+  Microstructures ($233^3$) and XYZ-Dragon ($510^3$) --  by computing the
+  curvature with a regular grid (\emph{left}) and with hierarchical
+  algorithm (\emph{right}), with two different radii for each object.
+  %
+  In \emph{orange color}: time required to extract the triangulation.
+  %
+  In \emph{blue color}: time required to compute the curvature tensor at
+  different levels: from $l_4$ (light blue) to $l_0$ (dark blue).
+  %
+  }
+  %
   \label{fig:timings}
 \end{figure}
 
