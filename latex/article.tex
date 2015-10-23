@@ -309,8 +309,7 @@ Additionally, eigenvectors associated with $\hat{\lambda}_1$ and
 $\hat{\lambda}_2$ of the covariance matrix correspond to principal curvature
 directions $\PrincDirH{1}{R}$ and $\PrincDirH{2}{R}$. The smallest eigenvector
 corresponds to the normal direction $\NormalDirH{R}$ at $\vx$. Convergence
-results can be found in \cite{ChapterIICurvature}.\todo{Changer
-ChapterIICurvature dans le bibtex...}
+results can be found in \cite{CVIU2014}.%%% Changer avec le chapitre de Jaco à un moment
 
 It has been shown that the radius of the ball depends on the geometry of the
 underlying shape. In \cite{DGCI2014}, authors proposed a parameter-free
@@ -356,23 +355,22 @@ hierarchical octree cells.
 \end{figure}
 
 Representing a hierachical structure on GPU is usually challenging since the GPU
-memory is limited and non consistent \todo{fix coherent/aligned/coalesced?}
+memory is limited and non consistent %\todo{fix coherent/aligned/coalesced?}
 memory access (\emph{e.g.} tree traversal using pointer dereferencing) may lead
 to huge payload from cache misses.  Efficient spatial tree encoding can be
-achieved using pointerless structures. We use linear quadtrees or octrees to
-represent classical quadtree/octree trees, see for instance
-\textsc{Gargantini}~\cite{gargantini1982effective}. This structure consists in
-indexing each cell by a \emph{Morton code}: the code of children cells are
-defined by the code of the parent suffixed by two bits (in dimension 2, three
-bits in dimension 3) (see Figure \ref{fig_quadtree_partitionning}-\emph{left}).
-A cell's code encodes its position \wrt its parent cell and its
-complete path to the tree root. Hence, whatever their depth, all cell codes are
-simply stored in a linear vector on memory. Furthermore, cell operations such as
-subdivision, merging, neighbors access can be efficiently implemented using
-bitwise operations on the Morton code. In the following, we use the GPU
-implementation proposed by \textsc{Dupuy} \textit{et al.}~\cite{dupuy2014quadtrees}. By
-using their approach, Morton codes and bitwise operations are optimized to match
-with GPU hardware requirements.
+achieved using pointerless structures such as linear quadtrees or octrees, see
+for instance \textsc{Gargantini}~\cite{gargantini1982effective}. This structure
+consists in indexing each cell by a \emph{Morton code}: the code of children
+cells are defined by the code of the parent suffixed by two bits (in dimension
+2, three bits in dimension 3) (see Figure
+\ref{fig_quadtree_partitionning}-\emph{left}). A cell's code encodes its
+position \wrt its parent cell and its complete path to the tree root. Hence,
+whatever their depth, all cell codes are simply stored in a linear vector on
+memory. Furthermore, cell operations such as subdivision, merging, neighbors
+access can be efficiently implemented using bitwise operations on the Morton
+code. In the following, we use the GPU implementation proposed by \textsc{Dupuy}
+\textit{et al.}~\cite{dupuy2014quadtrees}. By using their approach, Morton codes
+and bitwise operations are optimized to match with GPU hardware requirements.
 
 \subsection{Data parallel and adaptive mesh generation}
 
@@ -492,22 +490,25 @@ estimators
 and (\ref{eq:dig-curvature-estimator-k2}).
 
 To implement the integration on $\Ball{R}{\vx} \cap \Shape$
-(Fig.~\ref{fig:approx}-$a$), a naive approach consists in scanning all
-digital points inside such domain (Fig.~\ref{fig:approx}-$b$) and then
-to estimate the geometrical moment as the sum of the geometrical
-moments of each elementary cubes lying in the intersection. On GPU,
-\emph{mipmap} textures are used to obtain a multi-resolution information: if the
-input binary object is stored in a 3D texture, GPU hardware can
-construct a multi-resolution pyramid such that 8 neighboring voxel
-intensities at level $l$ are averaged to define the voxel value at
-level $l+1$. If the level 0 corresponds to the binary input object, at
-a given level $l$, a voxel $(x,y,z)$ contains the fraction of $\DSh$
-belonging to the cube of center $(x,y,z)$ and edge length $2^l$. As a
-consequence, we can approximate the volume of $\Ball{R}{\vx}\cap\Shape$ by
-considering mipmap values at a given resolution $l$
-(Fig.~\ref{fig:approx}-$c$). In this case, errors only occurs for
-cells lying inside $\Shape$ (with density 1) not entirely covered by
-$\Ball{R}{\vx}$. Furthermore, \emph{mipmap} textures give us a fast method to know if a voxel is inside $\Shape$, for all levels. Indeed, if the mipmap value is greater than $0.5$, the voxel associated is \emph{at least} half inside $\Shape$.
+(Fig.~\ref{fig:approx}-$a$), a naive approach consists in scanning all digital
+points inside such domain (Fig.~\ref{fig:approx}-$b$) and then to estimate the
+geometrical moment as the sum of the geometrical moments of each elementary
+cubes lying in the intersection. On GPU, \emph{mipmap} textures are used to
+obtain a multi-resolution information: if the input binary object is stored in a
+3D texture, GPU hardware can construct a multi-resolution pyramid such that 8
+neighboring voxel intensities at level $l$ are averaged to define the voxel
+value at level $l+1$. If the level 0 corresponds to the binary input object, at
+a given level $l$, a voxel $(x,y,z)$ contains the fraction of $\DSh$ belonging
+to the cube of center $(x,y,z)$ and edge length $2^l$. As a consequence, we can
+approximate the volume of $\Ball{R}{\vx}\cap\Shape$ by considering mipmap values
+at a given resolution $l$ (Fig.~\ref{fig:approx}-$c$). In this case, errors only
+occurs for cells lying inside $\Shape$ (with density 1) not entirely covered by
+$\Ball{R}{\vx}$. Furthermore, the \emph{mipmap} texture can be used to design,
+using a single texture probe, a fast inclusion test of a given cell $c$ at level
+$l$ into the shapes: we say that $c$ is in $\Shape$ if its density (retrieved
+from the texture probe at level l) is greater than $1/2$. The idea here is to
+mimic a lend of adaptive Gauss digitization process.
+
 \begin{figure}
   \begin{center}
     \subfigure[]{\includegraphics[width=4cm]{figs/approx1}}
@@ -577,7 +578,7 @@ hierarchical octree representation can be found in the supplementary
 material (see Section \ref{sec:discussion}).
 
 
-\todo[inline]{phrase sur approx si on met}
+%\todo[inline]{phrase sur approx si on met}
 
 
 
@@ -649,6 +650,9 @@ be much slower to process.
 We therefore use in practice an adaptive triangulation of the object, refining the mesh
 when it is closer from the camera and thus reducing the number of vertices to compute.
 
+
+For all illustrations, we use directly normal vectors computed by algorithm
+discussed in Section~\ref{sec:curv-tens-estim}
 
 \begin{table}
   \begin{center}
@@ -750,7 +754,7 @@ when it is closer from the camera and thus reducing the number of vertices to co
 	  	  every node near coord/.style={ font=\tiny, inner sep=0pt},
           enlargelimits=0.15,
           ylabel={\#Time (in ms)},
-          symbolic x coords={Octa-R8, Octa-R16, Snow-R10, Snow-R20, 
+          symbolic x coords={Octa-R8, Octa-R16, Snow-R10, Snow-R20,
 	      Dragon-R8, Dragon-R20},
           xtick=data,
           point meta=rawy,
@@ -810,25 +814,34 @@ when it is closer from the camera and thus reducing the number of vertices to co
   \label{fig:timings}
 \end{figure}
 
+\begin{figure}
+  \begin{center}
+   \includegraphics[width=5cm]{figs/snow_I08iso_233_r20_l0_m3}
+
+  \end{center}
+  \caption{Illustration of mean curvature computation of snow microstructures.}
+  \label{fig:full}
+\end{figure}
 
 \begin{figure}
   \begin{center}
-    \subfigure[]{\framebox{K}}
-   \subfigure[]{\framebox{H}}
-   \subfigure[]{\framebox{DIR1}}
-   \subfigure[]{\framebox{DIR2}}
-   \subfigure[]{\framebox{normales}}\\
-    \subfigure[]{\framebox{K}}
-   \subfigure[]{\framebox{H}}
-   \subfigure[]{\framebox{DIR1}}
-   \subfigure[]{\framebox{DIR2}}
-   \subfigure[]{\framebox{normales}}
-
+    {\includegraphics[width=2.7cm]{figs/EG_dragon_mean}}
+    {\includegraphics[width=2.7cm]{figs/EG_dragon_gaussian}}
+    {\includegraphics[width=2.7cm]{figs/EG_dragon_k1}}
+    {\includegraphics[width=2.7cm]{figs/EG_dragon_k2}}\\
+    {\includegraphics[width=2.7cm]{figs/EG_dragon_normal_zoom}}
+    {\includegraphics[width=2.7cm]{figs/EG_dragon_dir_min_zoom}}
+    {\includegraphics[width=2.7cm]{figs/EG_dragon_dir_max_zoom}}\\
+    {\includegraphics[width=2.2cm]{figs/function_mean_0}}
+    {\includegraphics[width=2.2cm]{figs/function_mean_1}}
+    {\includegraphics[width=2.2cm]{figs/function_mean_2}}
+    {\includegraphics[width=2.2cm]{figs/function_mean_3}}
+    {\includegraphics[width=2.2cm]{figs/function_mean_4}}
   \end{center}
   \caption{Illustration fig illustration complete (adaptative, ...) plusieurs
     objets.. + dynamique.
     %
-    For all illustrations, we use directly normal vectors computed by algorithm discussed in Section~\ref{sec:curv-tens-estim}}
+    \emph{Third row:} mean curvature computed in real-time on a dynamic object.}
   \label{fig:full}
 \end{figure}
 
