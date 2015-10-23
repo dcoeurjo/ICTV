@@ -283,9 +283,11 @@ public:
 		}
 		dl->loadFile(argv[1]);
 		dl->loadData32BGpu();
+		/*
 		dl->loadx2y2z2();
 		dl->loadxyyzxz();
 		dl->loadxyz();
+		*/
 		
 		lodManager.init();
 		extractor.init();
