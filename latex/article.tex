@@ -642,7 +642,7 @@ $O\left(\left(\frac{R}{2^l}\right)^3\right)$, the interactive control
     {\includegraphics[width=2.2cm]{figs/function_mean_3}}
     {\includegraphics[width=2.2cm]{figs/function_mean_4}}
   \end{center}
-  \caption{\emph{Third row:} Mean, Gaussian, first and second principal curvature estimation on an OctaFlower with a digital domain of $130^3$.
+  \caption{\emph{First row:} Mean, Gaussian, first and second principal curvature estimation on an OctaFlower with a digital domain of $130^3$.
   \emph{Second row:} First and second principal directions estimation (and zoom) on an OctaFlower.
   \emph{Third row:} Mean curvature computed in real-time on a dynamic object.}
   \label{fig:full}
@@ -815,7 +815,7 @@ discussed in Section~\ref{sec:curv-tens-estim}
      \end{tikzpicture}
      \end{center}
   %
-  \caption{Timings in milliseconds obtained while visualizing an adaptive
+  \caption{Timings in milliseconds (in logscale) obtained while visualizing an adaptive
   triangulation on three objects -- OctaFlower (digital domain of $130^3$ ), Snow
   Microstructures ($233^3$) and XYZ-Dragon ($510^3$) --  by computing the
   curvature with a regular grid (\emph{left}) and with hierarchical
@@ -826,32 +826,40 @@ discussed in Section~\ref{sec:curv-tens-estim}
   In \emph{blue color}: time required to compute the curvature tensor at
   different levels: from $l_4$ (light blue) to $l_0$ (dark blue).
   %
+  Timings are given using a NVIDIA GeForce GTX 850M GPU.
   }
   %
   \label{fig:timings}
 \end{figure}
 
-In this experiments, we measure the timings obtained when running our framework on a
-GeForce GTX 850M. Here, the triangulation is dynamically refining according to its distance to the camera.
-At each frame, both the curvature and the triangulation are recomputed.
-If the visualisation stays unchanged, we compute the curvature at a level $l-1$ until the level $l_0$ is reached.
-We measured those timings using the regular and the hierarchical algorithm. The results are presented in
-logarithmic scale figure \ref{fig:timings}.
+When dealing with large datasets, we can not expect real-time curvature tensor
+estimation due to the huge amount of data to process. By computing an
+dynamically refined approximate curvature tensor estimation joined with an
+adaptive triangulation (as discussed in Section~\ref{sec:hierarchical}), we
+manage to maintain a real time framerate by giving control over the amount of
+data to process at each frame. In Figure~\ref{fig:timings}, we compare timings
+(in logarithmic scale) when the triangulation is dynamically refining according
+to its distance to the camera. We measured those timings using the regular and
+the hierarchical algorithm.
 
-We can first note that the required time for an object to compute ground truth curvature is usually
-as high as the time required to extract the geometry and compute all the above levels.
-Using approximations is thus mandatory, since for big objects such as the XYZ Dragon (Digital Domain $510^3$)
-with high radii, the computation is seconds faster, the $l_0$ visualisation takes more than 4 seconds to compute, whereas
-the approximated visualisation at $l_2$ takes only 300ms.
-We can thus get an approximated visualisation of our object as soon as we run the application, allowing for
-real time interactions with the object (changing the visualised value, the curvature radius, etc ...).
-Once an interesting portion if the object is reached, it only takes a few seconds to the application to display
+We can first note that the required time for an object to compute ground truth
+curvature is usually as high as the time required to extract the geometry and
+compute all the above levels. Using approximations is thus mandatory, since for
+big objects such as the XYZ Dragon (Digital Domain $510^3$) with high radii, the
+computation is seconds faster, the $l_0$ visualisation takes more than 4 seconds
+to compute, whereas the approximated visualisation at $l_2$ takes only 300ms. We
+can thus get an approximated visualisation of our object as soon as we run the
+application, allowing for real time interactions with the object (changing the
+visualised value, the curvature radius, etc ...). Once an interesting portion if
+the object is reached, it only takes a few seconds to the application to display
 ground truth curvature estimation.
 
-It is also clear on those graphs that using a hierarchical decomposition reduces the curvature computation time.
-For the XYZ Dragon with a radius of 20, it needs almost 4 seconds to compute the $l_0$ level, whereas using the
-hierarchical algorithm, it only needs 700ms. However, due to the precomputation, this algorithm is biased and
-creates an error (presented in Table~\ref{tab:full-res-stat}) that needs to be considered
+It is also clear on those graphs that using a hierarchical decomposition reduces
+the curvature computation time. For the XYZ Dragon with a radius of 20, it needs
+almost 4 seconds to compute the $l_0$ level, whereas using the hierarchical
+algorithm, it only needs 700ms. However, due to the precomputation, this
+algorithm is biased and creates an error (presented in
+Table~\ref{tab:full-res-stat}) that needs to be considered
 
 
 \subsection{Visualisation}
@@ -884,11 +892,11 @@ or not into $\Ball{R}{\vx}\cap \Shape$.
 In this article, we have propose a full data parallel framework on GPU
 hardware which combines an adaptive isosurface construction from
 digital data with a curvature tensor estimation at each vertex. Using
-this approach, we can explore in realtime different curvature
+this approach, we can explore in real-time different curvature
 measurements (mean, Gaussian, principal directions) with different
 ball radii on potentially large dynamic dataset. Our proposal relies
 on both a linear octree representation with Morton codes and an
-efficient integral computation on GPU.  The source code and additional
+efficient integral computation on GPU. The source code and additional
 material (video, \ldots) are available on the project website
 (\url{https://github.com/dcoeurjo/ICTV}).
 
