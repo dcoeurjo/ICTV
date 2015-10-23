@@ -709,12 +709,9 @@ discussed in Section~\ref{sec:curv-tens-estim}
   For all illustrations, we use directly normal vectors computed by algorithm discussed in Section~\ref{sec:curv-tens-estim}}
   \label{fig:refine}
 \end{figure}
-\todo[inline]{blabla experiments}
 
 
 \subsection{Fully adaptive evaluation}
-
-
 
 \begin{figure}[!htbp]
   \begin{center}
@@ -814,6 +811,23 @@ discussed in Section~\ref{sec:curv-tens-estim}
   \label{fig:timings}
 \end{figure}
 
+In this experiments, we measure the timings obtained when running our framework on a
+GeForce GTX 850M. Here, the triangulation is dynamically refining according to its distance to the camera.
+At each frame, both the curvature and the triangulation are recomputed.
+If the visualisation stays unchanged, we compute the curvature at a level $l-1$ until the level $l_0$ is reached.
+We measured those timings using the regular and the hierarchical algorithm. The results are presented
+figure \ref{fig:timings}.
+
+
+\subsection{Visualisation}
+
+For dynamic datasets, we consider a time varying implicit
+surface. Since it would have been to expensive to update the a mipmap texture
+of densities at each time step, we simply evaluate the implicit
+expression at each vertex of a cell to decide if such cell is included
+or not into $\Ball{R}{\vx}\cap \Shape$.
+\todo[inline]{blabla experiments}
+
 \begin{figure}
   \begin{center}
     {\includegraphics[width=2.7cm]{figs/EG_dragon_mean}}
@@ -837,15 +851,6 @@ discussed in Section~\ref{sec:curv-tens-estim}
     \emph{Third row:} mean curvature computed in real-time on a dynamic object.}
   \label{fig:full}
 \end{figure}
-
-\todo[inline]{blabla experiments}
-
-For dynamic datasets, we consider a time varying impicit
-surface. Since it would have been to expensive to update the a mipmap texture
-of densities at each time step, we simply evaluate the implicit
-expression at each vertex of a cell to decide if such cell is included
-or not into $\Ball{R}{\vx}\cap \Shape$.
-\todo[inline]{blabla experiments}
 
 
 
