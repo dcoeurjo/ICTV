@@ -658,15 +658,22 @@ $\Ball{R}{\vx}\cap \Shape$ instead of updating the \emph{mipmap texture} of
 densities at each time step. For all illustrations, we use directly normal
 vectors computed by algorithm discussed in Section~\ref{sec:curv-tens-estim}.
 
-Then, we compare the approximation made by computing curvature from level $l >
-l_0$ in order to accelerate visualisation with the ground truth result obtained
+Then, we compare the approximation made by computing curvature from level $l >=
+l_0$ in Figure~\ref{fig:refine}. We can see that results using approximation
+seems to fastly converge to the ground truth results.
+Table~\ref{tab:full-res-stat} shows numerical results of $L_\infty$ error (worst
+case) and $L_2$ error (mean), as well the number of \emph{mipmap texture}
+fetches. We can first see that the number of texel fetch required to compute the
+curvature reduces drastically when computing the approximations. This is
+mandatory if we want to increase the framerate.
+
+
+ in order to accelerate visualisation with the ground truth result obtained
 at level $l_0$. We also compare them with the hierarchical algorithm discussed
 in Section~\ref{sec:hierarchical}. The results are presented in
 Table~\ref{tab:full-res-stat}, and illustrated in Figure~\ref{fig:refine}.
 
-We can first see that the number of texel fetch required to compute
-the curvature reduces drastically when computing the approximations.
-This is mandatory if we want to increase the framerate.
+
 However, we can also note that the error increases quite slowly.
 The errors obtained comparing $l_1$, or for bigger radii $l_2$ approximations
 with the $l_0$ level are small. The errors measured comparing higher levels
@@ -707,7 +714,6 @@ when it is closer from the camera and thus reducing the number of vertices to co
       3.51e-05 & 2.67e-04 & 7.57e-05 & 2.02e-05 & 0\\
       \bottomrule
     \end{tabular}
-
 	\begin{tabular}{@{}lrrrrrr@{}}
       \toprule
       & \multicolumn{6}{c}{$R=16$}\\
@@ -724,11 +730,15 @@ when it is closer from the camera and thus reducing the number of vertices to co
       4.43e-05 & 1.39e-04 & 4.16e-05 & 1.57e-05 & 2.07e-06 & 0\\
       \bottomrule
     \end{tabular}
-
   \end{center}
-  \caption{Comparison of number of texture fetches, $L_2$ and $L_\infty$ error obtained on OctaFlower with a digital domain of $130^3$. We measured it using radii of 8 and 16.
-  The object was triangulated at full resolution with a regular grid and contains 282,396 vertices. The timings
-    only consider the curvature estimation step.\label{tab:full-res-stat}}
+  %
+  \caption{Comparison of number of texture fetches, $L_2$ and $L_\infty$ error
+  obtained on OctaFlower with a digital domain of $130^3$ when computing mean
+  curvature, with two radii: 8 and 16. The object is triangulated at full
+  resolution with a regular grid and contains 282,396 vertices.
+  %
+  \label{tab:full-res-stat}}
+  %
 \end{table}
 
 \begin{figure}[!htbp]
