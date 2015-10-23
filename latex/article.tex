@@ -546,6 +546,7 @@ at this point.
 
 
 \subsection{Per Vertex Real-time Computation on GPU}
+\label{sec:hierarchical}
 
 We describe here two different visualization pipeline on GPU that will
 be evaluated in the next section.
@@ -649,17 +650,18 @@ $O\left(\left(\frac{R}{2^l}\right)^3\right)$, the interactive control
 
 We first evaluate the curvature estimation on a full-resolution geometry
 obtained by disabling the LoD criterion at the mesh generation step.
-Figure~\ref{fig:full}-top and middle show results of curvature tensor estimation
-(mean, Gaussian curvature, first and second principal curvatures, first and
-second principal directions) on an OctaFlower. Figure~\ref{fig:full}-bottom
-shows the mean curvature estimation in real-time on a dynamic object. For all
-illustrations, we use directly normal vectors computed by algorithm discussed in
-Section~\ref{sec:curv-tens-estim}.
+Figure~\ref{fig:full}-top and middle shows results of curvature tensor
+estimation (mean, Gaussian, first and second principal curvatures, first and
+second principal directions) on an OctaFlower at level $l_0$ (ground truth).
+Figure~\ref{fig:full}-bottom shows mean curvature estimation in real-time on a
+dynamic object. For all illustrations, we use directly normal vectors computed
+by algorithm discussed in Section~\ref{sec:curv-tens-estim}.
 
-We compare the approximation made to accelerate visualisation with the ground
-truth result obtained at level $l_0$. We also compare it with the hierarchical
-algorithm. The results are presented Table~\ref{tab:full-res-stat}, and
-illustrated Figure~\ref{fig:refine}.
+Then, we compare the approximation made by computing curvature from level $l >
+l_0$ in order to accelerate visualisation with the ground truth result obtained
+at level $l_0$. We also compare them with the hierarchical algorithm discussed
+in Section~\ref{sec:hierarchical}. The results are presented in
+Table~\ref{tab:full-res-stat}, and illustrated in Figure~\ref{fig:refine}.
 
 We can first see that the number of texel fetch required to compute
 the curvature reduces drastically when computing the approximations.
