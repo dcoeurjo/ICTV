@@ -115,7 +115,7 @@ a dynamic curvature tensor estimation. We define a fully data
 %parallel process on GPU (Graphics Processor Unit) hardware to both efficiently
 parallel process on the GPU (Graphics Processor Unit) to both efficiently
 extract adaptive isosurface and compute per vertex curvature tensor using
-Integral Invariants estimators. 
+Integral Invariants estimators.
 %Hence, this system allows us to visualize
 This system allow us to visualize
 curvature tensor in real-time on large dynamic objects. Our approach combines a
@@ -143,21 +143,21 @@ The method developed by \textsc{Lengyel} \textit{et al.}
 %However, it
 %was only developed on CPU to visualize in real-time static or near
 %static data, combining octree with new Marching Cubes configurations
-%to generate adaptive meshes. 
+%to generate adaptive meshes.
 It combines an octree space partitioning with new Marching Cubes configurations
-to generate adaptive meshes on the CPU from 
+to generate adaptive meshes on the CPU from
 %, but was only developed on the CPU to visualize
 static or near static data.
 In this paper we propose a full GPU pipeline
-%inspired from this method.  
-inspired from this method, 
-%using a GPU-friendly Lod criterion 
+%inspired from this method.
+inspired from this method,
+%using a GPU-friendly Lod criterion
 to maintain a view dependent triangulation.
-%It leaves the CPU free for other tasks and avoids synchronization with the GPU.  
+%It leaves the CPU free for other tasks and avoids synchronization with the GPU.
 %Our high framerate also allows
-%Our high framerate allows this method to run in real-time on fully dynamic data.  
+%Our high framerate allows this method to run in real-time on fully dynamic data.
 Our high framerate allows to visualize fully dynamic data in real-time.
-%The triangulation is controlled by a GPU LoD criterion 
+%The triangulation is controlled by a GPU LoD criterion
 %that ensures that
 %triangles project onto more than one pixel, thus removing geometrical
 %aliasing.
@@ -173,7 +173,7 @@ a spherical kernel of a given radius. Additionally, authors have
 demonstrated that these estimators have multigrid convergence
 properties. In this article, we also propose an efficient GPU
 implementation of such estimators to visualize%, in real-time,
-such curvature maps in real-time and %allowing us 
+such curvature maps in real-time and %allowing us
 to interactively change the %explore different
 value of the spherical kernel radius.
 
@@ -553,9 +553,9 @@ mimic a lend of adaptive Gauss digitization process.
 \begin{figure}
   \vspace{-0.35cm}
   \begin{center}
-    {\includegraphics[width=4cm]{figs/approx1}}
-    {\includegraphics[width=4cm]{figs/approx-reg-1}}
-    {\includegraphics[width=4cm]{figs/approx-reg-2}}
+    {\includegraphics[width=4.0cm]{figs/approx1}}
+    {\includegraphics[width=4.0cm]{figs/approx-reg-1}}
+    {\includegraphics[width=4.0cm]{figs/approx-reg-2}}
   \end{center}
   \vspace{-0.35cm}
   \caption{Integral computation with an area estimation (\emph{left}) from pixel
@@ -587,6 +587,7 @@ at this point.
   \caption{Adaptive approximation of the integration using a
     hierarchical decomposition of the ball $\Ball{R}{\vx}$ (\emph{left}), or a decomposition of $\Ball{R}{\vx}\cap\Shape$ (\emph{right}).}
   \label{fig:approx2}
+  \vspace{-0.35cm}
 \end{figure}
 
 \subsection{Per Vertex Real-time Computation on GPU}
@@ -676,12 +677,12 @@ $O\left(\left(\frac{R}{2^l}\right)^3\right)$, the interactive control
     {\includegraphics[width=2.2cm]{figs/function_mean_3}}
     {\includegraphics[width=2.2cm]{figs/function_mean_4}}
   \end{center}
-
   \vspace{-0.35cm}
   \caption{\emph{First row}: Mean and Gaussian curvature estimation, (zoom of) first and second principal directions estimation on an OctaFlower with a digital domain of $130^3$.
   % \emph{Second row:} (Zoom of) First and second principal directions estimation on an OctaFlower.
   \emph{Second row:} Mean curvature computed in real-time on a dynamic object.}
   \label{fig:full}
+  \vspace{-0.35cm}
 \end{figure}
 
 % \begin{figure}
@@ -892,21 +893,21 @@ time, especially with big radii. For the XYZ-Dragon with $R=20$, it needs almost
 it only needs 700ms. However, due to the precomputation and current hierarchical
 structure, this algorithm is biased and creates an error (presented in
 Table~\ref{tab:full-res-stat}) that needs to be considered.
-
-\begin{figure}
-  \vspace{-0.35cm}
-  \begin{center}
-    {\includegraphics[height=3.5cm]{figs/xyzrgb_dragon-510_R8_mean}}
-    {\includegraphics[height=3.0cm]{figs/snow_I08iso_233_r20_l0_m3}}
-  \end{center}
-  \caption{Illustration of mean curvature computation of two large datasets: XYZ-Dragon (with digital domain of $512^3$) and Snow microstructures ($233^3$).}
-  \label{fig:adaptive}
-  \vspace{-0.35cm}
-\end{figure}
-
-Figure~\ref{fig:adaptive} shows curvature computation and exploration in
-real-time on large datasets: XYZ-Dragon (with digital domain of $512^3$) and
-Snow microstructures ($233^3$).
+%
+% \begin{figure}
+%   \vspace{-0.35cm}
+%   \begin{center}
+%     {\includegraphics[height=3.5cm]{figs/xyzrgb_dragon-510_R8_mean}}
+%     {\includegraphics[height=3.0cm]{figs/snow_I08iso_233_r20_l0_m3}}
+%   \end{center}
+%   \caption{Illustration of mean curvature computation of two large datasets: XYZ-Dragon (with digital domain of $512^3$) and Snow microstructures ($233^3$).}
+%   \label{fig:adaptive}
+%   \vspace{-0.35cm}
+% \end{figure}
+%
+% Figure~\ref{fig:adaptive} shows curvature computation and exploration in
+% real-time on large datasets: XYZ-Dragon (with digital domain of $512^3$) and
+% Snow microstructures ($233^3$).
 
 \section{Conclusion and Discussion}
 \label{sec:discussion}
@@ -923,21 +924,22 @@ material (video, \ldots) are available on the project website
 (\url{https://github.com/dcoeurjo/ICTV}).
 
 An extension of this framework could be to implement an approximate hierarchical
-algorithm. From there, we could use the dynamic refinement scheme to compute
-the curvature with the hierarchical algorithm, thus massively reducing the number of probes.
-We could also use trexture streaming to compute on the fly on the CPU the subdivision and
-stream it to the GPU, allowing dynamic radii change with the hierarchical algorithm.
-Another improvement would be to implement the hierarchical pattern presented Figure~\ref{fig:approx}-$b$.
-This would prevent bias addition from adding cells of density 1 but only partly convered by the ball.
+algorithm. From there, we could use the dynamic refinement scheme to compute the
+curvature with the hierarchical algorithm, thus massively reducing the number of
+probes. We could also use trexture streaming to compute on the fly on the CPU
+the subdivision and stream it to the GPU, allowing dynamic radii change with the
+hierarchical algorithm. Another improvement would be to implement the
+hierarchical pattern presented Figure~\ref{fig:approx}-$b$. This would prevent
+bias addition from adding cells of density 1 but only partly convered by the
+ball.
 
-This framework could also be used for feature detection purposes
-such as presented in \cite{SMI2015}. The point classification is done by computing
-the curvature at different radii and comparing them. Using our framework,
-this may be done in a real-time manner.
-The computed curvature could finally be used to control the refinement of the
-triangulation. We are for now only using the normal computation for shading
-purposes but we could imagine using it along with the vertices to do a
-Poisson reconstruction of the object.
+% This framework could also be used for feature detection purposes such as
+% presented in \cite{SMI2015}. The point classification is done by computing the
+% curvature at different radii and comparing them. Using our framework, this may
+% be done in a real-time manner. The computed curvature could finally be used to
+% control the refinement of the triangulation. We are for now only using the
+% normal computation for shading purposes but we could imagine using it along with
+% the vertices to do a Poisson reconstruction of the object.
 
 %% \appendix
 %% \section{Hierarchical Probing Algorithm}
