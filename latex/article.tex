@@ -506,7 +506,7 @@ occurs for cells lying inside $\Shape$ (with density 1) not entirely covered by
 $\Ball{R}{\vx}$. Furthermore, the \emph{mipmap} texture can be used to design,
 using a single texture probe, a fast inclusion test of a given cell $c$ at level
 $l$ into the shapes: we say that $c$ is in $\Shape$ if its density (retrieved
-from the texture probe at level $l$) is greater than $1/2$. The idea here is to
+from the texture probe at level l) is greater than $1/2$. The idea here is to
 mimic a lend of adaptive Gauss digitization process.
 
 \begin{figure}
@@ -658,7 +658,7 @@ dynamic object. For all illustrations, we use directly normal vectors computed
 by algorithm discussed in Section~\ref{sec:curv-tens-estim}.
 
 Then, we compare the approximation made by computing curvature from level $l >
-l_0$ in order to accelerate visualization with the ground truth result obtained
+l_0$ in order to accelerate visualisation with the ground truth result obtained
 at level $l_0$. We also compare them with the hierarchical algorithm discussed
 in Section~\ref{sec:hierarchical}. The results are presented in
 Table~\ref{tab:full-res-stat}, and illustrated in Figure~\ref{fig:refine}.
@@ -671,9 +671,10 @@ The errors obtained comparing $l_1$, or for bigger radii $l_2$ approximations
 with the $l_0$ level are small. The errors measured comparing higher levels
 are of course much bigger and those level are thus never used in practice.
 They are presented here to illustrate how the refining process converges to
-the $l_0$ level. Thanks to this low error, higher approximation levels are visually
+the $l_0$ level.
+Thanks to this low error, higher approximation levels are visually
 very similar to the $l_0$ level. We can therefore use them for exploring our
-datasets in real time, changing the radii on the fly and visualizing dynamic datasets.
+datasets in real time, changing the radii on the fly and visualising dynamic datasets.
 
 When computing results using the hierachical algorithm, a higher error can be noted.
 This is due to the precomputation of the subdivision that no longer ensures to fetch data
@@ -862,14 +863,14 @@ algorithm is biased and creates an error (presented in
 Table~\ref{tab:full-res-stat}) that needs to be considered
 
 
-\subsection{Visualisation}
-
-For dynamic datasets, we consider a time varying implicit
-surface. Since it would have been to expensive to update the a mipmap texture
-of densities at each time step, we simply evaluate the implicit
-expression at each vertex of a cell to decide if such cell is included
-or not into $\Ball{R}{\vx}\cap \Shape$.
-\todo[inline]{blabla experiments}
+%\subsection{Visualisation}
+%
+%For dynamic datasets, we consider a time varying implicit
+%surface. Since it would have been to expensive to update the a mipmap texture
+%of densities at each time step, we simply evaluate the implicit
+%expression at each vertex of a cell to decide if such cell is included
+%or not into $\Ball{R}{\vx}\cap \Shape$.
+%\todo[inline]{blabla experiments}
 
 \begin{figure}
   \begin{center}
@@ -899,6 +900,15 @@ on both a linear octree representation with Morton codes and an
 efficient integral computation on GPU. The source code and additional
 material (video, \ldots) are available on the project website
 (\url{https://github.com/dcoeurjo/ICTV}).
+
+In a future work, this framework could be used for feature detection purposes
+such as presented in \cite{SMI2015}. The point classification is done by computing
+the curvature at different radii and comparing them. Using our framework,
+this may be done in a real-time manner.
+The computed curvature could also be used to control the refinement of the
+triangulation. We are for now only using the normal computation for shading
+purposes but we could imagine using it along with the vertices to do a
+Poisson reconstruction of the object.
 
 %% \appendix
 %% \section{Hierarchical Probing Algorithm}
