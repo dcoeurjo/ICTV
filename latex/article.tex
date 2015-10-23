@@ -853,11 +853,11 @@ We can thus get an approximated visualisation of our object as soon as we run
 the application, allowing for real time interactions with the object (changing
 the visualized value, curvature radius, \ldots). It is also clear on those
 graphs that using a hierarchical decomposition reduces the curvature computation
-time. For the XYZ-Dragon with $R=20$, it needs almost 4 seconds to compute the
-$l_0$ level, whereas using the hierarchical algorithm, it only needs 700ms.
-However, due to the precomputation, this algorithm is biased and creates an
-error (presented in Table~\ref{tab:full-res-stat}) that needs to be considered.
-
+time, especially with big radii. For the XYZ-Dragon with $R=20$, it needs almost
+4 seconds to compute the $l_0$ level, whereas using the hierarchical algorithm,
+it only needs 700ms. However, due to the precomputation and current hierarchical
+structure, this algorithm is biased and creates an error (presented in
+Table~\ref{tab:full-res-stat}) that needs to be considered.
 
 \begin{figure}
   \begin{center}
