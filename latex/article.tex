@@ -110,10 +110,14 @@ different values of such parameter is mandatory.
 
 \noindent\textbf{Contributions}\quad In this work, we propose a framework to
 perform interactive visualization of complex 3D digital structures combined with
-a dynamic curvature tensor estimation. More precisely, we define a fully data
-parallel process on GPU (Graphics Processor Unit) hardware to both efficiently
+%a dynamic curvature tensor estimation. More precisely, we define a fully data
+a dynamic curvature tensor estimation. We define a fully data
+%parallel process on GPU (Graphics Processor Unit) hardware to both efficiently
+parallel process on the GPU (Graphics Processor Unit) to both efficiently
 extract adaptive isosurface and compute per vertex curvature tensor using
-Integral Invariants estimators. Hence, this system allows us to visualize
+Integral Invariants estimators. 
+%Hence, this system allows us to visualize
+This system allow us to visualize
 curvature tensor in real-time on large dynamic objects. Our approach combines a
 GPU implementation of pointerless octrees to represent the data, an adaptive
 viewpoint-dependent mesh extraction, and a GPU implementation of integral
@@ -140,16 +144,19 @@ The method developed by \textsc{Lengyel} \textit{et al.}
 %was only developed on CPU to visualize in real-time static or near
 %static data, combining octree with new Marching Cubes configurations
 %to generate adaptive meshes. 
-It combines an octree space partitioning with new Marching Cubes configuration
-to generate adaptive meshes, but was only developed on the CPU to visualize
+It combines an octree space partitioning with new Marching Cubes configurations
+to generate adaptive meshes on the CPU from 
+%, but was only developed on the CPU to visualize
 static or near static data.
 In this paper we propose a full GPU pipeline
 %inspired from this method.  
-inspired from this method, using a GPU-friendly Lod criterion to maintain a view dependent triangulation.
+inspired from this method, 
+%using a GPU-friendly Lod criterion 
+to maintain a view dependent triangulation.
 %It leaves the CPU free for other tasks and avoids synchronization with the GPU.  
 %Our high framerate also allows
-Our high framerate allows
-this method to run in real-time on fully dynamic data.  
+%Our high framerate allows this method to run in real-time on fully dynamic data.  
+Our high framerate allows to visualize fully dynamic data in real-time.
 %The triangulation is controlled by a GPU LoD criterion 
 %that ensures that
 %triangles project onto more than one pixel, thus removing geometrical
@@ -164,10 +171,11 @@ principal curvature directions, normal vector field) on digital
 surfaces. Such approaches are based on an integration principle using
 a spherical kernel of a given radius. Additionally, authors have
 demonstrated that these estimators have multigrid convergence
-properties. In this article, we propose an efficient GPU
-implementation of such estimators in order to visualize, in real-time,
-such curvature maps and allowing us to interactively explore different
-values of the spherical kernel radius.
+properties. In this article, we also propose an efficient GPU
+implementation of such estimators to visualize%, in real-time,
+such curvature maps in real-time and %allowing us 
+to interactively change the %explore different
+value of the spherical kernel radius.
 
 
 
@@ -658,12 +666,12 @@ $O\left(\left(\frac{R}{2^l}\right)^3\right)$, the interactive control
 
 \begin{figure}
   \begin{center}
-    {\includegraphics[width=2.2cm]{figs/Octa_mean}}
-    {\includegraphics[width=2.2cm]{figs/Octa_gaussian}}
-    % {\includegraphics[width=2.7cm]{figs/Octa_k1}}
-    % {\includegraphics[width=2.7cm]{figs/Octa_k2}}\\
-    % {\includegraphics[width=2.7cm]{figs/Octa_dir_min}}
-    % {\includegraphics[width=2.7cm]{figs/Octa_dir_max}}
+    {\includegraphics[width=2.7cm]{figs/Octa_mean}}
+    {\includegraphics[width=2.7cm]{figs/Octa_gaussian}}
+    {\includegraphics[width=2.7cm]{figs/Octa_k1}}
+    {\includegraphics[width=2.7cm]{figs/Octa_k2}}\\
+    {\includegraphics[width=2.7cm]{figs/Octa_dir_min}}
+    {\includegraphics[width=2.7cm]{figs/Octa_dir_max}}
     {\includegraphics[height=2.0cm]{figs/Octa_dir_min_zoom}}
     {\includegraphics[height=2.0cm]{figs/Octa_dir_max_zoom}}\\
     % {\includegraphics[height=4.0cm]{figs/EG_dragon_normal_zoom}}
@@ -673,8 +681,8 @@ $O\left(\left(\frac{R}{2^l}\right)^3\right)$, the interactive control
     {\includegraphics[width=2.2cm]{figs/function_mean_3}}
     {\includegraphics[width=2.2cm]{figs/function_mean_4}}
   \end{center}
-  \caption{\emph{First row}: Mean and Gaussian curvature estimation, (zoom of) first and second principal directions estimation on an OctaFlower with a digital domain of $130^3$.
-  % \emph{Second row:} (Zoom of) First and second principal directions estimation on an OctaFlower.
+  \caption{\emph{First row:} Mean, Gaussian, first and second principal curvature estimation on an OctaFlower with a digital domain of $130^3$.
+  \emph{Second row:} First and second principal directions estimation (and zoom) on an OctaFlower.
   \emph{Third row:} Mean curvature computed in real-time on a dynamic object.}
   \label{fig:full}
 \end{figure}
@@ -719,7 +727,7 @@ the $l_0$ level.
 
 This convergence is shown in Figure \ref{fig:convergence}. It has been evaluated using
 two different strategy for volume computation. The first one reads the interpolated
-data from the mipmap is adds 1 to the volume if this value is above a threshold.
+data from the mipmap is adds 1 to the volume if this value is above a threshold. 
 The second strategy adds directly to the volume the interpolated data read from the mipmap.
 The results are shown Figure \ref{fig:graph_convergence}. It can be seen that the
 interpolation done by the mipmap allows the resulting curvature to converge
@@ -897,9 +905,9 @@ We can first note that the required time for an object to compute ground truth
 curvature is usually as high as the time required to extract the geometry and
 compute all the above levels. Using approximations is thus mandatory, since for
 big objects such as the XYZ-Dragon ($510^3$) with big radii the approximate
-computation is faster than the $l_0$ while results are close enough. For
-example, with $R=20$, the approximated visualization at $l_2$ takes only 300ms
-while the $l_0$ visualization takes more than 4 seconds.
+computation is faster than the $l_0$ while results are enough close to the
+$l_0$. For example, with $R=20$, the approximated visualization at $l_2$ takes
+only 300ms while the $l_0$ visualization takes more than 4 seconds.
 
 We can thus get an approximated visualisation of our object as soon as we run
 the application, allowing for real time interactions with the object (changing
