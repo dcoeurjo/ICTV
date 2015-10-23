@@ -742,7 +742,6 @@ interpolation to reduce the bias, but it doesn't remove it.
   with a regular grid and contains 282,396 vertices.
   %
   \label{tab:full-res-stat}}
-  \vspace{-1.5cm}
   %
 \end{table}
 
@@ -903,7 +902,7 @@ Snow microstructures ($233^3$).
 \section{Conclusion and Discussion}
 \label{sec:discussion}
 
-In this article, we have propose a full data parallel framework on GPU
+In this article, we have proposed a full data parallel framework on GPU
 hardware which combines an adaptive isosurface construction from
 digital data with a curvature tensor estimation at each vertex. Using
 this approach, we can explore in real-time different curvature
@@ -919,6 +918,9 @@ algorithm. From there, we could use the dynamic refinement scheme to compute
 the curvature with the hierarchical algorithm, thus massively reducing the number of probes.
 We could also use trexture streaming to compute on the fly on the CPU the subdivision and
 stream it to the GPU, allowing dynamic radii change with the hierarchical algorithm.
+Another improvement would be to implement the hierarchical pattern presented Figure~\ref{fig:approx}-$b$.
+This would prevent bias addition from adding cells of density 1 but only partly convered by the ball.
+
 This framework could also be used for feature detection purposes
 such as presented in \cite{SMI2015}. The point classification is done by computing
 the curvature at different radii and comparing them. Using our framework,
