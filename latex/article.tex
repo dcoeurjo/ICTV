@@ -658,12 +658,12 @@ $O\left(\left(\frac{R}{2^l}\right)^3\right)$, the interactive control
 
 \begin{figure}
   \begin{center}
-    {\includegraphics[width=2.7cm]{figs/Octa_mean}}
-    {\includegraphics[width=2.7cm]{figs/Octa_gaussian}}
-    {\includegraphics[width=2.7cm]{figs/Octa_k1}}
-    {\includegraphics[width=2.7cm]{figs/Octa_k2}}\\
-    {\includegraphics[width=2.7cm]{figs/Octa_dir_min}}
-    {\includegraphics[width=2.7cm]{figs/Octa_dir_max}}
+    {\includegraphics[width=2.2cm]{figs/Octa_mean}}
+    {\includegraphics[width=2.2cm]{figs/Octa_gaussian}}
+    % {\includegraphics[width=2.7cm]{figs/Octa_k1}}
+    % {\includegraphics[width=2.7cm]{figs/Octa_k2}}\\
+    % {\includegraphics[width=2.7cm]{figs/Octa_dir_min}}
+    % {\includegraphics[width=2.7cm]{figs/Octa_dir_max}}
     {\includegraphics[height=2.0cm]{figs/Octa_dir_min_zoom}}
     {\includegraphics[height=2.0cm]{figs/Octa_dir_max_zoom}}\\
     % {\includegraphics[height=4.0cm]{figs/EG_dragon_normal_zoom}}
@@ -673,8 +673,8 @@ $O\left(\left(\frac{R}{2^l}\right)^3\right)$, the interactive control
     {\includegraphics[width=2.2cm]{figs/function_mean_3}}
     {\includegraphics[width=2.2cm]{figs/function_mean_4}}
   \end{center}
-  \caption{\emph{First row:} Mean, Gaussian, first and second principal curvature estimation on an OctaFlower with a digital domain of $130^3$.
-  \emph{Second row:} First and second principal directions estimation (and zoom) on an OctaFlower.
+  \caption{\emph{First row}: Mean and Gaussian curvature estimation, (zoom of) first and second principal directions estimation on an OctaFlower with a digital domain of $130^3$.
+  % \emph{Second row:} (Zoom of) First and second principal directions estimation on an OctaFlower.
   \emph{Third row:} Mean curvature computed in real-time on a dynamic object.}
   \label{fig:full}
 \end{figure}
@@ -719,7 +719,7 @@ the $l_0$ level.
 
 This convergence is shown in Figure \ref{fig:convergence}. It has been evaluated using
 two different strategy for volume computation. The first one reads the interpolated
-data from the mipmap is adds 1 to the volume if this value is above a threshold. 
+data from the mipmap is adds 1 to the volume if this value is above a threshold.
 The second strategy adds directly to the volume the interpolated data read from the mipmap.
 The results are shown Figure \ref{fig:graph_convergence}. It can be seen that the
 interpolation done by the mipmap allows the resulting curvature to converge
@@ -897,9 +897,9 @@ We can first note that the required time for an object to compute ground truth
 curvature is usually as high as the time required to extract the geometry and
 compute all the above levels. Using approximations is thus mandatory, since for
 big objects such as the XYZ-Dragon ($510^3$) with big radii the approximate
-computation is faster than the $l_0$ while results are enough close to the
-$l_0$. For example, with $R=20$, the approximated visualization at $l_2$ takes
-only 300ms while the $l_0$ visualization takes more than 4 seconds.
+computation is faster than the $l_0$ while results are close enough. For
+example, with $R=20$, the approximated visualization at $l_2$ takes only 300ms
+while the $l_0$ visualization takes more than 4 seconds.
 
 We can thus get an approximated visualisation of our object as soon as we run
 the application, allowing for real time interactions with the object (changing
