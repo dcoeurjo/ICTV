@@ -851,7 +851,7 @@ only 300ms while the $l_0$ visualization takes more than 4 seconds.
 
 We can thus get an approximated visualisation of our object as soon as we run
 the application, allowing for real time interactions with the object (changing
-the visualized value, curvature radius, \cdots). It is also clear on those
+the visualized value, curvature radius, \ldots). It is also clear on those
 graphs that using a hierarchical decomposition reduces the curvature computation
 time. For the XYZ-Dragon with $R=20$, it needs almost 4 seconds to compute the
 $l_0$ level, whereas using the hierarchical algorithm, it only needs 700ms.
@@ -891,13 +891,12 @@ material (video, \ldots) are available on the project website
 (\url{https://github.com/dcoeurjo/ICTV}).
 
 In a future work, this framework could be used for feature detection purposes
-such as presented in \cite{SMI2015}. The point classification is done by computing
-the curvature at different radii and comparing them. Using our framework,
-this may be done in a real-time manner.
-The computed curvature could also be used to control the refinement of the
-triangulation. We are for now only using the normal computation for shading
-purposes but we could imagine using it along with the vertices to do a
-Poisson reconstruction of the object.
+such as presented in \cite{SMI2015}. The point classification is done by
+computing the curvature at different radii and comparing them. Using our
+framework, this may be done in a real-time manner. The computed curvature could
+also be used to control the refinement of the triangulation. We are for now only
+using the normal computation for shading purposes but we could imagine using it
+along with the vertices to do a Poisson reconstruction of the object.
 
 %% \appendix
 %% \section{Hierarchical Probing Algorithm}
