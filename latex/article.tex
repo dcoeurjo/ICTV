@@ -97,9 +97,9 @@ settings of the geometry processing tool.  In this work, we focus on
 interactive visualization of volumetric data isosurfaces combined with
 a curvature tensor (mean/Gaussian curvature, principal curvatures
 directions, \ldots) estimation at each point of the digital
-surface. 
+surface.
 %Curvature maps on a given isosurface are key information when
-%exploring 3D structures in Material Sciences \todo{REF}. 
+%exploring 3D structures in Material Sciences \todo{REF}.
 Furthermore,
 most curvature estimators require a parameter fixing the scale
 to which the computation is performed. For short, such parameter
@@ -135,22 +135,22 @@ viewpoint. In this topic, many solutions have been developed in
 Computer
 Graphics~\cite{shu1995adaptive,schaefer2004dual,lengyel2010voxel,DBLP:journals/cgf/LewinerMPPL10,DBLP:journals/cvgip/LobelloDD14}.
 The method developed by \textsc{Lengyel} \textit{et al.}
-\cite{lengyel2010voxel} is the best suited to our needs. 
+\cite{lengyel2010voxel} is the best suited to our needs.
 %However, it
 %was only developed on CPU to visualize in real-time static or near
 %static data, combining octree with new Marching Cubes configurations
-%to generate adaptive meshes. 
+%to generate adaptive meshes.
 It combines an octree space partitioning with new Marching Cubes configuration
 to generate adaptive meshes, but was only developed on the CPU to visualize
 static or near static data.
 In this paper we propose a full GPU pipeline
-%inspired from this method.  
+%inspired from this method.
 inspired from this method, using a GPU-friendly Lod criterion to maintain a view dependent triangulation.
-%It leaves the CPU free for other tasks and avoids synchronization with the GPU.  
+%It leaves the CPU free for other tasks and avoids synchronization with the GPU.
 %Our high framerate also allows
 Our high framerate allows
-this method to run in real-time on fully dynamic data.  
-%The triangulation is controlled by a GPU LoD criterion 
+this method to run in real-time on fully dynamic data.
+%The triangulation is controlled by a GPU LoD criterion
 %that ensures that
 %triangles project onto more than one pixel, thus removing geometrical
 %aliasing.
@@ -341,10 +341,10 @@ change the radius and thus update the estimated quantities in real-time.
 \label{sec:isos-extr-gpu}
 
 In this section, we detail the adaptive isosurface extraction
-algorithm. 
+algorithm.
 %The proposed approach is based on an octree representation
 %of the input object on which an efficient adaptive triangulation
-%of the isosurface is constructed on GPU. 
+%of the isosurface is constructed on GPU.
 The proposed approch use an octree representation of the input object
 on which an adaptive Marching Cube is used to build the isosurface efficiently.
 Such approach is motivated by
@@ -377,7 +377,7 @@ the GPU is a data parallel component and is unable to handle recursivity.
 %since the GPU
 %memory is limited and non consistent %\todo{fix coherent/aligned/coalesced?}
 %memory access (\emph{e.g.} tree traversal using pointer dereferencing) may lead
-%to huge payload from cache misses.  
+%to huge payload from cache misses.
 
 Efficient spatial tree encoding can be
 achieved using pointerless structures such as linear quadtrees or octrees ( see
@@ -387,13 +387,13 @@ indexes each cell by a \emph{Morton code}: the code of children
 cells are defined by the code of the parent suffixed by two bits (in dimension
 2, three bits in dimension 3) (see Figure
 \ref{fig_quadtree_partitionning}-\emph{left}). A cell's code encodes its
-position \wrt its parent cell and its complete path to the tree root. 
-%Hence, whatever their depth, all cell codes are simply stored in a linear vector on memory. 
+position \wrt its parent cell and its complete path to the tree root.
+%Hence, whatever their depth, all cell codes are simply stored in a linear vector on memory.
 Hence, the tree is fully represented as a linear vector of its leaves, whatever their depth.
 Furthermore, cell operations such as subdivision, merging, neighbors
 access can be efficiently implemented using bitwise operations on the Morton
 code. In the following, we use the GPU implementation proposed by \textsc{Dupuy}
-\textit{et al.}~\cite{dupuy2014quadtrees} that we extended to the third dimension. 
+\textit{et al.}~\cite{dupuy2014quadtrees} that we extended to the third dimension.
 By using their approach, Morton codes
 and bitwise operations are optimized to match with GPU hardware requirements.
 
@@ -411,10 +411,10 @@ dual meshes
 \cite{shu1995adaptive,schaefer2004dual,lengyel2010voxel,DBLP:journals/cgf/LewinerMPPL10,DBLP:journals/cvgip/LobelloDD14}.
 
 In the following, we use the extension of MC configurations to handle
-adaptive structures proposed by \textsc{Lengyel} \emph{et al.}~\cite{lengyel2010voxel}. 
+adaptive structures proposed by \textsc{Lengyel} \emph{et al.}~\cite{lengyel2010voxel}.
 First, this approach constrains the octree
 structure in order to make sure that the depth difference between any
-two adjacent cells is at most one. 
+two adjacent cells is at most one.
 Then, \textsc{Lengyel} \emph{et al.} introduce the concept of transition cells.
 Those cells are defined to be inserted between two neighbouring octree cells of different depth.
 With specific MC configurations for such transition cells, a crack free triangulation can
@@ -433,10 +433,10 @@ the \emph{geometry shader} in the GPU graphic pipeline).
 
 As illustrated in Figure~\ref{fig_quadtree_partitionning}-\emph{middle}, we
 propose a viewpoint dependent criterion to decide if a cell needs to be refined:
-the closer we are to the camera, the finer the cells are. 
+the closer we are to the camera, the finer the cells are.
 %In addition to the
 %distance criterion, we define an angular criterion to prevent refining cells
-%outside the camera frustrum. 
+%outside the camera frustrum.
 Using a criterion based on the distance between a
 cell and the camera is well suited to GPU since it can be evaluated
 independently on all cells. Hence, we can efficiently determine if a cell must
@@ -691,7 +691,7 @@ $\Ball{R}{\vx}\cap \Shape$ instead of updating the \emph{mipmap texture} of
 densities at each time step. For all illustrations, we use directly normal
 vectors computed by algorithm discussed in Section~\ref{sec:curv-tens-estim}.
 
-Then, we compare the approximation made by computing curvature from level $l >=
+Then, we compare the approximation made by computing curvature from level $l \ge
 l_0$ in Figure~\ref{fig:refine}. We can see that results using approximation
 seems to fastly converge to the ground truth results.
 Table~\ref{tab:full-res-stat} shows numerical results of $L_\infty$ error (worst
@@ -730,45 +730,28 @@ when it is closer from the camera and thus reducing the number of vertices to co
 
 \begin{table}
   \begin{center}
+  \setlength{\tabcolsep}{0.15cm}
+	\begin{tabular}{@{}llrrrrrr@{}}
+      \toprule
+        & & H & $l_4$ & $l_3$ & $l_2$ & $l_1$ & $l_0$\\
+      \midrule
+      \multirow{2}{2.2cm}{Number of texture fetches} & $R=8$ & 1468 & & 2 & 28 & 260 & 2104 \\
+                                & $R=16$ & 5706 & 2 & 28 & 90 & 2120 & 17080\\\midrule
 
-	\begin{tabular}{@{}lrrrrr@{}}
-      \toprule
-      & \multicolumn{5}{c}{$R=8$}\\
-      \cmidrule(r){2-6}
-    Quantities & ~~~H & $l_3$ & $l_2$ & $l_1$ & $l_0$\\
-      \midrule
-      Number of texture fetches &
-      1468 & 2 & 28 & 260 & 2104\\
-      %Time (in ms) &
-      %208 & 15 & 26 & 93 & 642\\
-      $L_\infty$ error (\wrt $l_0$) &
-      0.051 & 0.306 & 0.085 & 0.047 & 0\\
-      $L_2$ error (\wrt $l_0$) &
-      3.51e-05 & 2.67e-04 & 7.57e-05 & 2.02e-05 & 0\\
-      \bottomrule
-    \end{tabular}
-	\begin{tabular}{@{}lrrrrrr@{}}
-      \toprule
-      & \multicolumn{6}{c}{$R=16$}\\
-      \cmidrule(r){2-7}
-    Quantities & ~~~H & $l_4$ & $l_3$ & $l_2$ & $l_1$ & $l_0$\\
-      \midrule
-      Number of texture fetches &
-      5706 & 2 & 28 & 90 & 2120 & 17080\\
-      %Time (in ms) &
-      %826 & 14 & 26 & 252 & 606 & 4801\\
-      $L_\infty$ error (\wrt $l_0$) &
-      0.053 & 0.146 & 0.041 & 0.017 & 0.005 & 0\\
-      $L_2$ error (\wrt $l_0$) &
-      4.43e-05 & 1.39e-04 & 4.16e-05 & 1.57e-05 & 2.07e-06 & 0\\
+      \multirow{2}{2.2cm}{$L_\infty$ error (\wrt $l_0$)} & $R=8$ & 0.051 & & 0.306 & 0.085 & 0.047 & 0\\
+                                    & $R=16$ & 0.053 & 0.146 & 0.041 & 0.017 & 0.005 & 0\\\midrule
+
+      \multirow{2}{2.1cm}{$L_2$ error (\wrt $l_0$)} & $R=8$ & 3.51e-05 & & 2.67e-04 & 7.57e-05 & 2.02e-05 & 0\\
+                               & $R=16$ & 4.43e-05 & 1.39e-04 & 4.16e-05 & 1.57e-05 & 2.07e-06 & 0\\
       \bottomrule
     \end{tabular}
   \end{center}
   %
   \caption{Comparison of number of texture fetches, $L_2$ and $L_\infty$ error
   obtained on OctaFlower with a digital domain of $130^3$ when computing mean
-  curvature, with two radii: 8 and 16. The object is triangulated at full
-  resolution with a regular grid and contains 282,396 vertices.
+  curvature with two radii: 8 and 16, with hierarchical algorithm (H) and $l \ge
+  l_0$ approximation algorithms. The object is triangulated at full resolution
+  with a regular grid and contains 282,396 vertices.
   %
   \label{tab:full-res-stat}}
   %
