@@ -666,7 +666,7 @@ generation step.
     Quantities & ~~~H & $l_4$ & $l_3$ & $l_2$ & $l_1$ & $l_0$\\
       \midrule
       Number of texture fetches &
-      5706 & 2 & 28 & 90 & 2120 & 1780\\
+      5706 & 2 & 28 & 90 & 2120 & 17080\\
       %Time (in ms) &
       %826 & 14 & 26 & 252 & 606 & 4801\\
       $L_\infty$ error (\wrt $l_0$) &
@@ -677,19 +677,18 @@ generation step.
     \end{tabular}
 
   \end{center}
-  \caption{object, size, radius, full res, num of vertices (timings
+  \caption{Comparison of number of texture fetches, $L_2$ and $L_\infty$ error obtained on  object, size, radius, full res, num of vertices (timings
     only consider the curvature estimation step).\label{tab:full-res-stat}}
 \end{table}
 
-\begin{figure}
+\begin{figure}[!htbp]
   \begin{center}
-    \subfigure[]{\framebox{octa $l_4$}}
-   \subfigure[]{\framebox{octa $l_3$}}
-   \subfigure[]{\framebox{octa $l_2$}}
-   \subfigure[]{\framebox{octa $l_1$}}
-   \subfigure[]{\framebox{octa $l_0$}}
+   {\includegraphics[width=2.7cm]{figs/octa_r10_l3_a}}
+   {\includegraphics[width=2.7cm]{figs/octa_r10_l2_a}}
+   {\includegraphics[width=2.7cm]{figs/octa_r10_l1_a}}
+   {\includegraphics[width=2.7cm]{figs/octa_r10_l0_a}}
   \end{center}
-  \caption{Illustration of mean curvature computation on an OctaFlower using mipmap approximation of different levels : $l_4$, $l_3$, $l_2$, $l_1$ and $l_0$ (\ie no approximation).
+  \caption{Illustration of mean curvature computation on an OctaFlower (digital domain of $130^3$) using mipmap approximation with different levels : $l_3$, $l_2$, $l_1$ and $l_0$ (\ie no approximation).
   %
   For all illustrations, we use directly normal vectors computed by algorithm discussed in Section~\ref{sec:curv-tens-estim}}
   \label{fig:refine}
@@ -766,8 +765,8 @@ generation step.
         %\legend{\strut Geometry, \strut Curvature, \strut xx, \strut xx}
       \end{axis}
 	  \end{tikzpicture}
-
-      \begin{tikzpicture}[scale=0.7]
+%
+    \begin{tikzpicture}[scale=0.7]
       \begin{axis}[
           ybar stacked,
           ymode = log,
