@@ -483,22 +483,25 @@ estimators
 and (\ref{eq:dig-curvature-estimator-k2}).
 
 To implement the integration on $\Ball{R}{\vx} \cap \Shape$
-(Fig.~\ref{fig:approx}-$a$), a naive approach consists in scanning all
-digital points inside such domain (Fig.~\ref{fig:approx}-$b$) and then
-to estimate the geometrical moment as the sum of the geometrical
-moments of each elementary cubes lying in the intersection. On GPU,
-\emph{mipmap} textures are used to obtain a multi-resolution information: if the
-input binary object is stored in a 3D texture, GPU hardware can
-construct a multi-resolution pyramid such that 8 neighboring voxel
-intensities at level $l$ are averaged to define the voxel value at
-level $l+1$. If the level 0 corresponds to the binary input object, at
-a given level $l$, a voxel $(x,y,z)$ contains the fraction of $\DSh$
-belonging to the cube of center $(x,y,z)$ and edge length $2^l$. As a
-consequence, we can approximate the volume of $\Ball{R}{\vx}\cap\Shape$ by
-considering mipmap values at a given resolution $l$
-(Fig.~\ref{fig:approx}-$c$). In this case, errors only occurs for
-cells lying inside $\Shape$ (with density 1) not entirely covered by
-$\Ball{R}{\vx}$. Furthermore, \emph{mipmap} textures give us a fast method to know if a voxel is inside $\Shape$, for all levels. Indeed, if the mipmap value is greater than $0.5$, the voxel associated is \emph{at least} half inside $\Shape$.
+(Fig.~\ref{fig:approx}-$a$), a naive approach consists in scanning all digital
+points inside such domain (Fig.~\ref{fig:approx}-$b$) and then to estimate the
+geometrical moment as the sum of the geometrical moments of each elementary
+cubes lying in the intersection. On GPU, \emph{mipmap} textures are used to
+obtain a multi-resolution information: if the input binary object is stored in a
+3D texture, GPU hardware can construct a multi-resolution pyramid such that 8
+neighboring voxel intensities at level $l$ are averaged to define the voxel
+value at level $l+1$. If the level 0 corresponds to the binary input object, at
+a given level $l$, a voxel $(x,y,z)$ contains the fraction of $\DSh$ belonging
+to the cube of center $(x,y,z)$ and edge length $2^l$. As a consequence, we can
+approximate the volume of $\Ball{R}{\vx}\cap\Shape$ by considering mipmap values
+at a given resolution $l$ (Fig.~\ref{fig:approx}-$c$). In this case, errors only
+occurs for cells lying inside $\Shape$ (with density 1) not entirely covered by
+$\Ball{R}{\vx}$. Furthermore, the \emph{mipmap} texture can be used to design,
+using a single texture probe, a fast inclusion test of a given cell $c$ at level
+$l$ into the shapes: we say that $c$ is in $\Shape$ if its density (retrieved
+from the texture probe at level l) is greater than $1/2$. The idea here is to
+mimic a lend of adaptive Gauss digitization process.
+
 \begin{figure}
   \begin{center}
     \subfigure[]{\includegraphics[width=4cm]{figs/approx1}}
