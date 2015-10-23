@@ -623,13 +623,43 @@ $O\left(\left(\frac{R}{2^l}\right)^3\right)$, the interactive control
 
 \subsection{Full resolution experiment}
 
-We first evaluate the curvature estimation on a full-resolution
-geometry obtained by disabling the LoD criterion at the mesh
-generation step. We compare the approximation made to accelerate 
-visualisation with the ground truth result obtained at level $l_0$.
-We also compare it with the hierarchical algorithm.
-The results are presented table \ref{tab:full-res-stat}, and illustrated
-figure \ref{fig:refine}.
+
+\begin{figure}
+  \begin{center}
+    {\includegraphics[width=2.7cm]{figs/Octa_mean}}
+    {\includegraphics[width=2.7cm]{figs/Octa_gaussian}}
+    {\includegraphics[width=2.7cm]{figs/Octa_k1}}
+    {\includegraphics[width=2.7cm]{figs/Octa_k2}}\\
+    {\includegraphics[width=2.7cm]{figs/Octa_dir_min}}
+    {\includegraphics[width=2.7cm]{figs/Octa_dir_max}}
+    {\includegraphics[height=2.0cm]{figs/Octa_dir_min_zoom}}
+    {\includegraphics[height=2.0cm]{figs/Octa_dir_max_zoom}}\\
+    % {\includegraphics[height=4.0cm]{figs/EG_dragon_normal_zoom}}
+    {\includegraphics[width=2.2cm]{figs/function_mean_0}}
+    {\includegraphics[width=2.2cm]{figs/function_mean_1}}
+    {\includegraphics[width=2.2cm]{figs/function_mean_2}}
+    {\includegraphics[width=2.2cm]{figs/function_mean_3}}
+    {\includegraphics[width=2.2cm]{figs/function_mean_4}}
+  \end{center}
+  \caption{\emph{Third row:} Mean, Gaussian, first and second principal curvature estimation on an OctaFlower with a digital domain of $130^3$.
+  \emph{Second row:} First and second principal directions estimation (and zoom) on an OctaFlower.
+  \emph{Third row:} Mean curvature computed in real-time on a dynamic object.}
+  \label{fig:full}
+\end{figure}
+
+We first evaluate the curvature estimation on a full-resolution geometry
+obtained by disabling the LoD criterion at the mesh generation step.
+Figure~\ref{fig:full}-top and middle show results of curvature tensor estimation
+(mean, Gaussian curvature, first and second principal curvatures, first and
+second principal directions) on an OctaFlower. Figure~\ref{fig:full}-bottom
+shows the mean curvature estimation in real-time on a dynamic object. For all
+illustrations, we use directly normal vectors computed by algorithm discussed in
+Section~\ref{sec:curv-tens-estim}.
+
+We compare the approximation made to accelerate visualisation with the ground
+truth result obtained at level $l_0$. We also compare it with the hierarchical
+algorithm. The results are presented Table~\ref{tab:full-res-stat}, and
+illustrated Figure~\ref{fig:refine}.
 
 We can first see that the number of texel fetch required to compute
 the curvature reduces drastically when computing the approximations.
@@ -847,26 +877,15 @@ or not into $\Ball{R}{\vx}\cap \Shape$.
 
 \begin{figure}
   \begin{center}
-    {\includegraphics[width=2.7cm]{figs/EG_dragon_mean}}
-    {\includegraphics[width=2.7cm]{figs/EG_dragon_gaussian}}
-    {\includegraphics[width=2.7cm]{figs/EG_dragon_k1}}
-    {\includegraphics[width=2.7cm]{figs/EG_dragon_k2}}\\
-    {\includegraphics[height=2.0cm]{figs/EG_dragon_normal_zoom}}
-    {\includegraphics[height=2.0cm]{figs/EG_dragon_dir_min_zoom}}
-    {\includegraphics[height=2.0cm]{figs/EG_dragon_dir_max_zoom}}
-    {\includegraphics[height=2.0cm]{figs/snow_I08iso_233_r20_l0_m3}}\\
-    {\includegraphics[width=2.2cm]{figs/function_mean_0}}
-    {\includegraphics[width=2.2cm]{figs/function_mean_1}}
-    {\includegraphics[width=2.2cm]{figs/function_mean_2}}
-    {\includegraphics[width=2.2cm]{figs/function_mean_3}}
-    {\includegraphics[width=2.2cm]{figs/function_mean_4}}
+    {\includegraphics[height=4.0cm]{figs/xyzrgb_dragon-510_R8_mean}}
+    {\includegraphics[height=3.5cm]{figs/snow_I08iso_233_r20_l0_m3}}
   \end{center}
   \caption{Illustration fig illustration complete (adaptative, ...) plusieurs
     objets.. + dynamique.
     Illustration of mean curvature computation of snow microstructures.
     %
     \emph{Third row:} mean curvature computed in real-time on a dynamic object.}
-  \label{fig:full}
+  \label{fig:adaptive}
 \end{figure}
 
 
