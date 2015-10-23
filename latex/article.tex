@@ -625,23 +625,24 @@ $O\left(\left(\frac{R}{2^l}\right)^3\right)$, the interactive control
 
 We first evaluate the curvature estimation on a full-resolution
 geometry obtained by disabling the LoD criterion at the mesh
-generation step. We compare the approximation made to accelerate 
+generation step. We compare the approximation made to accelerate
 visualisation with the ground truth result obtained at level $l_0$.
 We also compare it with the hierarchical algorithm.
 The results are presented table \ref{tab:full-res-stat}, and illustrated
-figure \ref{fig:refine}.
+figure \ref{fig:refine}. For all illustrations, we use directly normal vectors computed by algorithm
+discussed in Section~\ref{sec:curv-tens-estim}
 
 We can first see that the number of texel fetch required to compute
 the curvature reduces drastically when computing the approximations.
 This is mandatory if we want to increase the framerate.
-However, we can also note that the error increases quite slowly. 
+However, we can also note that the error increases quite slowly.
 The errors obtained comparing $l_1$, or for bigger radii $l_2$ approximations
 with the $l_0$ level are small. The errors measured comparing higher levels
 are of course much bigger and those level are thus never used in practice.
-They are presented here to illustrate how the refining process converges to 
+They are presented here to illustrate how the refining process converges to
 the $l_0$ level.
-Thanks to this low error, higher approximation levels are visually 
-very similar to the $l_0$ level. We can therefore use them for exploring our 
+Thanks to this low error, higher approximation levels are visually
+very similar to the $l_0$ level. We can therefore use them for exploring our
 datasets in real time, changing the radii on the fly and visualising dynamic datasets.
 
 Bare in mind that those results were measured on a full resolution triangulation.
@@ -651,12 +652,10 @@ We therefore use in practice an adaptive triangulation of the object, refining t
 when it is closer from the camera and thus reducing the number of vertices to compute.
 
 
-For all illustrations, we use directly normal vectors computed by algorithm
-discussed in Section~\ref{sec:curv-tens-estim}
+
 
 \begin{table}
   \begin{center}
-
 	\begin{tabular}{@{}lrrrrr@{}}
       \toprule
       & \multicolumn{5}{c}{$R=8$}\\
@@ -704,9 +703,7 @@ discussed in Section~\ref{sec:curv-tens-estim}
    {\includegraphics[width=2.7cm]{figs/octa_r10_l1_a}}
    {\includegraphics[width=2.7cm]{figs/octa_r10_l0_a}}
   \end{center}
-  \caption{Illustration of mean curvature computation on an OctaFlower (digital domain of $130^3$) using mipmap approximation with different levels : $l_3$, $l_2$, $l_1$ and $l_0$ (\ie no approximation).
-  %
-  For all illustrations, we use directly normal vectors computed by algorithm discussed in Section~\ref{sec:curv-tens-estim}}
+  \caption{Illustration of mean curvature computation on an OctaFlower (digital domain of $130^3$) using mipmap approximation with different levels : $l_3$, $l_2$, $l_1$ and $l_0$ (\ie no approximation).}
   \label{fig:refine}
 \end{figure}
 
@@ -758,22 +755,22 @@ discussed in Section~\ref{sec:curv-tens-estim}
           x tick label style={rotate=45,anchor=east},
         ]
         %Geometry Generation
-        \addplot+[ybar, color=black, fill=cgeometry] plot coordinates {(Octa-R8,17.283000) (Octa-R16,18.458000) 
+        \addplot+[ybar, color=black, fill=cgeometry] plot coordinates {(Octa-R8,17.283000) (Octa-R16,18.458000)
           (Snow-R10,9.831000) (Snow-R20,9.653000)  (Dragon-R8,136.300000) (Dragon-R20,145.450000)};
         %l4
-        \addplot+[ybar, color=black, fill=clquatre] plot coordinates {(Octa-R8,1) (Octa-R16,2.509000) 
+        \addplot+[ybar, color=black, fill=clquatre] plot coordinates {(Octa-R8,1) (Octa-R16,2.509000)
           (Snow-R10,6.085000) (Snow-R20,9.445000)  (Dragon-R8,3.389000) (Dragon-R20,20.228000)};
         %l3
         \addplot+[ybar, color=black, fill=cltrois] plot coordinates {(Octa-R8,2.527000) (Octa-R16,4.159000)
           (Snow-R10,10.629000) (Snow-R20,11.542000) (Dragon-R8,20.397000) (Dragon-R20,26.710000)};
         %l2
-        \addplot+[ybar, color=black, fill=cldeux] plot coordinates {(Octa-R8,3.783000) (Octa-R16,9.006000) 
+        \addplot+[ybar, color=black, fill=cldeux] plot coordinates {(Octa-R8,3.783000) (Octa-R16,9.006000)
           (Snow-R10,13.777000) (Snow-R20,37.700000) (Dragon-R8,29.967000) (Dragon-R20,92.435000)};
         %l1
-        \addplot+[ybar, color=black, fill=clun] plot coordinates {(Octa-R8, 11.004000) (Octa-R16,38.687000) 
+        \addplot+[ybar, color=black, fill=clun] plot coordinates {(Octa-R8, 11.004000) (Octa-R16,38.687000)
           (Snow-R10,39.627000) (Snow-R20,217.954000) (Dragon-R8,59.840000) (Dragon-R20,506.549000)};
         %l0
-        \addplot+[ybar, color=black, fill=clzero] plot coordinates {(Octa-R8, 37.273000) (Octa-R16,244.353000) 
+        \addplot+[ybar, color=black, fill=clzero] plot coordinates {(Octa-R8, 37.273000) (Octa-R16,244.353000)
           (Snow-R10,236.194000) (Snow-R20,1655.680000) (Dragon-R8,322.674000) (Dragon-R20,3763.422000)};
         %\legend{\strut Geometry, \strut Curvature, \strut xx, \strut xx}
       \end{axis}
@@ -788,24 +785,24 @@ discussed in Section~\ref{sec:curv-tens-estim}
 	  	  every node near coord/.style={ at={(0,0)}, font=\tiny, inner sep=0pt},
           enlargelimits=0.15,
           %ylabel={\#Time (in ms)},
-          symbolic x coords={Octa-R8, Octa-R16, Snow-R10, Snow-R20, 
+          symbolic x coords={Octa-R8, Octa-R16, Snow-R10, Snow-R20,
 	      Dragon-R8, Dragon-R20},
           xtick=data,
           point meta=rawy,
           x tick label style={rotate=45,anchor=east},
         ]
         %Geometry Generation
-        \addplot+[ybar,color=black, fill=cgeometry] plot coordinates {(Octa-R8,17.283000) (Octa-R16,17.183000) 
+        \addplot+[ybar,color=black, fill=cgeometry] plot coordinates {(Octa-R8,17.283000) (Octa-R16,17.183000)
           (Snow-R10,9.383000) (Snow-R20,9.767000)  (Dragon-R8,127.347000) (Dragon-R20,127.166000)};
         %Hierarchical measurement
-        \addplot+[ybar, color=black, fill=clzero] plot coordinates {(Octa-R8,18.095000) (Octa-R16,64.186000) 
+        \addplot+[ybar, color=black, fill=clzero] plot coordinates {(Octa-R8,18.095000) (Octa-R16,64.186000)
           (Snow-R10,96.747000) (Snow-R20,364.547000)  (Dragon-R8,147.662000) (Dragon-R20,787.459000)};
         %\legend{\strut Geometry, \strut Curvature, \strut xx, \strut xx}
       \end{axis}
 
      \end{tikzpicture}
      \end{center}
-  \caption{Timings obtained while visualising an adaptive triangulation of an object (left) computing the curvature with a regular grid and (right) computing it with the hierarchical algorithm. 		
+  \caption{Timings obtained while visualising an adaptive triangulation of an object (left) computing the curvature with a regular grid and (right) computing it with the hierarchical algorithm.
   With a regular grid, the curvature computation refines at every frame until it reaches the ground truth result.
   We measured three datasets, OctaFlower (digital domain of $130^3$ ), snow micro structures($233^3$) and the XYZ Dragon ($510^3$)}
   \label{fig:timings}
@@ -832,12 +829,11 @@ or not into $\Ball{R}{\vx}\cap \Shape$.
   \begin{center}
     {\includegraphics[width=2.7cm]{figs/EG_dragon_mean}}
     {\includegraphics[width=2.7cm]{figs/EG_dragon_gaussian}}
-    {\includegraphics[width=2.7cm]{figs/EG_dragon_k1}}
-    {\includegraphics[width=2.7cm]{figs/EG_dragon_k2}}\\
-    {\includegraphics[height=2.0cm]{figs/EG_dragon_normal_zoom}}
     {\includegraphics[height=2.0cm]{figs/EG_dragon_dir_min_zoom}}
-    {\includegraphics[height=2.0cm]{figs/EG_dragon_dir_max_zoom}}
-    {\includegraphics[height=2.0cm]{figs/snow_I08iso_233_r20_l0_m3}}\\
+    {\includegraphics[height=2.0cm]{figs/EG_dragon_dir_max_zoom}}\\
+    % {\includegraphics[height=4.0cm]{figs/EG_dragon_normal_zoom}}
+    {\includegraphics[height=4.0cm]{figs/xyzrgb_dragon-510_R8_mean}}
+    {\includegraphics[height=3.5cm]{figs/snow_I08iso_233_r20_l0_m3}}\\
     {\includegraphics[width=2.2cm]{figs/function_mean_0}}
     {\includegraphics[width=2.2cm]{figs/function_mean_1}}
     {\includegraphics[width=2.2cm]{figs/function_mean_2}}
