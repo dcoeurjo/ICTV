@@ -97,9 +97,9 @@ settings of the geometry processing tool.  In this work, we focus on
 interactive visualization of volumetric data isosurfaces combined with
 a curvature tensor (mean/Gaussian curvature, principal curvatures
 directions, \ldots) estimation at each point of the digital
-surface. 
+surface.
 %Curvature maps on a given isosurface are key information when
-%exploring 3D structures in Material Sciences \todo{REF}. 
+%exploring 3D structures in Material Sciences \todo{REF}.
 Furthermore,
 most curvature estimators require a parameter fixing the scale
 to which the computation is performed. For short, such parameter
@@ -139,7 +139,7 @@ viewpoint. In this topic, many solutions have been developed in
 Computer
 Graphics~\cite{shu1995adaptive,schaefer2004dual,lengyel2010voxel,DBLP:journals/cgf/LewinerMPPL10,DBLP:journals/cvgip/LobelloDD14}.
 The method developed by \textsc{Lengyel} \textit{et al.}
-\cite{lengyel2010voxel} is the best suited to our needs. 
+\cite{lengyel2010voxel} is the best suited to our needs.
 %However, it
 %was only developed on CPU to visualize in real-time static or near
 %static data, combining octree with new Marching Cubes configurations
@@ -191,7 +191,7 @@ digitized set $\DigShape\EqDef\DSh$, $\Body{\DigShape}{h}$ is a subset of $\R^d$
 corresponding to the union of hypercubes centered at $h\cdot \vz$ for $\vz\in Z$
 with edge length $h$. By doing so, both $\partial\Shape$ and
 $\partial\Body{Z}{h}$ are topological boundary of objects lying in the same
-space (See Fig. \ref{fig:notations}-b). Note that the combinatorial digital
+space (see Fig. \ref{fig:notations}-b). Note that the combinatorial digital
 boundary $\DigBoundary{Z}$ of $Z$ made of cells in a cellular Cartesian complex
 (\emph{pointels}, \emph{linels}, \emph{surfels}, \ldots), can be trivially
 embedded into $\R^d$ such that it coincides with $\partial\Body{Z}{h}$.
@@ -199,14 +199,14 @@ embedded into $\R^d$ such that it coincides with $\partial\Body{Z}{h}$.
 
 \begin{figure}[t]{\small
     \begin{center}
-      \subfigure[]{\begin{overpic}[width=5cm]{figs/integral2D_2}
+      {\begin{overpic}[width=5cm]{figs/integral2D_2}
           \put(42,28){$\times$}
           \put(46,32){$\vx$}
           \put(55,45){$\Ball{R}{\vx}$}
           \put(1,10){$\dS$}
           \put(15,5){$\Shape$}
       \end{overpic}}~~~~~~
-      \subfigure[]{\begin{overpic}[width=5cm]{figs/notation_2}
+      {\begin{overpic}[width=5cm]{figs/notation_2}
           \put(62,0.5){$h \cdot \vz \in \Shape \cap \Ball{R}{\vx}$}
           \put(55,45){$\Ball{R}{\vx}$}
           \put(42,28.5){$\times$}
@@ -218,8 +218,9 @@ embedded into $\R^d$ such that it coincides with $\partial\Body{Z}{h}$.
       \end{overpic}}
       \vspace{-0.4cm}
     \end{center}}
-    \caption{Integral invariant computation $(a)$ and
-      notations $(b)$ in dimension 2 \cite{CVIU2014}.\label{fig:notations}}
+    \caption{Integral invariant computation (\emph{left}) and
+      notations (\emph{right}) in dimension 2 \cite{CVIU2014}.\label{fig:notations}}
+    \vspace{-0.35cm}
 \end{figure}
 
 In \cite{DGCI2013}, authors have defined the 2D digital curvature estimator
@@ -349,10 +350,10 @@ change the radius and thus update the estimated quantities in real-time.
 \label{sec:isos-extr-gpu}
 
 In this section, we detail the adaptive isosurface extraction
-algorithm. 
+algorithm.
 %The proposed approach is based on an octree representation
 %of the input object on which an efficient adaptive triangulation
-%of the isosurface is constructed on GPU. 
+%of the isosurface is constructed on GPU.
 The proposed approch use an octree representation of the input object
 on which an adaptive Marching Cube is used to build the isosurface efficiently.
 Such approach is motivated by
@@ -365,11 +366,13 @@ hierarchical octree cells.
 \subsection{Linear Octree Representation}
 
 \begin{figure}[!htbp]
+  \vspace{-0.35cm}
   \begin{center}
     \subfigure{}{\includegraphics[width=0.9\textwidth]{figs/morton2}}
     %%\subfigure{}{\includegraphics[height=0.17\textheight]{figs/partitioning}}
     %%\subfigure{}{\includegraphics[height=0.17\textheight]{figs/quadtree_activefront}}
   \end{center}
+  \vspace{-0.35cm}
 \caption{Morton codes associated to cells of a linear quatree. Each
    morton code of a child cell is obtained by adding a suffix to its
   parent code \emph{(left)}. The adaptive representation consists of
@@ -385,23 +388,23 @@ the GPU is a data parallel component and is unable to handle recursivity.
 %since the GPU
 %memory is limited and non consistent %\todo{fix coherent/aligned/coalesced?}
 %memory access (\emph{e.g.} tree traversal using pointer dereferencing) may lead
-%to huge payload from cache misses.  
+%to huge payload from cache misses.
 
 Efficient spatial tree encoding can be
-achieved using pointerless structures such as linear quadtrees or octrees ( see
-for instance \textsc{Gargantini}~\cite{gargantini1982effective} ). This structure
+achieved using pointerless structures such as linear quadtrees or octrees (see
+for instance \textsc{Gargantini}~\cite{gargantini1982effective}). This structure
 %consists in indexing each cell by a \emph{Morton code}: the code of children
 indexes each cell by a \emph{Morton code}: the code of children
 cells are defined by the code of the parent suffixed by two bits (in dimension
 2, three bits in dimension 3) (see Figure
 \ref{fig_quadtree_partitionning}-\emph{left}). A cell's code encodes its
-position \wrt its parent cell and its complete path to the tree root. 
-%Hence, whatever their depth, all cell codes are simply stored in a linear vector on memory. 
+position \wrt its parent cell and its complete path to the tree root.
+%Hence, whatever their depth, all cell codes are simply stored in a linear vector on memory.
 Hence, the tree is fully represented as a linear vector of its leaves, whatever their depth.
 Furthermore, cell operations such as subdivision, merging, neighbors
 access can be efficiently implemented using bitwise operations on the Morton
 code. In the following, we use the GPU implementation proposed by \textsc{Dupuy}
-\textit{et al.}~\cite{dupuy2014quadtrees} that we extended to the third dimension. 
+\textit{et al.}~\cite{dupuy2014quadtrees} that we extended to the third dimension.
 By using their approach, Morton codes
 and bitwise operations are optimized to match with GPU hardware requirements.
 
@@ -419,10 +422,10 @@ dual meshes
 \cite{shu1995adaptive,schaefer2004dual,lengyel2010voxel,DBLP:journals/cgf/LewinerMPPL10,DBLP:journals/cvgip/LobelloDD14}.
 
 In the following, we use the extension of MC configurations to handle
-adaptive structures proposed by \textsc{Lengyel} \emph{et al.}~\cite{lengyel2010voxel}. 
+adaptive structures proposed by \textsc{Lengyel} \emph{et al.}~\cite{lengyel2010voxel}.
 First, this approach constrains the octree
 structure in order to make sure that the depth difference between any
-two adjacent cells is at most one. 
+two adjacent cells is at most one.
 Then, \textsc{Lengyel} \emph{et al.} introduce the concept of transition cells.
 Those cells are defined to be inserted between two neighbouring octree cells of different depth.
 With specific MC configurations for such transition cells, a crack free triangulation can
@@ -441,10 +444,10 @@ the \emph{geometry shader} in the GPU graphic pipeline).
 
 As illustrated in Figure~\ref{fig_quadtree_partitionning}-\emph{middle}, we
 propose a viewpoint dependent criterion to decide if a cell needs to be refined:
-the closer we are to the camera, the finer the cells are. 
+the closer we are to the camera, the finer the cells are.
 %In addition to the
 %distance criterion, we define an angular criterion to prevent refining cells
-%outside the camera frustrum. 
+%outside the camera frustrum.
 Using a criterion based on the distance between a
 cell and the camera is well suited to GPU since it can be evaluated
 independently on all cells. Hence, we can efficiently determine if a cell must
@@ -473,7 +476,7 @@ cells have a visibility ratio greater than  constant $k$\,;
       \put(50,45){$d_c$}
       \put(95,65){$l(c)$}
     \end{overpic}~~~~~
-    \includegraphics[width=3.5cm]{viewlod2_small}~~~~~
+    \includegraphics[width=3cm]{viewlod2_small}~~~~~
     \includegraphics[width=3cm]{subdivision}
   \end{center}
   \caption{Notations \emph{(left)} and adaptive meshing in dimension 2 using the LoD distance and angular criterion \emph{(middle)}. Based on LoD criterion
@@ -504,9 +507,6 @@ illustrates the overall fully data parallel pipeline.
     retrieves data from a buffer and fills a new one. }
   \label{fig_pipeline}
 \end{figure}
-
-
-
 
 \section{Interactive Curvature Computation on GPU}
 \label{sec:inter-visu-gpu}
@@ -551,15 +551,18 @@ from the texture probe at level l) is greater than $1/2$. The idea here is to
 mimic a lend of adaptive Gauss digitization process.
 
 \begin{figure}
+  \vspace{-0.35cm}
   \begin{center}
     {\includegraphics[width=4cm]{figs/approx1}}
     {\includegraphics[width=4cm]{figs/approx-reg-1}}
     {\includegraphics[width=4cm]{figs/approx-reg-2}}
   \end{center}
+  \vspace{-0.35cm}
   \caption{Integral computation with an area estimation (\emph{left}) from pixel
     counting (\emph{middle}) or from densities (represented by different
     gray values) in a mipmap approximation of $\Shape$ (\emph{right}).}
   \label{fig:approx}
+  \vspace{-0.35cm}
 \end{figure}
 
 Using the hierachical nature of the mipmap texture, we could also
@@ -574,17 +577,17 @@ volume is exact  (\wrt the regular grid case) since geometrical moments
 are additive quantities, and the number of texture fetches is  optimal
 at this point.
 
-
 \begin{figure}
+  \vspace{-0.35cm}
   \begin{center}
     {\includegraphics[width=4cm]{figs/approx-bh}}
     {\includegraphics[width=4cm]{figs/approx-ada}}
   \end{center}
+  \vspace{-0.35cm}
   \caption{Adaptive approximation of the integration using a
     hierarchical decomposition of the ball $\Ball{R}{\vx}$ (\emph{left}), or a decomposition of $\Ball{R}{\vx}\cap\Shape$ (\emph{right}).}
   \label{fig:approx2}
 \end{figure}
-
 
 \subsection{Per Vertex Real-time Computation on GPU}
 \label{sec:hierarchical}
@@ -616,13 +619,6 @@ non-discrete positions. For a given radius $R$, the expected number of
 cells on $B_R$ is in $O(\log{R})$. Implementation details on the
 hierarchical octree representation can be found in the supplementary
 material (see Section \ref{sec:discussion}).
-
-
-%\todo[inline]{phrase sur approx si on met}
-
-
-
-
 
 \paragraph{Dynamic Refinement.} In this approach, we want to optimize
 the interactivity and the execution flow or parallelism on GPU. The
@@ -657,21 +653,20 @@ $O\left(\left(\frac{R}{2^l}\right)^3\right)$, the interactive control
  depth of the current MC vertex). In the next section, we evaluate the
  performances of both approaches.
 
-
 \section{Experiments}
 \label{sec:experiments}
 
 \subsection{Full resolution experiment}
 
-
 \begin{figure}
+  \vspace{-0.35cm}
   \begin{center}
-    {\includegraphics[width=2.7cm]{figs/Octa_mean}}
-    {\includegraphics[width=2.7cm]{figs/Octa_gaussian}}
-    {\includegraphics[width=2.7cm]{figs/Octa_k1}}
-    {\includegraphics[width=2.7cm]{figs/Octa_k2}}\\
-    {\includegraphics[width=2.7cm]{figs/Octa_dir_min}}
-    {\includegraphics[width=2.7cm]{figs/Octa_dir_max}}
+    {\includegraphics[width=2.2cm]{figs/Octa_mean}}
+    {\includegraphics[width=2.2cm]{figs/Octa_gaussian}}
+%    {\includegraphics[width=2.7cm]{figs/Octa_k1}}
+%    {\includegraphics[width=2.7cm]{figs/Octa_k2}}\\
+%    {\includegraphics[width=2.7cm]{figs/Octa_dir_min}}
+%    {\includegraphics[width=2.7cm]{figs/Octa_dir_max}}
     {\includegraphics[height=2.0cm]{figs/Octa_dir_min_zoom}}
     {\includegraphics[height=2.0cm]{figs/Octa_dir_max_zoom}}\\
     % {\includegraphics[height=4.0cm]{figs/EG_dragon_normal_zoom}}
@@ -681,21 +676,23 @@ $O\left(\left(\frac{R}{2^l}\right)^3\right)$, the interactive control
     {\includegraphics[width=2.2cm]{figs/function_mean_3}}
     {\includegraphics[width=2.2cm]{figs/function_mean_4}}
   \end{center}
-  \caption{\emph{First row:} Mean, Gaussian, first and second principal curvature estimation on an OctaFlower with a digital domain of $130^3$.
-  \emph{Second row:} First and second principal directions estimation (and zoom) on an OctaFlower.
-  \emph{Third row:} Mean curvature computed in real-time on a dynamic object.}
+
+  \vspace{-0.35cm}
+  \caption{\emph{First row}: Mean and Gaussian curvature estimation, (zoom of) first and second principal directions estimation on an OctaFlower with a digital domain of $130^3$.
+  % \emph{Second row:} (Zoom of) First and second principal directions estimation on an OctaFlower.
+  \emph{Second row:} Mean curvature computed in real-time on a dynamic object.}
   \label{fig:full}
 \end{figure}
 
-\begin{figure}
-  \begin{center}
-    \includegraphics[width=0.5\textwidth]{figs/graph_cmp_l0_l4_mean_octa130_Linf}
-  \end{center}
-  \caption{Error $L\infty$ on the measured Mean curvature between a $l_n$ approximation and the
-  $l_0$ measurement. The red curve present the results when computing the volume from a mipmap quantitized to 0 or 1, and the green one
-  present the results when computing it from the real mipmap values.}
-  \label{fig:graph_convergence}
-\end{figure}
+% \begin{figure}
+%   \begin{center}
+%     \includegraphics[width=0.5\textwidth]{figs/graph_cmp_l0_l4_mean_octa130_Linf}
+%   \end{center}
+%   \caption{Error $L\infty$ on the measured Mean curvature between a $l_n$ approximation and the
+%   $l_0$ measurement. The red curve present the results when computing the volume from a mipmap quantitized to 0 or 1, and the green one
+%   present the results when computing it from the real mipmap values.}
+%   \label{fig:graph_convergence}
+% \end{figure}
 
 We first evaluate the curvature estimation on a full-resolution geometry
 obtained by disabling the LoD criterion at the mesh generation step.
@@ -709,101 +706,76 @@ $\Ball{R}{\vx}\cap \Shape$ instead of updating the \emph{mipmap texture} of
 densities at each time step. For all illustrations, we use directly normal
 vectors computed by algorithm discussed in Section~\ref{sec:curv-tens-estim}.
 
-Then, we compare the approximation made by computing curvature from level $l >
-l_0$ in order to accelerate visualisation with the ground truth result obtained
-at level $l_0$. We also compare them with the hierarchical algorithm discussed
-in Section~\ref{sec:hierarchical}. The results are presented in
-Table~\ref{tab:full-res-stat}, and illustrated in Figure~\ref{fig:refine}.
+Then, we compare the approximation made by computing curvature from level $l \ge
+l_0$ in Figure~\ref{fig:refine}. We can see that results using approximation
+seems to fastly converge to the ground truth results.
+Table~\ref{tab:full-res-stat} shows numerical results of $L_\infty$ error (worst
+case) and $L_2$ error (mean), as well the number of \emph{mipmap texture}
+fetches. We can also see that the number of texel fetch, required to compute the
+curvature, reduces drastically when computing approximations. When measuring
+results with higher levels, we get consequently much bigger errors. Those level
+are thus never used in practice, they are presented here to illustrate how the
+refining process converges to the $l_0$ level. We see that levels close to $l_0$
+give few errors than $l_0$, and should be considered for exploring our datasets
+in real time, changing parameters on-the-fly and visualizing dynamic datasets.
 
-We can first see that the number of texel fetch required to compute
-the curvature reduces drastically when computing the approximations.
-This is mandatory if we want to increase the framerate.
-However, we can also note that the error increases quite slowly.
-The errors obtained comparing $l_1$, or for bigger radii $l_2$ approximations
-with the $l_0$ level are small. The errors measured comparing higher levels
-are of course much bigger and those level are thus never used in practice.
-They are presented here to illustrate how the refining process converges to
-the $l_0$ level.
-
-This convergence is shown in Figure \ref{fig:convergence}. It has been evaluated using
-two different strategy for volume computation. The first one reads the interpolated
-data from the mipmap is adds 1 to the volume if this value is above a threshold. 
-The second strategy adds directly to the volume the interpolated data read from the mipmap.
-The results are shown Figure \ref{fig:graph_convergence}. It can be seen that the
-interpolation done by the mipmap allows the resulting curvature to converge
-faster to the $l_0$ level.
-
-Thanks to this low error, higher approximation levels are visually
-very similar to the $l_0$ level. We can therefore use them for exploring our
-datasets in real time, changing the radii on the fly and visualising dynamic datasets.
-
-When computing results using the hierachical algorithm, a higher error can be noted.
-This is due to the precomputation of the subdivision that no longer ensures to fetch data
-at the center of a mipmap cell. The interpolation done by the GPU reduces the bias but
-does not remove it.
-
-Bear also in mind that those results were measured on a full resolution triangulation.
-Since we compute the curvature of each vertices of the final mesh, a highly triangulated object will
-be much slower to process.
-We therefore use in practice an adaptive triangulation of the object, refining the mesh
-when it is closer from the camera and thus reducing the number of vertices to compute.
+We also compare them with the hierarchical algorithm (as discussed in
+Section~\ref{sec:hierarchical}). This method introduce a higher error than
+$l_0$. This is due to the precomputation of the subdivision that no longer
+ensures to fetch data at the center of a mipmap cell. Then, the GPU performes an
+interpolation to reduce the bias, but it doesn't remove it.
 
 \begin{table}
   \begin{center}
-
-	\begin{tabular}{@{}lrrrrr@{}}
+  \setlength{\tabcolsep}{0.15cm}
+	\begin{tabular}{@{}llrrrrrr@{}}
       \toprule
-      & \multicolumn{5}{c}{$R=8$}\\
-      \cmidrule(r){2-6}
-    Quantities & ~~~H & $l_3$ & $l_2$ & $l_1$ & $l_0$\\
+        & & H & $l_4$ & $l_3$ & $l_2$ & $l_1$ & $l_0$\\
       \midrule
-      Number of texture fetches &
-      1468 & 2 & 28 & 260 & 2104\\
-      %Time (in ms) &
-      %208 & 15 & 26 & 93 & 642\\
-      $L_\infty$ error (\wrt $l_0$) &
-      0.051 & 0.306 & 0.085 & 0.047 & 0\\
-      $L_2$ error (\wrt $l_0$) &
-      3.51e-05 & 2.67e-04 & 7.57e-05 & 2.02e-05 & 0\\
+      \multirow{2}{2.2cm}{Number of texture fetches} & $R=8$ & 1468 & & 2 & 28 & 260 & 2104 \\
+                                & $R=16$ & 5706 & 2 & 28 & 90 & 2120 & 17080\\\midrule
+
+      \multirow{2}{2.2cm}{$L_\infty$ error (\wrt $l_0$)} & $R=8$ & 0.051 & & 0.306 & 0.085 & 0.047 & 0\\
+                                    & $R=16$ & 0.053 & 0.146 & 0.041 & 0.017 & 0.005 & 0\\\midrule
+
+      \multirow{2}{2.1cm}{$L_2$ error (\wrt $l_0$)} & $R=8$ & 3.51e-05 & & 2.67e-04 & 7.57e-05 & 2.02e-05 & 0\\
+                               & $R=16$ & 4.43e-05 & 1.39e-04 & 4.16e-05 & 1.57e-05 & 2.07e-06 & 0\\
       \bottomrule
     \end{tabular}
-
-	\begin{tabular}{@{}lrrrrrr@{}}
-      \toprule
-      & \multicolumn{6}{c}{$R=16$}\\
-      \cmidrule(r){2-7}
-    Quantities & ~~~H & $l_4$ & $l_3$ & $l_2$ & $l_1$ & $l_0$\\
-      \midrule
-      Number of texture fetches &
-      5706 & 2 & 28 & 90 & 2120 & 17080\\
-      %Time (in ms) &
-      %826 & 14 & 26 & 252 & 606 & 4801\\
-      $L_\infty$ error (\wrt $l_0$) &
-      0.053 & 0.146 & 0.041 & 0.017 & 0.005 & 0\\
-      $L_2$ error (\wrt $l_0$) &
-      4.43e-05 & 1.39e-04 & 4.16e-05 & 1.57e-05 & 2.07e-06 & 0\\
-      \bottomrule
-    \end{tabular}
-
   \end{center}
-  \caption{Comparison of number of texture fetches, $L_2$ and $L_\infty$ error obtained on OctaFlower with a digital domain of $130^3$. We measured it using radii of 8 and 16.
-  The object was triangulated at full resolution with a regular grid and contains 282,396 vertices. The timings
-    only consider the curvature estimation step.\label{tab:full-res-stat}}
+  %
+  \caption{Comparison of number of texture fetches, $L_2$ and $L_\infty$ error
+  obtained on OctaFlower with a digital domain of $130^3$ when computing mean
+  curvature with two radii: 8 and 16, with hierarchical algorithm (H) and $l \ge
+  l_0$ approximation algorithms. The object is triangulated at full resolution
+  with a regular grid and contains 282,396 vertices.
+  %
+  \label{tab:full-res-stat}}
+  %
 \end{table}
 
 \begin{figure}[!htbp]
+  \vspace{-0.35cm}
   \begin{center}
    {\includegraphics[width=2.7cm]{figs/octa_r10_l3_a}}
    {\includegraphics[width=2.7cm]{figs/octa_r10_l2_a}}
    {\includegraphics[width=2.7cm]{figs/octa_r10_l1_a}}
    {\includegraphics[width=2.7cm]{figs/octa_r10_l0_a}}
   \end{center}
+  \vspace{-0.35cm}
   \caption{Illustration of mean curvature computation on an OctaFlower (digital domain of $130^3$) using mipmap approximation with different levels : $l_3$, $l_2$, $l_1$ and $l_0$ (\ie no approximation).
   %
   For all illustrations, we use directly normal vectors computed by algorithm discussed in Section~\ref{sec:curv-tens-estim}}
   \label{fig:refine}
+  \vspace{-0.35cm}
 \end{figure}
 
+Bear also in mind that those results were measured on a full resolution
+triangulation. Since we compute the curvature of each vertices of the final
+mesh, a highly triangulated object will be much slower to process. We therefore
+use in practice an adaptive triangulation of the object, refining the mesh when
+it is closer from the camera and thus reducing the number of vertices to
+compute.
 
 \subsection{Fully adaptive evaluation}
 
@@ -874,6 +846,7 @@ when it is closer from the camera and thus reducing the number of vertices to co
      \end{tikzpicture}
      \end{center}
   %
+  \vspace{-0.35cm}
   \caption{Timings in milliseconds (in logscale) obtained while visualizing an adaptive
   triangulation on three objects -- OctaFlower (digital domain of $130^3$ ), Snow
   Microstructures ($233^3$) and XYZ-Dragon ($510^3$) --  by computing the
@@ -889,6 +862,7 @@ when it is closer from the camera and thus reducing the number of vertices to co
   }
   %
   \label{fig:timings}
+  \vspace{-0.35cm}
 \end{figure}
 
 When dealing with large datasets, we can not expect real-time curvature tensor
@@ -920,16 +894,14 @@ structure, this algorithm is biased and creates an error (presented in
 Table~\ref{tab:full-res-stat}) that needs to be considered.
 
 \begin{figure}
+  \vspace{-0.35cm}
   \begin{center}
-    {\includegraphics[height=4.0cm]{figs/xyzrgb_dragon-510_R8_mean}}
-    {\includegraphics[height=3.5cm]{figs/snow_I08iso_233_r20_l0_m3}}
+    {\includegraphics[height=3.5cm]{figs/xyzrgb_dragon-510_R8_mean}}
+    {\includegraphics[height=3.0cm]{figs/snow_I08iso_233_r20_l0_m3}}
   \end{center}
-  \caption{Illustration fig illustration complete (adaptative, ...) plusieurs
-    objets.. + dynamique.
-    Illustration of mean curvature computation of snow microstructures.
-    %
-    \emph{Third row:} mean curvature computed in real-time on a dynamic object.}
+  \caption{Illustration of mean curvature computation of two large datasets: XYZ-Dragon (with digital domain of $512^3$) and Snow microstructures ($233^3$).}
   \label{fig:adaptive}
+  \vspace{-0.35cm}
 \end{figure}
 
 Figure~\ref{fig:adaptive} shows curvature computation and exploration in
