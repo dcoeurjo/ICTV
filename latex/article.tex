@@ -654,8 +654,11 @@ Figure~\ref{fig:full}-top and middle shows results of curvature tensor
 estimation (mean, Gaussian, first and second principal curvatures, first and
 second principal directions) on an OctaFlower at level $l_0$ (ground truth).
 Figure~\ref{fig:full}-bottom shows mean curvature estimation in real-time on a
-dynamic object. For all illustrations, we use directly normal vectors computed
-by algorithm discussed in Section~\ref{sec:curv-tens-estim}.
+dynamic object. For this case, we simply evaluate the implicit expression at
+each vertex of a cell to decide if such cell is included or not into
+$\Ball{R}{\vx}\cap \Shape$ instead of updating the \emph{mipmap texture} of
+densities at each time step. For all illustrations, we use directly normal
+vectors computed by algorithm discussed in Section~\ref{sec:curv-tens-estim}.
 
 Then, we compare the approximation made by computing curvature from level $l >
 l_0$ in order to accelerate visualisation with the ground truth result obtained
@@ -846,31 +849,20 @@ the hierarchical algorithm.
 We can first note that the required time for an object to compute ground truth
 curvature is usually as high as the time required to extract the geometry and
 compute all the above levels. Using approximations is thus mandatory, since for
-big objects such as the XYZ Dragon (Digital Domain $510^3$) with high radii, the
-computation is seconds faster, the $l_0$ visualisation takes more than 4 seconds
-to compute, whereas the approximated visualisation at $l_2$ takes only 300ms. We
-can thus get an approximated visualisation of our object as soon as we run the
-application, allowing for real time interactions with the object (changing the
-visualised value, the curvature radius, etc ...). Once an interesting portion if
-the object is reached, it only takes a few seconds to the application to display
-ground truth curvature estimation.
+big objects such as the XYZ-Dragon ($510^3$) with big radii the approximate
+computation is faster than the $l_0$ while results are enough close to the
+$l_0$. For example, with $R=20$, the approximated visualization at $l_2$ takes
+only $300$ms while the $l_0$ visualization takes more than $4$ seconds.
 
-It is also clear on those graphs that using a hierarchical decomposition reduces
-the curvature computation time. For the XYZ Dragon with a radius of 20, it needs
-almost 4 seconds to compute the $l_0$ level, whereas using the hierarchical
-algorithm, it only needs 700ms. However, due to the precomputation, this
-algorithm is biased and creates an error (presented in
-Table~\ref{tab:full-res-stat}) that needs to be considered
+We can thus get an approximated visualisation of our object as soon as we run
+the application, allowing for real time interactions with the object (changing
+the visualized value, the curvature radius, \cdots). It is also clear on those
+graphs that using a hierarchical decomposition reduces the curvature computation
+time. For the XYZ-Dragon with $R=20$, it needs almost $4$ seconds to compute the
+$l_0$ level, whereas using the hierarchical algorithm, it only needs $700$ms.
+However, due to the precomputation, this algorithm is biased and creates an
+error (presented in Table~\ref{tab:full-res-stat}) that needs to be considered.
 
-
-%\subsection{Visualisation}
-%
-%For dynamic datasets, we consider a time varying implicit
-%surface. Since it would have been to expensive to update the a mipmap texture
-%of densities at each time step, we simply evaluate the implicit
-%expression at each vertex of a cell to decide if such cell is included
-%or not into $\Ball{R}{\vx}\cap \Shape$.
-%\todo[inline]{blabla experiments}
 
 \begin{figure}
   \begin{center}
