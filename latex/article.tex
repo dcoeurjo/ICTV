@@ -506,7 +506,7 @@ occurs for cells lying inside $\Shape$ (with density 1) not entirely covered by
 $\Ball{R}{\vx}$. Furthermore, the \emph{mipmap} texture can be used to design,
 using a single texture probe, a fast inclusion test of a given cell $c$ at level
 $l$ into the shapes: we say that $c$ is in $\Shape$ if its density (retrieved
-from the texture probe at level $l$) is greater than $1/2$. The idea here is to
+from the texture probe at level l) is greater than $1/2$. The idea here is to
 mimic a lend of adaptive Gauss digitization process.
 
 \begin{figure}
@@ -658,7 +658,7 @@ dynamic object. For all illustrations, we use directly normal vectors computed
 by algorithm discussed in Section~\ref{sec:curv-tens-estim}.
 
 Then, we compare the approximation made by computing curvature from level $l >
-l_0$ in order to accelerate visualization with the ground truth result obtained
+l_0$ in order to accelerate visualisation with the ground truth result obtained
 at level $l_0$. We also compare them with the hierarchical algorithm discussed
 in Section~\ref{sec:hierarchical}. The results are presented in
 Table~\ref{tab:full-res-stat}, and illustrated in Figure~\ref{fig:refine}.
@@ -666,14 +666,15 @@ Table~\ref{tab:full-res-stat}, and illustrated in Figure~\ref{fig:refine}.
 We can first see that the number of texel fetch required to compute
 the curvature reduces drastically when computing the approximations.
 This is mandatory if we want to increase the framerate.
-However, we can also note that the error increases quite slowly.
+However, we can also note that the error increases quite slowly. 
 The errors obtained comparing $l_1$, or for bigger radii $l_2$ approximations
 with the $l_0$ level are small. The errors measured comparing higher levels
 are of course much bigger and those level are thus never used in practice.
-They are presented here to illustrate how the refining process converges to
-the $l_0$ level. Thanks to this low error, higher approximation levels are visually
-very similar to the $l_0$ level. We can therefore use them for exploring our
-datasets in real time, changing the radii on the fly and visualizing dynamic datasets.
+They are presented here to illustrate how the refining process converges to 
+the $l_0$ level.
+Thanks to this low error, higher approximation levels are visually 
+very similar to the $l_0$ level. We can therefore use them for exploring our 
+datasets in real time, changing the radii on the fly and visualising dynamic datasets.
 
 When computing results using the hierachical algorithm, a higher error can be noted.
 This is due to the precomputation of the subdivision that no longer ensures to fetch data
@@ -794,22 +795,22 @@ discussed in Section~\ref{sec:curv-tens-estim}
           x tick label style={rotate=45,anchor=east},
         ]
         %Geometry Generation
-        \addplot+[ybar, color=black, fill=cgeometry] plot coordinates {(Octa-R8,17.283000) (Octa-R16,18.458000)
+        \addplot+[ybar, color=black, fill=cgeometry] plot coordinates {(Octa-R8,17.283000) (Octa-R16,18.458000) 
           (Snow-R10,9.831000) (Snow-R20,9.653000)  (Dragon-R8,136.300000) (Dragon-R20,145.450000)};
         %l4
-        \addplot+[ybar, color=black, fill=clquatre] plot coordinates {(Octa-R8,1) (Octa-R16,2.509000)
+        \addplot+[ybar, color=black, fill=clquatre] plot coordinates {(Octa-R8,1) (Octa-R16,2.509000) 
           (Snow-R10,6.085000) (Snow-R20,9.445000)  (Dragon-R8,3.389000) (Dragon-R20,20.228000)};
         %l3
         \addplot+[ybar, color=black, fill=cltrois] plot coordinates {(Octa-R8,2.527000) (Octa-R16,4.159000)
           (Snow-R10,10.629000) (Snow-R20,11.542000) (Dragon-R8,20.397000) (Dragon-R20,26.710000)};
         %l2
-        \addplot+[ybar, color=black, fill=cldeux] plot coordinates {(Octa-R8,3.783000) (Octa-R16,9.006000)
+        \addplot+[ybar, color=black, fill=cldeux] plot coordinates {(Octa-R8,3.783000) (Octa-R16,9.006000) 
           (Snow-R10,13.777000) (Snow-R20,37.700000) (Dragon-R8,29.967000) (Dragon-R20,92.435000)};
         %l1
-        \addplot+[ybar, color=black, fill=clun] plot coordinates {(Octa-R8, 11.004000) (Octa-R16,38.687000)
+        \addplot+[ybar, color=black, fill=clun] plot coordinates {(Octa-R8, 11.004000) (Octa-R16,38.687000) 
           (Snow-R10,39.627000) (Snow-R20,217.954000) (Dragon-R8,59.840000) (Dragon-R20,506.549000)};
         %l0
-        \addplot+[ybar, color=black, fill=clzero] plot coordinates {(Octa-R8, 37.273000) (Octa-R16,244.353000)
+        \addplot+[ybar, color=black, fill=clzero] plot coordinates {(Octa-R8, 37.273000) (Octa-R16,244.353000) 
           (Snow-R10,236.194000) (Snow-R20,1655.680000) (Dragon-R8,322.674000) (Dragon-R20,3763.422000)};
         %\legend{\strut Geometry, \strut Curvature, \strut xx, \strut xx}
       \end{axis}
@@ -825,26 +826,26 @@ discussed in Section~\ref{sec:curv-tens-estim}
 	  	  every node near coord/.style={ at={(0,0)}, font=\tiny, inner sep=0pt},
           enlargelimits=0.15,
           %ylabel={\#Time (in ms)},
-          symbolic x coords={Octa-R8, Octa-R16, Snow-R10, Snow-R20,
+          symbolic x coords={Octa-R8, Octa-R16, Snow-R10, Snow-R20, 
 	      Dragon-R8, Dragon-R20},
           xtick=data,
           point meta=rawy,
           x tick label style={rotate=45,anchor=east},
         ]
         %Geometry Generation
-        \addplot+[ybar,color=black, fill=cgeometry] plot coordinates {(Octa-R8,17.283000) (Octa-R16,17.183000)
+        \addplot+[ybar,color=black, fill=cgeometry] plot coordinates {(Octa-R8,17.283000) (Octa-R16,17.183000) 
           (Snow-R10,9.383000) (Snow-R20,9.767000)  (Dragon-R8,127.347000) (Dragon-R20,127.166000)};
         %Hierarchical measurement
-        \addplot+[ybar, color=black, fill=clzero] plot coordinates {(Octa-R8,18.095000) (Octa-R16,64.186000)
+        \addplot+[ybar, color=black, fill=clzero] plot coordinates {(Octa-R8,18.095000) (Octa-R16,64.186000) 
           (Snow-R10,96.747000) (Snow-R20,364.547000)  (Dragon-R8,147.662000) (Dragon-R20,787.459000)};
         %\legend{\strut Geometry, \strut Curvature, \strut xx, \strut xx}
       \end{axis}
 
      \end{tikzpicture}
      \end{center}
-  \caption{Timings obtained while visualizing an adaptive triangulation of an object (left) computing the curvature with a regular grid and (right) computing it with the hierarchical algorithm.
-  Orange is the required time to extract the triangulation, and blue are the curvature computations from level $l_4$ (light blue) to level $l_0$ (dark blue).
-  We measured three datasets, OctaFlower (digital domain of $130^3$ ), snow micro structures($233^3$) and the XYZ Dragon ($510^3$), with different radii ($8$, $10$, $16$ and $20$)}
+  \caption{Timings obtained while visualising an adaptive triangulation of an object (left) computing the curvature with a regular grid and (right) computing it with the hierarchical algorithm. 		
+  Orange is the required time to extract the triangulation, and blue are the curvature computations from level $l_4$ (light blue) to level $l_0$ (drak blue).
+  We measured three datasets, OctaFlower (digital domain of $130^3$ ), snow micro structures($233^3$) and the XYZ Dragon ($510^3$), with different radii (8, 10, 16, 20)}
   \label{fig:timings}
 \end{figure}
 
@@ -852,7 +853,7 @@ In this experiments, we measure the timings obtained when running our framework 
 GeForce GTX 850M. Here, the triangulation is dynamically refining according to its distance to the camera.
 At each frame, both the curvature and the triangulation are recomputed.
 If the visualisation stays unchanged, we compute the curvature at a level $l-1$ until the level $l_0$ is reached.
-We measured those timings using the regular and the hierarchical algorithm. The results are presented in
+We measured those timings using the regular and the hierarchical algorithm. The results are presented in 
 logarithmic scale figure \ref{fig:timings}.
 
 We can first note that the required time for an object to compute ground truth curvature is usually
@@ -871,14 +872,14 @@ hierarchical algorithm, it only needs 700ms. However, due to the precomputation,
 creates an error (presented in Table~\ref{tab:full-res-stat}) that needs to be considered
 
 
-\subsection{Visualisation}
-
-For dynamic datasets, we consider a time varying implicit
-surface. Since it would have been to expensive to update the a mipmap texture
-of densities at each time step, we simply evaluate the implicit
-expression at each vertex of a cell to decide if such cell is included
-or not into $\Ball{R}{\vx}\cap \Shape$.
-\todo[inline]{blabla experiments}
+%\subsection{Visualisation}
+%
+%For dynamic datasets, we consider a time varying implicit
+%surface. Since it would have been to expensive to update the a mipmap texture
+%of densities at each time step, we simply evaluate the implicit
+%expression at each vertex of a cell to decide if such cell is included
+%or not into $\Ball{R}{\vx}\cap \Shape$.
+%\todo[inline]{blabla experiments}
 
 \begin{figure}
   \begin{center}
