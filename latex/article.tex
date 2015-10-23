@@ -624,6 +624,7 @@ $O\left(\left(\frac{R}{2^l}\right)^3\right)$, the interactive control
 
 \subsection{Full resolution experiment}
 
+
 \begin{figure}
   \begin{center}
     {\includegraphics[width=2.7cm]{figs/Octa_mean}}
@@ -662,8 +663,6 @@ at level $l_0$. We also compare them with the hierarchical algorithm discussed
 in Section~\ref{sec:hierarchical}. The results are presented in
 Table~\ref{tab:full-res-stat}, and illustrated in Figure~\ref{fig:refine}.
 
-
-
 We can first see that the number of texel fetch required to compute
 the curvature reduces drastically when computing the approximations.
 This is mandatory if we want to increase the framerate.
@@ -672,8 +671,7 @@ The errors obtained comparing $l_1$, or for bigger radii $l_2$ approximations
 with the $l_0$ level are small. The errors measured comparing higher levels
 are of course much bigger and those level are thus never used in practice.
 They are presented here to illustrate how the refining process converges to
-the $l_0$ level.
-Thanks to this low error, higher approximation levels are visually
+the $l_0$ level. Thanks to this low error, higher approximation levels are visually
 very similar to the $l_0$ level. We can therefore use them for exploring our
 datasets in real time, changing the radii on the fly and visualizing dynamic datasets.
 
@@ -684,10 +682,12 @@ We therefore use in practice an adaptive triangulation of the object, refining t
 when it is closer from the camera and thus reducing the number of vertices to compute.
 
 
-
+For all illustrations, we use directly normal vectors computed by algorithm
+discussed in Section~\ref{sec:curv-tens-estim}
 
 \begin{table}
   \begin{center}
+
 	\begin{tabular}{@{}lrrrrr@{}}
       \toprule
       & \multicolumn{5}{c}{$R=8$}\\
@@ -735,15 +735,14 @@ when it is closer from the camera and thus reducing the number of vertices to co
    {\includegraphics[width=2.7cm]{figs/octa_r10_l1_a}}
    {\includegraphics[width=2.7cm]{figs/octa_r10_l0_a}}
   \end{center}
-  \caption{Illustration of mean curvature computation on an OctaFlower (digital domain of $130^3$) using mipmap approximation with different levels : $l_3$, $l_2$, $l_1$ and $l_0$ (\ie no approximation).}
+  \caption{Illustration of mean curvature computation on an OctaFlower (digital domain of $130^3$) using mipmap approximation with different levels : $l_3$, $l_2$, $l_1$ and $l_0$ (\ie no approximation).
+  %
+  For all illustrations, we use directly normal vectors computed by algorithm discussed in Section~\ref{sec:curv-tens-estim}}
   \label{fig:refine}
 \end{figure}
-\todo[inline]{blabla experiments}
 
 
 \subsection{Fully adaptive evaluation}
-
-
 
 \begin{figure}[!htbp]
   \begin{center}
@@ -778,6 +777,7 @@ when it is closer from the camera and thus reducing the number of vertices to co
       \begin{axis}[
           ybar stacked,
           ymode = log,
+          ymax = 6000,
 	  	  bar width=20pt,
 	  	  nodes near coords,
 	  	  every node near coord/.style={ font=\tiny, inner sep=0pt},
@@ -814,6 +814,7 @@ when it is closer from the camera and thus reducing the number of vertices to co
     \begin{tikzpicture}[scale=0.7]
       \begin{axis}[
           ybar stacked,
+          ymax = 6000,
           ymode = log,
 	  	  bar width=20pt,
 	  	  nodes near coords,
@@ -838,10 +839,42 @@ when it is closer from the camera and thus reducing the number of vertices to co
      \end{tikzpicture}
      \end{center}
   \caption{Timings obtained while visualizing an adaptive triangulation of an object (left) computing the curvature with a regular grid and (right) computing it with the hierarchical algorithm.
-  With a regular grid, the curvature computation refines at every frame until it reaches the ground truth result.
-  We measured three datasets, OctaFlower (digital domain of $130^3$ ), snow micro structures($233^3$) and the XYZ Dragon ($510^3$)}
+  Orange is the required time to extract the triangulation, and blue are the curvature computations from level $l_4$ (light blue) to level $l_0$ (dark blue).
+  We measured three datasets, OctaFlower (digital domain of $130^3$ ), snow micro structures($233^3$) and the XYZ Dragon ($510^3$), with different radii ($8$, $10$, $16$ and $20$)}
   \label{fig:timings}
 \end{figure}
+
+In this experiments, we measure the timings obtained when running our framework on a
+GeForce GTX 850M. Here, the triangulation is dynamically refining according to its distance to the camera.
+At each frame, both the curvature and the triangulation are recomputed.
+If the visualisation stays unchanged, we compute the curvature at a level $l-1$ until the level $l_0$ is reached.
+We measured those timings using the regular and the hierarchical algorithm. The results are presented in
+logarithmic scale figure \ref{fig:timings}.
+
+We can first note that the required time for an object to compute ground truth curvature is usually
+as high as the time required to extract the geometry and compute all the above levels.
+Using approximations is thus mandatory, since for big objects such as the XYZ Dragon (Digital Domain $510^3$)
+with high radii, the computation is seconds faster, the $l_0$ visualisation takes more than 4 seconds to compute, whereas
+the approximated visualisation at $l_2$ takes only 300ms.
+We can thus get an approximated visualisation of our object as soon as we run the application, allowing for
+real time interactions with the object (changing the visualised value, the curvature radius, etc ...).
+Once an interesting portion if the object is reached, it only takes a few seconds to the application to display
+ground truth curvature estimation.
+
+It is also clear on those graphs that using a hierarchical decomposition reduces the curvature computation time.
+For the XYZ Dragon with a radius of 20, it needs almost 4 seconds to compute the $l_0$ level, whereas using the
+hierarchical algorithm, it only needs 700ms. However, due to the precomputation, this algorithm is biased and
+creates an error (presented in Table~\ref{tab:full-res-stat}) that needs to be considered
+
+
+\subsection{Visualisation}
+
+For dynamic datasets, we consider a time varying implicit
+surface. Since it would have been to expensive to update the a mipmap texture
+of densities at each time step, we simply evaluate the implicit
+expression at each vertex of a cell to decide if such cell is included
+or not into $\Ball{R}{\vx}\cap \Shape$.
+\todo[inline]{blabla experiments}
 
 \begin{figure}
   \begin{center}
@@ -855,15 +888,6 @@ when it is closer from the camera and thus reducing the number of vertices to co
     \emph{Third row:} mean curvature computed in real-time on a dynamic object.}
   \label{fig:adaptive}
 \end{figure}
-
-\todo[inline]{blabla experiments}
-
-For dynamic datasets, we consider a time varying impicit
-surface. Since it would have been to expensive to update the a mipmap texture
-of densities at each time step, we simply evaluate the implicit
-expression at each vertex of a cell to decide if such cell is included
-or not into $\Ball{R}{\vx}\cap \Shape$.
-\todo[inline]{blabla experiments}
 
 
 
