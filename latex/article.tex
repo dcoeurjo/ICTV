@@ -721,7 +721,7 @@ We first evaluate the curvature estimation on a full-resolution geometry
 obtained by disabling the LoD criterion at the mesh generation step.
 Figure~\ref{fig:full}-top shows results of curvature tensor
 estimation (mean, Gaussian, first and
-second principal directions) on an OctaFlower at level $l_0$ (ground truth).
+second principal directions) on an OctaFlower at level $l_0$ (considered as our ground truth in the following).
 Figure~\ref{fig:full}-bottom shows mean curvature estimation in real-time on a
 dynamic object. For this case, we simply evaluate the implicit expression at
 each vertex of a cell to decide if such cell is included or not into
@@ -731,23 +731,24 @@ vectors computed by algorithm discussed in Section~\ref{sec:curv-tens-estim}.
 
 Then, we compare the approximation made by computing curvature from level $l \ge
 l_0$ in Figure~\ref{fig:refine}. We can see that results using approximation
-seems to fastly converge to the ground truth results.
-Table~\ref{tab:full-res-stat} shows numerical results of $L_\infty$ error (worst
-case) and $L_2$ error (mean), as well the number of \emph{mipmap texture}
+seems to quickly converge to the ground truth results.
+Table~\ref{tab:full-res-stat} shows numerical results of $L_\infty$ error (maximal absolute difference for all vertices )
+and $L_2$ error (mean absolute error of all vertices), as well the number of \emph{mipmap texture}
 fetches. We can also see that the number of texel fetch, required to compute the
 curvature, reduces drastically when computing approximations. However, at higher levels, 
-we get consequently much bigger errors. Those levels
+approximation errors become more important. Those levels
 are thus never used in practice, they are presented here to illustrate how the
-refining process converges to the $l_0$ level. We see that levels close to $l_0$
-lead very few error% than $l_0$, 
-and should be considered for exploring our datasets
-in real-time, changing parameters on-the-fly and visualizing dynamic datasets.
+refining process converges to the $l_0$ level. 
+%We see that levels close to $l_0$
+%lead very few error% than $l_0$, 
+%and should be considered for exploring our datasets
+%in real-time, changing parameters on-the-fly and visualizing dynamic datasets.
 
 We also compare them with the hierarchical algorithm (as discussed in
 Section~\ref{sec:hierarchical}). This method introduces a higher error when compared with
 $l_0$. This is due to the precomputation of the subdivision that no longer
 ensures to fetch data at the center of a mipmap cell. 
-The GPU's interpolation reduces the bias, but it doesn't remove it.
+The GPU interpolation reduces the bias, but it doesn't remove it.
 
 %Bear also in mind that those results were measured on a full resolution
 %triangulation. Since we compute the curvature of each vertices of the final
@@ -756,20 +757,20 @@ The GPU's interpolation reduces the bias, but it doesn't remove it.
 %it is closer from the camera and thus reducing the number of vertices to
 %compute.
 
-Those results were measured on a full resolution triangulation. 
-However, since we compute the curvature of each vertices of the final
-mesh, a highly triangulated object will be much slower to process.
+%Those results were measured on a full resolution triangulation. 
+%However, since we compute the curvature of each vertices of the final
+%mesh, a highly triangulated object will be much slower to process.
 
 \subsection{Fully adaptive evaluation}
 
 When dealing with large datasets, we can not expect real-time curvature tensor
-estimation due to the huge amount of data to process. By computing a
+estimation if we consider the full resolution geometry, due the the huge amount of data process. By computing a
 dynamically refined approximate curvature tensor estimation joined with an
 adaptive triangulation (as discussed in Section~\ref{sec:hierarchical}), we
 manage to maintain a real-time framerate by giving control over the amount of
 data to process at each frame. In Figure~\ref{fig:timings}, we compare timings
-(in logarithmic scale) for a triangulation that is dynamically refining according
-to its distance to the camera. We measured those timings using the regular and
+(in logarithmic scale) for a triangulation that is dynamically refined according
+to its distance to the camera. We measured those timings using the multiresolution regular and
 the hierarchical algorithm.
 
 %We can first note that the required time for an object to compute ground truth
@@ -780,36 +781,22 @@ the hierarchical algorithm.
 %$l_0$. For example, with $R=20$, the approximated visualization at $l_2$ takes
 %only 300ms while the $l_0$ visualization takes more than 4 seconds.
 
-We can first note that the required time for an object to compute ground truth
-curvature is usually as high as the time required to extract the geometry and
+We can first note that the required time for an object to compute the ground truth 
+curvature is usually as high as the time required to extract the geometry and to
 compute all of the above levels. Using approximations is thus mandatory.
-Another advantage with approximation, is that it allows us to get a visualisation of our object as soon as we run
+Another advantage with approximations, is that it allows us to get a visualisation of our object as soon as we run
 the application. This allows for real-time interactions with the object, required in order to change
-the visualized value, curvature radius, \ldots. 
+the visualized value, curvature radius, \ldots 
 
-It is also visible in Figure~\ref{fig:timings} that using a hierarchical decomposition greatly reduces the curvature computation
+It is also visible in Figure~\ref{fig:timings} that a hierarchical decomposition greatly reduces the curvature computation
 time, especially with big radii. 
 %For the XYZ-Dragon with $R=20$, it needs almost
 %4 seconds to compute the $l_0$ level, whereas using the hierarchical algorithm,
 %it only needs 700ms. 
-However, due to the precomputation and current hierarchical
+However, due to the precomputation and the current hierarchical
 structure, this algorithm is biased and creates an error (presented in
 Table~\ref{tab:full-res-stat}) that needs to be considered.
-%
-% \begin{figure}
-%   \vspace{-0.35cm}
-%   \begin{center}
-%     {\includegraphics[height=3.5cm]{figs/xyzrgb_dragon-510_R8_mean}}
-%     {\includegraphics[height=3.0cm]{figs/snow_I08iso_233_r20_l0_m3}}
-%   \end{center}
-%   \caption{Illustration of mean curvature computation of two large datasets: XYZ-Dragon (with digital domain of $512^3$) and Snow microstructures ($233^3$).}
-%   \label{fig:adaptive}
-%   \vspace{-0.35cm}
-% \end{figure}
-%
-% Figure~\ref{fig:adaptive} shows curvature computation and exploration in
-% real-time on large datasets: XYZ-Dragon (with digital domain of $512^3$) and
-% Snow microstructures ($233^3$).
+
 
 \begin{table}
   \begin{center}
@@ -943,6 +930,24 @@ Table~\ref{tab:full-res-stat}) that needs to be considered.
   \vspace{-0.35cm}
 \end{figure}
 
+ \begin{figure}[h!]
+   \vspace{-0.35cm}
+   \begin{center}
+   	 {\includegraphics[width=0.45\textwidth]{figs/snow_r10}}
+     {\includegraphics[width=0.5\textwidth]{figs/snow2_r10}}
+     {\includegraphics[width=0.6\textwidth]{figs/xyzrgb_dragon-510_R8_mean}}
+   \end{center}
+   \caption{\emph{First row}: Mean curvature estimation on Snow Microstructures with a digital domain of $233^3$ and a radius of 10. 
+   (left) Full snow object (right) exploration within the object
+  \emph{Second row:} Mean curvature estimation on XYZ Dragon with a digital domain of $510^3$ and a radius of 8.}
+   \label{fig:adaptive}
+   \vspace{-0.35cm}
+ \end{figure}
+
+ Figure~\ref{fig:adaptive} shows curvature computation and exploration in
+ real-time on large datasets: XYZ-Dragon (with digital domain of $512^3$) and
+ Snow microstructures ($233^3$).
+
 \section{Conclusion and Discussion}
 \label{sec:discussion}
 
@@ -957,15 +962,15 @@ efficient integral computation on GPU. The source code and additional
 material (video, \ldots) are available on the project website
 (\url{https://github.com/dcoeurjo/ICTV}).
 
-An extension of this framework could be to implement an approximate hierarchical
-algorithm. From there, we could use the dynamic refinement scheme to compute the
-curvature with the hierarchical algorithm, thus massively reducing the number of
-probes. We could also use texture streaming to compute on the fly on the CPU
-the subdivision and stream it to the GPU, allowing dynamic radii change with the
-hierarchical algorithm. Another improvement would be to implement the
-hierarchical pattern presented in Figure\ref{fig:approx2}-$b$. This would prevent
-bias from adding cells of density 1 but only partly convered by the
-ball.
+%An extension of this framework could be to implement an approximate hierarchical
+%algorithm. From there, we could use the dynamic refinement scheme to compute the
+%curvature with the hierarchical algorithm, thus massively reducing the number of
+%probes. We could also use texture streaming to compute on the fly on the CPU
+%the subdivision and stream it to the GPU, allowing dynamic radii change with the
+%hierarchical algorithm. Another improvement would be to implement the
+%hierarchical pattern presented in Figure\ref{fig:approx2}-$b$. This would prevent
+%bias from adding cells of density 1 but only partly convered by the
+%ball.
 
 % This framework could also be used for feature detection purposes such as
 % presented in \cite{SMI2015}. The point classification is done by computing the

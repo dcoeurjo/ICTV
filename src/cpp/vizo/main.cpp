@@ -338,7 +338,7 @@ public:
 		else 
 			load_viewPoint();
 		
-		min_lvl = (int)ceil(log2(Parameters::getInstance()->g_curvradius)) + 2;
+		min_lvl = 2.0;//(int)ceil(log2(Parameters::getInstance()->g_curvradius)) + 2;
 		Parameters::getInstance()->g_lvl = min_lvl;
 		
 		last_radius = Parameters::getInstance()->g_curvradius;
