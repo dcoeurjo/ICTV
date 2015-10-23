@@ -679,6 +679,16 @@ $O\left(\left(\frac{R}{2^l}\right)^3\right)$, the interactive control
   \label{fig:full}
 \end{figure}
 
+\begin{figure}
+  \begin{center}
+    \includegraphics[width=0.5\textwidth]{figs/graph_cmp_l0_l4_mean_octa130_Linf}
+  \end{center}
+  \caption{Error $L\infty$ on the measured Mean curvature between a $l_n$ approximation and the
+  $l_0$ measurement. The red curve present the results when computing the volume from a mipmap quantitized to 0 or 1, and the green one
+  present the results when computing it from the real mipmap values.}
+  \label{fig:graph_convergence}
+\end{figure}
+
 We first evaluate the curvature estimation on a full-resolution geometry
 obtained by disabling the LoD criterion at the mesh generation step.
 Figure~\ref{fig:full}-top and middle shows results of curvature tensor
@@ -706,6 +716,15 @@ with the $l_0$ level are small. The errors measured comparing higher levels
 are of course much bigger and those level are thus never used in practice.
 They are presented here to illustrate how the refining process converges to
 the $l_0$ level.
+
+This convergence is shown in Figure \ref{fig:convergence}. It has been evaluated using
+two different strategy for volume computation. The first one reads the interpolated
+data from the mipmap is adds 1 to the volume if this value is above a threshold. 
+The second strategy adds directly to the volume the interpolated data read from the mipmap.
+The results are shown Figure \ref{fig:graph_convergence}. It can be seen that the
+interpolation done by the mipmap allows the resulting curvature to converge
+faster to the $l_0$ level.
+
 Thanks to this low error, higher approximation levels are visually
 very similar to the $l_0$ level. We can therefore use them for exploring our
 datasets in real time, changing the radii on the fly and visualising dynamic datasets.
