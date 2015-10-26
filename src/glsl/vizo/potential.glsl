@@ -5,7 +5,7 @@ uniform sampler3D densities;
 
 float getPotential(vec3 position, float t)
 {
-	//float ret = textureLod(densities, position, 0).r;
+	float ret = textureLod(densities, position, 0).r;
 	
 	//Wave
 	/*float s = 20;
@@ -28,7 +28,7 @@ float getPotential(vec3 position, float t)
 		ret = 1;*/
 	
 	//Sinc
-	float size = 20.0;
+	/*float size = 20.0;
 	vec3 p = (position-0.5)*size;
 	
 	float y = 1.0;
@@ -39,7 +39,7 @@ float getPotential(vec3 position, float t)
 	
 	float ret = 0;
 	if (p.y < y)
-		ret = 1;
+		ret = 1;*/
 		
 	//Goursat
 	/*vec3 abc = vec3(0, abs(sin(u_time))*-2, -1);

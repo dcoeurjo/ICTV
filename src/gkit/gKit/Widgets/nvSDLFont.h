@@ -23,7 +23,7 @@ class SdlFont : public UIFont
 public:
     //~ SdlFont( const char *filename= "verdana.ttf", const int size= 14 );
     //~ SdlFont( const char *filename= "ubuntu.ttf", const int size= 16 );
-    SdlFont( const char *filename= "droid.ttf", const int size= 11 );
+    SdlFont( const char *filename= "droid.ttf", const int size= 12 );
     ~SdlFont( );
     
     int init( );

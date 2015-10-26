@@ -43,7 +43,7 @@ Parameters::Parameters()
     g_gui = true;
     g_radial_length = true;
     g_textured_data = false;
-	g_auto_refine = false;
+	g_auto_refine = true;
 	g_k1k2_normals = true;
 	g_curv_dir = 0;
 	g_curv_val = 1;
@@ -52,13 +52,13 @@ Parameters::Parameters()
     g_ground_truth = 3;
     
     g_regular = false;
-    g_radius_show = false;
+    g_radius_show = true;
 
-	g_curvradius = 10.0;
+	g_curvradius = 8.0;
     g_curvmin = -0.5;
     g_curvmax = 0.5;
 	
-    g_scale = 10;
+    g_scale = 10.0;
     g_tessel = 1.0;
     g_isosurface = 0;
 	

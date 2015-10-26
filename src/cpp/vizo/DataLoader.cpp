@@ -321,7 +321,7 @@ void DataRaw::loadFile(char* file)
 		a*= 2;
 	}
 	
-	unsigned long int size_p2 = a;
+	unsigned long int size_p2 = sizex;
 
 	unsigned long int total = size_p2 * size_p2 * size_p2;
     data = (float*) malloc(sizeof(float)*total);

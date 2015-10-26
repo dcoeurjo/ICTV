@@ -59,7 +59,7 @@ uniform int u_tessellation; //voxels to blocks of u_tessellation^3
 uniform float u_scale; //octree levels length
 uniform int u_radial; //use radial distance for LoD
 
-uint max_level = min( uint( ceil(log2(u_size_tex)) ), 7u ); //max octree level; cannot be splitted more than this level
+uint max_level = min( uint( ceil(log2(u_size_tex)) ), 8u ); //max octree level; cannot be splitted more than this level
 float max_tex = max_level;
 
 
