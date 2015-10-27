@@ -20,6 +20,8 @@
 
 #include <cmath>
 #include <string>
+#include <fstream>
+
 #define CAM_SPEED CAM_SPEED_MAX / 20.0
 #define CAM_SPEED_MAX Parameters::getInstance()->g_geometry.scale[0] / 5.0
 #define CAM_ROTATE 0.1f
@@ -139,6 +141,51 @@ void setShaderCameraPos(const gk::Transform& tr)
 	Parameters::getInstance()->g_camera.pos[0] = tr.matrix()[3];
 	Parameters::getInstance()->g_camera.pos[1] = tr.matrix()[1*4 + 3];
 	Parameters::getInstance()->g_camera.pos[2] = tr.matrix()[2*4 + 3];
+}
+
+void generatePotentialGlsl(char* poly)
+{	
+	std::string func;
+	if (poly == NULL)
+		func = "textureLod(densities, position, lvl).r";
+	else
+		func = poly;
+	
+	std::string file("\
+		uniform float u_time;\n \
+		uniform float u_size_tex;\n \
+		uniform sampler3D densities;\n \
+		\n\
+		float getPotential(vec3 position, float t, int lvl) {\n\
+		\n\
+		float ret = 0;\n\
+		float size = 20.0;\n\
+		vec3 p = (position-0.5)*size;\n\
+		float x = p.x; float y = p.y; float z = p.z;\n\
+		float h = ");
+
+	file += func;
+	
+	if (poly == NULL)
+		file += "; ret = h;\n";
+	else
+	{
+		file += ";\n\
+				if (y < h) ret = 1;\n";
+	}
+	
+	file += "		return ret;\n\n \
+		}\n";
+	
+	std::ofstream fichier("../glsl/potential.glsl", std::ios::out);  // ouverture en écriture avec effacement du fichier ouvert
+	if(fichier)
+	{
+		fichier << file;
+        fichier.close();
+    }
+
+    //exit(0);
+    return;
 }
 
 class Vizo : public gk::App
@@ -276,20 +323,26 @@ public:
 		cam_rotate = CAM_ROTATE;
 		
 		Parameters::getInstance()->g_light = false;
-		if (argc >= 4)
+		if (argc >= 5)
 			Parameters::getInstance()->g_light = true;
 
-		int type = 1;//atoi(argv[2]);
+		int size = atoi(argv[2]);
+		
+		int type = atoi(argv[3]);
 		if (type == 1)
 		{
-			int size = 256;
-			//if (argc >= 3)
-			size = atoi(argv[2]);
 			dl = new DataRaw(size);
+			dl->loadFile(argv[1]);
+			dl->loadData32BGpu();
+			
+			generatePotentialGlsl(NULL);
 		}
-		dl->loadFile(argv[1]);
-		dl->loadData32BGpu();
-		
+		else
+		{
+			Parameters::getInstance()->g_sizetex = size;
+			generatePotentialGlsl(argv[1]);
+		}
+
 		lodManager.init();
 		extractor.init();
 		curver.init();
@@ -1212,9 +1265,9 @@ public:
 
 int main( int argc, char **argv )
 {
-	if (argc < 2)
+	if (argc < 3)
 	{
-		printf("Usage : %s <data_file> <size> [light]\n\n Size:\t default = 256\n Light: if set to one, the exporter is not available but the application requires less GPU memory", argv[0]);
+		printf("Usage : %s <data_file> <size> <type> [light]\n\n Size:\t default = 256\n Type:\t 1 - .raw files\n\t2 - polynomial\n Light: if set to one, the exporter is not available but the application requires less GPU memory", argv[0]);
 		return 0;
 	}
 	Vizo app(argc, argv);
