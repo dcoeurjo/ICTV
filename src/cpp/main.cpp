@@ -147,35 +147,35 @@ void generatePotentialGlsl(char* poly)
 {	
 	std::string func;
 	if (poly == NULL)
-		func = "textureLod(densities, position, lvl).r";
+		func = "h = textureLod(densities, position, lvl).r";
 	else
 		func = poly;
 	
 	std::string file("\
-		uniform float u_time;\n \
-		uniform float u_size_tex;\n \
-		uniform sampler3D densities;\n \
-		\n\
-		float getPotential(vec3 position, float t, int lvl) {\n\
-		\n\
-		float ret = 0;\n\
-		float size = 20.0;\n\
-		vec3 p = (position-0.5)*size;\n\
-		float x = p.x; float y = p.y; float z = p.z;\n\
-		float h = ");
+uniform float u_time;\n \
+uniform float u_size_tex;\n \
+uniform sampler3D densities;\n \
+	\n\
+float getPotential(vec3 position, float t, int lvl) {\n\
+	\n\
+	float ret = 0;\n\
+	float size = 20.0;\n\
+	vec3 p = (position-0.5)*size;\n\
+	float x = p.x; float y = p.y; float z = p.z;\n\
+	float h;");
 
 	file += func;
+	file += ";\n";
+	file += "ret = h;\n";
 	
-	if (poly == NULL)
-		file += "; ret = h;\n";
-	else
+	if (poly != 0)
 	{
-		file += ";\n\
-				if (y < h) ret = 1;\n";
+		file += "if (ret < 0) ret = 1;\n\
+		else ret = 0; \n";
 	}
 	
-	file += "		return ret;\n\n \
-		}\n";
+	file += "return ret;\n\n \
+}\n";
 	
 	std::ofstream fichier("../glsl/potential.glsl", std::ios::out);  // ouverture en écriture avec effacement du fichier ouvert
 	if(fichier)
