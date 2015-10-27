@@ -1011,7 +1011,7 @@ public:
 		if (gpu_time == 0)
 			gpu_time = 0.1;
 		
-		fps = 1000 / gpu_time;
+		fps = 1000 / (gpu_time);// + (cpu_time/1000));
 		
 		//printf("Curv time %d\n", gpu_shading_time / 1000);
 
@@ -1027,9 +1027,9 @@ public:
 			
 			char tmp[1024] = {0}; //used to display sliders names
 			{
-				m_widgets.doLabel(nv::Rect(), Format("Frame %d", frame));
+				//m_widgets.doLabel(nv::Rect(), Format("Frame %d", frame));
 				
-				m_widgets.doLabel(nv::Rect(), Format("effective cpu time % 6ldus", cpu_time));
+				m_widgets.doLabel(nv::Rect(), Format("effective cpu time % 6ldms", cpu_time / 1000));
 				m_widgets.doLabel(nv::Rect(), Format("gpu time % 3ldms % 3ldus LOD", gpu_lod_time / 1000, gpu_lod_time % 1000));
 				m_widgets.doLabel(nv::Rect(), Format("gpu time % 3ldms % 3ldus Cull", gpu_cull_time / 1000, gpu_cull_time % 1000));
 				m_widgets.doLabel(nv::Rect(), Format("gpu time % 3ldms % 3ldus Triangulate Regular Cells", gpu_render_time_regular / 1000, gpu_render_time_regular % 1000));
@@ -1155,7 +1155,7 @@ public:
 		window_draw();
 		GLint64 stop; glGetInteger64v(GL_TIMESTAMP, &stop); // Nanoseconds
 		
-		double cpu_time = (stop - start) - sync_cell_cull - sync_count_triangles;
+		double cpu_time = (stop - start);
 		cpu_time /= 1000; // Microseconds
 		GUI( cpu_time );  
 		

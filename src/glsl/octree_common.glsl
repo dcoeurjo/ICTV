@@ -243,7 +243,7 @@ vec3 hash3( float n )
 float getVolume(vec3 position) //returns the value for a point in space fetching it from mipmapped texture
 {
 	float isovalue = 0;
-	float kernel = getPotential(position, u_time);//, isovalue, true);
+	float kernel = getPotential(position, u_time, 0);//, isovalue, true);
 	float ret = ( kernel - isovalue );
 	return kernel;
 }
@@ -251,7 +251,7 @@ float getVolume(vec3 position) //returns the value for a point in space fetching
 float getVolume0(vec3 position) //returns the value for a point in space fetching it from the lowest mipmap of the texture
 {
 	float isovalue = 0;
-	float kernel = getPotential(position, u_time);// isovalue, false);
+	float kernel = getPotential(position, u_time, 0);// isovalue, false);
 	float ret = ( kernel - isovalue );
 	return ret;
 }

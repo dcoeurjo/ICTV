@@ -109,7 +109,7 @@ void analytic_hierarch(in vec3 vertex_position, out float volume, out vec3 xyz, 
 
 void fetch(vec3 p, float step, int l, inout float volume, inout vec3 xyz, inout vec3 xyz2, inout vec3 xy_yz_xz)
 {
-	float val = getPotential(p, u_time);//textureLod(densities, p, l).r;
+	float val = getPotential(p, u_time, l);//textureLod(densities, p, l).r;
 	vec3 p2 = p*u_size_tex;
 	val *= (step*step*step);
 	
