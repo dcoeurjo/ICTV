@@ -31,7 +31,13 @@ make vizo
 
 ### Preview
 
-![alt tag](http://i.imgur.com/m72QeV9.gif)
+<img src="http://i.imgur.com/m72QeV9.gif" alt="Mean curvature" />
+
+<img src="https://raw.github.com/dcoeurjo/ICTV/master/latex/figs/EG_dragon_mean.png" alt="Mean curvature" style="width: 200px;"/> | <img src="https://raw.github.com/dcoeurjo/ICTV/master/latex/figs/EG_dragon_gaussian.png" alt="Gaussian curvature" style="width: 200px;"/> | <img src="https://raw.github.com/dcoeurjo/ICTV/master/latex/figs/EG_dragon_k1.png" alt="First principal curvature" style="width: 200px;"/> | <img src="https://raw.github.com/dcoeurjo/ICTV/master/latex/figs/EG_dragon_k2.png" alt="Second principal curvature" style="width: 200px;"/>
+------------ | ------------- | ------------- | ------------- 
+Mean curvature | Gaussian curvature | First principal curvature | Second principal curvature
+<img src="https://raw.github.com/dcoeurjo/ICTV/master/latex/figs/EG_dragon_dir_min.png" alt="First principal direction field" style="width: 200px;"/> | <img src="https://raw.github.com/dcoeurjo/ICTV/master/latex/figs/EG_dragon_dir_max.png" alt="Second principal direction field" style="width: 200px;"/> | <img src="https://raw.github.com/dcoeurjo/ICTV/master/latex/figs/EG_dragon_normal.png" alt="Normal vector field" style="width: 200px;"/> | 
+First principal direction field | Second principal direction field | Normal vector field | 
 
 ### Credits
 
@@ -44,3 +50,4 @@ make vizo
 
 
 :octocat:
+
