@@ -20,8 +20,7 @@
 
 #include <cmath>
 #include <string>
-
-#define CAM_SPEED 20
+#define CAM_SPEED CAM_SPEED_MAX / 20.0
 #define CAM_SPEED_MAX Parameters::getInstance()->g_geometry.scale[0] / 5.0
 #define CAM_ROTATE 0.1f
 #define CAM_ROTATE_MAX 1.0f
@@ -283,9 +282,11 @@ public:
 		}
 		dl->loadFile(argv[1]);
 		dl->loadData32BGpu();
+		/*
 		dl->loadx2y2z2();
 		dl->loadxyyzxz();
 		dl->loadxyz();
+		*/
 		
 		lodManager.init();
 		extractor.init();
@@ -336,7 +337,7 @@ public:
 		else 
 			load_viewPoint();
 		
-		min_lvl = (int)ceil(log2(Parameters::getInstance()->g_curvradius)) + 2;
+		min_lvl = (int)ceil(log2(Parameters::getInstance()->g_curvradius));
 		Parameters::getInstance()->g_lvl = min_lvl;
 		
 		last_radius = Parameters::getInstance()->g_curvradius;
@@ -380,10 +381,10 @@ public:
 				Parameters::getInstance()->g_lvl =  min_lvl;
 				Parameters::getInstance()->g_compute_min_max = true;
 			}
-			else if (Parameters::getInstance()->g_auto_refine)// && fps > 30 && Parameters::getInstance()->g_lvl > 0)
+			else if (Parameters::getInstance()->g_auto_refine && fps > 30 && Parameters::getInstance()->g_lvl > 0)
 			{
-				if (Parameters::getInstance()->g_lvl == 0)
-					exit(0);
+				//if (Parameters::getInstance()->g_lvl == 0)
+				//	exit(0);
 				Parameters::getInstance()->g_lvl -= 1;
 				Parameters::getInstance()->g_compute_min_max = true;
 			}
@@ -833,6 +834,21 @@ public:
 			Parameters::getInstance()->g_export = true;
 			key('e') = 0;
 		}
+		
+		if (key('l'))
+		{
+			Parameters::getInstance()->g_curv_dir = ((int)Parameters::getInstance()->g_curv_dir+1)%5;
+			
+			if (Parameters::getInstance()->g_curv_dir == 3)
+				Parameters::getInstance()->g_curv_dir = 4;
+			
+			if (Parameters::getInstance()->g_curv_dir != 0)
+				Parameters::getInstance()->g_curv_val=0;
+			else
+				Parameters::getInstance()->g_curv_val=1;
+			
+			key('l') = 0;
+		}
 	}
     
 	void testMovement()
@@ -954,6 +970,7 @@ public:
 
 		if (animate)
 			Parameters::getInstance()->g_time_elapsed += 1.0/((float)fps+1);
+		//Parameters::getInstance()->g_curvradius += sin(0.5*Parameters::getInstance()->g_time_elapsed)*0.1;
 
 		Parameters::getInstance()->g_compute_min_max = true;
 		setShaderCameraPos(Parameters::getInstance()->g_geometry.affine);
@@ -986,12 +1003,14 @@ public:
 		
 		m_widgets.begin();
 		m_widgets.beginGroup(nv::GroupFlags_GrowDownFromLeft);
+		
+		m_widgets.doLabel(nv::Rect(), Format("FPS %d", fps));
+		
 		if (Parameters::getInstance()->g_gui)
 		{
 			
 			char tmp[1024] = {0}; //used to display sliders names
 			{
-				m_widgets.doLabel(nv::Rect(), Format("FPS %d", fps));
 				m_widgets.doLabel(nv::Rect(), Format("Frame %d", frame));
 				
 				m_widgets.doLabel(nv::Rect(), Format("effective cpu time % 6ldus", cpu_time));
@@ -1028,12 +1047,12 @@ public:
 				sprintf(tmp, "GT Lvl %.2f", Parameters::getInstance()->g_lvl);
 				m_widgets.doLabel(nv::Rect(), tmp);
 				m_widgets.doHorizontalSlider(nv::Rect(0,0, 200, 0), 0.f, 10.f, &(Parameters::getInstance()->g_lvl));
-				sprintf(tmp, "Curvature Min %.2f", Parameters::getInstance()->g_curvmin);
+				/*sprintf(tmp, "Curvature Min %.2f", Parameters::getInstance()->g_curvmin);
 				m_widgets.doLabel(nv::Rect(), tmp);
 				m_widgets.doHorizontalSlider(nv::Rect(0,0, 200, 0), -5.f, 5.f, &(Parameters::getInstance()->g_curvmin));
 				sprintf(tmp, "Curvature Max %.2f", Parameters::getInstance()->g_curvmax);
 				m_widgets.doLabel(nv::Rect(), tmp);
-				m_widgets.doHorizontalSlider(nv::Rect(0,0, 200, 0), -5.f, 5.f, &(Parameters::getInstance()->g_curvmax));
+				m_widgets.doHorizontalSlider(nv::Rect(0,0, 200, 0), -5.f, 5.f, &(Parameters::getInstance()->g_curvmax));*/
 				
 				static bool unfold_flags= 0;
 				static bool unfold_actions= 0;
@@ -1045,7 +1064,7 @@ public:
 					m_widgets.doButton(nv::Rect(), "Display Octree", &(Parameters::getInstance()->g_draw_cells));
 					m_widgets.doButton(nv::Rect(), "Display Radius", &(Parameters::getInstance()->g_radius_show));
 					m_widgets.doButton(nv::Rect(), "Wireframe", &(Parameters::getInstance()->g_solid_wireframe));
-					m_widgets.doButton(nv::Rect(), "Cull", &(Parameters::getInstance()->g_culling));
+					//m_widgets.doButton(nv::Rect(), "Cull", &(Parameters::getInstance()->g_culling));
 					//m_widgets.doButton(nv::Rect(), "Flying camera", &(Parameters::getInstance()->g_controls));
 					//m_widgets.doButton(nv::Rect(), "Display textures", &(Parameters::getInstance()->g_textured_data));
 					//m_widgets.doButton(nv::Rect(), "Display background", &(skybox));
@@ -1054,19 +1073,21 @@ public:
 					m_widgets.doButton(nv::Rect(), "Regular grid", &(Parameters::getInstance()->g_regular));
 					m_widgets.doButton(nv::Rect(), "Auto refine", &(Parameters::getInstance()->g_auto_refine));
 					m_widgets.doButton(nv::Rect(), "k1k2 normals", &(Parameters::getInstance()->g_k1k2_normals));
+					m_widgets.doButton(nv::Rect(), "Export Data", &(Parameters::getInstance()->g_export));
 					
 					m_widgets.endPanel();
 				}
 				
+				/*
 				if(m_widgets.beginPanel(r_actions, "Actions", &unfold_actions))
 				{
-					m_widgets.doButton(nv::Rect(), "Auto min max", &(Parameters::getInstance()->g_compute_min_max));
-					m_widgets.doButton(nv::Rect(), "Export Data", &(Parameters::getInstance()->g_export));
+					//m_widgets.doButton(nv::Rect(), "Auto min max", &(Parameters::getInstance()->g_compute_min_max));
 					//m_widgets.doButton(nv::Rect(), "Read data from texture", &(Parameters::getInstance()->g_fromtexture));
-					m_widgets.doButton(nv::Rect(), "Capture", &(Parameters::getInstance()->g_capture.enabled));
-					m_widgets.doButton(nv::Rect(), "Freeze", &(Parameters::getInstance()->g_geometry.freeze));
+					//m_widgets.doButton(nv::Rect(), "Capture", &(Parameters::getInstance()->g_capture.enabled));
+					//m_widgets.doButton(nv::Rect(), "Freeze", &(Parameters::getInstance()->g_geometry.freeze));
 					m_widgets.endPanel();
 				}
+				*/
 
 				if(m_widgets.doButton(nv::Rect(), "Write Viewpoint"))
 				{
@@ -1083,12 +1104,12 @@ public:
 						load_viewPoint();
 				}
 
-				sprintf(tmp, "Camera rotation %.3f", cam_rotate);
+				/*sprintf(tmp, "Camera rotation %.3f", cam_rotate);
 				m_widgets.doLabel(nv::Rect(), tmp);
 				m_widgets.doHorizontalSlider(nv::Rect(0,0, 200, 0), 0.f, CAM_ROTATE_MAX, &cam_rotate);
 				sprintf(tmp, "Camera speed %.2f", cam_speed);
 				m_widgets.doLabel(nv::Rect(), tmp);
-				m_widgets.doHorizontalSlider(nv::Rect(0,0, 200, 0), 0.f, CAM_SPEED_MAX, &cam_speed);
+				m_widgets.doHorizontalSlider(nv::Rect(0,0, 200, 0), 0.f, CAM_SPEED_MAX, &cam_speed);*/
 				sprintf(tmp, "Scale %.2f", Parameters::getInstance()->g_scale);
 				m_widgets.doLabel(nv::Rect(), tmp);
 				m_widgets.doHorizontalSlider(nv::Rect(0,0, 200, 0), 2.f, 28.f, &(Parameters::getInstance()->g_scale));
