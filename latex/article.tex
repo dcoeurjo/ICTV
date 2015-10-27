@@ -356,8 +356,8 @@ algorithm.
 %of the isosurface is constructed on GPU.
 The proposed approch uses an octree representation of the input object
 on which an adaptive Marching Cube builds the isosurface efficiently.
-Such 
-%approach is motivated by the fact that the 
+Such
+%approach is motivated by the fact that the
 hierarchical representation of the object allows us
 to handle large datasets and to locally adapt the level of details
 \wrt the geometry or camera position. We first present the
@@ -392,7 +392,7 @@ such a data parallel component is unable to handle recursivity.
 %to huge payload from cache misses.
 
 Efficient spatial tree encoding can be
-achieved using pointerless structures such as linear quadtrees or octrees 
+achieved using pointerless structures such as linear quadtrees or octrees
 %(seefor instance
  \textsc{Gargantini}~\cite{gargantini1982effective}. This structure
 %consists in indexing each cell by a \emph{Morton code}: the code of children
@@ -403,10 +403,10 @@ cells are defined by the code of the parent suffixed by two bits (in dimension
 position \wrt its parent cell and its complete path to the tree root.
 %Hence, whatever their depth, all cell codes are simply stored in a linear vector on memory.
 Hence, the tree is fully represented as a linear vector of its leaves.%, whatever their depth.
-Furthermore, cell operations such as subdivision, merging %, neighbors access 
+Furthermore, cell operations such as subdivision, merging %, neighbors access
 can be efficiently implemented using bitwise operations on the Morton
-code. In the following, we use the GPU 
-friendly 
+code. In the following, we use the GPU
+friendly
 implementation proposed by \textsc{Dupuy}
 \textit{et al.}~\cite{dupuy2014quadtrees}.% that we extended to the third dimension.
 %By using their approach, Morton codes
@@ -418,23 +418,23 @@ Using this spatial data structure, a triangulated mesh can be constructed
 %from a Marching Cubes approach \cite{lorensen1987marching} (MC for short): the
 using Marching Cubes\cite{lorensen1987marching} (MC for short): the
 triangulation is generated from local triangle patches computed on
-local cell configurations. 
+local cell configurations.
 %Since triangle patches are locally computed,
 Such approach is fully parallel and easy to implement on the GPU.
 However, since adjacent cells may not have the same depth
 in the octree, original \textsc{Lorensen} and \textsc{Cline}'s rules need to be
-updated (see Figure~\ref{fig_quadtree_partitionning}-\emph{right}). 
+updated (see Figure~\ref{fig_quadtree_partitionning}-\emph{right}).
 Many authors have addressed this problem both for primal and
 dual meshes
 \cite{shu1995adaptive,schaefer2004dual,lengyel2010voxel,DBLP:journals/cgf/LewinerMPPL10,DBLP:journals/cvgip/LobelloDD14}.
 
-In the following, we use the 
-%extension  of MC configurations to handle adaptive structures 
+In the following, we use the
+%extension  of MC configurations to handle adaptive structures
 algorithm
 proposed by \textsc{Lengyel} \emph{et al.}~\cite{lengyel2010voxel}.
 First, this approach constrains the octree
-structure 
-%in order 
+structure
+%in order
 to make sure that the depth difference between any
 two adjacent cells is at most one.
 Then, \textsc{Lengyel} \emph{et al.} introduce the concept of transition cells.
@@ -461,20 +461,20 @@ the closer we are to the camera, the finer the cells are.
 %distance criterion, we define an angular criterion to prevent refining cells
 %outside the camera frustrum.
 Such a criterion is also well suited to GPU since it can be evaluated
-independently on all cells. 
-%Hence, we can efficiently determine if a cell must be subdivided or not. 
+independently on all cells.
+%Hence, we can efficiently determine if a cell must be subdivided or not.
 Figure~\ref{fig_lod_octree} illustrates our the level of
-details (LoD for short) criterion% we use. More precisely, 
+details (LoD for short) criterion% we use. More precisely,
 In dimension 2, if $\alpha$ denotes the viewing angle, an object at a distance $d$ from the camera
 %with diameter greater than $2\cdot d\cdot\tan(\alpha)$ is projected into more
 has a projected size on screen of $2\cdot d\cdot\tan(\alpha)$.
-%than one pixel 
-(see Figure~\ref{fig_lod_octree}-\emph{left}). 
+%than one pixel
+(see Figure~\ref{fig_lod_octree}-\emph{left}).
 %Hence, the
 Our distance criterion is based on the ratio (\emph{visibility ratio} in the
 following) between the cell diameter $l(c)$ (power of 2 depending on the depth),
 and its projected size. %$2\cdot d_c\cdot\tan(\alpha)$, $d_c$ being the distance between the cell
-%center and the camera. 
+%center and the camera.
 For a given cell $c$, split and merge decision are based
 on this visibility ratio:
 %
@@ -495,7 +495,7 @@ cells have a visibility ratio greater than  constant $k$\,;
     \includegraphics[width=3cm]{viewlod2_small}~~~~~
     %\includegraphics[width=3cm]{subdivision}
   \end{center}
-  \caption{Notations \emph{(left)} and adaptive meshing in dimension 2 using the LoD distance and angular criterion \emph{(right)}. 
+  \caption{Notations \emph{(left)} and adaptive meshing in dimension 2 using the LoD distance and angular criterion \emph{(right)}.
   %Based on LoD criterion evaluation, the cell buffer is updated between each frame \emph{(right)}.
   }
   \label{fig_lod_octree}
@@ -510,10 +510,10 @@ Using such a criterion, split and merge decisions are computed in%of all cells a
 parallel from all cell's morton codes.
 
 Once decisions have been made, a new set of cells is sent to the mesh
-generation step described above. 
+generation step described above.
 %Updating the cell buffer can be
 %efficiently implemented on GPU hardware as illustrated in
-%Figure~\ref{fig_lod_octree}-\emph{right}.  
+%Figure~\ref{fig_lod_octree}-\emph{right}.
 Finally, before
 constructing the triangulation from remaining cells and transition
 cells, geometrical culling is performed in order to skip the triangle
@@ -622,7 +622,7 @@ results in terms of texture fetch can be obtained by the approach
 presented in Fig.~\ref{fig:approx2}-$b$. At each vertex, the
 computation algorithm would consist in a recursive decomposition of
 the domain such that a cell is subdivided if it does not belong to
-$\Ball{R}{\vx}\cap\Shape$. However, on the GPU %hardware, 
+$\Ball{R}{\vx}\cap\Shape$. However, on the GPU %hardware,
 this approach is
 highly inefficient since the hardware optimizes the parallelism only
 when the micro-program described in the shader has a predictive
@@ -735,19 +735,19 @@ seems to quickly converge to the ground truth results.
 Table~\ref{tab:full-res-stat} shows numerical results of $L_\infty$ error (maximal absolute difference for all vertices )
 and $L_2$ error (mean absolute error of all vertices), as well the number of \emph{mipmap texture}
 fetches. We can also see that the number of texel fetch, required to compute the
-curvature, reduces drastically when computing approximations. However, at higher levels, 
+curvature, reduces drastically when computing approximations. However, at higher levels,
 approximation errors become more important. Those levels
 are thus never used in practice, they are presented here to illustrate how the
-refining process converges to the $l_0$ level. 
+refining process converges to the $l_0$ level.
 %We see that levels close to $l_0$
-%lead very few error% than $l_0$, 
+%lead very few error% than $l_0$,
 %and should be considered for exploring our datasets
 %in real-time, changing parameters on-the-fly and visualizing dynamic datasets.
 
 We also compare them with the hierarchical algorithm (as discussed in
 Section~\ref{sec:hierarchical}). This method introduces a higher error when compared with
 $l_0$. This is due to the precomputation of the subdivision that no longer
-ensures to fetch data at the center of a mipmap cell. 
+ensures to fetch data at the center of a mipmap cell.
 The GPU interpolation reduces the bias, but it doesn't remove it.
 
 %Bear also in mind that those results were measured on a full resolution
@@ -757,7 +757,7 @@ The GPU interpolation reduces the bias, but it doesn't remove it.
 %it is closer from the camera and thus reducing the number of vertices to
 %compute.
 
-%Those results were measured on a full resolution triangulation. 
+%Those results were measured on a full resolution triangulation.
 %However, since we compute the curvature of each vertices of the final
 %mesh, a highly triangulated object will be much slower to process.
 
@@ -781,18 +781,18 @@ the hierarchical algorithm.
 %$l_0$. For example, with $R=20$, the approximated visualization at $l_2$ takes
 %only 300ms while the $l_0$ visualization takes more than 4 seconds.
 
-We can first note that the required time for an object to compute the ground truth 
+We can first note that the required time for an object to compute the ground truth
 curvature is usually as high as the time required to extract the geometry and to
 compute all of the above levels. Using approximations is thus mandatory.
 Another advantage with approximations, is that it allows us to get a visualisation of our object as soon as we run
 the application. This allows for real-time interactions with the object, required in order to change
-the visualized value, curvature radius, \ldots 
+the visualized value, curvature radius, \ldots
 
 It is also visible in Figure~\ref{fig:timings} that a hierarchical decomposition greatly reduces the curvature computation
-time, especially with big radii. 
+time, especially with big radii.
 %For the XYZ-Dragon with $R=20$, it needs almost
 %4 seconds to compute the $l_0$ level, whereas using the hierarchical algorithm,
-%it only needs 700ms. 
+%it only needs 700ms.
 However, due to the precomputation and the current hierarchical
 structure, this algorithm is biased and creates an error (presented in
 Table~\ref{tab:full-res-stat}) that needs to be considered.
@@ -935,22 +935,22 @@ Table~\ref{tab:full-res-stat}) that needs to be considered.
    \begin{center}
    	 {\includegraphics[width=0.4\textwidth]{figs/snow_r8}}
    	 {\includegraphics[width=0.4\textwidth]{figs/xyzrgb_dragon-510_R8_mean}}
-   	 
+
      {\includegraphics[width=0.4\textwidth]{figs/snow_r8_min}}
-	 {\includegraphics[width=0.4\textwidth]{figs/dragon_r8}}     
-     
+	 {\includegraphics[width=0.4\textwidth]{figs/dragon_r8}}
+
      {\includegraphics[width=0.4\textwidth]{figs/snow_r8_max}}
-	 {\includegraphics[width=0.4\textwidth]{figs/dragon_r8_max}}     
-     
+	 {\includegraphics[width=0.4\textwidth]{figs/dragon_r8_max}}
+
      {\includegraphics[width=0.4\textwidth]{figs/snow_r8_normales}}
      {\includegraphics[width=0.4\textwidth]{figs/dragon_r8_normales}}
-     
+
    \end{center}
    \caption{\emph{Left column}: Mean curvature, first and second
-     principal directions and normal vector field estimation on Snow Microstructures ($233^3$ and  $R=8$). 
+     principal directions and normal vector field estimation on Snow Microstructures ($233^3$ and $R=8$).
   \emph{Right column:} Mean curvature, first and second principal
-  directions and normal vector field estimantion on XYZ Dragon($510^3$
-  and $R=8$). Normal vectors are colored with a mapping their
+  directions and normal vector field estimation on XYZ-Dragon ($510^3$
+  and $R=8$). Normal vectors are colored with a mapping of their
   component to RGB color space.}
    \label{fig:adaptive}
    \vspace{-0.35cm}
