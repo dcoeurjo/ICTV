@@ -82,6 +82,8 @@ public:
     float g_ground_truth;
     
     float g_time_elapsed; //in seconds
+    
+    bool g_light;
 };
 
 #endif

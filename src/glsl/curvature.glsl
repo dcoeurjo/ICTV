@@ -86,7 +86,7 @@ void main( )
 	//vertex_color = xyz2/(65.0*65.0);
 	
 	//vertex_color = vec3(volume, 0, 1);
-	vertex_color = texelFetch(u_spheresubdiv, 2, 0).rgb * -100;
+	vertex_color = vec3(1);
 	
     gl_Position = position;
 }
@@ -141,7 +141,7 @@ uniform Transforms {
 uniform vec3 u_scene_size;
 uniform vec2 u_viewport;
 
-/*
+
 void setPoint(vec3 point, vec3 color)
 {
 	geometry_curvdir = 1;
@@ -258,7 +258,6 @@ void drawParallelpitruc( vec3 pts[3], vec3 mean_dir, vec3 color )
 		
 		EndPrimitive();
 }
-*/
 
 void main()
 {
@@ -295,7 +294,7 @@ void main()
 		geometry_max_dir = vec4(curv_dir_max[i], vertex_k1_k2[i].z);
 		
 		geometry_position = vec4(vertex_position[i], vertex_k1_k2[i].x);
-		geometry_normale = vec4(curv_normale[i], vertex_k1_k2[i].w);//vec4(reorientNormal(pts, curv_normale[i]), 1);
+		geometry_normale = vec4( reorientNormal(pts, curv_normale[i]), 1 );
 		/*geometry_covmatDiag = covmatDiag[i];
 		geometry_covmatUpper = covmatUpper[i];
 		geometry_egv = eigenvalues[i];*/
@@ -306,7 +305,6 @@ void main()
 	
 	EndPrimitive();
 	
-	/*
 	if (u_curv_dir == 1 || u_curv_dir == 3)
 	{
 		drawParallelpitruc(pts, curv_dir_min[0], vec3(0, 0, 1));
@@ -321,7 +319,6 @@ void main()
 	{
 		drawParallelpitruc(pts, curv_normale[0], curv_normale[0]);
 	}
-	*/
 }
 
 #endif
@@ -451,9 +448,15 @@ void main( )
 	vec3 light_dir = vec3(1, 1, 1);
 	normale = (u_transforms.modelview * vec4(normale, 0)).xyz;
 	
-	float shadow_weight = 0;
+	float shadow_weight = 0.5;
 	float dotnormal = clamp(dot(normalize(normale), normalize(light_dir.xyz)), 0, 1);
-	fragment_color = vec4( shadow_weight * color * dotnormal + (1-shadow_weight) * color, 1);
+	vec3 diffuse = shadow_weight * color * dotnormal + (1-shadow_weight) * color;
+	
+	vec3 R = reflect(-normalize(light_dir), normalize(normale));
+	float ER = clamp(dot(normalize(vec3(0, 0, 1)), normalize(R)), 0, 1);
+	vec3 specular = vec3(1) * pow(ER, 100);
+	
+	fragment_color = vec4(diffuse+specular, 1);
 
 	if (geometry_curvdir == 0 && solid_wireframe == 1)
 	{

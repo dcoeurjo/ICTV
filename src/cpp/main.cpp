@@ -274,13 +274,17 @@ public:
 		//init camera parameters
 		cam_speed = CAM_SPEED;
 		cam_rotate = CAM_ROTATE;
+		
+		Parameters::getInstance()->g_light = false;
+		if (argc >= 4)
+			Parameters::getInstance()->g_light = true;
 
 		int type = 1;//atoi(argv[2]);
 		if (type == 1)
 		{
 			int size = 256;
-			if (argc >= 3)
-				size = atoi(argv[2]);
+			//if (argc >= 3)
+			size = atoi(argv[2]);
 			dl = new DataRaw(size);
 		}
 		dl->loadFile(argv[1]);
@@ -303,7 +307,7 @@ public:
 		fps = 0;
 		nb_probe = 0;
 		
-		plot = true;
+		plot = false;
 		transition_cells_displayed = true;
 		
 		std::string file(argv[1]);
@@ -495,13 +499,25 @@ public:
 		if (Parameters::getInstance()->g_draw_triangles)
 		{
 			m_time_shading->begin();
-			glEnable(GL_RASTERIZER_DISCARD);
-			curver.run(queryResult_regular, queryResult_transition, &triangles_regular, &triangles_transition, &sync_count_triangles);
-			glDisable(GL_RASTERIZER_DISCARD);
+			if (!Parameters::getInstance()->g_light)
+			{
+				glEnable(GL_RASTERIZER_DISCARD);
+				curver.run(queryResult_regular, queryResult_transition, &triangles_regular, &triangles_transition, &sync_count_triangles);
+				glDisable(GL_RASTERIZER_DISCARD);
+			}
+			else
+				curver.run(queryResult_regular, queryResult_transition, &triangles_regular, &triangles_transition, &sync_count_triangles);
 			m_time_shading->end();
 			
 			if (Parameters::getInstance()->g_export)
 			{
+				if( Parameters::getInstance()->g_light )
+				{
+					printf("Exporting is not available in light mode\n");
+				}
+				else
+				{
+				
 				m_time_shading->sync();
 				gpu_shading_time = m_time_shading->result64() / 1000;
 				
@@ -624,12 +640,12 @@ public:
 
 				fclose(plotfd);
 				printf("Done\n");
+				
+				}
 			}
 			
-			if (Parameters::getInstance()->g_compute_min_max)
-			{
-				//printf("Reading curvatures ...\n");
-				
+			if (Parameters::getInstance()->g_compute_min_max && !Parameters::getInstance()->g_light )
+			{	
 				int size_data_dirmin = 4;
 				int size_totale_dirmin = sizeof(float)*3*triangles_regular*size_data_dirmin; //3 vertex/triangles
 				glBindBuffer(GL_ARRAY_BUFFER, Parameters::getInstance()->g_buffers[BUFFER_EXPORT_DIRMIN]);
@@ -703,7 +719,8 @@ public:
 			}
 		}
 		
-		shadator.run(triangles_regular+triangles_transition);
+		if (!Parameters::getInstance()->g_light)
+			shadator.run(triangles_regular+triangles_transition);
 		
 		//fprintf(stdout, "%lf %lf %lf -- ", Parameters::getInstance()->g_camera.pos[0], Parameters::getInstance()->g_camera.pos[1], Parameters::getInstance()->g_camera.pos[2]);
 		//fprintf(stdout, "[Cells] Total %d Regular %d Transition %d // [Triangles] Regular %d Transition %d ... // [Vertices] %d \r", 
@@ -1048,12 +1065,16 @@ public:
 				sprintf(tmp, "GT Lvl %.2f", Parameters::getInstance()->g_lvl);
 				m_widgets.doLabel(nv::Rect(), tmp);
 				m_widgets.doHorizontalSlider(nv::Rect(0,0, 200, 0), 0.f, 10.f, &(Parameters::getInstance()->g_lvl));
-				/*sprintf(tmp, "Curvature Min %.2f", Parameters::getInstance()->g_curvmin);
-				m_widgets.doLabel(nv::Rect(), tmp);
-				m_widgets.doHorizontalSlider(nv::Rect(0,0, 200, 0), -5.f, 5.f, &(Parameters::getInstance()->g_curvmin));
-				sprintf(tmp, "Curvature Max %.2f", Parameters::getInstance()->g_curvmax);
-				m_widgets.doLabel(nv::Rect(), tmp);
-				m_widgets.doHorizontalSlider(nv::Rect(0,0, 200, 0), -5.f, 5.f, &(Parameters::getInstance()->g_curvmax));*/
+				
+				if( Parameters::getInstance()->g_light )
+				{
+					sprintf(tmp, "Curvature Min %.2f", Parameters::getInstance()->g_curvmin);
+					m_widgets.doLabel(nv::Rect(), tmp);
+					m_widgets.doHorizontalSlider(nv::Rect(0,0, 200, 0), -5.f, 5.f, &(Parameters::getInstance()->g_curvmin));
+					sprintf(tmp, "Curvature Max %.2f", Parameters::getInstance()->g_curvmax);
+					m_widgets.doLabel(nv::Rect(), tmp);
+					m_widgets.doHorizontalSlider(nv::Rect(0,0, 200, 0), -5.f, 5.f, &(Parameters::getInstance()->g_curvmax));
+				}
 				
 				static bool unfold_flags= 0;
 				static bool unfold_actions= 0;
@@ -1190,7 +1211,7 @@ int main( int argc, char **argv )
 {
 	if (argc < 2)
 	{
-		printf("Usage : %s <data_file> [size]\n\n Size:\t default = 256\n", argv[0]);
+		printf("Usage : %s <data_file> <size> [light]\n\n Size:\t default = 256\n Light: if set to one, the exporter is not available but the application requires less GPU memory", argv[0]);
 		return 0;
 	}
 	Vizo app(argc, argv);
