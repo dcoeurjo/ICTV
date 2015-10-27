@@ -363,20 +363,22 @@ public:
 		plot = false;
 		transition_cells_displayed = true;
 		
-		std::string file(argv[1]);
-		file = file.substr(file.find_last_of('/')+1, (file.find_last_of('.')-1)-file.find_last_of('/'));
-		printf("%s\n", file.c_str());
-		char buf[400];
-		sprintf (buf, "time_plot_%s_r%.2lf_s%d_l%d_m%d.txt", file.c_str(), 
-						 Parameters::getInstance()->g_curvradius, 
-						 Parameters::getInstance()->g_sizetex, 
-						 (int)Parameters::getInstance()->g_lvl,
-						 (int)Parameters::getInstance()->g_ground_truth);
-		plotfd2 = fopen(buf,"w");
-		if (plotfd2 == NULL)
-				perror("fopen");
-		fprintf(plotfd2, "# Frame Lvl \t\t TotalCells \t\t RegCells \t\t TrCells \t\t Tgl \t\t LodTime (ms) \t\t CullTime (ms) \t\t RegTglTime (ms) \t\t TrTglTime (ms)\t\t ShadingTime (ms)\t\t ShdLessTime (ms)\t\t TotalTime (ms) \t\t Cpu Time (ns)\n");
-		
+		if( plot )
+		{
+			std::string file(argv[1]);
+			file = file.substr(file.find_last_of('/')+1, (file.find_last_of('.')-1)-file.find_last_of('/'));
+			printf("%s\n", file.c_str());
+			char buf[400];
+			sprintf (buf, "time_plot_%s_r%.2lf_s%d_l%d_m%d.txt", file.c_str(), 
+							Parameters::getInstance()->g_curvradius, 
+							Parameters::getInstance()->g_sizetex, 
+							(int)Parameters::getInstance()->g_lvl,
+							(int)Parameters::getInstance()->g_ground_truth);
+			plotfd2 = fopen(buf,"w");
+			if (plotfd2 == NULL)
+					perror("fopen");
+			fprintf(plotfd2, "# Frame Lvl \t\t TotalCells \t\t RegCells \t\t TrCells \t\t Tgl \t\t LodTime (ms) \t\t CullTime (ms) \t\t RegTglTime (ms) \t\t TrTglTime (ms)\t\t ShadingTime (ms)\t\t ShdLessTime (ms)\t\t TotalTime (ms) \t\t Cpu Time (ns)\n");
+		}
 		
 		// OpenGL context flags
 		glEnable (GL_DEPTH_TEST);
@@ -1267,7 +1269,7 @@ int main( int argc, char **argv )
 {
 	if (argc < 3)
 	{
-		printf("Usage : %s <data_file> <size> <type> [light]\n\n Size:\t default = 256\n Type:\t 1 - .raw files\n\t2 - polynomial\n Light: if set to one, the exporter is not available but the application requires less GPU memory", argv[0]);
+		printf("Usage : %s <data_file> <size> <type> [light]\n\n Size:\t default = 256\n Type:\t 1 - .raw files\n\t2 - polynomial\n Light: if set to one, the exporter is not available but the application requires less GPU memory\n", argv[0]);
 		return 0;
 	}
 	Vizo app(argc, argv);
