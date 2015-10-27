@@ -1,21 +1,33 @@
-To be installed in the same folder as GKIT.
+# Interactive Curvature Tensor Visualization
 
-Build & run
-	cd src/GKIT
-	premake4 gmake
-	make vizo
-	./vizo ../../data/raw/octa-flower-130_border.raw 1 130
-	(or any other .raw. 
-	 *1* is ... because.
-	 *130* is the size of the object's bounding box.)
+### Build & run
+```sh
+cd src/GKIT
+premake4 gmake
+make vizo
+./vizo <data> 1 <size>
+```
+* \<data\> - any other .raw file
+* \<size\> - object's bounding box.
+
+#### Example
+
+```sh
+./vizo ../../data/raw/octa-flower-130_border.raw 1 130
+```
+
 
 GKIT will lookup the sources with the path "../ICTV/src/cpp"
 
-Dependencies: SDL2, SDL2_image, SDL2_ttf, openexr, glew
+#### Dependencies
+* SDL2
+* SDL2_image
+* SDL2_ttf
+* openexr
+* glew
 
-Video : https://www.youtube.com/watch?v=s65R0osQmYo
+### Video
+[https://www.youtube.com/watch?v=s65R0osQmYo](https://www.youtube.com/watch?v=s65R0osQmYo)
 
-
-data contains two txt files, vp & qp.
-Those are transformations matrices used to remember/load a viewpoint.
-
+### Preview
+![](http://i.imgur.com/m72QeV9.gif)
