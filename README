@@ -13,6 +13,7 @@ GKIT will lookup the sources with the path "../ICTV/src/cpp"
 
 Dependencies: SDL2, SDL2_image, SDL2_ttf, openexr, glew
 
+Video : https://www.youtube.com/watch?v=s65R0osQmYo
 
 
 data contains two txt files, vp & qp.
