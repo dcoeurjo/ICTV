@@ -213,6 +213,7 @@ private:
 	bool reload_fetch;
 	bool movement;
 	bool animate;
+	bool hierarch;
 	
 	//Parameters keep for export
 	bool was_regular_grid;
@@ -257,10 +258,10 @@ public:
 	    
 	int init( )
 	{
-		bool hierarch = computeSphereSubdivision((int)Parameters::getInstance()->g_curvradius, ceil( log2(atoi(argv[2])) ));
+		hierarch = computeSphereSubdivision((int)Parameters::getInstance()->g_curvradius, ceil( log2(atoi(argv[2])) ));
 		if (!hierarch)
-			exit(0);
-		
+			Parameters::getInstance()->g_ground_truth = 1;
+
 		//Create queries
 		fprintf(stdout, "Status: Using GLEW %s\n", glewGetString(GLEW_VERSION));
 		m_time_lod = gk::createTimeQuery();
@@ -1029,9 +1030,12 @@ public:
 				sprintf(tmp, "Isosurface %.2f", Parameters::getInstance()->g_isosurface);
 				m_widgets.doLabel(nv::Rect(), tmp);
 				m_widgets.doHorizontalSlider(nv::Rect(0,0, 200, 0), 0.f, 1.f, &(Parameters::getInstance()->g_isosurface));*/
-				sprintf(tmp, "Mode:\nGT (1), GT hierachique (2),\nApprox (3)\nCurrent %d", (int)Parameters::getInstance()->g_ground_truth);
-				m_widgets.doLabel(nv::Rect(), tmp);
-				m_widgets.doHorizontalSlider(nv::Rect(0,0, 200, 0), 1.1, 3.9, &(Parameters::getInstance()->g_ground_truth));
+				if (hierarch)
+				{
+					sprintf(tmp, "Mode:\nRegular (1), Hierarchical (2)\nCurrent %d", (int)Parameters::getInstance()->g_ground_truth);
+					m_widgets.doLabel(nv::Rect(), tmp);
+					m_widgets.doHorizontalSlider(nv::Rect(0,0, 200, 0), 1.1, 2.9, &(Parameters::getInstance()->g_ground_truth));
+				}
 				sprintf(tmp, "Mode:\nNone (0),\nMean curvature (1), Gaussian curvature (2)\nK1 (3), K2(4)\nCurrent %d", (int)Parameters::getInstance()->g_curv_val);
 				m_widgets.doLabel(nv::Rect(), tmp);
 				m_widgets.doHorizontalSlider(nv::Rect(0,0, 200, 0), 0.1, 4.9, &(Parameters::getInstance()->g_curv_val));

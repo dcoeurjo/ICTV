@@ -224,7 +224,7 @@ void Curvature::loadProgram()
 		load_curv(Parameters::getInstance()->g_programs[PROGRAM_APPROXCURV], LOCATION_APPROXCURV_SIZE);
 	}
 	
-	{
+	/*{
 		GLuint *program = &Parameters::getInstance()->g_programs[PROGRAM_GTCURV];
 
         fprintf (stderr, "loading GT curv program... "); fflush (stderr);
@@ -241,7 +241,7 @@ void Curvature::loadProgram()
         glLinkProgram (*program);
 		
 		load_curv(Parameters::getInstance()->g_programs[PROGRAM_GTCURV], LOCATION_GTCURV_SIZE);
-	}
+	}*/
 	
 	{
 		GLuint *program = &Parameters::getInstance()->g_programs[PROGRAM_HIERARCHCURV];
@@ -308,11 +308,11 @@ void Curvature::run(GLuint nbcells_reg, GLuint nbcells_tr, GLuint* nb_triangles_
 {
 	configureProgram();
 
-	if((int)Parameters::getInstance()->g_ground_truth == 1)
-		glUseProgram(Parameters::getInstance()->g_programs[PROGRAM_GTCURV]);
-	else if((int)Parameters::getInstance()->g_ground_truth == 2)
+	if((int)Parameters::getInstance()->g_ground_truth == 2)
+	//	glUseProgram(Parameters::getInstance()->g_programs[PROGRAM_GTCURV]);
+	//else if((int)Parameters::getInstance()->g_ground_truth == 2)
 		glUseProgram(Parameters::getInstance()->g_programs[PROGRAM_HIERARCHCURV]);
-	else if((int)Parameters::getInstance()->g_ground_truth == 3)
+	else if((int)Parameters::getInstance()->g_ground_truth == 1)
 		glUseProgram(Parameters::getInstance()->g_programs[PROGRAM_APPROXCURV]);
 
 	glBeginQuery(GL_PRIMITIVES_GENERATED, Parameters::getInstance()->g_query[QUERY_TRIANGLES]);
