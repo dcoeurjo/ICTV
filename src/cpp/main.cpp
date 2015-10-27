@@ -514,6 +514,7 @@ public:
 				if( Parameters::getInstance()->g_light )
 				{
 					printf("Exporting is not available in light mode\n");
+					Parameters::getInstance()->g_export = false;
 				}
 				else
 				{
@@ -1095,7 +1096,9 @@ public:
 					m_widgets.doButton(nv::Rect(), "Regular grid", &(Parameters::getInstance()->g_regular));
 					m_widgets.doButton(nv::Rect(), "Auto refine", &(Parameters::getInstance()->g_auto_refine));
 					m_widgets.doButton(nv::Rect(), "k1k2 normals", &(Parameters::getInstance()->g_k1k2_normals));
-					m_widgets.doButton(nv::Rect(), "Export Data", &(Parameters::getInstance()->g_export));
+					
+					if (!Parameters::getInstance()->g_light)
+						m_widgets.doButton(nv::Rect(), "Export Data", &(Parameters::getInstance()->g_export));
 					
 					m_widgets.endPanel();
 				}
