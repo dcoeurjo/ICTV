@@ -1,6 +1,7 @@
 # Interactive Curvature Tensor Visualization
 
 ### Build & run
+
 ```sh
 cd src/GKIT
 premake4 gmake
@@ -16,10 +17,8 @@ make vizo
 ./vizo ../../data/raw/octa-flower-130_border.raw 1 130
 ```
 
-
-GKIT will lookup the sources with the path "../ICTV/src/cpp"
-
 #### Dependencies
+
 * SDL2
 * SDL2_image
 * SDL2_ttf
@@ -30,4 +29,17 @@ GKIT will lookup the sources with the path "../ICTV/src/cpp"
 [https://www.youtube.com/watch?v=s65R0osQmYo](https://www.youtube.com/watch?v=s65R0osQmYo)
 
 ### Preview
+
 ![alt tag](http://i.imgur.com/m72QeV9.gif)
+
+### Credits
+
+*	Hélène Perrier @Logarithme
+*	Jérémy Levallois @jlevallois
+*	David Coeurjolly @dcoeurjo
+*	Jean-Philippe Farrugia @jpfarrug
+*	Jean-Claude Iehl @jciehl
+*	Jacques-Olivier Lachaud @JacquesOlivierLachaud
+
+
+:octocat:
