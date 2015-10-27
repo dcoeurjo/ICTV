@@ -38,7 +38,7 @@ make vizo
 *	Hélène Perrier [@Logarithme](https://github.com/Logarithme)
 *	Jérémy Levallois [@jlevallois](https://github.com/jlevallois)
 *	David Coeurjolly [@dcoeurjo](https://github.com/dcoeurjo)
-*	Jean-Philippe Farrugia [@jpfarrug](hhttps://github.com/jpfarrug)
+*	Jean-Philippe Farrugia [@jpfarrug](https://github.com/jpfarrug)
 *	Jean-Claude Iehl [@jciehl](https://github.com/jciehl)
 *	Jacques-Olivier Lachaud [@JacquesOlivierLachaud](https://github.com/JacquesOlivierLachaud)
 
