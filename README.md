@@ -48,6 +48,29 @@ First principal direction field | Second principal direction field | Normal vect
 *	Jean-Claude Iehl [@jciehl](https://github.com/jciehl)
 *	Jacques-Olivier Lachaud [@JacquesOlivierLachaud](https://github.com/JacquesOlivierLachaud)
 
+### License
+
+* Source code ([/src](https://github.com/dcoeurjo/ICTV/tree/master/src) [/tools](https://github.com/dcoeurjo/ICTV/tree/master/tools))
+
+>	**GNU General Public License**
+>	
+>    This program is free software: you can redistribute it and/or modify
+>    it under the terms of the GNU General Public License as published by
+>    the Free Software Foundation, either version 3 of the License, or
+>    (at your option) any later version.
+>
+>    This program is distributed in the hope that it will be useful,
+>    but WITHOUT ANY WARRANTY; without even the implied warranty of
+>    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+>    GNU General Public License for more details.
+>    
+>    http://www.gnu.org/licenses/gpl-3.0.en.html
+
+* Article ([/latex](https://github.com/dcoeurjo/ICTV/tree/master/latex))
+
+> **Creative Commons CC BY-NC-SA 2.0**
+> 
+>    https://creativecommons.org/licenses/by-nc-sa/2.0/
+
 
 :octocat:
-
