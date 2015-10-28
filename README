@@ -1,18 +1,28 @@
-To be installed in the same folder as GKIT.
 
-Build & run
-	cd src/GKIT
+Build (LINUX)
+	cd src/gkit
 	premake4 gmake
-	make vizo
-	./vizo ../../data/raw/octa-flower-130_border.raw 1 130
-	(or any other .raw. 
-	 *1* is ... because.
-	 *130* is the size of the object's bounding box.)
+	make ICTV
+	
+Usage : ./ICTV <data_file> <size> <type> [light]
 
-GKIT will lookup the sources with the path "../ICTV/src/cpp"
+Size:	default = 256
+
+Type:	1 - .raw files
+	2 - Enter a piece of glsl code filling a variable h with the implicit fonction to render.
+	x, y, and z are available variables containing the position of the vertex in [-10:10].
+	t is a variable containing the time elapsed is seconds.
+	A point (x,y,z) is considered inside if h < 0.
+
+Light: 	If a fourth argument is given (whatever its value), the application runs in light mode. 
+	It requires less GPU memory but does not allow to export the data
+		
+Examples:
+./ICTV "h=y - sin(t)*sin(x)" 128 2
+./ICTV ../../data/raw/bunny_border_67.raw 67 1
+
 
 Dependencies: SDL2, SDL2_image, SDL2_ttf, openexr, glew
-
 
 
 data contains two txt files, vp & qp.
