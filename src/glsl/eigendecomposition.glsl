@@ -1,190 +1,27 @@
 /*
-// Slightly modified version of  Stan Melax's code for 3x3 matrix diagonalization (Thanks Stan!)
-// source: http://www.melax.com/diag.html?attredirects=0
-void getEigenValuesVectors2(float A[3][3], out float Q[3][3], out float vecD[3])
-{
-	float D[3][3];
-    // A must be a symmetric matrix.
-    // returns Q and D such that 
-    // Diagonal matrix D = QT * A * Q;  and  A = Q*D*QT
-    int maxsteps=24;  // certainly wont need that many.
-    int k0, k1, k2;
-    float o[3], m[3];
-    float q [4] = {0.0,0.0,0.0,1.0};
-    float jr[4];
-    float sqw, sqx, sqy, sqz;
-    float tmp1, tmp2, mq;
-    float AQ[3][3];
-    float thet, sgn, t, c;
-    for(int i=0;i < maxsteps;++i)
-    {
-        // quat to matrix
-        sqx      = q[0]*q[0];
-        sqy      = q[1]*q[1];
-        sqz      = q[2]*q[2];
-        sqw      = q[3]*q[3];
-        Q[0][0]  = ( sqx - sqy - sqz + sqw);
-        Q[1][1]  = (-sqx + sqy - sqz + sqw);
-        Q[2][2]  = (-sqx - sqy + sqz + sqw);
-        tmp1     = q[0]*q[1];
-        tmp2     = q[2]*q[3];
-        Q[1][0]  = 2.0 * (tmp1 + tmp2);
-        Q[0][1]  = 2.0 * (tmp1 - tmp2);
-        tmp1     = q[0]*q[2];
-        tmp2     = q[1]*q[3];
-        Q[2][0]  = 2.0 * (tmp1 - tmp2);
-        Q[0][2]  = 2.0 * (tmp1 + tmp2);
-        tmp1     = q[1]*q[2];
-        tmp2     = q[0]*q[3];
-        Q[2][1]  = 2.0 * (tmp1 + tmp2);
-        Q[1][2]  = 2.0 * (tmp1 - tmp2);
-
-        // AQ = A * Q
-        AQ[0][0] = Q[0][0]*A[0][0]+Q[1][0]*A[0][1]+Q[2][0]*A[0][2];
-        AQ[0][1] = Q[0][1]*A[0][0]+Q[1][1]*A[0][1]+Q[2][1]*A[0][2];
-        AQ[0][2] = Q[0][2]*A[0][0]+Q[1][2]*A[0][1]+Q[2][2]*A[0][2];
-        AQ[1][0] = Q[0][0]*A[0][1]+Q[1][0]*A[1][1]+Q[2][0]*A[1][2];
-        AQ[1][1] = Q[0][1]*A[0][1]+Q[1][1]*A[1][1]+Q[2][1]*A[1][2];
-        AQ[1][2] = Q[0][2]*A[0][1]+Q[1][2]*A[1][1]+Q[2][2]*A[1][2];
-        AQ[2][0] = Q[0][0]*A[0][2]+Q[1][0]*A[1][2]+Q[2][0]*A[2][2];
-        AQ[2][1] = Q[0][1]*A[0][2]+Q[1][1]*A[1][2]+Q[2][1]*A[2][2];
-        AQ[2][2] = Q[0][2]*A[0][2]+Q[1][2]*A[1][2]+Q[2][2]*A[2][2];
-        // D = Qt * AQ
-        D[0][0] = AQ[0][0]*Q[0][0]+AQ[1][0]*Q[1][0]+AQ[2][0]*Q[2][0]; 
-        D[0][1] = AQ[0][0]*Q[0][1]+AQ[1][0]*Q[1][1]+AQ[2][0]*Q[2][1]; 
-        D[0][2] = AQ[0][0]*Q[0][2]+AQ[1][0]*Q[1][2]+AQ[2][0]*Q[2][2]; 
-        D[1][0] = AQ[0][1]*Q[0][0]+AQ[1][1]*Q[1][0]+AQ[2][1]*Q[2][0]; 
-        D[1][1] = AQ[0][1]*Q[0][1]+AQ[1][1]*Q[1][1]+AQ[2][1]*Q[2][1]; 
-        D[1][2] = AQ[0][1]*Q[0][2]+AQ[1][1]*Q[1][2]+AQ[2][1]*Q[2][2]; 
-        D[2][0] = AQ[0][2]*Q[0][0]+AQ[1][2]*Q[1][0]+AQ[2][2]*Q[2][0]; 
-        D[2][1] = AQ[0][2]*Q[0][1]+AQ[1][2]*Q[1][1]+AQ[2][2]*Q[2][1]; 
-        D[2][2] = AQ[0][2]*Q[0][2]+AQ[1][2]*Q[1][2]+AQ[2][2]*Q[2][2];
-        o[0]    = D[1][2];
-        o[1]    = D[0][2];
-        o[2]    = D[0][1];
-        m[0]    = abs(o[0]);
-        m[1]    = abs(o[1]);
-        m[2]    = abs(o[2]);
-
-        k0      = (m[0] > m[1] && m[0] > m[2])?0: (m[1] > m[2])? 1 : 2; // index of largest element of offdiag
-        k1      = (k0+1)%3;
-        k2      = (k0+2)%3;
-        if (o[k0]==0.0)
-        {
-            break;  // diagonal already
-        }
-        thet    = (D[k2][k2]-D[k1][k1])/(2.0*o[k0]);
-        sgn     = (thet > 0.0)?1.0:-1.0;
-        thet   *= sgn; // make it positive
-        t       = sgn /(thet +((thet < 1.E6)?sqrt(thet*thet+1.0):thet)) ; // sign(T)/(|T|+sqrt(T^2+1))
-        c       = 1.0/sqrt(t*t+1.0); //  c= 1/(t^2+1) , t=s/c 
-        if(c==1.0)
-        {
-            break;  // no room for improvement - reached machine precision.
-        }
-        jr[0 ]  = jr[1] = jr[2] = jr[3] = 0.0;
-        jr[k0]  = sgn*sqrt((1.0-c)/2.0);  // using 1/2 angle identity sin(a/2) = sqrt((1-cos(a))/2)  
-        jr[k0] *= -1.0; // since our quat-to-matrix convention was for v*M instead of M*v
-        jr[3 ]  = sqrt(1.0f - jr[k0] * jr[k0]);
-        if(jr[3]==1.0)
-        {
-            break; // reached limits of floating point precision
-        }
-        q[0]    = (q[3]*jr[0] + q[0]*jr[3] + q[1]*jr[2] - q[2]*jr[1]);
-        q[1]    = (q[3]*jr[1] - q[0]*jr[2] + q[1]*jr[3] + q[2]*jr[0]);
-        q[2]    = (q[3]*jr[2] + q[0]*jr[1] - q[1]*jr[0] + q[2]*jr[3]);
-        q[3]    = (q[3]*jr[3] - q[0]*jr[0] - q[1]*jr[1] - q[2]*jr[2]);
-        mq      = sqrt(q[0] * q[0] + q[1] * q[1] + q[2] * q[2] + q[3] * q[3]);
-        q[0]   /= mq;
-        q[1]   /= mq;
-        q[2]   /= mq;
-        q[3]   /= mq;
-    }
-    
-    vecD[0] = D[0][0];
-    vecD[1] = D[1][1];
-    vecD[2] = D[2][2];
-}
-
-
-void computeK1K2(float volume, float r, 
-         vec3 xyz2, vec3 xy_yz_xz, vec3 xyz,
-         out vec3 minDir, out vec3 maxDir, out vec3 n, out vec3 val, out float k1, out float k2)
-{ 
-  float eigenvectors[3][3];
-  float eigenvalues[3];
-  float curvmat[3][3];
-  
-  int min_i = 0;
-  int max_i = 1;
-  int med_i = 2;
-  
-  float covxy = xy_yz_xz.x - (xyz.x*xyz.y/volume);
-  float covyz = xy_yz_xz.y - (xyz.y*xyz.z/volume);
-  float covxz = xy_yz_xz.z - (xyz.x*xyz.z/volume);
-  
-  //volume = volume;
-  curvmat[0][0] = xyz2.x - (xyz.x*xyz.x/volume); 
-  curvmat[0][1] = covxy;  
-  curvmat[0][2] = covyz;
-  
-  curvmat[1][0] = covxy; 
-  curvmat[1][1] = xyz2.y - (xyz.y*xyz.y/volume);
-  curvmat[1][2] = covxz;
-  
-  curvmat[2][0] = covxz;
-  curvmat[2][1] = covyz;
-  curvmat[2][2] = xyz2.z - (xyz.z*xyz.z/volume);
-
-  getEigenValuesVectors2( curvmat, eigenvectors, eigenvalues );
-  
-  min_i = 0;
-  if ((eigenvalues[1] <= eigenvalues[0]) && (eigenvalues[1] <= eigenvalues[2]))
-    min_i= 1;
-  if ((eigenvalues[2] <= eigenvalues[0]) && (eigenvalues[2] <= eigenvalues[1]))
-    min_i= 2;
-    
-  n = vec3( eigenvectors[0][min_i], eigenvectors[1][min_i], eigenvectors[2][min_i] );
-  
-  max_i = 0;
-  if (eigenvalues[1] >= eigenvalues[0] && eigenvalues[1] >= eigenvalues[2])
-      max_i= 1;
-  if (eigenvalues[2] >= eigenvalues[0] && eigenvalues[2] >= eigenvalues[1])
-      max_i= 2;
-  
-  maxDir = vec3( eigenvectors[0][max_i], eigenvectors[1][max_i], eigenvectors[2][max_i] );
-
-  for(int i=0; i<3; i++)
-  if (min_i != i && max_i != i)
-    med_i = i;
-    
-  minDir = vec3( eigenvectors[0][med_i], eigenvectors[1][med_i], eigenvectors[2][med_i] );
-  
-  float l1 = eigenvalues[med_i];
-  float l2 = eigenvalues[max_i];
-  
-  float pi = 3.14159;
-  float r6 = r*r*r*r*r*r;
-  k1 = (6.0/(pi*r6))*(l2 - 3.0*l1) + (8.0/(5.0*r));
-  k2 = (6.0/(pi*r6))*(l1 - 3.0*l2) + (8.0/(5.0*r));
-  
-  val = vec3( eigenvalues[min_i], eigenvalues[med_i], eigenvalues[max_i] );
-}
-*/
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+ * Copyright 2015 
+ * Hélène Perrier <helene.perrier@liris.cnrs.fr>
+ * Jérémy Levallois <jeremy.levallois@liris.cnrs.fr>
+ * David Coeurjolly <david.coeurjolly@liris.cnrs.fr>
+ * Jacques-Olivier Lachaud <jacques-olivier.lachaud@univ-savoie.fr>
+ * Jean-Philippe Farrugia <jean-philippe.farrugia@liris.cnrs.fr>
+ * Jean-Claude Iehl <jean-claude.iehl@liris.cnrs.fr>
+ * 
+ * This file is part of ICTV.
+ * 
+ * ICTV is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * ICTV is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with ICTV.  If not, see <http://www.gnu.org/licenses/>
+ */
 
 void getEigenValuesVectors ( in float mat_data[3][3], out float vectors[3][3], out float values[3] )
 { 
