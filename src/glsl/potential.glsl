@@ -1,29 +1,3 @@
-/*
- * Copyright 2015 
- * Hélène Perrier <helene.perrier@liris.cnrs.fr>
- * Jérémy Levallois <jeremy.levallois@liris.cnrs.fr>
- * David Coeurjolly <david.coeurjolly@liris.cnrs.fr>
- * Jacques-Olivier Lachaud <jacques-olivier.lachaud@univ-savoie.fr>
- * Jean-Philippe Farrugia <jean-philippe.farrugia@liris.cnrs.fr>
- * Jean-Claude Iehl <jean-claude.iehl@liris.cnrs.fr>
- * 
- * This file is part of ICTV.
- * 
- * ICTV is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- * 
- * ICTV is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- * 
- * You should have received a copy of the GNU General Public License
- * along with ICTV.  If not, see <http://www.gnu.org/licenses/>
- */
-
-
 uniform float u_time;
  uniform float u_size_tex;
  uniform sampler3D densities;
@@ -34,10 +8,8 @@ float getPotential(vec3 position, float t, int lvl) {
 	float size = 20.0;
 	vec3 p = (position-0.5)*size;
 	float x = p.x; float y = p.y; float z = p.z;
-	float h;float d=(abs(sin(0.5*t))+0.5) * sqrt(x*x+z*z)+0.01; h=y - (10*(sin(d)/d));;
+	float h;h = textureLod(densities, position, lvl).r;
 ret = h;
-if (ret < 0) ret = 1;
-		else ret = 0; 
 return ret;
 
  }

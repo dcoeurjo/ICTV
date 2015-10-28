@@ -617,7 +617,7 @@ public:
 				//fprintf(plotfd, "# Frame \t\t TotalCells \t\t RegCells \t\t TrCells \t\t Tgl \t\t LodTime (ms) \t\t CullTime (ms) \t\t RegTglTime (ms) \t\t TrTglTime (ms)\t\t ShadingTime (ms)\t\t ShdLessTime (ms)\t\t TotalTime (ms) \t\t Cpu Time (ns)\n");
 				fprintf(plotfd, "#Vertex \t\tCurv \tK1 \tK2 \tDir Min \t\tDir Max \t\tNormale \t\tNb Probe \n");// \t\tEigenvalues \t\tCovmat Diag \t\tCovmat Upper\n");
 				fprintf(plotfd, "#N %d\n", 3*triangles_regular);
-				fprintf(plotfd, "#total curv ms %d\n", gpu_shading_time / 1000);
+				fprintf(plotfd, "#total curv ms %lu\n", gpu_shading_time / 1000);
 			
 				printf(" [1/2] Copying from the GPU ... \n");
 				
@@ -1155,7 +1155,7 @@ public:
 				}
 				
 				static bool unfold_flags= 0;
-				static bool unfold_actions= 0;
+				//static bool unfold_actions= 0;
 				static nv::Rect r_flags;
 				static nv::Rect r_actions;
 				if(m_widgets.beginPanel(r_flags, "Flags", &unfold_flags))
@@ -1291,7 +1291,20 @@ int main( int argc, char **argv )
 {
 	if (argc < 3)
 	{
-		printf("Usage : %s <data_file> <size> <type> [light]\n\n Size:\t default = 256\n Type:\t 1 - .raw files\n\t2 - polynomial\n Light: if set to one, the exporter is not available but the application requires less GPU memory\n", argv[0]);
+		printf("\
+Usage : %s <data_file> <size> <type> [light]\n\n\
+Size:	default = 256\n\n\
+Type:	1 - .raw files\n\
+	2 - Enter a piece of glsl code filling a variable h with the implicit fonction to render.\n\
+	x, y, and z are available variables containing the position of the vertex in [-10:10].\n\
+	t is a variable containing the time elapsed is seconds.\n\
+	A point (x,y,z) is considered inside if h < 0.\n\n\
+Light: 	If a fourth argument is given (whatever its value), the application is run in light mode. \n\
+	It requires less GPU memory but does not allow to export the data\n\
+		\n\
+Examples:\n\
+%s \"h=y - sin(t)*sin(x)\" 128 2\n\
+%s ../../data/raw/bunny_border_67.raw 67 1\n", argv[0], argv[0], argv[0]);
 		return 0;
 	}
 	Vizo app(argc, argv);

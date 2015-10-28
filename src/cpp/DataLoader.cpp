@@ -354,7 +354,9 @@ void DataRaw::loadFile(char* file)
     data_char = (unsigned char*) malloc(sizeof(unsigned char)*total);
     
 	unsigned char* raw_data = (unsigned char*) malloc(sizeof(unsigned char)*sizex*sizex*sizex);
-    fread(raw_data, sizeof(unsigned char), sizex*sizex*sizex, fd);
+    unsigned int r = fread(raw_data, sizeof(unsigned char), sizex*sizex*sizex, fd);
+	if (r != sizex*sizex*sizex)
+		printf("Read only %u values\n", r);
 	fclose(fd);
 
 	unsigned char min = raw_data[0];
