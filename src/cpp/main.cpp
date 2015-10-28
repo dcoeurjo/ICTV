@@ -842,7 +842,8 @@ public:
 		glDeleteTransformFeedbacks(FEEDBACK_COUNT, Parameters::getInstance()->g_feedbacks);
 		glDeleteQueries(1, &Parameters::getInstance()->g_query[QUERY_REGULAR]);
 		glDeleteQueries(1, &Parameters::getInstance()->g_query[QUERY_TRANSITION]);
-		fclose(plotfd2);
+		if (plot)
+			fclose(plotfd2);
 		return 0;
 	}
 

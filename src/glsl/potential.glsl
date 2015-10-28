@@ -8,7 +8,7 @@ float getPotential(vec3 position, float t, int lvl) {
 	float size = 20.0;
 	vec3 p = (position-0.5)*size;
 	float x = p.x; float y = p.y; float z = p.z;
-	float h;h=y - sin(t)*sin(x);
+	float h;h=y-sin(t)*sin(x);
 ret = h;
 if (ret < 0) ret = 1;
 		else ret = 0; 

@@ -1,4 +1,4 @@
-solution "TP"
+solution "ICTV"
 	configurations { "debug", "release" }
 
 		local gkit_files =
@@ -93,7 +93,7 @@ project("testGL")
 		files ( gkit_files )
 		files { "mesh_viewer.cpp" }
 
-project("vizo")
+project("ICTV")
 	language "C++"
 	kind "ConsoleApp"
 	files ( gkit_files )
