@@ -447,7 +447,7 @@ Value computeHierarchy( MipMap* M, int x0, int y0, int z0, Value r )
   return acc;
 }
 
-Value computeHierarchy( int lvl, int x0, int y0, int z0, Value r )
+void computeHierarchy( int lvl, int x0, int y0, int z0, Value r )
 {
   Value weight[ LVL+1 ];
   Value diag  [ LVL+1 ];
@@ -460,7 +460,7 @@ Value computeHierarchy( int lvl, int x0, int y0, int z0, Value r )
       diag  [ i ] = diag  [ i+1 ] * (Value) 2;
     }
   int xyzk[ 4 ] = { 0, 0, 0, 0 };
-  Value acc = 0;
+  //Value acc = 0;
   Value r2  = r*r;
   do 
     {
@@ -491,7 +491,7 @@ Value computeHierarchy( int lvl, int x0, int y0, int z0, Value r )
 					if(xyzk_list[0] >= MAX_SUBDIV)
 					{
 						printf("Cannot compute hierarchical decomposition for it contains more than %d elements\n", MAX_SUBDIV);
-						return acc;
+						return;// acc;
 					}
 					xyzk_list[ (int)xyzk_list[0]*4 ] = (xyzk[0] - pow(2, xyzk[3]-1))/pow(2, xyzk[3]);
 					xyzk_list[ (int)xyzk_list[0]*4 + 1 ] = (xyzk[1] - pow(2, xyzk[3]-1))/pow(2, xyzk[3]);
@@ -516,7 +516,7 @@ Value computeHierarchy( int lvl, int x0, int y0, int z0, Value r )
 					if(xyzk_list[0] >= MAX_SUBDIV)
 					{
 						printf("Cannot compute hierarchical decomposition for it contains more than %d elements\n", MAX_SUBDIV);
-						return acc;
+						return;// acc;
 					}
 					xyzk_list[ (int)xyzk_list[0]*4 ] = (xyzk[0] - pow(2, xyzk[3]-1))/pow(2, xyzk[3]);
 					xyzk_list[ (int)xyzk_list[0]*4 + 1 ] = (xyzk[1] - pow(2, xyzk[3]-1))/pow(2, xyzk[3]);
@@ -532,7 +532,7 @@ Value computeHierarchy( int lvl, int x0, int y0, int z0, Value r )
         }
     }
   while ( xyzk[ 3 ] > 0 );
-  return acc;
+  //return acc;
 }
 
 
@@ -818,7 +818,7 @@ bool computeSphereSubdivision(int r, int lvl)
 	int y0 = 1 << (lvl-1); 
 	int z0 = 1 << (lvl-1); 
 	//Value exact = computeExact( x0+0.5, y0, z0, r, lvl );
-	Value exact = computeHierarchy( lvl, x0, y0, z0, r );
+	computeHierarchy( lvl, x0, y0, z0, r );
 	printf("Fetch %d cells\n", (int)xyzk_list[0]);
 	
 	//for(int i=1; i<=xyzk_list[0]; i++)

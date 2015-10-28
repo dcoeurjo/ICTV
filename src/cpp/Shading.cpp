@@ -25,7 +25,6 @@
 
 
 #include "Shading.h"
-#include <boost/concept_check.hpp>
 
 #include "GL/GLQuery.h"
 #include "GL/GLTexture.h"
@@ -231,7 +230,7 @@ void Shading::run(GLuint nb_triangles_regular)
 
 	glUseProgram(Parameters::getInstance()->g_programs[PROGRAM_SHADING]);
 	
-	int res = (int)Parameters::getInstance()->g_tessel;
+	//int res = (int)Parameters::getInstance()->g_tessel;
 	glBindVertexArray (Parameters::getInstance()->g_vertex_arrays[VERTEX_ARRAY_SHADING]);
 	glDrawArrays(
 		GL_TRIANGLES,

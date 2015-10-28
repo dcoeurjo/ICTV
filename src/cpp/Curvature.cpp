@@ -25,7 +25,6 @@
 
 
 #include "Curvature.h"
-#include <boost/concept_check.hpp>
 
 #include "GL/GLQuery.h"
 #include "GL/GLTexture.h"
