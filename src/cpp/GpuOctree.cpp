@@ -261,8 +261,8 @@ void GPUOctree::loadVertexArrays()
 		glEnableVertexAttribArray(1);
                 glBindBuffer(GL_ARRAY_BUFFER, Parameters::getInstance()->g_buffers[BUFFER_CODE]);
                 glVertexAttribPointer(1, 4, GL_FLOAT, 0, 0, 0);
-	glBindVertexArray (0);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
+		glBindVertexArray (0);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
         
         glGenVertexArrays (1, Parameters::getInstance()->g_vertex_arrays + VERTEX_ARRAY_LTREE_RENDER2);
         glBindVertexArray(Parameters::getInstance()->g_vertex_arrays[VERTEX_ARRAY_LTREE_RENDER2]);
@@ -272,8 +272,8 @@ void GPUOctree::loadVertexArrays()
 		glEnableVertexAttribArray(1);
                 glBindBuffer(GL_ARRAY_BUFFER, Parameters::getInstance()->g_buffers[BUFFER_CODE]);
                 glVertexAttribPointer(1, 4, GL_FLOAT, 0, 0, 0);
-	glBindVertexArray (0);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
+		glBindVertexArray (0);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
 	
 	/*glGenVertexArrays (1, Parameters::getInstance()->g_vertex_arrays + VERTEX_ARRAY_OCTREE_RENDER1);
         glBindVertexArray(Parameters::getInstance()->g_vertex_arrays[VERTEX_ARRAY_OCTREE_RENDER1]);
