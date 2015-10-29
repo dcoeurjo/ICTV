@@ -32,7 +32,8 @@ make vizo
 
 ### Video
 
-[https://www.youtube.com/watch?v=JWszppL8aP4](https://www.youtube.com/watch?v=JWszppL8aP4)
+* Preview: [https://www.youtube.com/watch?v=JWszppL8aP4](https://www.youtube.com/watch?v=JWszppL8aP4)
+* Large dataset exploration: [https://www.youtube.com/watch?v=1mUPesJ0IyI](https://www.youtube.com/watch?v=1mUPesJ0IyI)
 
 ### Preview
 
