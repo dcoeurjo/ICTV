@@ -37,68 +37,70 @@
 
 void configure_curv(GLuint program, GLuint first_loc)
 {
-	/*
-	LOCATION_SHADING_SIZE,
-	LOCATION_SHADING_DENSITY,
-	LOCATION_SHADING_VIEWPORT,
-	LOCATION_SHADING_TAN_FOVY,
-	LOCATION_SHADING_SCALE,
-	LOCATION_SHADING_WIREFRAME,
-	LOCATION_SHADING_CAMERA,
-	LOCATION_SHADING_CURVRADIUS,
-	LOCATION_SHADING_CURVMIN,
-	LOCATION_SHADING_CURVMAX,
-	LOCATION_SHADING_GROUNDTRUTH,
-	LOCATION_SHADING_SIZETEX,
-	*/
 	glProgramUniform3f (program,
-			Parameters::getInstance()->g_uniform_locations[first_loc],//LOCATION_SHADING_SIZE+first_loc],
+			Parameters::getInstance()->g_uniform_locations[first_loc],
 			Parameters::getInstance()->g_geometry.scale[0], Parameters::getInstance()->g_geometry.scale[1], Parameters::getInstance()->g_geometry.scale[2]);
 	glProgramUniform1i (program,
 			Parameters::getInstance()->g_uniform_locations[first_loc+1],
 			TEXTURE_DENSITY);
+	
 	glProgramUniform2f (program,
 			Parameters::getInstance()->g_uniform_locations[first_loc+2],
 			Parameters::getInstance()->g_window.width, Parameters::getInstance()->g_window.height);
 
-	glProgramUniform1f (program,
-			Parameters::getInstance()->g_uniform_locations[first_loc+3],
-			tanf (Parameters::getInstance()->g_camera.fovy / 360.f * 3.14159f));
-	glProgramUniform1f(program,
-			Parameters::getInstance()->g_uniform_locations[first_loc+4],
-			Parameters::getInstance()->g_scale);
-
 	glProgramUniform1i (program,
-			Parameters::getInstance()->g_uniform_locations[first_loc+5],
+			Parameters::getInstance()->g_uniform_locations[first_loc+3],
 			Parameters::getInstance()->g_solid_wireframe);
 
-	glProgramUniform3f (program,
-			Parameters::getInstance()->g_uniform_locations[first_loc+6],
-			Parameters::getInstance()->g_camera.pos[0],
-			Parameters::getInstance()->g_camera.pos[1],
-			Parameters::getInstance()->g_camera.pos[2]
-   			);
-
 	glProgramUniform1f (program,
-                    Parameters::getInstance()->g_uniform_locations[first_loc+7],
+                    Parameters::getInstance()->g_uniform_locations[first_loc+4],
                     Parameters::getInstance()->g_curvradius);
 
     glProgramUniform1f (program,
-                    Parameters::getInstance()->g_uniform_locations[first_loc+8],
+                    Parameters::getInstance()->g_uniform_locations[first_loc+5],
                     Parameters::getInstance()->g_curvmin);
 
     glProgramUniform1f (program,
-                    Parameters::getInstance()->g_uniform_locations[first_loc+9],
+                    Parameters::getInstance()->g_uniform_locations[first_loc+6],
                     Parameters::getInstance()->g_curvmax);
 
     glProgramUniform1i (program,
-            Parameters::getInstance()->g_uniform_locations[first_loc+10],
+            Parameters::getInstance()->g_uniform_locations[first_loc+7],
             (int)Parameters::getInstance()->g_ground_truth);
 
     glProgramUniform1f(program,
-            Parameters::getInstance()->g_uniform_locations[first_loc+11],
+            Parameters::getInstance()->g_uniform_locations[first_loc+8],
             Parameters::getInstance()->g_sizetex);
 	
+	glProgramUniform1i (program,
+			Parameters::getInstance()->g_uniform_locations[first_loc+9],
+ 			(int)Parameters::getInstance()->g_curv_dir);
+	
+	glProgramUniform1i (program,
+			Parameters::getInstance()->g_uniform_locations[first_loc+10],
+ 			(int)Parameters::getInstance()->g_curv_val);
+	
+	glProgramUniform1f (program,
+			Parameters::getInstance()->g_uniform_locations[first_loc+11],
+ 			Parameters::getInstance()->g_lvl);
+
+	glProgramUniform1i (program,
+			Parameters::getInstance()->g_uniform_locations[first_loc+12],
+ 			Parameters::getInstance()->g_k1k2_normals);
+	
+	glProgramUniform1f (program,
+			Parameters::getInstance()->g_uniform_locations[first_loc+13],
+ 			Parameters::getInstance()->g_time_elapsed);
+	
+	glProgramUniform1i (program,
+			Parameters::getInstance()->g_uniform_locations[first_loc+14],
+ 			TEXTURE_SUBDIV_SPHERE);
+	
+	glProgramUniform1i (program,
+			Parameters::getInstance()->g_uniform_locations[first_loc+15],
+ 			Parameters::getInstance()->g_fromtexture );
+	
+		/*
 	glProgramUniform1i (program,
 			Parameters::getInstance()->g_uniform_locations[first_loc+12],
 			TEXTURE_X2Y2Z2);
@@ -110,34 +112,22 @@ void configure_curv(GLuint program, GLuint first_loc)
 	glProgramUniform1i (program,
 			Parameters::getInstance()->g_uniform_locations[first_loc+14],
  			TEXTURE_XYZ);
-	
-	glProgramUniform1i (program,
-			Parameters::getInstance()->g_uniform_locations[first_loc+15],
- 			(int)Parameters::getInstance()->g_curv_dir);
-	
-	glProgramUniform1i (program,
-			Parameters::getInstance()->g_uniform_locations[first_loc+16],
- 			(int)Parameters::getInstance()->g_curv_val);
-	
-	glProgramUniform1f (program,
-			Parameters::getInstance()->g_uniform_locations[first_loc+17],
- 			Parameters::getInstance()->g_lvl);
-
-	glProgramUniform1i (program,
-			Parameters::getInstance()->g_uniform_locations[first_loc+18],
- 			Parameters::getInstance()->g_k1k2_normals);
-	
-	glProgramUniform1f (program,
-			Parameters::getInstance()->g_uniform_locations[first_loc+19],
- 			Parameters::getInstance()->g_time_elapsed);
-	
-	glProgramUniform1i (program,
-			Parameters::getInstance()->g_uniform_locations[first_loc+20],
- 			TEXTURE_SUBDIV_SPHERE);
-	
-	glProgramUniform1i (program,
-			Parameters::getInstance()->g_uniform_locations[first_loc+21],
- 			Parameters::getInstance()->g_fromtexture );
+ 	*/
+	/*glProgramUniform1f (program,
+			Parameters::getInstance()->g_uniform_locations[first_loc+3],
+			tanf (Parameters::getInstance()->g_camera.fovy / 360.f * 3.14159f));
+	glProgramUniform1f(program,
+			Parameters::getInstance()->g_uniform_locations[first_loc+4],
+			Parameters::getInstance()->g_scale);
+	*/
+	/*
+	glProgramUniform3f (program,
+			Parameters::getInstance()->g_uniform_locations[first_loc+6],
+			Parameters::getInstance()->g_camera.pos[0],
+			Parameters::getInstance()->g_camera.pos[1],
+			Parameters::getInstance()->g_camera.pos[2]
+   			);
+    */
 }
 
 void Curvature::configureProgram()
@@ -152,35 +142,49 @@ void load_curv(GLuint program, GLuint first_loc)
 {
 	Parameters::getInstance()->g_uniform_locations[first_loc] =
 		glGetUniformLocation (program, "u_scene_size");
+		
 	Parameters::getInstance()->g_uniform_locations[first_loc+1] =
 		glGetUniformLocation (program, "densities");
 	Parameters::getInstance()->g_uniform_locations[first_loc+2] =
 		glGetUniformLocation (program, "u_viewport");
 
 	Parameters::getInstance()->g_uniform_locations[first_loc+3] =
-		glGetUniformLocation (program, "u_tan_fovy");
-	Parameters::getInstance()->g_uniform_locations[first_loc+4] =
-		glGetUniformLocation (program, "u_scale");
-
-	Parameters::getInstance()->g_uniform_locations[first_loc+5] =
 		glGetUniformLocation (program, "solid_wireframe");
-	
-	Parameters::getInstance()->g_uniform_locations[first_loc+6] =
-		glGetUniformLocation (program, "u_camera_pos");
 		
-	Parameters::getInstance()->g_uniform_locations[first_loc+7] =
+	Parameters::getInstance()->g_uniform_locations[first_loc+4] =
 		glGetUniformLocation (program, "u_curv_radius");
-    Parameters::getInstance()->g_uniform_locations[first_loc+8] =
+    Parameters::getInstance()->g_uniform_locations[first_loc+5] =
         glGetUniformLocation (program, "u_kmin");
-    Parameters::getInstance()->g_uniform_locations[first_loc+9] =
+    Parameters::getInstance()->g_uniform_locations[first_loc+6] =
         glGetUniformLocation (program, "u_kmax");
 
-    Parameters::getInstance()->g_uniform_locations[first_loc+10] =
+    Parameters::getInstance()->g_uniform_locations[first_loc+7] =
         glGetUniformLocation (program, "u_ground_truth");
 
-    Parameters::getInstance()->g_uniform_locations[first_loc+11] =
+    Parameters::getInstance()->g_uniform_locations[first_loc+8] =
         glGetUniformLocation (program, "u_size_tex");
+	
+	Parameters::getInstance()->g_uniform_locations[first_loc+9] = 
+		glGetUniformLocation(program, "u_curv_dir");
+	Parameters::getInstance()->g_uniform_locations[first_loc+10] = 
+		glGetUniformLocation(program, "u_curv_val");
 		
+	Parameters::getInstance()->g_uniform_locations[first_loc+11] = 
+		glGetUniformLocation(program, "u_lvl");
+	Parameters::getInstance()->g_uniform_locations[first_loc+12] = 
+		glGetUniformLocation(program, "u_k1k2_normals");
+		
+	Parameters::getInstance()->g_uniform_locations[first_loc+13] = 
+		glGetUniformLocation(program, "u_time");
+		
+	Parameters::getInstance()->g_uniform_locations[first_loc+14] = 
+		glGetUniformLocation(program, "u_spheresubdiv");
+	
+	Parameters::getInstance()->g_uniform_locations[first_loc+15] = 
+		glGetUniformLocation(program, "u_fromtexture");
+		
+	
+	/*
 	Parameters::getInstance()->g_uniform_locations[first_loc+12] = 
 		glGetUniformLocation(program, "u_xyz2_tex");
 
@@ -189,25 +193,16 @@ void load_curv(GLuint program, GLuint first_loc)
 		
 	Parameters::getInstance()->g_uniform_locations[first_loc+14] = 
 		glGetUniformLocation(program, "u_xyz_tex");
-		
-	Parameters::getInstance()->g_uniform_locations[first_loc+15] = 
-		glGetUniformLocation(program, "u_curv_dir");
-	Parameters::getInstance()->g_uniform_locations[first_loc+16] = 
-		glGetUniformLocation(program, "u_curv_val");
-		
-	Parameters::getInstance()->g_uniform_locations[first_loc+17] = 
-		glGetUniformLocation(program, "u_lvl");
-	Parameters::getInstance()->g_uniform_locations[first_loc+18] = 
-		glGetUniformLocation(program, "u_k1k2_normals");
-		
-	Parameters::getInstance()->g_uniform_locations[first_loc+19] = 
-		glGetUniformLocation(program, "u_time");
-		
-	Parameters::getInstance()->g_uniform_locations[first_loc+20] = 
-		glGetUniformLocation(program, "u_spheresubdiv");
+	*/
 	
-	Parameters::getInstance()->g_uniform_locations[first_loc+21] = 
-		glGetUniformLocation(program, "u_fromtexture");
+	/*
+	Parameters::getInstance()->g_uniform_locations[first_loc+3] =
+		glGetUniformLocation (program, "u_tan_fovy");
+	Parameters::getInstance()->g_uniform_locations[first_loc+4] =
+		glGetUniformLocation (program, "u_scale");
+	*/
+	/*Parameters::getInstance()->g_uniform_locations[first_loc+6] =
+		glGetUniformLocation (program, "u_camera_pos");*/
 }
 
 void Curvature::loadProgram()
@@ -380,11 +375,6 @@ void Curvature::run(GLuint nbcells_reg, GLuint nbcells_tr, GLuint* nb_triangles_
 			3u,
 			Parameters::getInstance()->g_buffers[BUFFER_EXPORT_NORMALES]
 		);
-		/*glBindBufferBase (
-			GL_TRANSFORM_FEEDBACK_BUFFER,
-			4u,
-			Parameters::getInstance()->g_buffers[BUFFER_EXPORT_NORMALES]
-		);*/
 	}
 	glBeginTransformFeedback(GL_TRIANGLES);
 	
@@ -444,15 +434,7 @@ void Curvature::loadBuffers()
 		
 	int res = (int)Parameters::getInstance()->g_tessel;
 	long long int nb_cells = 300000*res*res*res;
-	int export_data = 4; //vec3 pos
-	//export_data += 3; //vec2 k1k2
-	//export_data += 3; //vec3 min_dir;
-	//export_data += 3; //vec3 max_dir;
-	//export_data += 3; //vec3 normale;
-	/*export_data += 3; //vec3 eigenvalues
-	export_data += 3; //vec3 covmatup
-	export_data += 3; //vec3 covmatdiag*/
-	
+	int export_data = 4; 
 	glGenBuffers (1, &Parameters::getInstance()->g_buffers[BUFFER_EXPORT_TGL]);
 		glBindBuffer (GL_ARRAY_BUFFER, Parameters::getInstance()->g_buffers[BUFFER_EXPORT_TGL]);
 		glBufferData (
@@ -462,19 +444,6 @@ void Curvature::loadBuffers()
 				GL_DYNAMIC_COPY
 		);
 	glBindBuffer (GL_ARRAY_BUFFER, 0);
-	
-	/*
-	export_data = 4;
-	glGenBuffers (1, &Parameters::getInstance()->g_buffers[BUFFER_EXPORT_K1K2]);
-		glBindBuffer (GL_ARRAY_BUFFER, Parameters::getInstance()->g_buffers[BUFFER_EXPORT_K1K2]);
-		glBufferData (
-				GL_ARRAY_BUFFER,
-				nb_cells*12*export_data*sizeof(float), //12 triangles max for each cell, each made of 3 vec3
-				NULL,
-				GL_DYNAMIC_COPY
-		);
-	glBindBuffer (GL_ARRAY_BUFFER, 0);
-	*/
 	
 	export_data = 4;
 	glGenBuffers (1, &Parameters::getInstance()->g_buffers[BUFFER_EXPORT_DIRMIN]);
