@@ -136,14 +136,14 @@ void configure_curv(GLuint program, GLuint first_loc)
  			TEXTURE_SUBDIV_SPHERE);
 	
 	glProgramUniform1i (program,
-			Parameters::getInstance()->g_uniform_locations[first_loc+20],
+			Parameters::getInstance()->g_uniform_locations[first_loc+21],
  			Parameters::getInstance()->g_fromtexture );
 }
 
 void Curvature::configureProgram()
 {
 	//configure_curv(Parameters::getInstance()->g_programs[PROGRAM_SHADING], LOCATION_SHADING_SIZE);
-	configure_curv(Parameters::getInstance()->g_programs[PROGRAM_GTCURV], LOCATION_GTCURV_SIZE);
+	//configure_curv(Parameters::getInstance()->g_programs[PROGRAM_GTCURV], LOCATION_GTCURV_SIZE);
 	configure_curv(Parameters::getInstance()->g_programs[PROGRAM_HIERARCHCURV], LOCATION_HIERARCHCURV_SIZE);
 	configure_curv(Parameters::getInstance()->g_programs[PROGRAM_APPROXCURV], LOCATION_APPROXCURV_SIZE);
 }
@@ -206,7 +206,7 @@ void load_curv(GLuint program, GLuint first_loc)
 	Parameters::getInstance()->g_uniform_locations[first_loc+20] = 
 		glGetUniformLocation(program, "u_spheresubdiv");
 	
-	Parameters::getInstance()->g_uniform_locations[first_loc+20] = 
+	Parameters::getInstance()->g_uniform_locations[first_loc+21] = 
 		glGetUniformLocation(program, "u_fromtexture");
 }
 
