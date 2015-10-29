@@ -55,7 +55,7 @@ First principal direction field | Second principal direction field | Normal vect
 
 ### License
 
-* Source code ([/src](https://github.com/dcoeurjo/ICTV/tree/master/src) [/tools](https://github.com/dcoeurjo/ICTV/tree/master/tools))
+* Source code ([/src](https://github.com/dcoeurjo/ICTV/tree/master/src) and  [/tools](https://github.com/dcoeurjo/ICTV/tree/master/tools))
 
 >	**GNU General Public License**
 >	
@@ -71,7 +71,7 @@ First principal direction field | Second principal direction field | Normal vect
 >    
 >    http://www.gnu.org/licenses/gpl-3.0.en.html
 
-* Article ([/latex](https://github.com/dcoeurjo/ICTV/tree/master/latex))
+* Article and figures ([/latex](https://github.com/dcoeurjo/ICTV/tree/master/latex))
 
 > **Creative Commons CC BY-NC-SA 2.0**
 > 
