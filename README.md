@@ -1,5 +1,10 @@
 # Interactive Curvature Tensor Visualization
 
+ICTV (Interactive Curvature Tensor Visualization) is an opensource (GPL) OpenGL tool to visualize large volumetric  data isosurfaces in realtime. This tool also combines the isosurface extraction with a GPU curvature tensor estimation (mean/gaussian curvature, principal curvature directions...) allowing a realtime exploration of the tensor with different parameter values.
+
+This tool requires OpenGL 4.4 (see below for other library dependencies). 
+
+
 ### Build & Run
 
 ```sh
