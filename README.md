@@ -1,5 +1,10 @@
 # Interactive Curvature Tensor Visualization
 
+ICTV (Interactive Curvature Tensor Visualization) is an opensource (GPL) OpenGL tool to visualize large volumetric  data isosurfaces in realtime. This tool also combines the isosurface extraction with a GPU curvature tensor estimation (mean/gaussian curvature, principal curvature directions...) allowing a realtime exploration of the tensor with different parameter values.
+
+This tool requires OpenGL 4.4 (see below for other library dependencies). 
+
+
 ### Build & Run
 
 ```sh
@@ -27,7 +32,8 @@ make vizo
 
 ### Video
 
-[https://www.youtube.com/watch?v=s65R0osQmYo](https://www.youtube.com/watch?v=s65R0osQmYo)
+* Preview: [https://www.youtube.com/watch?v=JWszppL8aP4](https://www.youtube.com/watch?v=JWszppL8aP4)
+* Large dataset exploration: [https://www.youtube.com/watch?v=1mUPesJ0IyI](https://www.youtube.com/watch?v=1mUPesJ0IyI)
 
 ### Preview
 
@@ -50,7 +56,7 @@ First principal direction field | Second principal direction field | Normal vect
 
 ### License
 
-* Source code ([/src](https://github.com/dcoeurjo/ICTV/tree/master/src) [/tools](https://github.com/dcoeurjo/ICTV/tree/master/tools))
+* Source code ([/src](https://github.com/dcoeurjo/ICTV/tree/master/src) and  [/tools](https://github.com/dcoeurjo/ICTV/tree/master/tools))
 
 >	**GNU General Public License**
 >	
@@ -66,7 +72,7 @@ First principal direction field | Second principal direction field | Normal vect
 >    
 >    http://www.gnu.org/licenses/gpl-3.0.en.html
 
-* Article ([/latex](https://github.com/dcoeurjo/ICTV/tree/master/latex))
+* Article and figures ([/latex](https://github.com/dcoeurjo/ICTV/tree/master/latex))
 
 > **Creative Commons CC BY-NC-SA 2.0**
 > 
