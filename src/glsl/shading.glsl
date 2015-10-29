@@ -288,7 +288,7 @@ void main()
 		geometry_max_dir = curv_dir_max[i].xyz;
 		geometry_position = vertex_position[i].xyz;
 		
-		geometry_normale = reorientNormal(pts, curv_normale[i]);
+		geometry_normale = curv_normale[i];// reorientNormal(pts, curv_normale[i]);
 		/*geometry_covmatDiag = covmatDiag[i];
 		geometry_covmatUpper = covmatUpper[i];
 		geometry_egv = eigenvalues[i];*/
@@ -450,6 +450,7 @@ void main( )
 		normale = geometry_normale;
 	
 	//Phong
+	
 	vec3 light_dir = vec3(1, 1, 1);
 	normale = (u_transforms.modelview * vec4(normale, 0)).xyz;
 	
@@ -462,6 +463,7 @@ void main( )
 	vec3 specular = vec3(1) * pow(ER, 100);
 	
 	fragment_color = vec4(diffuse+specular, 1);
+	//fragment_color = vec4(abs(normalize(normale)), 1);
 
 	if (geometry_curvdir == 0 && solid_wireframe == 1)
 	{

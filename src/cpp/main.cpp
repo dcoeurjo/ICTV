@@ -327,7 +327,7 @@ public:
 	    
 	int init( )
 	{
-		hierarch = computeSphereSubdivision((int)Parameters::getInstance()->g_curvradius, ceil( log2(atoi(argv[2])) ));
+		hierarch = computeSphereSubdivision((int)Parameters::getInstance()->g_curvradius, ceil( log2(atoi(argv[3])) ));
 		if (!hierarch)
 			Parameters::getInstance()->g_ground_truth = 1;
 
@@ -348,9 +348,9 @@ public:
 		if (argc >= 5)
 			Parameters::getInstance()->g_light = true;
 
-		int size = atoi(argv[2]);
+		int size = atoi(argv[3]);
 		
-		int type = atoi(argv[3]);
+		int type = atoi(argv[2]);
 		if (type == 1)
 		{
 			dl = new DataRaw(size);
@@ -1293,19 +1293,19 @@ int main( int argc, char **argv )
 	if (argc < 3)
 	{
 		printf("\
-Usage : %s <data_file> <size> <type> [light]\n\n\
-Size:	default = 256\n\n\
+Usage : %s <data_file> <type> <size> [light]\n\n\
 Type:	1 - .raw files\n\
 	2 - Enter a piece of glsl code filling a variable h with the implicit fonction to render.\n\
 	x, y, and z are available variables containing the position of the vertex in [-10:10].\n\
 	t is a variable containing the time elapsed is seconds.\n\
 	A point (x,y,z) is considered inside if h < 0.\n\n\
+Size:	resolution of the dataset\n\n\
 Light: 	If a fourth argument is given (whatever its value), the application is run in light mode. \n\
 	It requires less GPU memory but does not allow to export the data\n\
 		\n\
 Examples:\n\
-%s \"h=y - sin(t)*sin(x)\" 128 2\n\
-%s ../../data/raw/bunny_border_67.raw 67 1\n", argv[0], argv[0], argv[0]);
+%s \"h=y - sin(t)*sin(x)\" 2 128\n\
+%s ../../data/raw/bunny_border_67.raw 1 67\n", argv[0], argv[0], argv[0]);
 		return 0;
 	}
 	Vizo app(argc, argv);

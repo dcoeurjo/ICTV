@@ -467,7 +467,7 @@ bool do_offset(vec3 neighbours, vec3 pos, float s)
 vec3 compute_offset(vec3 neighbours, vec3 pos, float s, vec3 N)
 {
 	float size = TR_SIZE;
-	return vec3(0);
+	//return vec3(0);
 
 	vec3 n = near_in_block(pos, s);
 	vec3 off = vec3(0);
