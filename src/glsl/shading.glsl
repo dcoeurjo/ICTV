@@ -47,6 +47,7 @@ out vec3 covmatDiag;
 out vec3 covmatUpper;
 out vec3 vertex_k1_k2;
 
+/*
 uniform vec3 u_scene_size;
 uniform float u_lvl;
 uniform float u_curv_radius;
@@ -55,6 +56,8 @@ uniform sampler3D densities;
 uniform sampler3D u_xyz2_tex;
 uniform sampler3D u_xy_yz_xz_tex;
 uniform sampler3D u_xyz_tex;
+*/
+
 uniform int u_curv_val;
 
 void main( )
@@ -102,10 +105,11 @@ uniform Transforms {
 	mat4 invmodelview;
 } u_transforms;
 
+
 uniform vec3 u_scene_size;
 uniform vec2 u_viewport;
 uniform int u_curv_dir;
-uniform float u_lvl;
+/*uniform float u_lvl;
 uniform float u_curv_radius;
 uniform float u_size_tex;
 uniform sampler3D densities;
@@ -113,6 +117,7 @@ uniform sampler3D u_xyz2_tex;
 uniform sampler3D u_xy_yz_xz_tex;
 uniform sampler3D u_xyz_tex;
 uniform int u_curv_val;
+*/
 
 in vec3 vertex_k1_k2[];
 in vec3 vertex_position[];
@@ -336,11 +341,13 @@ in vec3 geometry_color;
 in float geometry_curv_value;
 in flat int geometry_curvdir;
 
+
 uniform float u_kmin;
 uniform float u_kmax;
 uniform int solid_wireframe;
-uniform int u_k1k2_normals;
-uniform int u_curv_dir;
+uniform int u_triangle_normals;
+uniform int u_curv_val;
+/*uniform int u_curv_dir;
 uniform vec3 u_scene_size;
 uniform float u_lvl;
 uniform float u_curv_radius;
@@ -349,7 +356,7 @@ uniform sampler3D densities;
 uniform sampler3D u_xyz2_tex;
 uniform sampler3D u_xy_yz_xz_tex;
 uniform sampler3D u_xyz_tex;
-uniform int u_curv_val;
+*/
 
 out vec4 fragment_color;
 
@@ -444,7 +451,7 @@ void main( )
 		color = abs(geometry_color);
 	
 	vec3 normale;
-	if( u_k1k2_normals == 0 )
+	if( u_triangle_normals == 1 )
 		normale = normalize(cross( dFdx(geometry_position.xyz), dFdy(geometry_position.xyz)));
 	else
 		normale = geometry_normale;

@@ -81,35 +81,39 @@ public:
     bool g_draw_triangles; //draw extracted triangles
     bool g_culling; //cull or not the octree nodes
     bool g_controls; //set the controls to first-person style
-    bool g_fromtexture; //set if the data is to be computed or read from a texture
-    bool g_textured_data; //color with the textures
-    bool g_radial_length; //use the LoD criteria with radial length
-    bool g_regular;
-    bool g_radius_show;
-	bool g_auto_refine;
-	bool g_k1k2_normals;
+    //bool g_fromtexture; //set if the data is to be computed or read from a texture
+    //bool g_textured_data; //color with the textures
+    //bool g_radial_length; //use the LoD criteria with radial length
+    
+    bool g_radius_show; //show the radius ball
+	bool g_triangle_normals; //are we using the triangle normals or the normal vector field
 	
-	bool g_compute_min_max;
-	bool g_export;
-
+	bool g_adaptive_geom; //are we displaying the objet with a full res regular grid of with adaptive geometry
+	bool g_auto_refine; //When using regular curvature computation, are we atomatically refining the computations or are we sticking to a chosen lvl
+	
+	bool g_compute_min_max; //to automatically compute the min max curvature
+	bool g_export; //to export the data
     bool g_gui; //hides/show the gui
     
     float g_scale; //sets the size of the different levels
-    float g_tessel; //tessellates the cell in N^3 smaller cells
-    float g_isosurface; //sets the isovalue for potential or density fields
-    float g_curvradius;
-    float g_curvmin;
-    float g_curvmax;
-	float g_curv_dir;
-	float g_curv_val;
-	float g_lvl;
-    int g_sizetex;
+    float g_tessel; //tessellates the cell in N^3 smaller cells [UNUSED BECAUSE TOO SLOW]
+    //float g_isosurface; //sets the isovalue for potential or density fields [UNUSED]
+    float g_curvradius; //sets the radius of the curvature ball
+    
+    float g_curvmin; //the min curv value
+    float g_curvmax; //the max curvature value
+	
+	float g_curv_dir; //shows 0.nothing 1.the first principal direction 2.the second principal direction 3.both first and second principal directions 4.the normal vector field
+	float g_curv_val; //show 0.nothing 1.the mean curvature value 2.The gaussian curvature value 3.the first principal curvature 4.the second principal curvature
+	
+	float g_lvl; //for automatic refinement, to keep track of which is the current refinement lvl.
+    int g_sizetex; //the resolution of the input dataset
 
-    float g_ground_truth;
+    float g_ground_truth; //computed using a regular or hierachical grid
     
     float g_time_elapsed; //in seconds
     
-    bool g_light;
+    bool g_lightmode; //run in light mode or not
 };
 
 #endif

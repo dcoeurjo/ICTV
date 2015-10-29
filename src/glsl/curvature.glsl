@@ -37,9 +37,10 @@ out float curv_value;
 out vec3 curv_dir_min;
 out vec3 curv_dir_max;
 out vec3 curv_normale;
-out vec3 eigenvalues;
+/*out vec3 eigenvalues;
 out vec3 covmatDiag;
 out vec3 covmatUpper;
+*/
 out vec4 vertex_k1_k2;
 
 uniform vec3 u_scene_size;
@@ -54,6 +55,8 @@ void main( )
 	vec3 xyz2 = vec3(0);
 	vec3 xy_yz_xz = vec3(0);
 	vec3 xyz = vec3(0);
+	
+	vec3 eigenvalues;
 
 	float volume_approx = 0.0;
 	int nb_probe = getVolumeMoments(vertex_position, volume, xyz, xy_yz_xz, xyz2, u_lvl);
@@ -123,7 +126,7 @@ void main( )
 #define TRANSFORMS_BINDING 0
 
 layout (triangles) in;
-layout (triangle_strip, max_vertices = 10) out;
+layout (triangle_strip, max_vertices = 30) out;
 
 uniform int u_curv_dir;
 
@@ -147,9 +150,11 @@ out vec4 geometry_max_dir;
 out vec4 geometry_position;
 out vec4 geometry_normale;
 
+/*
 out vec3 geometry_egv;
 out vec3 geometry_covmatDiag;
 out vec3 geometry_covmatUpper;
+*/
 
 out vec3 geometry_distance;
 out vec3 geometry_color;
@@ -370,7 +375,7 @@ in flat int geometry_curvdir;
 uniform float u_kmin;
 uniform float u_kmax;
 uniform int solid_wireframe;
-uniform int u_k1k2_normals;
+uniform int u_triangle_normals;
 
 out vec4 fragment_color;
 
@@ -465,7 +470,7 @@ void main( )
 		color = abs(geometry_color);
 	
 	vec3 normale;
-	if( u_k1k2_normals == 0 )
+	if( u_triangle_normals == 1 )
 		normale = normalize(cross( dFdx(geometry_position.xyz), dFdy(geometry_position.xyz)));
 	else
 		normale = geometry_normale.xyz;

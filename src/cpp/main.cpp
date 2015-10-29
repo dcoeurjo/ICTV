@@ -116,12 +116,14 @@ void activateTextures()
 	glActiveTexture(GL_TEXTURE0 + TEXTURE_DENSITY);
 	glBindTexture(GL_TEXTURE_3D, Parameters::getInstance()->g_textures[TEXTURE_DENSITY]);
 
+	/*
 	glActiveTexture(GL_TEXTURE0 + TEXTURE_X2Y2Z2);
 	glBindTexture(GL_TEXTURE_3D, Parameters::getInstance()->g_textures[TEXTURE_X2Y2Z2]);
 	glActiveTexture(GL_TEXTURE0 + TEXTURE_XY_YZ_XZ);
 	glBindTexture(GL_TEXTURE_3D, Parameters::getInstance()->g_textures[TEXTURE_XY_YZ_XZ]);
 	glActiveTexture(GL_TEXTURE0 + TEXTURE_XYZ);
 	glBindTexture(GL_TEXTURE_3D, Parameters::getInstance()->g_textures[TEXTURE_XYZ]);
+	*/
 	
 	glActiveTexture(GL_TEXTURE0 + TEXTURE_CODE_CLASS);
 	glBindTexture(GL_TEXTURE_1D, Parameters::getInstance()->g_textures[TEXTURE_CODE_CLASS]);
@@ -137,6 +139,7 @@ void activateTextures()
 	glActiveTexture(GL_TEXTURE0 + TEXTURE_CLASS_TRIANGLES_TR);
 	glBindTexture(GL_TEXTURE_2D, Parameters::getInstance()->g_textures[TEXTURE_CLASS_TRIANGLES_TR]);
 	
+	/*
 	glActiveTexture(GL_TEXTURE0 + TEXTURE_COLOR_X);
 	glBindTexture(GL_TEXTURE_2D, Parameters::getInstance()->g_textures[TEXTURE_COLOR_X]);
 	glActiveTexture(GL_TEXTURE0 + TEXTURE_COLOR_Y);
@@ -153,6 +156,7 @@ void activateTextures()
 	
 	glActiveTexture(GL_TEXTURE0 + TEXTURE_ENVMAP);
 	glBindTexture(GL_TEXTURE_2D, Parameters::getInstance()->g_textures[TEXTURE_ENVMAP]);
+	*/
 	
 	glActiveTexture(GL_TEXTURE0 + TEXTURE_SUBDIV_SPHERE);
 	glBindTexture(GL_TEXTURE_1D, Parameters::getInstance()->g_textures[TEXTURE_SUBDIV_SPHERE]);
@@ -344,9 +348,9 @@ public:
 		cam_speed = CAM_SPEED;
 		cam_rotate = CAM_ROTATE;
 		
-		Parameters::getInstance()->g_light = false;
+		Parameters::getInstance()->g_lightmode = false;
 		if (argc >= 5)
-			Parameters::getInstance()->g_light = true;
+			Parameters::getInstance()->g_lightmode = true;
 
 		int size = atoi(argv[3]);
 		
@@ -413,8 +417,8 @@ public:
 		
 		if (Parameters::getInstance()->g_controls == true)
 			load_quatPoint(cam);
-		else 
-			load_viewPoint();
+		else
+		load_viewPoint();
 		
 		min_lvl = (int)ceil(log2(Parameters::getInstance()->g_curvradius));
 		Parameters::getInstance()->g_lvl = min_lvl;
@@ -422,11 +426,11 @@ public:
 		last_radius = Parameters::getInstance()->g_curvradius;
 		last_lvl = Parameters::getInstance()->g_lvl;
 		last_scale = Parameters::getInstance()->g_scale;
-		last_regular = Parameters::getInstance()->g_regular;
+		last_regular = Parameters::getInstance()->g_adaptive_geom;
 		last_mode = Parameters::getInstance()->g_ground_truth;
 		last_color = Parameters::getInstance()->g_curv_val;
 		
-		reload_fetch = Parameters::getInstance()->g_fromtexture;
+		//reload_fetch = Parameters::getInstance()->g_fromtexture;
 		
 		movement = false;
 		animate = true;
@@ -439,7 +443,7 @@ public:
 		/* Min max recompute */
 		if (last_radius != Parameters::getInstance()->g_curvradius ||
 			last_scale != Parameters::getInstance()->g_scale ||
-			last_regular != Parameters::getInstance()->g_regular ||
+			last_regular != Parameters::getInstance()->g_auto_refine ||
 			last_lvl != Parameters::getInstance()->g_lvl ||
 			last_mode != Parameters::getInstance()->g_ground_truth ||
 			last_color != Parameters::getInstance()->g_curv_val
@@ -455,7 +459,7 @@ public:
 			if (movement ||
 				last_scale != Parameters::getInstance()->g_scale ||
 				last_radius != Parameters::getInstance()->g_curvradius ||
-				last_regular != Parameters::getInstance()->g_regular)
+				last_regular != Parameters::getInstance()->g_adaptive_geom)
 			{
 				Parameters::getInstance()->g_lvl =  min_lvl;
 				Parameters::getInstance()->g_compute_min_max = true;
@@ -472,7 +476,7 @@ public:
 		last_radius = Parameters::getInstance()->g_curvradius;
 		last_lvl = Parameters::getInstance()->g_lvl;
 		last_scale = Parameters::getInstance()->g_scale;
-		last_regular = Parameters::getInstance()->g_regular;
+		last_regular = Parameters::getInstance()->g_adaptive_geom;
 		last_mode = Parameters::getInstance()->g_ground_truth;
 		last_color = Parameters::getInstance()->g_curv_val;
 
@@ -544,7 +548,7 @@ public:
 			m_time_render_regular->end();
 		}
 		
-		if (transition_cells_displayed && queryResult_transition > 0 && !(Parameters::getInstance()->g_regular))
+		if (transition_cells_displayed && queryResult_transition > 0 && Parameters::getInstance()->g_adaptive_geom)
 		{
 			m_time_render_transition->begin();
 			
@@ -576,7 +580,7 @@ public:
 		if (Parameters::getInstance()->g_draw_triangles)
 		{
 			m_time_shading->begin();
-			if (!Parameters::getInstance()->g_light)
+			if (!Parameters::getInstance()->g_lightmode)
 			{
 				glEnable(GL_RASTERIZER_DISCARD);
 				curver.run(queryResult_regular, queryResult_transition, &triangles_regular, &triangles_transition, &sync_count_triangles);
@@ -588,7 +592,7 @@ public:
 			
 			if (Parameters::getInstance()->g_export)
 			{
-				if( Parameters::getInstance()->g_light )
+				if( Parameters::getInstance()->g_lightmode )
 				{
 					printf("Exporting is not available in light mode\n");
 					Parameters::getInstance()->g_export = false;
@@ -722,7 +726,7 @@ public:
 				}
 			}
 			
-			if (Parameters::getInstance()->g_compute_min_max && !Parameters::getInstance()->g_light )
+			if (Parameters::getInstance()->g_compute_min_max && !Parameters::getInstance()->g_lightmode )
 			{	
 				int size_data_dirmin = 4;
 				int size_totale_dirmin = sizeof(float)*3*triangles_regular*size_data_dirmin; //3 vertex/triangles
@@ -797,7 +801,7 @@ public:
 			}
 		}
 		
-		if (!Parameters::getInstance()->g_light)
+		if (!Parameters::getInstance()->g_lightmode)
 			shadator.run(triangles_regular+triangles_transition);
 		
 		//fprintf(stdout, "%lf %lf %lf -- ", Parameters::getInstance()->g_camera.pos[0], Parameters::getInstance()->g_camera.pos[1], Parameters::getInstance()->g_camera.pos[2]);
@@ -952,18 +956,18 @@ public:
 		int x, y;
 		int button = SDL_GetRelativeMouseState(&x, &y);
 		
-		if (Parameters::getInstance()->g_controls)
+		/*if (Parameters::getInstance()->g_controls)
 		{
 			//QUATERNION
 			if(key('s'))
 			{
 				movement = true;
-				cam.moveBackward(cam_speed);//*(gpu_time/1000.0));
+				cam.moveBackward(cam_speed);// * (gpu_time/1000.0));
 			}
 			if(key('z'))
 			{
 				movement = true;
-				cam.moveForward(cam_speed);//*(gpu_time/1000.0));
+				cam.moveForward(cam_speed);// * (gpu_time/1000.0));
 			}
 			
 			if(button & SDL_BUTTON(1))
@@ -975,7 +979,7 @@ public:
 			Parameters::getInstance()->g_geometry.affine = cam.getMatrix();
 		}
 		else
-		{
+		{*/
 			if(button & SDL_BUTTON(1))
 			{
 				if (Parameters::getInstance()->g_mouse == MOUSE_FRAMEBUFFER) 
@@ -1060,7 +1064,7 @@ public:
 						Parameters::getInstance()->g_geometry.affine;
 				}
 			}
-		}
+		//}
 
 		if (animate)
 			Parameters::getInstance()->g_time_elapsed += 1.0/((float)fps+1);
@@ -1145,7 +1149,7 @@ public:
 				m_widgets.doLabel(nv::Rect(), tmp);
 				m_widgets.doHorizontalSlider(nv::Rect(0,0, 200, 0), 0.f, 10.f, &(Parameters::getInstance()->g_lvl));
 				
-				if( Parameters::getInstance()->g_light )
+				if( Parameters::getInstance()->g_lightmode )
 				{
 					sprintf(tmp, "Curvature Min %.2f", Parameters::getInstance()->g_curvmin);
 					m_widgets.doLabel(nv::Rect(), tmp);
@@ -1171,11 +1175,11 @@ public:
 					//m_widgets.doButton(nv::Rect(), "Display background", &(skybox));
 					//m_widgets.doButton(nv::Rect(), "Display transitions", &transition_cells_displayed);
 					//m_widgets.doButton(nv::Rect(), "LoD Radial", &(Parameters::getInstance()->g_radial_length));
-					m_widgets.doButton(nv::Rect(), "Regular grid", &(Parameters::getInstance()->g_regular));
+					m_widgets.doButton(nv::Rect(), "Adaptive Geometry", &(Parameters::getInstance()->g_adaptive_geom));
 					m_widgets.doButton(nv::Rect(), "Auto refine", &(Parameters::getInstance()->g_auto_refine));
-					m_widgets.doButton(nv::Rect(), "k1k2 normals", &(Parameters::getInstance()->g_k1k2_normals));
+					m_widgets.doButton(nv::Rect(), "Triangle normals", &(Parameters::getInstance()->g_triangle_normals));
 					
-					if (!Parameters::getInstance()->g_light)
+					if (!Parameters::getInstance()->g_lightmode)
 						m_widgets.doButton(nv::Rect(), "Export Data", &(Parameters::getInstance()->g_export));
 					
 					m_widgets.endPanel();
