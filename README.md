@@ -32,7 +32,7 @@ make vizo
 
 ### Video
 
-[https://www.youtube.com/watch?v=s65R0osQmYo](https://www.youtube.com/watch?v=s65R0osQmYo)
+[https://www.youtube.com/watch?v=JWszppL8aP4](https://www.youtube.com/watch?v=JWszppL8aP4)
 
 ### Preview
 
