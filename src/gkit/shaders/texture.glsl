@@ -28,8 +28,6 @@
     
     out vec4 fragment_color;
 
-    toto
-
     void main( )
     {
 	vec4 diffuse= texture(diffuse_texture, vertex_texcoord);
