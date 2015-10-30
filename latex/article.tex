@@ -714,7 +714,7 @@ $O\left(\left(\frac{R}{2^l}\right)^3\right)$, the interactive control
     {\includegraphics[width=2.2cm]{figs/function_mean_4}}
   \end{center}
   \vspace{-0.35cm}
-  \caption{\emph{First row}: Mean and Gaussian curvature estimation, (zoom of) first and second principal directions estimation on an OctaFlower with a digital domain of $130^3$.
+  \caption{\emph{First row}: Mean and Gaussian curvature estimation, (zoom of) first and second principal directions estimation on ``OctaFlower'' with a digital domain of $130^3$.
   % \emph{Second row:} (Zoom of) First and second principal directions estimation on an OctaFlower.
   \emph{Second row:} Mean curvature computed in real-time on a dynamic object.}
   \label{fig:full}
@@ -731,27 +731,30 @@ $O\left(\left(\frac{R}{2^l}\right)^3\right)$, the interactive control
 %   \label{fig:graph_convergence}
 % \end{figure}
 
-We first evaluate the curvature estimation on a full-resolution geometry
+We first evaluate curvature estimations on a full-resolution geometry
 obtained by disabling the LoD criterion at the mesh generation step.
-Figure~\ref{fig:full}-top shows results of curvature tensor
-estimation (mean, Gaussian, first and
-second principal directions) on an OctaFlower at level $l_0$ (considered as our ground truth in the following).
-Figure~\ref{fig:full}-bottom shows mean curvature estimation in real-time on a
-dynamic object. For this case, we simply evaluate the implicit expression at
-each vertex of a cell to decide if such cell is included or not into
-$\Ball{R}{\vx}\cap \Shape$ instead of updating the \emph{mipmap texture} of
-densities at each time step. For all illustrations, we use directly normal
-vectors computed by algorithm discussed in Section~\ref{sec:curv-tens-estim}.
+Figure~\ref{fig:full}-top shows results of curvature tensor estimation
+(mean, Gaussian, first and second principal directions) on
+``OctaFlower'' at level $l_0$ (considered as our ground truth in the
+following).  Figure~\ref{fig:full}-bottom shows mean curvature
+estimation in real-time on a dynamic object. For this case, we simply
+evaluate the implicit expression at each vertex of a cell to decide if
+such cell is included or not into $\Ball{R}{\vx}\cap \Shape$ instead
+of updating the \emph{mipmap texture} of densities at each time
+step. For all illustrations, we use directly normal vectors computed
+by algorithm discussed in Section~\ref{sec:curv-tens-estim}.
 
-Then, we compare the approximation made by computing curvature from level $l \ge
-l_0$ in Figure~\ref{fig:refine}. We can see that results using approximation
-seems to quickly converge to the ground truth results.
-Table~\ref{tab:full-res-stat} shows numerical results of $L_\infty$ error (maximal absolute difference for all vertices )
-and $L_2$ error (mean absolute error of all vertices), as well the number of \emph{mipmap texture}
-fetches. We can also see that the number of texel fetch, required to compute the
-curvature, reduces drastically when computing approximations. However, at higher levels,
-approximation errors become more important. Those levels
-are thus never used in practice, they are presented here to illustrate how the
+Then, we compare the approximations made by computing curvature from
+level $l \ge l_0$ in Figure~\ref{fig:refine}. We can see that results
+using approximation seems to quickly converge to ground truth results.
+Table~\ref{tab:full-res-stat} shows numerical results of $L_\infty$
+error (maximal absolute difference for all vertices) and $L_2$ error
+(mean \Jaco{squared errors} of all vertices), as well the number of
+\emph{mipmap texture} fetches. We can also see that the number of
+texel fetch, required to compute the curvature, reduces drastically
+when computing approximations. However, at higher levels,
+approximation errors become more important. Those levels are thus
+never used in practice, they are presented here to illustrate how the
 refining process converges to the $l_0$ level.
 %We see that levels close to $l_0$
 %lead very few error% than $l_0$,
@@ -762,7 +765,7 @@ We also compare them with the hierarchical algorithm (as discussed in
 Section~\ref{sec:hierarchical}). This method introduces a higher error when compared with
 $l_0$. This is due to the precomputation of the subdivision that no longer
 ensures to fetch data at the center of a mipmap cell.
-The GPU interpolation reduces the bias, but it doesn't remove it.
+The GPU interpolation reduces the bias, but it does \Jaco{not} remove it.
 
 %Bear also in mind that those results were measured on a full resolution
 %triangulation. Since we compute the curvature of each vertices of the final
@@ -777,8 +780,8 @@ The GPU interpolation reduces the bias, but it doesn't remove it.
 
 \subsection{Fully adaptive evaluation}
 
-When dealing with large datasets, we can not expect real-time curvature tensor
-estimation if we consider the full resolution geometry, due the the huge amount of data process. By computing a
+When dealing with large datasets, we \Jaco{cannot} expect real-time curvature tensor
+estimation if we consider the full resolution geometry, due the the huge amount of data \Jaco{to} process. By computing a
 dynamically refined approximate curvature tensor estimation joined with an
 adaptive triangulation (as discussed in Section~\ref{sec:hierarchical}), we
 manage to maintain a real-time framerate by giving control over the amount of
@@ -795,12 +798,14 @@ the hierarchical algorithm.
 %$l_0$. For example, with $R=20$, the approximated visualization at $l_2$ takes
 %only 300ms while the $l_0$ visualization takes more than 4 seconds.
 
-We can first note that the required time for an object to compute the ground truth
-curvature is usually as high as the time required to extract the geometry and to
-compute all of the above levels. Using approximations is thus mandatory.
-Another advantage with approximations, is that it allows us to get a visualisation of our object as soon as we run
-the application. This allows for real-time interactions with the object, required in order to change
-the visualized value, curvature radius, \ldots
+\Jaco{First} we can note that the required time to
+compute the ground truth curvature \Jaco{for an object} is usually as high as the time
+required to extract its geometry and to compute all of the above
+levels. Using approximations is thus mandatory.  Another advantage
+with approximations is that it allows us to get a visualisation of
+our object as soon as we run the application. This allows for
+real-time interactions with the object, required in order to change
+the visualized \Jaco{quantity}, curvature radius, etc.
 
 It is also visible in Figure~\ref{fig:timings} that a hierarchical decomposition greatly reduces the curvature computation
 time, especially with big radii.
