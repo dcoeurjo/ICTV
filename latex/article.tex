@@ -365,7 +365,7 @@ algorithm.
 %The proposed approach is based on an octree representation
 %of the input object on which an efficient adaptive triangulation
 %of the isosurface is constructed on GPU.
-The proposed approch uses an octree representation of the input object
+The proposed approach uses an octree representation of the input object
 on which an adaptive Marching Cube builds the isosurface efficiently.
 Such
 %approach is motivated by the fact that the
@@ -413,7 +413,8 @@ cells are defined by the code of the parent suffixed by two bits (in dimension
 \ref{fig_quadtree_partitionning}-\emph{left}). A cell's code encodes its
 position \wrt its parent cell and its complete path to the tree root.
 %Hence, whatever their depth, all cell codes are simply stored in a linear vector on memory.
-Hence, the tree is fully represented as a linear vector of its leaves.%, whatever their depth.
+Hence, the tree is fully represented as a linear vector of its leaves.
+%, whatever their depth.
 Furthermore, cell operations such as subdivision, merging %, neighbors access
 can be efficiently implemented using bitwise operations on the Morton
 code. In the following, we use the GPU
@@ -427,7 +428,7 @@ implementation proposed by \textsc{Dupuy}
 
 Using this spatial data structure, a triangulated mesh can be constructed
 %from a Marching Cubes approach \cite{lorensen1987marching} (MC for short): the
-using Marching Cubes\cite{lorensen1987marching} (MC for short): the
+using Marching Cubes \cite{lorensen1987marching} (MC for short): the
 triangulation is generated from local triangle patches computed on
 local cell configurations.
 %Since triangle patches are locally computed,
@@ -456,9 +457,9 @@ be extracted.
 %specific MC configurations for such transition cells,  leading to a
 %crack-free triangulation.
 
-Similarly to original MC algorithm, this approach is well suited%perfectly adapted
-to the GPU: Given a set of cells (a vector of morton codes),
-each triangle patch can be extracted in parallel for both the regular cell and the transition cells.
+Similarly to original MC algorithm, this approach is well suited %perfectly adapted
+to a GPU implemntation: given a set of cells (a vector of morton codes),
+each triangle patch can be extracted in parallel for both regular cells and transition cells.
 %(done by the \emph{geometry shader} in the GPU graphic pipeline).
 
 \subsection{Level of Details Criteria and Temporal Updates}
@@ -472,10 +473,11 @@ the closer we are to the camera, the finer the cells are.
 %distance criterion, we define an angular criterion to prevent refining cells
 %outside the camera frustrum.
 Such a criterion is also well suited to GPU since it can be evaluated
-independently on all cells.
+independently on \Jaco{every} cell.
 %Hence, we can efficiently determine if a cell must be subdivided or not.
-Figure~\ref{fig_lod_octree} illustrates our the level of
-details (LoD for short) criterion% we use. More precisely,
+Figure~\ref{fig_lod_octree} illustrates our level of
+details (LoD for short) criterion.
+% we use. More precisely,
 In dimension 2, if $\alpha$ denotes the viewing angle, an object at a distance $d$ from the camera
 %with diameter greater than $2\cdot d\cdot\tan(\alpha)$ is projected into more
 has a projected size on screen of $2\cdot d\cdot\tan(\alpha)$.
@@ -517,8 +519,9 @@ cells have a visibility ratio greater than  constant $k$\,;
 %Figure~\ref{fig_lod_octree}-\emph{middle}). We do not go into the
 %details but please note that stay, split and merge decisions of all cells are computed in
 %parallel from all cell morton codes.
-Using such a criterion, split and merge decisions are computed in%of all cells are computed in
-parallel from all cell's morton codes.
+Using such a criterion, split and merge decisions are computed in
+%of all cells are computed in
+parallel from the morton codes of all cells.
 
 Once decisions have been made, a new set of cells is sent to the mesh
 generation step described above.
@@ -534,7 +537,7 @@ illustrates the overall fully data parallel pipeline.
 \begin{figure}[!htbp]
   \centering
   \includegraphics[width=0.9\textwidth]{figs/pipeline2}
-  \caption{ Summary our GPU pipeline. Data buffers are
+  \caption{\Jaco{GPU pipeline summary}. Data buffers are
     represented in green and computations in red. Each computation
     retrieves data from a buffer and fills a new one. }
   \label{fig_pipeline}
@@ -549,7 +552,7 @@ present our approaches.
 \subsection{Design principles}
 
 The general idea is to perform an Integral Invariant computation on
-GPU at each vertex of the generated triangular mesh. First note that
+GPU at each vertex of the generated \Jaco{triangulated} mesh. First note that
 when the LoD criterion is removed, each MC vertex is exactly centered at
 a surfel center. At different depth of the octree, MC vertices still
 correspond to surfel centers of subsampled versions of the input
