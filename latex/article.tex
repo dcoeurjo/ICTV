@@ -557,9 +557,9 @@ when the LoD criterion is removed, each MC vertex is exactly centered at
 a surfel center. At different depth of the octree, MC vertices still
 correspond to surfel centers of subsampled versions of the input
 object. Hence, Integral Invariant framework defined in
-Section~\ref{sec:curv-tens-estim} is consistent with the triangular
+Section~\ref{sec:curv-tens-estim} is consistent with the \Jaco{triangulated}
 surface obtained on GPU: triangles are used for visualization purposes
-but all computations are performed on the digital object $\DSh$ and thus
+but all computations are performed on the digital object $\DSh$ \Jaco{for}
 estimators
 (\ref{eq:dig-curvature-estimator-k}),
 (\ref{eq:dig-curvature-estimator-H}), (\ref{eq:dig-curvature-estimator-k1})
@@ -583,7 +583,7 @@ $\Ball{R}{\vx}$. Furthermore, the \emph{mipmap} texture can be used to design,
 using a single texture probe, a fast inclusion test of a given cell $c$ at level
 $l$ into the shapes: we say that $c$ is in $\Shape$ if its density (retrieved
 from the texture probe at level l) is greater than $1/2$. The idea here is to
-mimic a lend of adaptive Gauss digitization process.
+mimic a \Jaco{blend ?} of adaptive Gauss digitization process.
 
 \begin{figure}
   \vspace{-0.35cm}
@@ -607,7 +607,7 @@ consider hierarchical decompositions of either $\Ball{R}{\vx}$
 regions into mipmap cells of different resolution in order to limit
 the number of texture access (important bottleneck on GPU hardwares)
 and to get better approximated quantities. Note that the scenario in
-Fig.~\ref{fig:approx2}-$b$, is clearly the best approach: the
+Fig.~\ref{fig:approx2}-$b$ is clearly the best approach: the
 volume is exact  (\wrt the regular grid case) since geometrical moments
 are additive quantities, and the number of texture fetches is  optimal
 at this point.
@@ -653,7 +653,7 @@ to this cell. Note that cells in the $B_R$ decomposition may not be
 aligned with mipmap cells. However, we can use GPU %mipmap
 functionalities which interpolates mipmap values if we probe at
 non-discrete positions. For a given radius $R$, the expected number of
-cells on $B_R$ is in $O(\log{R})$. Implementation details on the
+cells \Jaco{in} $B_R$ is in $O(\log{R})$. Implementation details on the
 hierarchical octree representation can be found in the supplementary
 material (see Section \ref{sec:discussion}).
 
@@ -661,11 +661,11 @@ material (see Section \ref{sec:discussion}).
 the interactivity and the execution flow or parallelism on GPU. The
 integration is simply computed using a regular grid at different
 resolution $l$ (Fig. \ref{fig:approx}-$b$ and $c$). The shader code
-becomes trivial (simple triple loop) and a lot of texture fetched are
+becomes trivial (simple triple loop) and a lot of texture \Jaco{fetches} are
 involved, but interactivity can be easily obtained. Indeed, we
 consider the following multi-pass approach:
 \begin{enumerate}
-\item When the surface geometry has been computed,we set the current
+\item When the surface geometry has been computed, we set the current
   level $l$ at an high level $l\EqDef l_{max}$ of the mipmap
   pyramid.
 \item We compute the integrals (and the curvature tensor) at the
@@ -677,9 +677,9 @@ consider the following multi-pass approach:
   $l$ and return to step 2 if the final $l_0$ level has not been
   reached yet.
 \end{enumerate}
-A consequence of the multi-pass approach is that is there is no
+A consequence of the multi-pass approach is that \Jaco{when} there is no
 interaction (camera settings, parameters), the GPU automatically
-refine the estimation. Even if step 2 is quite expensive, in
+refines the estimation. Even if step 2 is quite expensive, in
 $O\left(\left(\frac{R}{2^l}\right)^3\right)$, the interactive control
  in step 3 considerably improves the interactive exploration of the
  tensor with fast preliminary approximations which are quickly refined.
