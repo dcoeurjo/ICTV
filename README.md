@@ -14,7 +14,7 @@ make ICTV
 ./ICTV <data> <type> <size> [light]
 ```
 
-* \<type\>:	1 - .raw files
+* \<type\>:	1 - .raw files\n
 			2 - Enter a piece of glsl code filling a variable h with the implicit fonction to render.
 				x, y, and z are available variables containing the position of the vertex in [-10:10].
 				t is a variable containing the time elapsed is seconds.
