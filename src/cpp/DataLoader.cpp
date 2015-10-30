@@ -290,7 +290,7 @@ unsigned long int f(unsigned int sf, unsigned long int x, unsigned long int y, u
 	return ((z*sf) + x)*sf + y;
 }
 
-//Files provided by Eric
+/*//Files provided by Eric
 void DataTerrain::loadFile(char* file)
 {
 	printf("Loading Eric's file as float %s ... ", file); fflush(stdout);
@@ -327,7 +327,7 @@ void DataTerrain::loadFile(char* file)
 		data[i++] = ((float)data_char[f(sf, x, y, z)] / 255.0) - 0.5;
 
 	printf("Complete\n");
-}
+}*/
 
 //Files .raw provided by http://www.tc18.org/code_data_set/3D_images.php
 void DataRaw::loadFile(char* file)
@@ -341,13 +341,19 @@ void DataRaw::loadFile(char* file)
 		return;
 	}
 	
+	bool padding = true; //if set to true, the texture is padded until it has the size of the next power of 2 resolution
+	
 	unsigned long int a = 1;
 	while(a < sizex)
 	{
 		a*= 2;
 	}
 	
-	unsigned long int size_p2 = sizex;
+	unsigned long int size_p2;
+	if (padding)
+		size_p2 = a;
+	else
+		size_p2 = sizex;
 
 	unsigned long int total = size_p2 * size_p2 * size_p2;
     data = (float*) malloc(sizeof(float)*total);

@@ -56,13 +56,13 @@ public:
 	virtual void releaseData() { free(data); }
 };
 
-class DataTerrain : public DataLoader
+/*class DataTerrain : public DataLoader
 {
 public:	
 	virtual float* get32BData() { return data; }
 	virtual unsigned char* get8BData() { return data_char; }
 	virtual void loadFile(char* file);
-};
+};*/
 
 class DataRaw : public DataLoader
 {
