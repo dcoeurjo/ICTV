@@ -23,7 +23,6 @@
  * along with ICTV.  If not, see <http://www.gnu.org/licenses/>
  */
 
-
 #include "DataLoader.h"
 
 #include "GL/GLTexture.h"
@@ -71,6 +70,7 @@ void DataLoader::loadData8BGpu()
 	glBindTexture(GL_TEXTURE_3D, 0);
 }
 
+/*
 void loadNxtMipmap(int size, float* texture, float** miptexture)
 {
 	int sizemip = size/2;
@@ -233,11 +233,6 @@ void DataLoader::loadxyz()
 		float norm_j = j;
 		float norm_k = k;
 		
-		/*
-		mmt[nb*3] = norm_i;
-		mmt[nb*3 + 1] = norm_j;
-		mmt[nb*3 + 2] = norm_k;
-		*/
 		mmt[nb*3] = norm_i*data[nb];
 		mmt[nb*3 + 1] = norm_j*data[nb];
 		mmt[nb*3 + 2] = norm_k*data[nb];
@@ -283,14 +278,15 @@ void DataLoader::loadxyz()
 	
 	//free(mmt);
 }
+*/
 
-
+/*
 unsigned long int f(unsigned int sf, unsigned long int x, unsigned long int y, unsigned long int z)
 {
 	return ((z*sf) + x)*sf + y;
 }
-
-//Files provided by Eric
+*/
+/*//Files provided by Eric
 void DataTerrain::loadFile(char* file)
 {
 	printf("Loading Eric's file as float %s ... ", file); fflush(stdout);
@@ -327,7 +323,7 @@ void DataTerrain::loadFile(char* file)
 		data[i++] = ((float)data_char[f(sf, x, y, z)] / 255.0) - 0.5;
 
 	printf("Complete\n");
-}
+}*/
 
 //Files .raw provided by http://www.tc18.org/code_data_set/3D_images.php
 void DataRaw::loadFile(char* file)
@@ -341,20 +337,28 @@ void DataRaw::loadFile(char* file)
 		return;
 	}
 	
+	bool padding = true; //if set to true, the texture is padded until it has the size of the next power of 2 resolution
+	
 	unsigned long int a = 1;
 	while(a < sizex)
 	{
 		a*= 2;
 	}
 	
-	unsigned long int size_p2 = sizex;
+	unsigned long int size_p2;
+	if (padding)
+		size_p2 = a;
+	else
+		size_p2 = sizex;
 
 	unsigned long int total = size_p2 * size_p2 * size_p2;
     data = (float*) malloc(sizeof(float)*total);
     data_char = (unsigned char*) malloc(sizeof(unsigned char)*total);
     
 	unsigned char* raw_data = (unsigned char*) malloc(sizeof(unsigned char)*sizex*sizex*sizex);
-    fread(raw_data, sizeof(unsigned char), sizex*sizex*sizex, fd);
+    unsigned int r = fread(raw_data, sizeof(unsigned char), sizex*sizex*sizex, fd);
+	if (r != sizex*sizex*sizex)
+		printf("Read only %u values\n", r);
 	fclose(fd);
 
 	unsigned char min = raw_data[0];

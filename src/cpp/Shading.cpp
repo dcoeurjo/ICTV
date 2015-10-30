@@ -23,9 +23,7 @@
  * along with ICTV.  If not, see <http://www.gnu.org/licenses/>
  */
 
-
 #include "Shading.h"
-
 
 #include "GL/GLQuery.h"
 #include "GL/GLTexture.h"
@@ -125,7 +123,7 @@ void load(GLuint program, GLuint first_loc)
 		glGetUniformLocation (program, "u_scene_size");
 	
 	Parameters::getInstance()->g_uniform_locations[first_loc+1] =
-			glGetUniformLocation (program, "u_viewport");
+		glGetUniformLocation (program, "u_viewport");
 
 	Parameters::getInstance()->g_uniform_locations[first_loc+2] =
 		glGetUniformLocation (program, "solid_wireframe");

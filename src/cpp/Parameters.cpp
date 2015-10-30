@@ -23,7 +23,6 @@
  * along with ICTV.  If not, see <http://www.gnu.org/licenses/>
  */
 
-
 #include "Parameters.h"
 
 #include <stdlib.h>
@@ -63,21 +62,21 @@ Parameters::Parameters()
     g_draw_cells = false;
     g_draw_triangles = true;
     g_culling = true;
-    g_fromtexture = true;
+    //g_fromtexture = true;
     g_solid_wireframe = true;
     g_controls = false;
     g_gui = true;
-    g_radial_length = true;
-    g_textured_data = false;
+    //g_radial_length = true;
+    //g_textured_data = false;
 	g_auto_refine = true;
-	g_k1k2_normals = true;
+	g_triangle_normals = false;
 	g_curv_dir = 0;
 	g_curv_val = 1;
 	g_lvl = 2;
 
-    g_ground_truth = 3;
+    g_ground_truth = 1;
     
-    g_regular = false;
+    g_adaptive_geom = true;
     g_radius_show = true;
 
 	g_curvradius = 8.0;
@@ -86,7 +85,7 @@ Parameters::Parameters()
 	
     g_scale = 10.0;
     g_tessel = 1.0;
-    g_isosurface = 0;
+    //g_isosurface = 0;
 	
 	g_export = false;
 	g_compute_min_max = true;

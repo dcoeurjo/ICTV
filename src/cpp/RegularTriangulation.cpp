@@ -23,7 +23,6 @@
  * along with ICTV.  If not, see <http://www.gnu.org/licenses/>
  */
 
-
 #include "Triangulation.h"
 
 #include "GL/GLQuery.h"
@@ -143,13 +142,13 @@ void RegularTriangulation::configurePrograms()
                             Parameters::getInstance()->g_scale);
         glProgramUniform1f(Parameters::getInstance()->g_programs[PROGRAM_REGULAR_DRAW],
 			    Parameters::getInstance()->g_uniform_locations[LOCATION_REGULAR_ISOSURFACE],
-                            Parameters::getInstance()->g_isosurface);
+                            0);//Parameters::getInstance()->g_isosurface);
 	glProgramUniform1i (Parameters::getInstance()->g_programs[PROGRAM_REGULAR_DRAW],
 			    Parameters::getInstance()->g_uniform_locations[LOCATION_REGULAR_FROMTEXTURE],
-			    Parameters::getInstance()->g_fromtexture);
+			    1);//Parameters::getInstance()->g_fromtexture);
 	glProgramUniform1i (Parameters::getInstance()->g_programs[PROGRAM_REGULAR_DRAW],
 			    Parameters::getInstance()->g_uniform_locations[LOCATION_REGULAR_METRIC],
-			    Parameters::getInstance()->g_radial_length);
+			    1);//Parameters::getInstance()->g_radial_length);
 	glProgramUniform1f (Parameters::getInstance()->g_programs[PROGRAM_REGULAR_DRAW],
                             Parameters::getInstance()->g_uniform_locations[LOCATION_REGULAR_TIME],
                             Parameters::getInstance()->g_time_elapsed);

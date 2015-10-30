@@ -23,7 +23,6 @@
  * along with ICTV.  If not, see <http://www.gnu.org/licenses/>
  */
 
-
 #include "GpuOctree.h"
 
 #include "GL/GLQuery.h"
@@ -32,8 +31,10 @@
 #include "GL/GLBuffer.h"
 #include "ProgramManager.h"
 
+int sizekey = 2;
+
 //Cube data, used for cells drawing
-const GLfloat g_cubeVertices[] = {  0.5f, -0.5f, -0.5f,   // 0 
+/*const GLfloat g_cubeVertices[] = {  0.5f, -0.5f, -0.5f,   // 0 
 					0.5f,  0.5f, -0.5f,   // 1
 					0.5f,  0.5f,  0.5f,   // 2
 					0.5f, -0.5f,  0.5f,   // 3
@@ -47,7 +48,7 @@ const GLushort g_cubeIndexes[] = { 0,1,1,2,2,3,3,0,   // front
 					5,4,4,7,7,6,6,5,   // back
 					4,0,0,3,3,7,7,4,   // left
 					2,3,3,7,7,6,6,2,   // top
-					0,4,4,5,5,1,1,0 }; // bottom
+					0,4,4,5,5,1,1,0 }; // bottom*/
 							
 
 void streamFrustum (void) 
@@ -87,14 +88,13 @@ void streamFrustum (void)
 
 void GPUOctree::loadBuffers()
 {
-        const int root[] = {0,0,0,0};
-        //const size_t cap = 1 << 28;
+        const int root[] = {0,0};
 		
 		size_t full_tree = 1;
-		unsigned long int side = pow(2, 9);
-		full_tree += side*side*side;
+		long int side = std::pow(2, 8); //lvl 8 max
+		full_tree += side*side*side; 
 		
-		size_t full_tree_cap = full_tree * sizeof(float) * 2.0; //1 vec2 for each
+		size_t full_tree_cap = full_tree * sizeof(float) * sizekey; //1 vec2 for each
 		
 		printf("LOD CAPACITY %lu (%lu)\n", full_tree, full_tree_cap);
 		
@@ -102,10 +102,10 @@ void GPUOctree::loadBuffers()
 		tr_cells = full_tree/100.0; //a lot less than tree cells
 		printf("TR CAPACITY %lu\n", tr_cells);
 		
-		size_t tr_cells_cap = tr_cells * sizeof(float) * 2.0; //1 vec2 for each
+		size_t tr_cells_cap = tr_cells * sizeof(float) * sizekey; //1 vec2 for each
 		
-		size_t tr_neighbours = tr_cells * sizeof(float)*4; //1 vec4 for each
-		size_t full_neighbours = full_tree * sizeof(float)*4; //1 vec4 for each
+		size_t tr_neighbours = tr_cells * sizeof(float) * 4.0; //1 vec4 for each
+		size_t full_neighbours = full_tree * sizeof(float) * 4.0; //1 vec4 for each
 		
 		glGenBuffers (1, &Parameters::getInstance()->g_buffers[BUFFER_FRUSTUM]);
 			glBindBuffer (GL_ARRAY_BUFFER, Parameters::getInstance()->g_buffers[BUFFER_FRUSTUM]);
@@ -178,16 +178,6 @@ void GPUOctree::loadBuffers()
 					GL_DYNAMIC_COPY
 			);
 		glBindBuffer (GL_ARRAY_BUFFER, 0);
-	
-	//To draw the octree's cells
-	glGenBuffers (1, &Parameters::getInstance()->g_buffers[BUFFER_VERTEX_CUBE]);
-	glBindBuffer (GL_ARRAY_BUFFER, Parameters::getInstance()->g_buffers[BUFFER_VERTEX_CUBE]);
-	glBufferData (GL_ARRAY_BUFFER, sizeof (g_cubeVertices), g_cubeVertices, GL_STATIC_DRAW);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glGenBuffers (1, &Parameters::getInstance()->g_buffers[BUFFER_INDEX_CUBE]);
-	glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, Parameters::getInstance()->g_buffers[BUFFER_INDEX_CUBE]);
-	glBufferData (GL_ELEMENT_ARRAY_BUFFER, sizeof (g_cubeIndexes), g_cubeIndexes, GL_STATIC_DRAW);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
 void GPUOctree::loadVertexArrays()
@@ -202,7 +192,7 @@ void GPUOctree::loadVertexArrays()
                 glDeleteVertexArrays (1, Parameters::getInstance()->g_vertex_arrays + VERTEX_ARRAY_LTREE_RENDER1);
         if (glIsVertexArray (Parameters::getInstance()->g_vertex_arrays[VERTEX_ARRAY_LTREE_RENDER2]))
                 glDeleteVertexArrays (1, Parameters::getInstance()->g_vertex_arrays + VERTEX_ARRAY_LTREE_RENDER2);
-	if (glIsVertexArray (Parameters::getInstance()->g_vertex_arrays[VERTEX_ARRAY_LTREE_RENDER1_TR]))
+		if (glIsVertexArray (Parameters::getInstance()->g_vertex_arrays[VERTEX_ARRAY_LTREE_RENDER1_TR]))
                 glDeleteVertexArrays (1, Parameters::getInstance()->g_vertex_arrays + VERTEX_ARRAY_LTREE_RENDER1_TR);
         if (glIsVertexArray (Parameters::getInstance()->g_vertex_arrays[VERTEX_ARRAY_LTREE_RENDER2_TR]))
                 glDeleteVertexArrays (1, Parameters::getInstance()->g_vertex_arrays + VERTEX_ARRAY_LTREE_RENDER2_TR);
@@ -210,19 +200,23 @@ void GPUOctree::loadVertexArrays()
 	glGenVertexArrays (1, Parameters::getInstance()->g_vertex_arrays + VERTEX_ARRAY_EMPTY);
         glBindVertexArray (Parameters::getInstance()->g_vertex_arrays[VERTEX_ARRAY_EMPTY]);
         glBindVertexArray (0);
+	
 
         glGenVertexArrays (1, Parameters::getInstance()->g_vertex_arrays + VERTEX_ARRAY_LTREE_UPDATE1);
         glBindVertexArray (Parameters::getInstance()->g_vertex_arrays[VERTEX_ARRAY_LTREE_UPDATE1]);
                 glEnableVertexAttribArray (0);
                 glBindBuffer (GL_ARRAY_BUFFER, Parameters::getInstance()->g_buffers[BUFFER_LTREE_DATA1]);
                 glVertexAttribIPointer (0, 2, GL_UNSIGNED_INT, 0, 0);
-	glBindVertexArray (0);
+		glBindVertexArray (0);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		
         glGenVertexArrays (1, Parameters::getInstance()->g_vertex_arrays + VERTEX_ARRAY_LTREE_UPDATE2);
         glBindVertexArray (Parameters::getInstance()->g_vertex_arrays[VERTEX_ARRAY_LTREE_UPDATE2]);
                 glEnableVertexAttribArray (0);
                 glBindBuffer (GL_ARRAY_BUFFER, Parameters::getInstance()->g_buffers[BUFFER_LTREE_DATA2]);
                 glVertexAttribIPointer (0, 2, GL_UNSIGNED_INT, 0, 0);
         glBindVertexArray (0);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
 
         glGenVertexArrays (1, Parameters::getInstance()->g_vertex_arrays + VERTEX_ARRAY_LTREE_RENDER1);
         glBindVertexArray(Parameters::getInstance()->g_vertex_arrays[VERTEX_ARRAY_LTREE_RENDER1]);
@@ -232,7 +226,8 @@ void GPUOctree::loadVertexArrays()
 		glEnableVertexAttribArray(1);
                 glBindBuffer(GL_ARRAY_BUFFER, Parameters::getInstance()->g_buffers[BUFFER_CODE]);
                 glVertexAttribPointer(1, 4, GL_FLOAT, 0, 0, 0);
-	glBindVertexArray (0);
+		glBindVertexArray (0);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
         
         glGenVertexArrays (1, Parameters::getInstance()->g_vertex_arrays + VERTEX_ARRAY_LTREE_RENDER2);
         glBindVertexArray(Parameters::getInstance()->g_vertex_arrays[VERTEX_ARRAY_LTREE_RENDER2]);
@@ -242,7 +237,8 @@ void GPUOctree::loadVertexArrays()
 		glEnableVertexAttribArray(1);
                 glBindBuffer(GL_ARRAY_BUFFER, Parameters::getInstance()->g_buffers[BUFFER_CODE]);
                 glVertexAttribPointer(1, 4, GL_FLOAT, 0, 0, 0);
-	glBindVertexArray (0);
+		glBindVertexArray (0);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
         
 	glGenVertexArrays (1, Parameters::getInstance()->g_vertex_arrays + VERTEX_ARRAY_LTREE_RENDER1_TR);
         glBindVertexArray(Parameters::getInstance()->g_vertex_arrays[VERTEX_ARRAY_LTREE_RENDER1_TR]);
@@ -253,6 +249,7 @@ void GPUOctree::loadVertexArrays()
                 glBindBuffer(GL_ARRAY_BUFFER, Parameters::getInstance()->g_buffers[BUFFER_NEIGHBOURS]);
                 glVertexAttribPointer(1, 4, GL_FLOAT, 0, 0, 0);
 	glBindVertexArray (0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
         
         glGenVertexArrays (1, Parameters::getInstance()->g_vertex_arrays + VERTEX_ARRAY_LTREE_RENDER2_TR);
         glBindVertexArray(Parameters::getInstance()->g_vertex_arrays[VERTEX_ARRAY_LTREE_RENDER2_TR]);
@@ -263,30 +260,7 @@ void GPUOctree::loadVertexArrays()
                 glBindBuffer(GL_ARRAY_BUFFER, Parameters::getInstance()->g_buffers[BUFFER_NEIGHBOURS]);
                 glVertexAttribPointer(1, 4, GL_FLOAT, 0, 0, 0);
         glBindVertexArray(0);
-	
-	glGenVertexArrays (1, Parameters::getInstance()->g_vertex_arrays + VERTEX_ARRAY_OCTREE_RENDER1);
-	glBindVertexArray(Parameters::getInstance()->g_vertex_arrays[VERTEX_ARRAY_OCTREE_RENDER1]);
-		glEnableVertexAttribArray(0);
-		glEnableVertexAttribArray(1);
-		glBindBuffer(GL_ARRAY_BUFFER, Parameters::getInstance()->g_buffers[BUFFER_LTREE_DATA1]);
-		glVertexAttribIPointer(0, 2, GL_UNSIGNED_INT, 0, 0);
-		glVertexAttribDivisor(0, 1);
-		glBindBuffer (GL_ARRAY_BUFFER, Parameters::getInstance()->g_buffers[BUFFER_VERTEX_CUBE]);
-		glVertexAttribPointer (1, 3, GL_FLOAT, 0, 0, 0);
-		glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, Parameters::getInstance()->g_buffers[BUFFER_INDEX_CUBE]);
-	glBindVertexArray(0);
-	
-	glGenVertexArrays (1, Parameters::getInstance()->g_vertex_arrays + VERTEX_ARRAY_OCTREE_RENDER2);
-	glBindVertexArray(Parameters::getInstance()->g_vertex_arrays[VERTEX_ARRAY_OCTREE_RENDER2]);
-		glEnableVertexAttribArray(0);
-		glEnableVertexAttribArray(1);
-		glBindBuffer(GL_ARRAY_BUFFER, Parameters::getInstance()->g_buffers[BUFFER_LTREE_DATA2]);
-		glVertexAttribIPointer(0, 2, GL_UNSIGNED_INT, 0, 0);
-		glVertexAttribDivisor(0, 1);
-		glBindBuffer (GL_ARRAY_BUFFER, Parameters::getInstance()->g_buffers[BUFFER_VERTEX_CUBE]);
-		glVertexAttribPointer (1, 3, GL_FLOAT, 0, 0, 0);
-		glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, Parameters::getInstance()->g_buffers[BUFFER_INDEX_CUBE]);
-	glBindVertexArray(0);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
 void GPUOctree::loadFeedback()
@@ -310,19 +284,19 @@ void GPUOctree::configurePrograms()
         glProgramUniform1i (Parameters::getInstance()->g_programs[PROGRAM_LTREE_LOD],
                             Parameters::getInstance()->g_uniform_locations[LOCATION_LOD_DENSITY],
                             TEXTURE_DENSITY);
-	/*glProgramUniform1i (Parameters::getInstance()->g_programs[PROGRAM_LTREE_LOD], 
+	glProgramUniform1i (Parameters::getInstance()->g_programs[PROGRAM_LTREE_LOD], 
 			    Parameters::getInstance()->g_uniform_locations[LOCATION_LOD_FROMTEXTURE], 
-			    (int)Parameters::getInstance()->g_fromtexture);
+			    1);//(int)Parameters::getInstance()->g_fromtexture);
 	glProgramUniform1i (Parameters::getInstance()->g_programs[PROGRAM_LTREE_LOD], 
 			    Parameters::getInstance()->g_uniform_locations[LOCATION_LOD_METRIC], 
-			    (int)Parameters::getInstance()->g_radial_length);
-	*/glProgramUniform1f (Parameters::getInstance()->g_programs[PROGRAM_LTREE_LOD],
+			    1);//(int)Parameters::getInstance()->g_radial_length);
+	glProgramUniform1f (Parameters::getInstance()->g_programs[PROGRAM_LTREE_LOD],
                             Parameters::getInstance()->g_uniform_locations[LOCATION_LOD_TIME],
                             Parameters::getInstance()->g_time_elapsed);
-  /*  glProgramUniform1i (Parameters::getInstance()->g_programs[PROGRAM_LTREE_LOD], 
+    glProgramUniform1i (Parameters::getInstance()->g_programs[PROGRAM_LTREE_LOD], 
                 Parameters::getInstance()->g_uniform_locations[LOCATION_LOD_REGULAR], 
-                (int)Parameters::getInstance()->g_regular);
-*/
+                (int)(!Parameters::getInstance()->g_adaptive_geom));
+
     glProgramUniform1f(Parameters::getInstance()->g_programs[PROGRAM_LTREE_LOD],
                             Parameters::getInstance()->g_uniform_locations[LOCATION_LOD_SIZETEX],
                             Parameters::getInstance()->g_sizetex);
@@ -344,16 +318,16 @@ void GPUOctree::configurePrograms()
 	glProgramUniform1i(Parameters::getInstance()->g_programs[PROGRAM_LTREE_CULL],
                             Parameters::getInstance()->g_uniform_locations[LOCATION_CULL_TESSEL],
                             (int)Parameters::getInstance()->g_tessel);
-    /*    glProgramUniform1f(Parameters::getInstance()->g_programs[PROGRAM_LTREE_CULL],
+        glProgramUniform1f(Parameters::getInstance()->g_programs[PROGRAM_LTREE_CULL],
                             Parameters::getInstance()->g_uniform_locations[LOCATION_CULL_ISOSURFACE],
-                            Parameters::getInstance()->g_isosurface);
+                            0);//Parameters::getInstance()->g_isosurface);
 	glProgramUniform1i (Parameters::getInstance()->g_programs[PROGRAM_LTREE_CULL], 
 			    Parameters::getInstance()->g_uniform_locations[LOCATION_CULL_FROMTEXTURE], 
-			    (int)Parameters::getInstance()->g_fromtexture);
+			    1);//(int)Parameters::getInstance()->g_fromtexture);
 	glProgramUniform1i (Parameters::getInstance()->g_programs[PROGRAM_LTREE_CULL], 
 			    Parameters::getInstance()->g_uniform_locations[LOCATION_CULL_METRIC], 
-			    (int)Parameters::getInstance()->g_radial_length);
-	*/glProgramUniform1f (Parameters::getInstance()->g_programs[PROGRAM_LTREE_CULL],
+			    1);//(int)Parameters::getInstance()->g_radial_length);
+	glProgramUniform1f (Parameters::getInstance()->g_programs[PROGRAM_LTREE_CULL],
                             Parameters::getInstance()->g_uniform_locations[LOCATION_CULL_TIME],
                             Parameters::getInstance()->g_time_elapsed);
     glProgramUniform1f (Parameters::getInstance()->g_programs[PROGRAM_LTREE_CULL],
@@ -364,19 +338,22 @@ void GPUOctree::configurePrograms()
 	
 	/**DISPLAY**/
 	glProgramUniform3f (Parameters::getInstance()->g_programs[PROGRAM_CELL_DRAW],
-                            Parameters::getInstance()->g_uniform_locations[LOCATION_DRAW_SCENE_SIZE],
+                            Parameters::getInstance()->g_uniform_locations[LOCATION_DRAWCELL_SCENE_SIZE],
                             Parameters::getInstance()->g_geometry.scale[0], Parameters::getInstance()->g_geometry.scale[1], Parameters::getInstance()->g_geometry.scale[2]);
 	glProgramUniform1i (Parameters::getInstance()->g_programs[PROGRAM_CELL_DRAW],
-                            Parameters::getInstance()->g_uniform_locations[LOCATION_DRAW_DENSITY],
+                            Parameters::getInstance()->g_uniform_locations[LOCATION_DRAWCELL_DENSITY],
                             TEXTURE_DENSITY);
         glProgramUniform1f (Parameters::getInstance()->g_programs[PROGRAM_CELL_DRAW],
-                            Parameters::getInstance()->g_uniform_locations[LOCATION_CELL_TAN_FOVY],
+                            Parameters::getInstance()->g_uniform_locations[LOCATION_DRAWCELL_TAN_FOVY],
                             tanf (Parameters::getInstance()->g_camera.fovy / 360.f * 3.14159f));
         glProgramUniform1f(Parameters::getInstance()->g_programs[PROGRAM_CELL_DRAW],
-                            Parameters::getInstance()->g_uniform_locations[LOCATION_CELL_SCALE],
+                            Parameters::getInstance()->g_uniform_locations[LOCATION_DRAWCELL_SCALE],
                             Parameters::getInstance()->g_scale);
+	glProgramUniform1i (Parameters::getInstance()->g_programs[PROGRAM_CELL_DRAW], 
+			    Parameters::getInstance()->g_uniform_locations[LOCATION_DRAWCELL_FROMTEXTURE], 
+			    1);//(int)Parameters::getInstance()->g_fromtexture);
 	glProgramUniform1f(Parameters::getInstance()->g_programs[PROGRAM_CELL_DRAW],
-                            Parameters::getInstance()->g_uniform_locations[LOCATION_CELL_TIME],
+                            Parameters::getInstance()->g_uniform_locations[LOCATION_DRAWCELL_TIME],
                             Parameters::getInstance()->g_time_elapsed);
 
     
@@ -393,6 +370,7 @@ void GPUOctree::loadPrograms()
 	
         gk::GLCompiler& c = gk::loadProgram( SHADER_PATH("octree_lod.glsl"));
 	   c.include(SHADER_PATH("noise.glsl") );
+	   c.include(SHADER_PATH("potential.glsl") );
 	   c.include(SHADER_PATH("octree_common.glsl") );
 	   c.include(SHADER_PATH("ltree.glsl") );
 
@@ -436,6 +414,7 @@ void GPUOctree::loadPrograms()
         fprintf (stderr, "Loading octree cull program... "); fflush (stderr);
         gk::GLCompiler& c = gk::loadProgram( SHADER_PATH("octree_cull.glsl") );
     	c.include(SHADER_PATH("noise.glsl") );
+		c.include(SHADER_PATH("potential.glsl") );
     	c.include(SHADER_PATH("octree_common.glsl") );
     	c.include(SHADER_PATH("ltree.glsl") );
 
@@ -480,6 +459,7 @@ void GPUOctree::loadPrograms()
 	   fprintf (stderr, "Loading cell draw program... "); fflush (stderr);
         gk::GLCompiler& c = gk::loadProgram( SHADER_PATH("cell_draw.glsl"));
     	c.include(SHADER_PATH("noise.glsl") );
+		c.include(SHADER_PATH("potential.glsl") );
     	c.include(SHADER_PATH("octree_common.glsl") );
     	c.include(SHADER_PATH("ltree.glsl") );
         GLProgram* tmp = c.make();
@@ -488,17 +468,17 @@ void GPUOctree::loadPrograms()
 
         *program = tmp->name;
 	
-    	Parameters::getInstance()->g_uniform_locations[LOCATION_DRAW_SCENE_SIZE] =
+    	Parameters::getInstance()->g_uniform_locations[LOCATION_DRAWCELL_SCENE_SIZE] =
                     glGetUniformLocation (Parameters::getInstance()->g_programs[PROGRAM_CELL_DRAW], "u_scene_size");
-    	Parameters::getInstance()->g_uniform_locations[LOCATION_CELL_TAN_FOVY] =
+    	Parameters::getInstance()->g_uniform_locations[LOCATION_DRAWCELL_TAN_FOVY] =
                     glGetUniformLocation (Parameters::getInstance()->g_programs[PROGRAM_CELL_DRAW], "u_tan_fovy");
-    	Parameters::getInstance()->g_uniform_locations[LOCATION_CELL_SCALE] =
+    	Parameters::getInstance()->g_uniform_locations[LOCATION_DRAWCELL_SCALE] =
                     glGetUniformLocation (Parameters::getInstance()->g_programs[PROGRAM_CELL_DRAW], "u_scale");
-    	Parameters::getInstance()->g_uniform_locations[LOCATION_DRAW_DENSITY] =
+    	Parameters::getInstance()->g_uniform_locations[LOCATION_DRAWCELL_DENSITY] =
                     glGetUniformLocation (Parameters::getInstance()->g_programs[PROGRAM_CELL_DRAW], "densities");
-    	Parameters::getInstance()->g_uniform_locations[LOCATION_CELL_FROMTEXTURE] =
+    	Parameters::getInstance()->g_uniform_locations[LOCATION_DRAWCELL_FROMTEXTURE] =
     		glGetUniformLocation (Parameters::getInstance()->g_programs[PROGRAM_CELL_DRAW], "fromtexture");
-    	Parameters::getInstance()->g_uniform_locations[LOCATION_CELL_TIME] =
+    	Parameters::getInstance()->g_uniform_locations[LOCATION_DRAWCELL_TIME] =
     		glGetUniformLocation (Parameters::getInstance()->g_programs[PROGRAM_CELL_DRAW], "u_time");
 	
 	fprintf (stderr, "Success\n");
@@ -635,12 +615,16 @@ void GPUOctree::runCull(GLuint* queryResult_regular, GLuint* queryResult_transit
 void GPUOctree::runDisplay(int nb)
 {
 	glLineWidth(2.0);
+	glPointSize(10.0);
 
 	//draw cells
 	glUseProgram (Parameters::getInstance()->g_programs[PROGRAM_CELL_DRAW]);
-	glBindVertexArray (Parameters::getInstance()->g_vertex_arrays[VERTEX_ARRAY_OCTREE_RENDER2 - Parameters::getInstance()->g_geometry.pingpong]);
+	if (Parameters::getInstance()->g_geometry.pingpong == 1)
+		glBindVertexArray (Parameters::getInstance()->g_vertex_arrays[VERTEX_ARRAY_LTREE_RENDER1]);
+	else
+		glBindVertexArray (Parameters::getInstance()->g_vertex_arrays[VERTEX_ARRAY_LTREE_RENDER2]);
 
-	glDrawElementsInstanced (GL_LINES, 48, GL_UNSIGNED_SHORT, 0, nb);
+	glDrawArrays(GL_POINTS, 0, nb);
 
 	glBindVertexArray(0);
 	glUseProgram(0);

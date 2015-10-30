@@ -23,7 +23,6 @@
  * along with ICTV.  If not, see <http://www.gnu.org/licenses/>
  */
 
-
 uniform float u_curv_radius;
 uniform sampler3D u_xyz2_tex;
 uniform sampler3D u_xy_yz_xz_tex;

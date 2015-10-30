@@ -23,7 +23,6 @@
  * along with ICTV.  If not, see <http://www.gnu.org/licenses/>
  */
 
-
 #version 430
 
 #ifdef VERTEX_SHADER
@@ -56,6 +55,8 @@ uniform sampler3D densities;
 uniform sampler3D u_xyz2_tex;
 uniform sampler3D u_xy_yz_xz_tex;
 uniform sampler3D u_xyz_tex;
+*/
+
 uniform int u_curv_val;
 
 void main( )

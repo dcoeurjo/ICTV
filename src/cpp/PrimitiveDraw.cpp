@@ -23,7 +23,6 @@
  * along with ICTV.  If not, see <http://www.gnu.org/licenses/>
  */
 
-
 #include "PrimitiveDraw.h"
 
 #include "GL/GLQuery.h"

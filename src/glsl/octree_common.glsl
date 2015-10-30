@@ -23,7 +23,6 @@
  * along with ICTV.  If not, see <http://www.gnu.org/licenses/>
  */
 
-
 #define TRANSFORMS_BINDING 0
 #define FRUSTUM_BINDING 1
 

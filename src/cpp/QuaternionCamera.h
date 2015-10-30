@@ -23,7 +23,6 @@
  * along with ICTV.  If not, see <http://www.gnu.org/licenses/>
  */
 
-
 #ifndef QUATERNIONCAMERA_H_
 #define QUATERNIONCAMERA_H_
 

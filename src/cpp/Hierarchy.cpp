@@ -33,6 +33,7 @@
 // Not in math.h
 #define PI 3.14159265358979323846
 #define LVL 11
+#define MAX_SUBDIV 5000
 
 typedef float Value;
 
@@ -56,7 +57,7 @@ Value moment110( Value data, int x, int y, int z );
 Value moment101( Value data, int x, int y, int z );
 Value moment011( Value data, int x, int y, int z );
 
-float xyzk_list[4*10000+1];
+float xyzk_list[4*MAX_SUBDIV+1];
 
 // A 3D image of size (2^lvl)^3
 struct SImage {
@@ -322,6 +323,11 @@ Value computeExact(float x0, float y0, float z0, Value r, int lvl)
 					z / pow(2, lvl) - 0.5 >= 0)
 				{
 					xyzk_list[0]++;
+					if(xyzk_list[0] >= MAX_SUBDIV)
+					{
+						printf("Cannot compute hierarchical decomposition for it contains more than %d elements\n", MAX_SUBDIV);
+						return acc;
+					}
 					xyzk_list[ (int)xyzk_list[0]*4 ] = x / pow(2, lvl) - 0.5;
 					xyzk_list[ (int)xyzk_list[0]*4 + 1 ] = y / pow(2, lvl) - 0.5;
 					xyzk_list[ (int)xyzk_list[0]*4 + 2 ] = z / pow(2, lvl) - 0.5;
@@ -441,7 +447,7 @@ Value computeHierarchy( MipMap* M, int x0, int y0, int z0, Value r )
   return acc;
 }
 
-Value computeHierarchy( int lvl, int x0, int y0, int z0, Value r )
+void computeHierarchy( int lvl, int x0, int y0, int z0, Value r )
 {
   Value weight[ LVL+1 ];
   Value diag  [ LVL+1 ];
@@ -454,7 +460,7 @@ Value computeHierarchy( int lvl, int x0, int y0, int z0, Value r )
       diag  [ i ] = diag  [ i+1 ] * (Value) 2;
     }
   int xyzk[ 4 ] = { 0, 0, 0, 0 };
-  Value acc = 0;
+  //Value acc = 0;
   Value r2  = r*r;
   do 
     {
@@ -482,6 +488,11 @@ Value computeHierarchy( int lvl, int x0, int y0, int z0, Value r )
 				  (xyzk[2] - pow(2, xyzk[3]-1))/pow(2, xyzk[3]) >= 0)
 				{
 					xyzk_list[0]++;
+					if(xyzk_list[0] >= MAX_SUBDIV)
+					{
+						printf("Cannot compute hierarchical decomposition for it contains more than %d elements\n", MAX_SUBDIV);
+						return;// acc;
+					}
 					xyzk_list[ (int)xyzk_list[0]*4 ] = (xyzk[0] - pow(2, xyzk[3]-1))/pow(2, xyzk[3]);
 					xyzk_list[ (int)xyzk_list[0]*4 + 1 ] = (xyzk[1] - pow(2, xyzk[3]-1))/pow(2, xyzk[3]);
 					xyzk_list[ (int)xyzk_list[0]*4 + 2 ] = (xyzk[2] - pow(2, xyzk[3]-1))/pow(2, xyzk[3]);
@@ -502,6 +513,11 @@ Value computeHierarchy( int lvl, int x0, int y0, int z0, Value r )
 				  (xyzk[2] - pow(2, xyzk[3]-1))/pow(2, xyzk[3]) >= 0)
 				{
 					xyzk_list[0]++;
+					if(xyzk_list[0] >= MAX_SUBDIV)
+					{
+						printf("Cannot compute hierarchical decomposition for it contains more than %d elements\n", MAX_SUBDIV);
+						return;// acc;
+					}
 					xyzk_list[ (int)xyzk_list[0]*4 ] = (xyzk[0] - pow(2, xyzk[3]-1))/pow(2, xyzk[3]);
 					xyzk_list[ (int)xyzk_list[0]*4 + 1 ] = (xyzk[1] - pow(2, xyzk[3]-1))/pow(2, xyzk[3]);
 					xyzk_list[ (int)xyzk_list[0]*4 + 2 ] = (xyzk[2] - pow(2, xyzk[3]-1))/pow(2, xyzk[3]);
@@ -516,7 +532,7 @@ Value computeHierarchy( int lvl, int x0, int y0, int z0, Value r )
         }
     }
   while ( xyzk[ 3 ] > 0 );
-  return acc;
+  //return acc;
 }
 
 
@@ -647,6 +663,11 @@ Value computeApproximateHierarchy( int lvl, int x0, int y0, int z0, Value r, int
 				if (xyzk[0] >= 0 && xyzk[1] >= 0 && xyzk[2] >= 0)
 				{
 					xyzk_list[0]++;
+					if(xyzk_list[0] >= MAX_SUBDIV)
+					{
+						printf("Cannot compute hierarchical decomposition for it contains more than %d elements\n", MAX_SUBDIV);
+						return acc;
+					}
 					xyzk_list[ (int)xyzk_list[0]*4 ] = (xyzk[0] - pow(2, xyzk[3]-1))/pow(2, xyzk[3]);
 					xyzk_list[ (int)xyzk_list[0]*4 + 1 ] = (xyzk[1] - pow(2, xyzk[3]-1))/pow(2, xyzk[3]);
 					xyzk_list[ (int)xyzk_list[0]*4 + 2 ] = (xyzk[2] - pow(2, xyzk[3]-1))/pow(2, xyzk[3]);
@@ -664,6 +685,11 @@ Value computeApproximateHierarchy( int lvl, int x0, int y0, int z0, Value r, int
               if (xyzk[0] >= 0 && xyzk[1] >= 0 && xyzk[2] >= 0)
 				{
 					xyzk_list[0]++;
+					if(xyzk_list[0] >= MAX_SUBDIV)
+					{
+						printf("Cannot compute hierarchical decomposition for it contains more than %d elements\n", MAX_SUBDIV);
+						return acc;
+					}
 					xyzk_list[ (int)xyzk_list[0]*4 ] = (xyzk[0] - pow(2, xyzk[3]-1))/pow(2, xyzk[3]);
 					xyzk_list[ (int)xyzk_list[0]*4 + 1 ] = (xyzk[1] - pow(2, xyzk[3]-1))/pow(2, xyzk[3]);
 					xyzk_list[ (int)xyzk_list[0]*4 + 2 ] = (xyzk[2] - pow(2, xyzk[3]-1))/pow(2, xyzk[3]);
@@ -785,14 +811,14 @@ Value computeApproximateHierarchy2( MipMap* M, int x0, int y0, int z0, Value r, 
   return acc;
 }
 
-void computeSphereSubdivision(int r, int lvl)
+bool computeSphereSubdivision(int r, int lvl)
 {
 	printf("Lvl %d\n", lvl);
 	int x0 = 1 << (lvl-1); 
 	int y0 = 1 << (lvl-1); 
 	int z0 = 1 << (lvl-1); 
 	//Value exact = computeExact( x0+0.5, y0, z0, r, lvl );
-	Value exact = computeHierarchy( lvl, x0, y0, z0, r );
+	computeHierarchy( lvl, x0, y0, z0, r );
 	printf("Fetch %d cells\n", (int)xyzk_list[0]);
 	
 	//for(int i=1; i<=xyzk_list[0]; i++)
@@ -807,7 +833,7 @@ void computeSphereSubdivision(int r, int lvl)
 	glTexImage1D(GL_TEXTURE_1D, 0, GL_RGBA32F, xyzk_list[0]+1, 0, GL_RGBA, GL_FLOAT, xyzk_list);
 	glGenerateMipmap(GL_TEXTURE_1D);
 	
-	return;
+	return (xyzk_list[0] < MAX_SUBDIV);
 }
 
 
