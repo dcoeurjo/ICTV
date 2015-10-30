@@ -8,8 +8,10 @@ float getPotential(vec3 position, float t, int lvl) {
 	float size = 20.0;
 	vec3 p = (position-0.5)*size;
 	float x = p.x; float y = p.y; float z = p.z;
-	float h;h = textureLod(densities, position, lvl).r;
+	float h;float d=(abs(sin(0.5*t))+0.5) * sqrt(x*x+z*z)+0.01; h=y - (10*(sin(d)/d));;
 ret = h;
+if (ret < 0) ret = 1;
+		else ret = 0; 
 return ret;
 
  }
