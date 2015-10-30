@@ -365,6 +365,7 @@ public:
 		}
 		else
 		{
+			dl = NULL;
 			Parameters::getInstance()->g_sizetex = size;
 			generatePotentialGlsl(argv[1]);
 		}
@@ -848,6 +849,8 @@ public:
 		glDeleteQueries(1, &Parameters::getInstance()->g_query[QUERY_TRANSITION]);
 		if (plot)
 			fclose(plotfd2);
+		if (dl != NULL)
+			dl->releaseData();
 		return 0;
 	}
 

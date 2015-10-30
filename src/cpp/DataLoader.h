@@ -53,7 +53,7 @@ public:
 	virtual void loadxyyzxz();
 	virtual void loadxyz();*/
 	
-	virtual void releaseData() { free(data); }
+	virtual void releaseData() { free(data); free(data_char); }
 };
 
 /*class DataTerrain : public DataLoader
