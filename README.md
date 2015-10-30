@@ -10,16 +10,29 @@ This tool requires OpenGL 4.4 (see below for other library dependencies).
 ```sh
 cd src/GKIT
 premake4 gmake
-make vizo
-./vizo <data> 1 <size>
+make ICTV
+./ICTV <data> <type> <size> [light]
 ```
-* \<data\> - any other .raw file
-* \<size\> - object's bounding box.
+
+* \<type\>:	1 - .raw files  
+			2 - Enter a piece of glsl code filling a variable h with the implicit fonction to render.
+				x, y, and z are available variables containing the position of the vertex in [-10:10].
+				t is a variable containing the time elapsed is seconds.
+				A point (x,y,z) is considered inside if h < 0.
+* \<size\>:	resolution of the dataset
+
+* \<light\>: If a fourth argument is given (whatever its value), the application is run in light mode. 
+			 It requires less GPU memory but does not allow to export the data
 
 #### Example
 
 ```sh
-./vizo ../../data/raw/octa-flower-130_border.raw 1 130
+#loading the bunny
+./ICTV ../../data/raw/bunny_border_67.raw 1 67
+#loading the moving sinus cardinal
+./ICTV "float d=(abs(sin(0.5*t))+0.5) * sqrt(x*x+z*z)+0.01; h=y - (10*(sin(d)/d));" 2 128
+#loading the octa flower in light mode
+./ICTV ../../data/raw/octa-flower-130_border.raw 1 130 1
 ```
 
 #### Dependencies
