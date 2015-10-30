@@ -143,13 +143,13 @@ void RegularTriangulation::configurePrograms()
                             Parameters::getInstance()->g_scale);
         glProgramUniform1f(Parameters::getInstance()->g_programs[PROGRAM_REGULAR_DRAW],
 			    Parameters::getInstance()->g_uniform_locations[LOCATION_REGULAR_ISOSURFACE],
-                            0);//Parameters::getInstance()->g_isosurface);
+                            Parameters::getInstance()->g_isosurface);
 	glProgramUniform1i (Parameters::getInstance()->g_programs[PROGRAM_REGULAR_DRAW],
 			    Parameters::getInstance()->g_uniform_locations[LOCATION_REGULAR_FROMTEXTURE],
-			    1);//Parameters::getInstance()->g_fromtexture);
+			    Parameters::getInstance()->g_fromtexture);
 	glProgramUniform1i (Parameters::getInstance()->g_programs[PROGRAM_REGULAR_DRAW],
 			    Parameters::getInstance()->g_uniform_locations[LOCATION_REGULAR_METRIC],
-			    1);//Parameters::getInstance()->g_radial_length);
+			    Parameters::getInstance()->g_radial_length);
 	glProgramUniform1f (Parameters::getInstance()->g_programs[PROGRAM_REGULAR_DRAW],
                             Parameters::getInstance()->g_uniform_locations[LOCATION_REGULAR_TIME],
                             Parameters::getInstance()->g_time_elapsed);

@@ -142,13 +142,13 @@ void TransitionTriangulation::configurePrograms()
 			    (int)Parameters::getInstance()->g_tessel);
         glProgramUniform1f(Parameters::getInstance()->g_programs[PROGRAM_TRANSITION_DRAW],
                             Parameters::getInstance()->g_uniform_locations[LOCATION_TRANSITION_ISOSURFACE],
-                            0);//Parameters::getInstance()->g_isosurface);
+                            Parameters::getInstance()->g_isosurface);
 	glProgramUniform1i (Parameters::getInstance()->g_programs[PROGRAM_TRANSITION_DRAW],
 			    Parameters::getInstance()->g_uniform_locations[LOCATION_TRANSITION_FROMTEXTURE],
-                            1);//Parameters::getInstance()->g_fromtexture);
+                            Parameters::getInstance()->g_fromtexture);
 	glProgramUniform1i (Parameters::getInstance()->g_programs[PROGRAM_TRANSITION_DRAW],
                             Parameters::getInstance()->g_uniform_locations[LOCATION_TRANSITION_METRIC],
-                            0);//Parameters::getInstance()->g_radial_length);
+                            Parameters::getInstance()->g_radial_length);
 	glProgramUniform1f(Parameters::getInstance()->g_programs[PROGRAM_TRANSITION_DRAW],
                             Parameters::getInstance()->g_uniform_locations[LOCATION_TRANSITION_TIME],
                             Parameters::getInstance()->g_time_elapsed);
