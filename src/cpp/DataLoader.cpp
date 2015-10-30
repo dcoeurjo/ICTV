@@ -71,6 +71,7 @@ void DataLoader::loadData8BGpu()
 	glBindTexture(GL_TEXTURE_3D, 0);
 }
 
+/*
 void loadNxtMipmap(int size, float* texture, float** miptexture)
 {
 	int sizemip = size/2;
@@ -233,11 +234,6 @@ void DataLoader::loadxyz()
 		float norm_j = j;
 		float norm_k = k;
 		
-		/*
-		mmt[nb*3] = norm_i;
-		mmt[nb*3 + 1] = norm_j;
-		mmt[nb*3 + 2] = norm_k;
-		*/
 		mmt[nb*3] = norm_i*data[nb];
 		mmt[nb*3 + 1] = norm_j*data[nb];
 		mmt[nb*3 + 2] = norm_k*data[nb];
@@ -283,13 +279,14 @@ void DataLoader::loadxyz()
 	
 	//free(mmt);
 }
+*/
 
-
+/*
 unsigned long int f(unsigned int sf, unsigned long int x, unsigned long int y, unsigned long int z)
 {
 	return ((z*sf) + x)*sf + y;
 }
-
+*/
 /*//Files provided by Eric
 void DataTerrain::loadFile(char* file)
 {

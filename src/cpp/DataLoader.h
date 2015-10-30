@@ -49,9 +49,9 @@ public:
 	
 	virtual void loadData32BGpu();
 	virtual void loadData8BGpu();
-	virtual void loadx2y2z2();
+	/*virtual void loadx2y2z2();
 	virtual void loadxyyzxz();
-	virtual void loadxyz();
+	virtual void loadxyz();*/
 	
 	virtual void releaseData() { free(data); }
 };
