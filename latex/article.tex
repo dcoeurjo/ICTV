@@ -75,16 +75,16 @@ LAMA, UMR5127, F-73776, France\\
 
 \begin{abstract}\sloppy
   Interactive visualization is a very convenient tool to explore
-  complex scientific data or to explore different parameter settings
+  complex scientific data or to try different parameter settings
   for a given processing algorithm. In this article, we present a tool
-  to efficiently explore the curvature tensor on the boundary of
+  to efficiently analyze the curvature tensor on the boundary of
   potentially large and dynamic digital objects (mean and Gaussian curvatures,
   principal curvatures, principal directions and normal vector
   field). More precisely, we combine a fully parallel pipeline on GPU
   to extract an adaptive triangulated isosurface of the digital
   object, with a curvature tensor estimation at each surface point
   based on integral invariants. Integral invariants being parametrized
-  by a given ball radius, our proposal allows us to explore
+  by a given ball radius, our proposal allows to explore
   interactively different radii and thus select the appropriate scale
   at which the computation is performed and visualized.
 
@@ -129,7 +129,7 @@ parallel process on the GPU (Graphics Processor Unit) to both efficiently
 extract adaptive isosurface and compute per vertex curvature tensor using
 Integral Invariants estimators.
 %Hence, this system allows us to visualize
-This system allow us to visualize
+This system allows us to visualize
 curvature tensor in real-time on large dynamic objects. Our approach combines a
 GPU implementation of pointerless octrees to represent the data, an adaptive
 viewpoint-dependent mesh extraction, and a GPU implementation of integral
@@ -205,7 +205,7 @@ Gauss digitization of $\Shape$ in a $d-$dimensional grid with grid step $h$,
 digitized set $\DigShape\EqDef\DSh$, $\Body{\DigShape}{h}$ is a subset of $\R^d$
 corresponding to the union of hypercubes centered at $h\cdot \vz$ for $\vz\in Z$
 with edge length $h$. By doing so, both $\partial\Shape$ and
-$\partial\Body{Z}{h}$ are topological boundary of objects lying in the same
+$\partial\Body{Z}{h}$ are topological boundaries of objects lying in the same
 space (see Fig. \ref{fig:notations}-b). Note that the combinatorial digital
 boundary $\DigBoundary{Z}$ of $Z$ made of cells in a cellular Cartesian complex
 (\emph{pointels}, \emph{linels}, \emph{surfels}, \ldots), can be trivially
@@ -238,7 +238,7 @@ embedded into $\R^d$ such that it coincides with $\partial\Body{Z}{h}$.
     \vspace{-0.35cm}
 \end{figure}
 
-In \cite{DGCI2013}, authors have defined the 2D digital curvature estimator
+In \cite{DGCI2013}, estimators are defined based on the 2D digital curvature estimator
 $\CurvH{R}$ and the 3D digital mean curvature estimator $\MeanCurvH{R}$ based on
 the digital volumetric integral $\VolC(Y,h) \EqDef h^d \MCard(Y)$ (we denote such
 quantity $\AreaC(Y,h)$ in dimension 2):
@@ -282,8 +282,8 @@ quantity $\AreaC(Y,h)$ in dimension 2):
   %
 \end{Definition}
 %
-They have proved that estimating both 2D curvature and 3D mean curvature on digital
-objects with volumetric integral information have the multigrid convergence
+Estimators of both 2D curvature and 3D mean curvature on digital
+objects with volumetric integral information are proved to be multigrid convergent
 property \cite{DGCI2013}. For short, when the digital object becomes finer and
 finer, \ie when the digitization step $h$ tends to zero, the estimated quantity
 on $\Bd{\Body{\DSh}{h}}$ converges (theoretically and experimentally) to the
@@ -335,10 +335,10 @@ and order $2$ (see Equation~20 of \cite{CVIU2014} for more details).
 % $\DMom{001}{h}$) and of order $2$ ($\DMom{200}{h}$, $\DMom{020}{h}$,
 % $\DMom{002}{h}$, $\DMom{110}{h}$, $\DMom{011}{h}$ and $\DMom{101}{h}$, see
 % Equation~20 of \cite{CVIU2014} for more details).
-They have also proved the convergence of these estimators when setting the ball
+These estimators are proven convergent when setting the ball
 radius $h$ in $R = kh^\frac{1}{3}$, where $k$ is a constant related to the
 maximal curvature of the shape, on convex shapes with at least $C^3$-boundary
-and bounded curvature \cite{CVIU2014}. More formally, they get:
+and bounded curvature \cite{CVIU2014}. More formally, it leads to:
 %
 \begin{align}
   \forall 0 < h \le h_0,\,\, &\forall \vx \in \Bd{\Shape},\,\,
@@ -356,11 +356,10 @@ in \cite{ChapterIICurvature}.
 %%% Changer avec le chapitre de Jaco à un moment
 
 It has been shown that the radius of the ball depends on the geometry of the
-underlying shape. In \cite{DGCI2014}, authors proposed a parameter-free
+underlying shape. In \cite{DGCI2014}, a proposal was made for a parameter-free
 estimation of the radius of the ball by analyzing the shape \wrt the local shape
 geometry using maximal digital straight segments of the digital boundary. In
-\cite{SMI2015}, authors analyzed in scale-space (for a range of radii) these
-estimators for a given digital shape. This allows them to detect features of the
+\cite{SMI2015}, these estimators have been analyzed in scale-space (for a range of radii)  for a given digital shape. This allows to detect features of the
 shape thanks to the behavior of estimators on singularities.
 
 As a consequence, for all these integral invariant based approaches, we need to
@@ -455,7 +454,7 @@ In the following, we use the
 %extension  of MC configurations to handle adaptive structures
 algorithm
 proposed by \textsc{Lengyel} \emph{et al.}~\cite{lengyel2010voxel}.
-First, this approach constrains the octree
+First, this approach forces the octree
 structure
 %in order
 to make sure that the depth difference between any
@@ -792,7 +791,7 @@ The GPU interpolation reduces the bias, but it does not remove it.
 \subsection{Fully adaptive evaluation}
 
 When dealing with large datasets, we cannot expect real-time curvature tensor
-estimation if we consider the full resolution geometry, due the the huge amount of data to process. By computing a
+estimation if we consider the full resolution geometry, due to the huge amount of data to process. By computing a
 dynamically refined approximate curvature tensor estimation joined with an
 adaptive triangulation (as discussed in Section~\ref{sec:hierarchical}), we
 manage to maintain a real-time framerate by giving control over the amount of
