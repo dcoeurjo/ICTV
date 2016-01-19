@@ -19,6 +19,7 @@
 \usepackage{graphicx}        % standard LaTeX graphics tool
 \usepackage{tikz}        % standard LaTeX graphics tool
 \usepackage{pgfplots}
+\usepackage[normalem]{ulem}
 
 %\usetikzlibrary{arrows}
 %\usetikzlibrary{quotes,angles}
@@ -584,8 +585,8 @@ present our approaches.
 The general idea is to perform an Integral Invariant computation on
 GPU at each vertex of the generated triangulated mesh.
 \color{blue}
-Since GPU are massively parallel, we can do all those computations in parallel 
-to get a very efficient implementation. Please note that
+Since GPU have massively parallel architectures, we can do all those computations in parallel 
+to obtain a very efficient implementation. Please note that
 \normalcolor
 when the LoD criterion is removed, each MC vertex is exactly centered at
 a surfel center. At different depth of the octree, MC vertices still
@@ -599,9 +600,8 @@ estimators
 (\ref{eq:dig-curvature-estimator-H}), (\ref{eq:dig-curvature-estimator-k1})
 and (\ref{eq:dig-curvature-estimator-k2}).
 
-\color{blue}
-To implement the integration on $\Ball{R}{\vx} \cap \Shape$ (Fig.~\ref{fig:approx}-$a$), we tried several approaches.
-\normalcolor
+\txtblue{To implement the integration on $\Ball{R}{\vx} \cap \Shape$
+  (Fig.~\ref{fig:approx}-$a$), several strategies have been evaluated.}
 
 \subsection{Per Vertex Real-time Computation on GPU}
 \label{sec:hierarchical}
@@ -615,14 +615,14 @@ cubes lying in the intersection (see
 Eq.~(\ref{eq:dig-curvature-estimator-k}) to (\ref{eq:dig-curvature-estimator-k2})). 
 \color{blue}
 This is exactly similar to what is done on the CPU. On  the GPU, we can
-exploit \emph{mipmap} textures to obtain a multi-resolution information.
+exploit \emph{mipmap} textures to obtain  multi-resolution information.
 \normalcolor
 If the input binary object is stored in a
 3D texture, GPU hardware constructs a multi-resolution pyramid (mipmap) such that 8
 neighboring voxel intensities at level $l$ are averaged to define the voxel
 value at level $l+1$. If the level 0 corresponds to the binary input object, at
 \color{blue}
-a given level $l$, a texture probe returns a voxel $(x,y,z)$, containing the fraction of $\DSh$ belonging
+a given level $l$, a texture probe at  a point $(x,y,z)$ returns the fraction of $\DSh$ belonging
 \normalcolor
 to the cube of center $(x,y,z)$ and edge length $2^l$. As a consequence, we can
 approximate the volume of $\Ball{R}{\vx}\cap\Shape$ by considering mipmap values
@@ -670,8 +670,8 @@ mimic a kind of adaptive Gauss digitization process.
 \end{figure}
 
 
-We describe here two different visualization pipeline on GPU that will
-be evaluated in the next section.
+\txtblue{\sout{We describe here two different visualization pipeline on GPU that will
+be evaluated in the next section.}}
 
 \paragraph{Hierarchical Decomposition.}  
 \color{blue}
@@ -680,8 +680,8 @@ consider hierarchical decompositions of $\Ball{R}{\vx}$
 (Fig.~\ref{fig:approx2}-$a$) 
 %or $\Ball{R}{\vx}\cap\Shape$
 %(Fig.~\ref{fig:approx2}-$b$). 
-The idea would be to decompose the
-regions into mipmap cells of different resolution in order to limit
+The idea is to decompose the
+ball into mipmap cells of different resolution in order to limit
 the number of texture access (important bottleneck on GPU hardwares)
 and to get better approximated quantities. 
 %Note that the scenario in
@@ -695,33 +695,33 @@ and to get better approximated quantities.
 %At each vertex, the
 %computation algorithm would consist in a recursive decomposition of
 %the domain such that a cell is subdivided if it does not belong to
-%$\Ball{R}{\vx}\cap\Shape$. However, on the GPU %hardware,
-%this approach is
-%highly inefficient since the hardware optimizes the parallelism only
-%when the micro-program described in the shader has a predictive
-%execution flow. Hence, implementing the recursive algorithm (or its
-%de-recursified version) requires a lot of branches (conditional
-%\emph{if} tests) in the flow. 
-We have thus considered a fast multi-resolution approximation as
-Fig.~\ref{fig:approx2}-$a$: for a given radius $R$, we precompute a
-hierarchical decomposition of $B_R$. Such decomposition is made of
-octree cells at different resolutions. At a given MC vertex $\vx$, the
-algorithm becomes simple since we just scan the ball cells and
-estimate the area (or other moments) from the mipmap values associated
-to this cell. Note that cells in the $B_R$ decomposition may not be
-aligned with mipmap cells. However, we can use GPU %mipmap
-functionalities which interpolates mipmap values if we probe at
-non-discrete positions. For a given radius $R$, the expected number of
-cells in $B_R$ is in $O(\log{R})$. Implementation details on the
-hierarchical octree representation can be found in the supplementary
-material (see Section \ref{sec:discussion}).
-Still, this method is not fully exploiting the GPU parallelism. 
-The hardware optimizes the parallelism only
-when the micro-program described in the shader has a predictive
-execution flow. Hence, implementing this recursive algorithm (or its
-de-recursified version) requires a lot of branches (conditional
-\emph{if} tests) in the flow. 
-\normalcolor
+%$\Ball{R}{\vx}\cap\Shape$.
+\txtred{On the GPU, computing a hierarchical decomposition of
+  $B_R(\vx)$ at each point $\vx$ is highly inefficient since the
+  hardware optimizes the parallelism only when the micro-program
+  described in the shader has a predictive execution flow. Hence,
+  implementing the recursive algorithm (or its de-recursified version)
+  requires a lot of branches (conditional \emph{if} tests) in the
+  flow.}  We have thus considered a fast multi-resolution
+approximation as illustrated in Fig.~\ref{fig:approx2}-$a$: for a
+given radius $R$, we precompute a hierarchical decomposition of
+$B_R$. Such decomposition is made of octree cells at different
+resolutions. At a given MC vertex $\vx$, the algorithm becomes simple
+since we just scan the ball cells and estimate the area (or other
+moments) from the mipmap values associated to this cell. Note that
+these \txtred{precomputed} cells in the $B_R$ decomposition may not be aligned
+with mipmap cells. However, we can use GPU %mipmap functionalities
+which interpolates mipmap values if we probe at non-discrete
+positions. For a given radius $R$, the expected number of cells in
+$B_R$ is in $O(\log{R})$. Implementation details on the hierarchical
+octree representation can be found in the supplementary material (see
+Section \ref{sec:discussion}). \sout{ Still, this method is not fully
+exploiting the GPU parallelism.  The hardware optimizes the
+parallelism only when the micro-program described in the shader has a
+predictive execution flow. Hence, implementing this recursive
+algorithm (or its de-recursified version) requires a lot of branches
+(conditional \emph{if} tests) in the flow.}\todo{la discussion vient apres}  \normalcolor
+
 
 \paragraph{Dynamic Refinement.} In this last approach, we want to optimize
 the interactivity and the execution flow or parallelism on GPU. The
