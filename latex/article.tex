@@ -108,14 +108,15 @@ visualization, we are also interested in performing geometry
 processing on the digital object and to explore different parameter
 settings of the geometry processing tool.
 \color{blue}
-Here, we focus on curvature tensor estimators.
-Most of them require a parameter fixing the scale
+Here, we focus on curvature tensor estimation (mean/Gaussian curvature, principal curvatures
+directions, \ldots). Most curvature estimators require a parameter fixing the scale
 at which the computation is performed. For short, such parameter
 (integration radius, convolution kernel size, \ldots) specifies a scale for analyzing the object surface, 
-and is naturally related to the amount of perturbation on input data. As a consequence, when using
-such tensors, exploring different values of this parameter is mandatory.
+and is naturally related to the amount of perturbation on input
+data\todo{DC: ``related to a expected signal/noise ratio?''}. As a consequence, when using
+such estimators, exploring different values of this parameter is mandatory.
 However, this is usually an offline process, due to the amount of computations that
-needs to be done.
+needs\todo{DC: needs->need?} to be done.
 \normalcolor
 %In this work, we present an interactive visualization of volumetric data isosurfaces combined with
 %a curvature tensor (mean/Gaussian curvature, principal curvatures
@@ -198,13 +199,12 @@ to interactively change the
 %explore different
 value of the kernel radius.
 
-\vspace{0.2cm}
-\color{blue}
-In this paper, we will first present the previous works on
-curvature tensor estimation. Then, we will see how we can
-efficiently extract a triangulation of an object on the GPU
-and finally, we will present how we can evaluate the curvature tensor in
-real time and discuss on the several approaches that we tried.
+\vspace{0.2cm} \color{blue} In this paper, we first present the
+previous works on curvature tensor estimation. Then, we propose na
+efficient GPU approach to extract a triangulated isosurface from a
+digital object. Finally, we propose a fully-parallel  GPU pipeline to compute
+curvature tensor in real time and discuss on experiments. \todo{DC:
+  bof le discuss}
 \normalcolor
 
 
@@ -304,7 +304,8 @@ finer, \ie when the digitization step $h$ tends to zero, the estimated quantity
 on $\Bd{\Body{\DSh}{h}}$ converges (theoretically and experimentally) to the
 \color{blue}
 associated one on $\Bd{\Shape}$ in $O\left(h^{\frac{1}{3}}\right)$ for
-convex shapes with at least $C^3$-boundary and bounded curvature.
+convex shapes with at least $C^3$-boundary and bounded curvature
+(setting $R\EqDef kh^\frac{1}{3}$ for some $k\in\R$).
 \normalcolor
 %
 %Since our digital estimators are defined on
@@ -600,18 +601,20 @@ and (\ref{eq:dig-curvature-estimator-k2}).
 
 \color{blue}
 To implement the integration on $\Ball{R}{\vx} \cap \Shape$ (Fig.~\ref{fig:approx}-$a$), we tried several approaches.
+\normalcolor
 
 \subsection{Per Vertex Real-time Computation on GPU}
 \label{sec:hierarchical}
 
 \paragraph{Naive Approach.}
-A first simple solution , consists in scanning all digital
-\normalcolor
-points inside the integration domain (Fig.~\ref{fig:approx}-$b$) and then to estimate the
+\txtblue{A first simple solution  consists in scanning all digital
+points, at a given resolution, lying inside the integration domain}
+(Fig.~\ref{fig:approx}-$b$) and then \txtblue{estimating} the
 geometrical moment as the sum of the geometrical moments of each elementary
-cubes lying in the intersection. 
+cubes lying in the intersection (see
+Eq.~(\ref{eq:dig-curvature-estimator-k}) to (\ref{eq:dig-curvature-estimator-k2})). 
 \color{blue}
-This is exactly similar to what is done on the CPU, but on the GPU, we can
+This is exactly similar to what is done on the CPU. On  the GPU, we can
 exploit \emph{mipmap} textures to obtain a multi-resolution information.
 \normalcolor
 If the input binary object is stored in a
@@ -1014,17 +1017,17 @@ Table~\ref{tab:full-res-stat}) that needs to be considered.
  \begin{figure}[h!]
    \vspace{-0.35cm}
    \begin{center}
-   	 {\includegraphics[width=0.4\textwidth]{figs/snow_r8}}
-   	 {\includegraphics[width=0.4\textwidth]{figs/xyzrgb_dragon-510_R8_mean}}
+   	 {\includegraphics[width=0.45\textwidth]{figs/snow_r8}}
+   	 {\includegraphics[width=0.45\textwidth]{figs/xyzrgb_dragon-510_R8_mean}}
 
-     {\includegraphics[width=0.4\textwidth]{figs/snow_r8_min}}
-	 {\includegraphics[width=0.4\textwidth]{figs/dragon_r8}}
+     {\includegraphics[width=0.45\textwidth]{figs/snow_r8_min}}
+	 {\includegraphics[width=0.45\textwidth]{figs/dragon_r8}}
 
-     {\includegraphics[width=0.4\textwidth]{figs/snow_r8_max}}
-	 {\includegraphics[width=0.4\textwidth]{figs/dragon_r8_max}}
+     {\includegraphics[width=0.45\textwidth]{figs/snow_r8_max}}
+	 {\includegraphics[width=0.45\textwidth]{figs/dragon_r8_max}}
 
-     {\includegraphics[width=0.4\textwidth]{figs/snow_r8_normales}}
-     {\includegraphics[width=0.4\textwidth]{figs/dragon_r8_normales}}
+     {\includegraphics[width=0.45\textwidth]{figs/snow_r8_normales}}
+     {\includegraphics[width=0.45\textwidth]{figs/dragon_r8_normales}}
 
    \end{center}
    \caption{\emph{Left column}: Mean curvature, first and second
