@@ -117,7 +117,7 @@ and is naturally related to the amount of perturbation on input
 data\todo{DC: ``related to a expected signal/noise ratio?''}. As a consequence, when using
 such estimators, exploring different values of this parameter is mandatory.
 However, this is usually an offline process, due to the amount of computations that
-needs\todo{DC: needs->need?} to be done.
+need to be done.
 \normalcolor
 %In this work, we present an interactive visualization of volumetric data isosurfaces combined with
 %a curvature tensor (mean/Gaussian curvature, principal curvatures
@@ -204,8 +204,7 @@ value of the kernel radius.
 previous works on curvature tensor estimation. Then, we propose na
 efficient GPU approach to extract a triangulated isosurface from a
 digital object. Finally, we propose a fully-parallel  GPU pipeline to compute
-curvature tensor in real time and discuss on experiments. \todo{DC:
-  bof le discuss}
+curvature tensor in real time and present our results.
 \normalcolor
 
 
@@ -601,7 +600,7 @@ estimators
 and (\ref{eq:dig-curvature-estimator-k2}).
 
 \txtblue{To implement the integration on $\Ball{R}{\vx} \cap \Shape$
-  (Fig.~\ref{fig:approx}-$a$), several strategies have been evaluated.}
+  (Fig.~\ref{fig:notations}), several strategies have been evaluated.}
 
 \subsection{Per Vertex Real-time Computation on GPU}
 \label{sec:hierarchical}
@@ -609,7 +608,7 @@ and (\ref{eq:dig-curvature-estimator-k2}).
 \paragraph{Naive Approach.}
 \txtblue{A first simple solution  consists in scanning all digital
 points, at a given resolution, lying inside the integration domain}
-(Fig.~\ref{fig:approx}-$b$) and then \txtblue{estimating} the
+(Fig.~\ref{fig:approx}-$left$) and then \txtblue{estimating} the
 geometrical moment as the sum of the geometrical moments of each elementary
 cubes lying in the intersection (see
 Eq.~(\ref{eq:dig-curvature-estimator-k}) to (\ref{eq:dig-curvature-estimator-k2})). 
@@ -626,7 +625,7 @@ a given level $l$, a texture probe at  a point $(x,y,z)$ returns the fraction of
 \normalcolor
 to the cube of center $(x,y,z)$ and edge length $2^l$. As a consequence, we can
 approximate the volume of $\Ball{R}{\vx}\cap\Shape$ by considering mipmap values
-at a given resolution $l$ (Fig.~\ref{fig:approx}-$c,d$). In this case, errors only
+at a given resolution $l$ (Fig.~\ref{fig:approx}-$right$). In this case, errors only
 occurs for cells lying inside $\Shape$ (with density 1) not entirely covered by
 $\Ball{R}{\vx}$. Furthermore, the \emph{mipmap} texture can be used to design,
 using a single texture probe, a fast inclusion test of a given cell $c$ at level
@@ -637,37 +636,34 @@ mimic a kind of adaptive Gauss digitization process.
 \begin{figure}
   \vspace{-0.35cm}
   \begin{center}
-    {\includegraphics[width=4.0cm]{figs/approx1}}
-    {\includegraphics[width=4.0cm]{figs/approx-reg-1}}
-    {\includegraphics[width=4.0cm]{figs/approx-reg-2}}
-    %TODO image Mipmap 3eme Niveau
+    {\includegraphics[width=4.0cm]{figs/approx-naive}}
+    {\includegraphics[width=4.0cm]{figs/approx-hierarchical}}
+    {\includegraphics[width=4.0cm]{figs/approx-dynamic}}
   \end{center}
   \vspace{-0.35cm}
-  \caption{Integral computation with an area estimation (\emph{left}) 
-  \color{blue}
-  	from mipmaps at level $l=0$ (note that this is the same as pixel counting) \emph{middle-left}
-  	from mipmaps at level $l=1$ \emph{middle-right}
-  	from mipmaps at level $l=2$ \emph{right}
-  	We can note that the higher the mipmap level, the more we approximate our integrand, and the less texture probe we need to do.
-    \normalcolor}
+  \caption{\txtblue{
+  	Here are the three approaches we used to evaluate the integrand.
+  	(\emph{left}) is the naive approach, where we sum all the digital points that are inside the integrand domain
+  	(\emph{middle}) shows the hierarchical decomposition of the ball, thus limiting the number of texture probes to do.
+  	(\emph{right}) illustrates the dynamic approach, we probe the textures at a higher resolution and we refine it at each frame until we reach the finer level.
+    }}
   \label{fig:approx}
   \vspace{-0.35cm}
 \end{figure}
 
-\begin{figure}
-  \vspace{-0.35cm}
-  \begin{center}
-    {\includegraphics[width=4cm]{figs/approx-bh}}
-    %{\includegraphics[width=4cm]{figs/approx-ada}}
-    %TODO Image alignement cellules mipmaps
-  \end{center}
-  \vspace{-0.35cm}
-  \caption{Adaptive approximation of the integration using a
-    hierarchical decomposition of the ball $\Ball{R}{\vx}$ }
-    %(\emph{left}), or a decomposition of $\Ball{R}{\vx}\cap\Shape$ (\emph{right}).}
-  \label{fig:approx2}
-  \vspace{-0.35cm}
-\end{figure}
+%\begin{figure}
+%  \vspace{-0.35cm}
+%  \begin{center}
+%    {\includegraphics[width=4cm]{figs/approx-bh}}
+%    %{\includegraphics[width=4cm]{figs/approx-ada}}
+%  \end{center}
+%  \vspace{-0.35cm}
+%  \caption{Adaptive approximation of the integration using a
+%    hierarchical decomposition of the ball $\Ball{R}{\vx}$ }
+%    %(\emph{left}), or a decomposition of $\Ball{R}{\vx}\cap\Shape$ (\emph{right}).}
+%  \label{fig:approx2}
+%  \vspace{-0.35cm}
+%\end{figure}
 
 
 \txtblue{\sout{We describe here two different visualization pipeline on GPU that will
@@ -676,8 +672,8 @@ be evaluated in the next section.}}
 \paragraph{Hierarchical Decomposition.}  
 \color{blue}
 Using the hierarchical nature of the mipmap texture, we could also
-consider hierarchical decompositions of $\Ball{R}{\vx}$
-(Fig.~\ref{fig:approx2}-$a$) 
+consider hierarchical decompositions of $\Ball{R}{\vx}$.
+%(Fig.~\ref{fig:approx}-$middle$) 
 %or $\Ball{R}{\vx}\cap\Shape$
 %(Fig.~\ref{fig:approx2}-$b$). 
 The idea is to decompose the
@@ -703,7 +699,7 @@ and to get better approximated quantities.
   implementing the recursive algorithm (or its de-recursified version)
   requires a lot of branches (conditional \emph{if} tests) in the
   flow.}  We have thus considered a fast multi-resolution
-approximation as illustrated in Fig.~\ref{fig:approx2}-$a$: for a
+approximation as illustrated in Fig.~\ref{fig:approx}-$middle$: for a
 given radius $R$, we precompute a hierarchical decomposition of
 $B_R$. Such decomposition is made of octree cells at different
 resolutions. At a given MC vertex $\vx$, the algorithm becomes simple
@@ -726,7 +722,7 @@ algorithm (or its de-recursified version) requires a lot of branches
 \paragraph{Dynamic Refinement.} In this last approach, we want to optimize
 the interactivity and the execution flow or parallelism on GPU. The
 integration is simply computed using a regular grid at different
-resolution $l$ (Fig. \ref{fig:approx}-$b$ and $c$). The shader code
+resolution $l$ (Fig. \ref{fig:approx}-$right$). The shader code
 becomes trivial (simple triple loop) and a lot of texture fetches are
 involved, but interactivity can be easily obtained. Indeed, we
 consider the following multi-pass approach:
