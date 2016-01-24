@@ -108,17 +108,16 @@ volumetric datasets are considered. Beside
 visualization, we are also interested in performing geometry
 processing on the digital object and to explore different parameter
 settings of the geometry processing tool.
-\color{blue}
+\txtblue{
 Here, we focus on curvature tensor estimation (mean/Gaussian curvature, principal curvatures
 directions, \ldots). Most curvature estimators require a parameter fixing the scale
 at which the computation is performed. For short, such parameter
-(integration radius, convolution kernel size, \ldots) specifies a scale for analyzing the object surface, 
+(integration radius, convolution kernel size, \ldots) specifies a scale for analyzing the object surface,
 and is naturally related to the amount of perturbation on input
 data\todo{DC: ``related to a expected signal/noise ratio?''}. As a consequence, when using
 such estimators, exploring different values of this parameter is mandatory.
 However, this is usually an offline process, due to the amount of computations that
-need to be done.
-\normalcolor
+need to be done.}
 %In this work, we present an interactive visualization of volumetric data isosurfaces combined with
 %a curvature tensor (mean/Gaussian curvature, principal curvatures
 %directions, \ldots) estimation at each point of the digital
@@ -200,12 +199,11 @@ to interactively change the
 %explore different
 value of the kernel radius.
 
-\vspace{0.2cm} \color{blue} In this paper, we first present the
-previous works on curvature tensor estimation. Then, we propose na
+\vspace{0.2cm} \txtblue{In this paper, we first present the
+previous works on curvature tensor estimation. Then, we propose an
 efficient GPU approach to extract a triangulated isosurface from a
 digital object. Finally, we propose a fully-parallel  GPU pipeline to compute
-curvature tensor in real time and present our results.
-\normalcolor
+curvature tensor in real time and present our results.}
 
 
 
@@ -302,11 +300,10 @@ objects with volumetric integral information are proved to be multigrid converge
 property \cite{DGCI2013}. For short, when the digital object becomes finer and
 finer, \ie when the digitization step $h$ tends to zero, the estimated quantity
 on $\Bd{\Body{\DSh}{h}}$ converges (theoretically and experimentally) to the
-\color{blue}
+\txtblue{
 associated one on $\Bd{\Shape}$ in $O\left(h^{\frac{1}{3}}\right)$ for
 convex shapes with at least $C^3$-boundary and bounded curvature
-(setting $R\EqDef kh^\frac{1}{3}$ for some $k\in\R$).
-\normalcolor
+(setting $R\EqDef kh^\frac{1}{3}$ for some $k\in\R$).}
 %
 %Since our digital estimators are defined on
 %digital shapes, in order to compare results with the exact curvature on
@@ -354,12 +351,11 @@ and order $2$ (see Equation~20 of \cite{CVIU2014} for more details).
 % $\DMom{001}{h}$) and of order $2$ ($\DMom{200}{h}$, $\DMom{020}{h}$,
 % $\DMom{002}{h}$, $\DMom{110}{h}$, $\DMom{011}{h}$ and $\DMom{101}{h}$, see
 % Equation~20 of \cite{CVIU2014} for more details).
-\color{blue}
+\txtblue{
 These estimators are proven convergent in $O\left(h^{\frac{1}{3}}\right)$ when setting the ball
 radius $h$ in $R = kh^\frac{1}{3}$, where $k$ is a constant related to the
 maximal curvature of the shape, on convex shapes with at least $C^3$-boundary
-and bounded curvature \cite{CVIU2014}.
-\normalcolor 
+and bounded curvature \cite{CVIU2014}.}
 %More formally, it leads to:
 %%
 %\begin{align}
@@ -583,10 +579,9 @@ present our approaches.
 %\subsection{Design principles}
 The general idea is to perform an Integral Invariant computation on
 GPU at each vertex of the generated triangulated mesh.
-\color{blue}
-Since GPU have massively parallel architectures, we can do all those computations in parallel 
-to obtain a very efficient implementation. Please note that
-\normalcolor
+\txtblue{
+Since GPU have massively parallel architectures, we can do all those computations in parallel
+to obtain a very efficient implementation. Please note that}
 when the LoD criterion is removed, each MC vertex is exactly centered at
 a surfel center. At different depth of the octree, MC vertices still
 correspond to surfel centers of subsampled versions of the input
@@ -611,18 +606,16 @@ points, at a given resolution, lying inside the integration domain}
 (Fig.~\ref{fig:approx}-$left$) and then \txtblue{estimating} the
 geometrical moment as the sum of the geometrical moments of each elementary
 cubes lying in the intersection (see
-Eq.~(\ref{eq:dig-curvature-estimator-k}) to (\ref{eq:dig-curvature-estimator-k2})). 
-\color{blue}
+Eq.~(\ref{eq:dig-curvature-estimator-k}) to (\ref{eq:dig-curvature-estimator-k2})).
+\txtblue{
 This is exactly similar to what is done on the CPU. On  the GPU, we can
-exploit \emph{mipmap} textures to obtain  multi-resolution information.
-\normalcolor
+exploit \emph{mipmap} textures to obtain  multi-resolution information.}
 If the input binary object is stored in a
 3D texture, GPU hardware constructs a multi-resolution pyramid (mipmap) such that 8
 neighboring voxel intensities at level $l$ are averaged to define the voxel
 value at level $l+1$. If the level 0 corresponds to the binary input object, at
-\color{blue}
-a given level $l$, a texture probe at  a point $(x,y,z)$ returns the fraction of $\DSh$ belonging
-\normalcolor
+\txtblue{
+a given level $l$, a texture probe at  a point $(x,y,z)$ returns the fraction of $\DSh$ belonging}
 to the cube of center $(x,y,z)$ and edge length $2^l$. As a consequence, we can
 approximate the volume of $\Ball{R}{\vx}\cap\Shape$ by considering mipmap values
 at a given resolution $l$ (Fig.~\ref{fig:approx}-$right$). In this case, errors only
@@ -669,17 +662,17 @@ mimic a kind of adaptive Gauss digitization process.
 \txtblue{\sout{We describe here two different visualization pipeline on GPU that will
 be evaluated in the next section.}}
 
-\paragraph{Hierarchical Decomposition.}  
-\color{blue}
+\paragraph{Hierarchical Decomposition.}
+\txtblue{
 Using the hierarchical nature of the mipmap texture, we could also
 consider hierarchical decompositions of $\Ball{R}{\vx}$.
-%(Fig.~\ref{fig:approx}-$middle$) 
+%(Fig.~\ref{fig:approx}-$middle$)
 %or $\Ball{R}{\vx}\cap\Shape$
-%(Fig.~\ref{fig:approx2}-$b$). 
+%(Fig.~\ref{fig:approx2}-$b$).
 The idea is to decompose the
 ball into mipmap cells of different resolution in order to limit
 the number of texture access (important bottleneck on GPU hardwares)
-and to get better approximated quantities. 
+and to get better approximated quantities.
 %Note that the scenario in
 %Fig.~\ref{fig:approx2}-$b$ is clearly the best approach: the
 %volume is exact  (\wrt the regular grid case) since geometrical moments
@@ -687,7 +680,7 @@ and to get better approximated quantities.
 %at this point.
 %As discussed above, best
 %results in terms of texture fetch can be obtained by the approach
-%presented in Fig.~\ref{fig:approx2}-$b$. 
+%presented in Fig.~\ref{fig:approx2}-$b$.
 %At each vertex, the
 %computation algorithm would consist in a recursive decomposition of
 %the domain such that a cell is subdivided if it does not belong to
@@ -716,7 +709,7 @@ exploiting the GPU parallelism.  The hardware optimizes the
 parallelism only when the micro-program described in the shader has a
 predictive execution flow. Hence, implementing this recursive
 algorithm (or its de-recursified version) requires a lot of branches
-(conditional \emph{if} tests) in the flow.}\todo{la discussion vient apres}  \normalcolor
+(conditional \emph{if} tests) in the flow.}\todo{la discussion vient apres}}
 
 
 \paragraph{Dynamic Refinement.} In this last approach, we want to optimize
