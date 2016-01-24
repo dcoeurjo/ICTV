@@ -30,10 +30,10 @@
 \usepackage{booktabs}
 
 
-\newcommand{\ie}{\emph{i.e.} }
-\newcommand{\eg}{\emph{e.g.} }
-\newcommand{\wrt}{\emph{w.r.t.} }
-\newcommand{\wnlog}{w.l.o.g. }
+\newcommand{\ie}{\emph{i.e.}\xspace}
+\newcommand{\eg}{\emph{e.g.}\xspace}
+\newcommand{\wrt}{\emph{w.r.t.}\xspace}
+\newcommand{\wnlog}{w.l.o.g.\xspace}
 \newcommand{\Zr}{\ensuremath{\mathbb{Z}[\rho]}}
 \newcommand{\C}{\ensuremath{\mathbb{C}}}
 \newcommand{\E}{\ensuremath{\mathcal{E}}}
@@ -529,7 +529,7 @@ on this visibility ratio:
 \begin{itemize}
   \item $c$ is split if its children
 cells have a visibility ratio greater than  constant $k$\,;
-  \item $c$ and its sibling cells are merged if their parent cell $c'$ has a visibility ratio lower than $k$\;
+  \item $c$ and its sibling cells are merged if their parent cell $c'$ has a visibility ratio lower than $k$\,;
   \item otherwise, the cell $c$ stays for the next frame.
 \end{itemize}
 %
@@ -739,7 +739,7 @@ consider the following multi-pass approach:
 A consequence of the multi-pass approach is that when there is no
 interaction (camera settings, parameters), the GPU automatically
 refines the estimation. Even if step 2 is quite expensive, in
-$O\left(\left({\frac{R}{2^l}}\right)^3\right)$, the interactive control
+$O\left({\left({\frac{R}{2^l}}\right)}^3\right)$, the interactive control
 in step 3 considerably improves the interactive exploration of the
 tensor with fast preliminary approximations which are quickly refined.
 
