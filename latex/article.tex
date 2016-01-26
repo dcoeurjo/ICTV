@@ -113,8 +113,8 @@ Here, we focus on curvature tensor estimation (mean/Gaussian curvature, principa
 directions, \ldots). Most curvature estimators require a parameter fixing the scale
 at which the computation is performed. For short, such parameter
 (integration radius, convolution kernel size, \ldots) specifies a scale for analyzing the object surface,
-and is naturally related to the amount of perturbation on input
-data\todo{DC: ``related to a expected signal/noise ratio?''}. As a consequence, when using
+and is naturally related to the amount allowed perturbations on input
+data. As a consequence, when using
 such estimators, exploring different values of this parameter is mandatory.
 However, this is usually an offline process, due to the amount of computations that
 need to be done.}
@@ -125,7 +125,6 @@ need to be done.}
 %Curvature maps on a given isosurface are key information when
 %exploring 3D structures in Material Sciences \todo{REF}.
 
-\vspace{0.2cm}
 
 \noindent\textbf{Contributions}\quad In this work, we propose a framework to
 perform interactive visualization of complex 3D digital structures combined with
@@ -143,7 +142,6 @@ viewpoint-dependent mesh extraction, and a GPU implementation of integral
 invariant curvature estimators.
 
 
-\vspace{0.2cm}
 
 \sloppy\noindent\textbf{Related works}\quad Extracting and visualizing
 isosurface on volumetric data has been widely investigated since the
@@ -199,7 +197,7 @@ to interactively change the
 %explore different
 value of the kernel radius.
 
-\vspace{0.2cm} \txtblue{In this paper, we first present the
+\txtblue{In this paper, we first present the
 previous works on curvature tensor estimation. Then, we propose an
 efficient GPU approach to extract a triangulated isosurface from a
 digital object. Finally, we propose a fully-parallel  GPU pipeline to compute
@@ -253,10 +251,9 @@ embedded into $\R^d$ such that it coincides with $\partial\Body{Z}{h}$.
     \vspace{-0.35cm}
 \end{figure}
 
-In~\cite{DGCI2013}, \comJeremy{the 2D digital curvature estimator $\CurvH{R}$
-and the 3D digital mean curvature estimator $\MeanCurvH{R}$ are based on the
-digital volumetric integral $\VolC(Y,h) \EqDef h^d \MCard(Y)$ (we denote such
-quantity $\AreaC(Y,h)$ in dimension 2):}
+In~\cite{DGCI2013}, \comJeremy{authors define a  2D digital curvature estimator $\CurvH{R}$
+and a 3D digital mean curvature estimator $\MeanCurvH{R}$  based on the
+digital volume estimator $\VolC(Y,h) \EqDef h^d \MCard(Y)$ (area estimator $\AreaC(Y,h)$ in dimension 2):}
 %% Redite
 %% \Jaco{Given some point $\vx \in \R^d$, the set $Y$ is the digital intersection of $\DigShape$ with the ball of radius $R/h$ and center $\vx/h$.}
 %% where $Y$ is the intersection of $\DigShape$ with a ball
@@ -299,16 +296,15 @@ quantity $\AreaC(Y,h)$ in dimension 2):}
   %
 \end{Definition}
 %
-\comJeremy{Estimators of both 2D curvature and 3D mean curvature on digital
-objects with volumetric integral information are proved to be multigrid
-convergent~\cite{DGCI2013}.}
-%
-For short, when the digital object becomes finer and finer, \ie when the
-digitization step $h$ tends to zero, the estimated quantity on
-$\Bd{\Body{\DSh}{h}}$ converges (theoretically and experimentally) to the
-\txtblue{ associated one on $\Bd{\Shape}$ in $O\left(h^{\frac{1}{3}}\right)$ for
-convex shapes with at least $C^3$-boundary and bounded curvature (setting
-$R\EqDef kh^\frac{1}{3}$ for some $k\in\R$).}
+\comJeremy{Such curvature estimators have multigrid convergence
+  properties~\cite{DGCI2013}:} For short, when
+the digital object becomes finer and finer, \ie when the digitization
+step $h$ tends to zero, the estimated quantity on
+$\Bd{\Body{\DSh}{h}}$ converges (theoretically and experimentally) to
+the \txtblue{ associated one on $\Bd{\Shape}$ in
+  $O\left(h^{\frac{1}{3}}\right)$ for convex shapes with at least
+  $C^3$-boundary and bounded curvature (setting $R\EqDef
+  kh^\frac{1}{3}$ for some $k\in\R$).}
 %
 %Since our digital estimators are defined on
 %digital shapes, in order to compare results with the exact curvature on
@@ -370,7 +366,6 @@ and bounded curvature~\cite{CVIU2014}.}
 %  &\PrincCurvH{1}{R}(\DigF{\Shape}{h},\vxH, h) = \PrincCurv{1}(\Shape,\vx) + O\left(h^{\frac{1}{3}}\right) \,,\\
 %  &\PrincCurvH{2}{R}(\DigF{\Shape}{h},\vxH, h) = \PrincCurv{2}(\Shape,\vx) + O\left(h^{\frac{1}{3}}\right) \,.
 %\end{align}
-
 Additionally, eigenvectors associated to $\hat{\lambda}_1$ and
 $\hat{\lambda}_2$ of the covariance matrix are principal
 curvature direction estimators $\PrincDirH{1}{R}$ and
@@ -665,8 +660,9 @@ mimic a kind of adaptive Gauss digitization process.
 %\end{figure}
 
 
-\txtblue{\sout{We describe here two different visualization pipeline on GPU that will
-be evaluated in the next section.}}
+%\txtblue{\sout{We describe here two different visualization pipeline on GPU that will
+ %   be evaluated in the next section.}}
+
 
 \paragraph{Hierarchical Decomposition.}
 \txtblue{
@@ -710,12 +706,13 @@ which interpolates mipmap values if we probe at non-discrete
 positions. For a given radius $R$, the expected number of cells in
 $B_R$ is in $O(\log{R})$. Implementation details on the hierarchical
 octree representation can be found in the supplementary material (see
-Section~\ref{sec:discussion}). \sout{ Still, this method is not fully
-exploiting the GPU parallelism.  The hardware optimizes the
-parallelism only when the micro-program described in the shader has a
-predictive execution flow. Hence, implementing this recursive
-algorithm (or its de-recursified version) requires a lot of branches
-(conditional \emph{if} tests) in the flow.}\todo{la discussion vient apres}}
+Section~\ref{sec:discussion}).}
+%\sout{ Still, this method is not fully
+%exploiting the GPU parallelism.  The hardware optimizes the
+%parallelism only when the micro-program described in the shader has a
+%predictive execution flow. Hence, implementing this recursive
+%algorithm (or its de-recursified version) requires a lot of branches
+%(conditional \emph{if} tests) in the flow.}\todo{la discussion vient apres}}
 
 
 \paragraph{Dynamic Refinement.} In this last approach, we want to optimize
@@ -1006,17 +1003,17 @@ Table~\ref{tab:full-res-stat}) that needs to be considered.
  \begin{figure}[h!]
    \vspace{-0.35cm}
    \begin{center}
-   	 {\includegraphics[width=0.45\textwidth]{figs/snow_r8}}
-   	 {\includegraphics[width=0.45\textwidth]{figs/xyzrgb_dragon-510_R8_mean}}
+   	 {\includegraphics[width=0.4\textwidth]{figs/snow_r8}}
+   	 {\includegraphics[width=0.4\textwidth]{figs/xyzrgb_dragon-510_R8_mean}}
 
-     {\includegraphics[width=0.45\textwidth]{figs/snow_r8_min}}
-	 {\includegraphics[width=0.45\textwidth]{figs/dragon_r8}}
+     {\includegraphics[width=0.4\textwidth]{figs/snow_r8_min}}
+	 {\includegraphics[width=0.4\textwidth]{figs/dragon_r8}}
 
-     {\includegraphics[width=0.45\textwidth]{figs/snow_r8_max}}
-	 {\includegraphics[width=0.45\textwidth]{figs/dragon_r8_max}}
+     {\includegraphics[width=0.4\textwidth]{figs/snow_r8_max}}
+	 {\includegraphics[width=0.4\textwidth]{figs/dragon_r8_max}}
 
-     {\includegraphics[width=0.45\textwidth]{figs/snow_r8_normales}}
-     {\includegraphics[width=0.45\textwidth]{figs/dragon_r8_normales}}
+     {\includegraphics[width=0.4\textwidth]{figs/snow_r8_normales}}
+     {\includegraphics[width=0.4\textwidth]{figs/dragon_r8_normales}}
 
    \end{center}
    \caption{\emph{Left column}: Mean curvature, first and second
