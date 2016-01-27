@@ -109,10 +109,15 @@
 %\newcommand{\EqDef}{\smash{\ensuremath{\stackrel{\text{def}}{=}}}}
 
 %% Misc.
-\newcommand{\txtblue}[1]{\textcolor{blue}{ #1}}
-\newcommand{\txtgreen}[1]{\textcolor{green}{ #1}}
-\newcommand{\txtred}[1]{\textcolor{red}{ #1}}
-\newcommand{\comJeremy}[1]{\textcolor[rgb]{0.26,0.73,0.06}{\emph{#1}}}
+%% \newcommand{\txtblue}[1]{\textcolor{blue}{ #1}}
+%% \newcommand{\txtgreen}[1]{\textcolor{green}{ #1}}
+%% \newcommand{\txtred}[1]{\textcolor{red}{ #1}}
+%% \newcommand{\comJeremy}[1]{\textcolor[rgb]{0.26,0.73,0.06}{\emph{#1}}}
+
+\newcommand{\txtblue}[1]{{#1}}
+\newcommand{\txtgreen}[1]{{#1}}
+\newcommand{\txtred}[1]{{#1}}
+\newcommand{\comJeremy}[1]{#1}
 
 
 \DeclareMathOperator*{\argmin}{arg\,min}

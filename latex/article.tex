@@ -380,10 +380,9 @@ geometry using maximal digital straight segments of the digital boundary.
 In~\cite{SMI2015}, these estimators have been analyzed in scale-space (for a
 range of radii) for a given digital shape. This allows to detect features of
 the shape thanks to the behavior of estimators on singularities.
-
 As a consequence, for all these integral invariant based approaches, we need to
 consider different ball radius which could be time consuming when implemented on
-CPU\@. We propose here a fully parallel implementation on GPU allowing us to
+CPU. We propose here a fully parallel implementation on GPU allowing us to
 change the radius and thus update the estimated quantities in real-time.
 
 \section{Isosurface Extraction on GPU}
@@ -425,12 +424,10 @@ octree representation and then the isosurface extraction.
 
 Representing a hierarchical structure on GPU is usually challenging since
 such a data parallel component is unable to handle recursivity.
-
 %since the GPU
 %memory is limited and non consistent %\todo{fix coherent/aligned/coalesced?}
 %memory access (\emph{e.g.} tree traversal using pointer dereferencing) may lead
 %to huge payload from cache misses.
-
 Efficient spatial tree encoding can be
 achieved using pointerless structures such as linear quadtrees or octrees
 %(seefor instance
@@ -871,8 +868,8 @@ time, especially with big radii.
 However, due to the precomputation and the current hierarchical
 structure, this algorithm is biased and creates an error (presented in
 Table~\ref{tab:full-res-stat}) that needs to be considered.
-
-
+%
+%
 \begin{table}
   \begin{center}
   \setlength{\tabcolsep}{0.15cm}
@@ -899,8 +896,8 @@ Table~\ref{tab:full-res-stat}) that needs to be considered.
   with a regular grid and contains 282,396 vertices.\label{tab:full-res-stat}}
   %
 \end{table}
-
-\begin{figure}[!b]
+%
+\begin{figure}[!htbp]
   \vspace{-0.35cm}
   \begin{center}
    {\includegraphics[width=2.7cm]{figs/octa_r10_l3_a}}
@@ -915,7 +912,7 @@ Table~\ref{tab:full-res-stat}) that needs to be considered.
   }\label{fig:refine}
   \vspace{-0.35cm}
 \end{figure}
-
+%
 \begin{figure}[!htbp]
   \begin{center}
     \begin{tikzpicture}[scale=0.7]
@@ -998,21 +995,21 @@ Table~\ref{tab:full-res-stat}) that needs to be considered.
   }\label{fig:timings}
   \vspace{-0.35cm}
 \end{figure}
-
+%
  \begin{figure}[h!]
    \vspace{-0.35cm}
    \begin{center}
-   	 {\includegraphics[width=0.4\textwidth]{figs/snow_r8}}
-   	 {\includegraphics[width=0.4\textwidth]{figs/xyzrgb_dragon-510_R8_mean}}
+   	 {\includegraphics[width=0.45\textwidth]{figs/snow_r8}}
+   	 {\includegraphics[width=0.45\textwidth]{figs/xyzrgb_dragon-510_R8_mean}}
 
-     {\includegraphics[width=0.4\textwidth]{figs/snow_r8_min}}
-	 {\includegraphics[width=0.4\textwidth]{figs/dragon_r8}}
+     {\includegraphics[width=0.45\textwidth]{figs/snow_r8_min}}
+	 {\includegraphics[width=0.45\textwidth]{figs/dragon_r8}}
 
-     {\includegraphics[width=0.4\textwidth]{figs/snow_r8_max}}
-	 {\includegraphics[width=0.4\textwidth]{figs/dragon_r8_max}}
+     {\includegraphics[width=0.45\textwidth]{figs/snow_r8_max}}
+	 {\includegraphics[width=0.45\textwidth]{figs/dragon_r8_max}}
 
-     {\includegraphics[width=0.4\textwidth]{figs/snow_r8_normales}}
-     {\includegraphics[width=0.4\textwidth]{figs/dragon_r8_normales}}
+     {\includegraphics[width=0.45\textwidth]{figs/snow_r8_normales}}
+     {\includegraphics[width=0.45\textwidth]{figs/dragon_r8_normales}}
 
    \end{center}
    \caption{\emph{Left column}: Mean curvature, first and second
@@ -1023,7 +1020,6 @@ Table~\ref{tab:full-res-stat}) that needs to be considered.
   component to RGB color space.}\label{fig:adaptive}
    \vspace{-0.35cm}
  \end{figure}
-
  Figure~\ref{fig:adaptive} shows curvature computation and exploration in
  real-time on large datasets: ``XYZ-Dragon'' (with digital domain of $512^3$) and
  ``Snow microstructures'' ($233^3$).
