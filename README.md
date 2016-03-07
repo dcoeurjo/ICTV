@@ -6,9 +6,7 @@ This work has been presented at [DGCI 2016](http://dgci2016.univ-nantes.fr). Ple
 
 ```bibtex
 @inproceedings{ICTV16,
-  author    = {H\'el\`ene Perrier and J\'er\'emy Levallois and David
-Coeurjolly and {Jean-Philippe} Farrugia and {Jean-Claude}
-Iehl and {Jacques-Olivier} Lachaud},
+  author    = {H\'el\`ene Perrier and J\'er\'emy Levallois and David Coeurjolly and {Jean-Philippe} Farrugia and {Jean-Claude} Iehl and {Jacques-Olivier} Lachaud},
   title     = {Interactive Curvature Tensor Visualization on Digital Surfaces},
   booktitle = {{DGCI}},
   series    = {Lecture Notes in Computer Science},
