@@ -4,7 +4,7 @@ ICTV (Interactive Curvature Tensor Visualization) is an opensource (GPL) OpenGL 
 
 This work has been presented at [DGCI 2016](http://dgci2016.univ-nantes.fr). Please cite this project as follows:
 
-``` bibtex
+``` latex
 @inproceedings{ICTV16,
   author    = {H\'el\`ene Perrier and J\'er\'emy Levallois and David
 Coeurjolly and {Jean-Philippe} Farrugia and {Jean-Claude}
