@@ -2,6 +2,24 @@
 
 ICTV (Interactive Curvature Tensor Visualization) is an opensource (GPL) OpenGL tool to visualize large volumetric  data isosurfaces in realtime. This tool also combines the isosurface extraction with a GPU curvature tensor estimation (mean/gaussian curvature, principal curvature directions...) allowing a realtime exploration of the tensor with different parameter values.
 
+This work has been presented at [DGCI 2016](http://dgci2016.univ-nantes.fr). Please cite this project as follows:
+
+```bibtex
+@inproceedings{ICTV16,
+  author    = {H\'el\`ene Perrier and J\'er\'emy Levallois and David Coeurjolly and {Jean-Philippe} Farrugia and {Jean-Claude} Iehl and {Jacques-Olivier} Lachaud},
+  title     = {Interactive Curvature Tensor Visualization on Digital Surfaces},
+  booktitle = {{DGCI}},
+  series    = {Lecture Notes in Computer Science},
+  volume    = {},
+  pages     = {},
+  note      = {to appear},
+  publisher = {Springer},
+  year      = {2016}
+}
+```
+
+
+
 This tool requires OpenGL 4.4 (see below for other library dependencies). 
 
 
