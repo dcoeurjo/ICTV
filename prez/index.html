@@ -1,0 +1,448 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+
+		<title>ICTV</title>
+
+		<meta name="description" content="Based on a framework by Hakim El Hattab">
+		<meta name="author" content="Helene Perrier, Jeremy Levallois">
+
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+
+		<link rel="stylesheet" href="css/reveal.css">
+		<link rel="stylesheet" href="css/theme/kha_solarized.css" id="theme">
+
+		<!-- Code syntax highlighting -->
+		<link rel="stylesheet" href="lib/css/zenburn.css">
+
+		<!--MathJax-->
+		<script type="text/x-mathjax-config">
+		MathJax.Hub.Config({
+			TeX: {
+				extensions: ["color.js","tex2jax.js"],
+				Macros: {
+          R: '\\mathbb{R}',
+					vx: '\\mathbf{x}',
+					vy: '\\mathbf{y}'
+				},
+				tex2jax: {
+					inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+					displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+					processEscapes: true
+				}
+			},
+			skipStartupTypeset: true
+		});
+		</script>
+
+		<!-- Printing and PDF exports -->
+		<script>
+			var link = document.createElement( 'link' );
+			link.rel = 'stylesheet';
+			link.type = 'text/css';
+			link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+			document.getElementsByTagName( 'head' )[0].appendChild( link );
+		</script>
+
+		<!--[if lt IE 9]>
+		<script src="lib/js/html5shiv.js"></script>
+		<![endif]-->
+	</head>
+
+	<body>
+
+		<div class="reveal">
+
+			<!-- Any section element inside of this container is displayed as a slide -->
+			<div class="slides">
+				<section>
+					<h1>Interactive Curvature Tensor visualization</h1>
+					<p>
+						<small>
+						<a href="">Helene Perrier</a> &nbsp;
+						<a href="">Jeremy Levallois</a> &nbsp;
+						<a href="">David Coeurjolly</a> <br/>
+						<a href="">Jean-Philippe Farrugia</a> &nbsp;
+						<a href="">Jean-Claude Iehl</a> &nbsp;
+						<a href="">Jacques-Olivier Lachaud</a>
+						</small><br/>
+					</p>
+
+					<img src="img/teaser.png" width="500" class="imgNoBorder" />
+
+				</section>
+
+				<section>
+						<h2>visualizing digital curvature</h2>
+						
+						<img align="right" src="img/digital_curvature.png" height="209" class="imgNoBorder" />
+						
+						<p align="left" class="fragment"><br/>A long process</p>
+						<p align="left" class="fragment">Curvature radius ?</p>
+						<p align="left" class="fragment">Feature Detection<small><a href="http://dx.doi.org/10.1007/978-3-319-09955-2_14">[LCL14]</a><a href="http://dx.doi.org/10.1016/j.cag.2015.05.023">[LCL15]</a></small> </p>
+
+						<p class="fragment">
+							<strong><br/>How can we visualize digital curvature in interactive time ?</strong>
+						</p>
+						
+
+						<aside class="notes">
+							Reminder
+						</aside>
+				</section>
+
+				<section>
+						<img src="img/appli.gif" height="500" class="imgNoBorder" />
+						<p> GPU implementation for on the fly curvature computation </p>
+				</section>
+
+				<section slide-title="Pipeline">
+						<h2>Pipeline</h2>
+						<p align="left">Our pipeline runs in <b>two steps</b> ... </p>
+						<ul>
+						<li class="fragment" /><p>Extracting a <b>mesh</b> from the digital object</p>
+						<li class="fragment" /><p>Compute the <b>curvature</b> value on each vertex of this mesh</p>
+						</ul>
+
+						<p class="fragment" align="left">
+							<b><font color="#5f5f5f">
+							Both those steps are done <b>on the fly</b> and in <b>real-time</b>, <br/> thanks to the <b>GPU</b> parallelism !
+							</font></b>
+						</p>
+				</section>
+
+				<section>
+						<h2>Pipeline</h2>
+						<img src="img/pipeline_full.png" width="800" class="imgNoBorder" />
+				</section>
+
+				<section>
+						<h2>Pipeline</h2>
+						<img src="img/pipeline_step1.png" width="800" class="imgNoBorder" />
+				</section>
+
+				<section slide-title="Isosurface Extraction">
+						<h2>Real Time GPU Isosurface Extraction</h2>
+						<p align="left"> <br/>An extensively studied topic </p>
+						<ul>
+						<li class="fragment" /><p> However, most methods are <b>heavy to implement</b> </p>
+						<li class="fragment" /><p> Or rely on <b>caching strategies</b>, preventing animated geometry </p>
+						</ul>
+						<p class="fragment" align="left"> <br/> <b><font color="#5f5f5f">Here, we chose a more straightforward approach</font></b> </p>
+				</section>
+
+				<section>
+						<img src="img/mc_tables.png" width="300" class="imgNoBorder" /> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+						<img src="img/mc_sample.png" width="300" class="imgNoBorder" />
+						<p align="left"> <br/><b>Marching Cubes</b> based <small><a href="http://dx.doi.org/10.1145/37402.37422">[LC87]</a></small> </p>
+				</section>
+
+				<section>
+				
+				<section>
+						<h2>Why Marching Cubes ?</h2>
+
+						<ul>
+							<li class="fragment" /><font color="green">GPU loves Marching Cubes</font>
+							<li class="fragment" /><font color="red">But a regular grid is too much to handle</font>
+							<li class="fragment" /><font color="red">Original Marching Cubes is made for regular grids only</font>
+						</ul>
+
+						<p class="fragment">
+						<img src="img/mc_cracks.png" width="300" class="imgNoBorder" /></p>
+
+						<p class="fragment"> Dual MC, Tetrahedral grid, ... <br/>
+							<strong>No highly parallel solution ?</strong></p>
+
+				</section>
+				
+				<section>
+				<h2>Aligned with Khalimsky space</h2>
+				
+				<img src="img/digital.png" width="250" class="imgNoBorder" /><br/>
+				<img src="img/marchingcubes.png" width="320" class="imgNoBorder" />
+				<img src="img/khalimsky.png" width="320" class="imgNoBorder" />
+				
+				
+				<p>If you do your Marching cubes properly !</p>
+				
+				</section>
+				
+				</section>
+
+				<section>
+						<h2>Transvoxels <small><a href="http://dl.acm.org/citation.cfm?id=1925140">[Len10]</a></small></h2>
+						<p align="left">Sticks to the original marching cubes but uses an <b>octree</b> instead of the regular grid</p>
+
+						<img src="img/mc_octree.png" width="300" class="imgNoBorder" />
+
+						<p class="fragment" ><b><font color="#5f5f5f">Uses a <b>modified Marching Cubes</b> algorithm to patch the cracks</font></b></p>
+				</section>
+
+				<section>
+					<h2>Transvoxels <small><a href="http://dl.acm.org/citation.cfm?id=1925140">[Len10]</a></small></h2>
+					<b><font color="#5f5f5f">Transition cells</font></b>
+					<p><img src="img/transvoxels_transition0.png" height="300" class="imgNoBorder" />
+					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+					<img src="img/transvoxels_transition1.png" height="250" class="imgNoBorder" /></p>
+				</section>
+
+				<section>
+						<p><strong>GPU really can't handle recursivity</strong></p>
+						<p> How to put an octree on the GPU ? </p>
+				</section>
+
+				<section>
+						<h2>Quadtrees on the GPU <small><a href="http://dx.doi.org/10.1201/b16721-33">[DIP14]</a></small> </h2>
+						<p> Derecursifying a tree on the GPU </p>
+
+						<p><img src="img/morton_codes.png" height="300" class="imgNoBorder" />
+						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+						<img src="img/subdivision.png" height="320" class="imgNoBorder" /></p>
+				</section>
+
+				<section>
+					<h2>Isosurface Extraction</h2>
+					<ul>
+					<li/> <b><font color="green">Real time</font></b>
+						<ul>
+							<li/> Adaptivity
+						</ul>
+					<li/> <b><font color="green">Straightforward</font></b>
+						<ul>
+							<li/> Two Marching Cubes
+						</ul>
+					<li/> <b><font color="green">Animated datasets</font></b>
+					<li/> <b><font color="red">Bad quality</font></b>
+						<ul>
+							<li/> Which is ok since we do not export the mesh.
+						</ul>
+					</ul>
+				</section>
+
+				<section>
+						<h2>Pipeline</h2>
+						<img src="img/pipeline_step1.png" width="800" class="imgNoBorder" />
+				</section>
+
+				<section slide-title="Curvature Computation">
+						<h2>Pipeline</h2>
+						<img src="img/pipeline_step2.png" width="800" class="imgNoBorder" />
+				</section>
+
+				<section>
+						<h2>Two approaches</h2>
+
+						<p>
+						<br/><b><font color="#5f5f5f">Exact Computation</font></b> <br/>
+						<b><font color="red">Slow</font> <br/> <font color="green">Exact</font> </b>
+						</p>
+
+						<p>
+						<br/><b><font color="#5f5f5f">Approximated Computation</font></b> <br/>
+						<b><font color="green">Fast</font> <br/> <font color="red">Approximated</font> </b>
+						</p>
+
+				</section>
+
+				<section>
+					<h2>Exact Computation</h2>
+					<p align="left">
+						<br/><br/>Sum <b>all</b> the digital points in the sphere <img align="right" src="img/digital_curvature.png" height="150" class="imgNoBorder" />
+						<strong class="fragment" ><br/><br/>A LOT of texture accesses</strong>
+					</p>
+
+
+					<p>
+					<br/>
+					<img src="img/Octa_mean.png" height="200" class="imgNoBorder" />
+					<img src="img/Octa_dir_max.png" height="200" class="imgNoBorder" />
+					<img src="img/Octa_dir_min.png" height="200" class="imgNoBorder" />
+					<img src="img/Octa_normal.png" height="200" class="imgNoBorder" />
+					</p>
+
+				</section>
+
+				<section>
+
+					<p align="left"><br/>The digital dataset is loaded on the GPU as a texture</p>
+
+					<p><b>Mipmaps !</b></p>
+
+					<img src="img/mipmaps.png" height="150" class="imgNoBorder" />
+
+					<p>
+					<img src="img/mip2.png" height="150" class="imgNoBorder" />
+					<img src="img/mip1.png" height="150" class="imgNoBorder" />
+					<img src="img/mip0.png" height="150" class="imgNoBorder" />
+					</p>
+
+				</section>
+
+				<section>
+
+					<h2>Approximate Computation</h2>
+					<p align="left">
+						<br/><br/>Sum all the digital points in the sphere <b><font color="#5f5f5f">at a level L</font></b> <img align="right" src="img/mip1.png" height="150" class="imgNoBorder" />
+						<strong><font color="green"><br/><br/>Few texture accesses</font></strong>
+					</p>
+
+					<p>
+					<br/><br/>
+					<img src="img/octa_r10_l3_a.png" height="200" class="imgNoBorder" />
+					<img src="img/octa_r10_l2_a.png" height="200" class="imgNoBorder" />
+					<img src="img/octa_r10_l1_a.png" height="200" class="imgNoBorder" />
+					<img src="img/octa_r10_l0_a.png" height="200" class="imgNoBorder" />
+					</p>
+
+				</section>
+				
+				<section>
+					<h2>Refinement over time </h2>
+					<p align="left">Keeping an <b>exact</b> curvature visualization while maintaining a <b>real-time</b> manipulation of the object</p>
+					<p align="left">At each frame:</p>
+					<ol>
+						<li/> <p align="left">Approximate curvature <b><font color="#5f5f5f">at level L</font></b></p>
+						<li/> <p align="left"><b><font color="#5f5f5f">If</font></b> the object is moved <b><font color="#5f5f5f">{ L=1 }</font></b></p>
+						<p align="left"><b><font color="#5f5f5f">Else</font></b> <b><font color="#5f5f5f">{ L=L-1 }</font></b></p>
+					</ol>
+				</section>
+
+				<section>
+						<h2>Pipeline</h2>
+						<img src="img/pipeline_full.png" width="800" class="imgNoBorder" />
+				</section>
+
+				<section slide-title="Results">
+						<h2>Results</h2>
+
+						<img align="right" src="img/timings.png" width="450" class="imgNoBorder" />
+
+						<p align="left">
+						<br/>
+							<b><font color="orange"> Orange : Adaptive isosurface extraction </font></b> <br/>
+							<b><font color="#08519c">Dark Blue : Exact curvature computation </font></b><br/>
+							<b><font color="#a6bbdf">Lighter Blue : Approximated curvature computation</font></b><br/>
+						</p>
+						
+						<p>
+						<img align="left" src="img/Octa_mean.png" height="130" class="imgNoBorder" />
+						<img align="left" src="img/snow_mean.png" height="130" class="imgNoBorder" />
+						<img align="left" src="img/teaser.png" height="130" class="imgNoBorder" />
+						</p>
+						<p align="left"><br/><br/><br/><br/>
+						<small>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+						128<small>3</small>
+						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+						233<small>3</small> 
+						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+						512<small>3</small></small> </p>
+
+				</section>
+
+				<section>
+					<h1>Demo !</h1>
+				</section>
+				
+				<section>
+					
+					<h2>Visualizing curvature</h2>
+					<p class="fragment">in <strong>real-time</strong></p>
+					<p class="fragment">refined to <strong>exact curvature</strong></p>
+					<p class="fragment">making it easy to <strong>explore parameters</strong></p>
+					<p class="fragment">thanks to the <strong>GPU !</strong></p>
+					
+				</section>
+
+				<section>
+
+					<img src="img/dragon_r8.png" height="200" class="imgNoBorder" />
+					<img src="img/dragon_r8_max.png" height="200" class="imgNoBorder" />
+					<img src="img/dragon_r8_normales.png" height="200" class="imgNoBorder" />
+
+					<h2><br/> Thanks for listening ! <br/> Questions ? </h2>
+
+					<div style="margin-top:100px;">
+						<div style="font-size:15px; float:left; width:75px; text-align:left;">
+							<a href="http://dx.doi.org/10.1145/37402.37422">[LC87]</a>
+						</div>
+						<div style="font-size:15px; float:left; width:auto; text-align:left;">
+							Lorensen, W. E.; Cline, Harvey E. (1987). "Marching cubes: A high resolution 3d surface construction algorithm". ACM Computer Graphics
+						</div>
+
+						<div style="clear:both; font-size:15px; float:left; width:75px; text-align:left;">
+							<a href="http://dl.acm.org/citation.cfm?id=1925140">[Len10]</a>
+						</div>
+						<div style="font-size:15px; float:left; width:auto; text-align:left;">
+							Lengyel, E.S., Owens, J.D. (2010). “Voxel-based terrain for real-time virtual simulations”. University of California at
+						</div>
+
+						<div style="clear:both; font-size:15px; float:left; width:75px; text-align:left;">
+							<a href="http://dx.doi.org/10.1201/b16721-33">[DIP14]</a>
+						</div>
+						<div style="font-size:15px; float: left; width:auto; text-align:left;">
+							Dupuy, J., Iehl, J.C., Poulin, P. (2014) : “Quadtrees on the GPU.” GPU Pro 5, chap.
+						</div>
+
+						<div style="clear:both; font-size:15px; float:left; width:75px; text-align:left;">
+							<a href="http://dx.doi.org/10.1007/978-3-319-09955-2_14">[LCL14]</a>
+						</div>
+						<div style="font-size:15px; float:left; width:calc(100% - 75px); text-align:left;">
+							Levallois, J., Coeurjolly, D., Lachaud, J.O. (2014) “Parameter-free and multigrid convergent digital curvature estimators.” In: Discrete Geometry for Computer Imagery.
+						</div>
+
+						<div style="clear:both; font-size:15px; float:left; width:75px; text-align:left;">
+							<a href="http://dx.doi.org/10.1016/j.cag.2015.05.023">[LCL15]</a>
+						</div>
+						<div style="font-size:15px; float:left; width:auto; text-align:left;">
+							Levallois, J., Coeurjolly, D., Lachaud, J.O. (2015) “Scale-space feature extraction on digital surfaces”. Computers and Graphics
+						</div>
+					</div>
+
+				</section>
+
+			</div>
+		</div>
+
+		<script src="lib/js/head.min.js"></script>
+		<script src="js/reveal.js"></script>
+
+		<script>
+
+			// Full list of configuration options available at:
+			// https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				controls: true,
+				progress: true,
+				history: true,
+				center: true,
+
+				slideNumber: 'h.v/t',
+
+				transition: 'none', // none/fade/slide/convex/concave/zoom
+				transitionSpeed: 'fast',
+
+				// Optional reveal.js plugins
+				dependencies: [
+					{ src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+					{ src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+					{ src: 'plugin/zoom-js/zoom.js', async: true },
+					{ src: 'plugin/notes/notes.js', async: true },
+					{ src: 'plugin/math/math.js', async: true }
+				]
+			});
+
+		</script>
+
+	</body>
+</html>
