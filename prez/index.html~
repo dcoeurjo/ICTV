@@ -181,8 +181,8 @@
 				<section>
 					<h2>Transvoxels <small><a href="http://dl.acm.org/citation.cfm?id=1925140">[Len10]</a></small></h2>
 					<b><font color="#5f5f5f">Transition cells</font></b>
-					<p><img src="img/transvoxels_transition0.png" height="250" class="imgNoBorder" />
-					<img src="img/transvoxels_transition1.png" height="250" class="imgNoBorder" /></p>
+					<p><img src="img/transvoxels_transition0.png" height="300" class="imgNoBorder" />
+					<img src="img/transvoxels_transition1.png" height="300" class="imgNoBorder" /></p>
 					<img src="img/figure_cracks.png" width="700" class="imgNoBorder" />
                                         
 				</section>
