@@ -60,11 +60,11 @@
 
 			<!-- Any section element inside of this container is displayed as a slide -->
 			<div class="slides">
-                                <section>
-                                        <img src="img/logo_liris.svg" width="100" class="imgNoBorder" />
-                                        <img src="img/logo_lama.svg" width="100" class="imgNoBorder" />
-                                        <img src="img/logo_anr.svg" width="100" class="imgNoBorder" />
-                                        <img src="img/DGtalLogo.png" width="100" class="imgNoBorder" />
+			<section>
+					<img src="img/logo_liris.svg" width="100" class="imgNoBorder" />
+					<img src="img/logo_lama.svg" width="100" class="imgNoBorder" />
+					<img src="img/logo_anr.svg" width="100" class="imgNoBorder" />
+					<img src="img/DGtalLogo.png" width="100" class="imgNoBorder" />
 					<h1>Interactive Curvature Tensor visualization</h1>
 					<p>
 						<small>
@@ -77,45 +77,41 @@
 						</small><br/>
 					</p>
 
-                                        <img src="img/teaser.png" width="300" class="imgNoBorder" />
+                    <img src="img/teaser.png" width="300" class="imgNoBorder" />
 
 				</section>
 
                                 <section>
-                                    <h2>How to represent data ?</h2>
-                                    <div style="float:left">
-                                    <p class="fragment">Triangles <img src="img/bunny-mesh.png" height="150" class="imgNoBorder" /> </p>
-                                    <p class="fragment">Pointsets <img src="img/bunny-points.png" height="150" class="imgNoBorder" /> </p>
-                                    </div>
-                                    <div style="float:right">
-                                    <p class="fragment"><strong>Volume</strong> <img src="img/bunny-digital.png" height="400" class="imgNoBorder" /> <br/><br/><br/></p>
-                                    </div>
+                                    <h2>Computing Digital Curvature</h2>
+									<div>
+									<ul>
+										<li class="fragment"/>Mean
+										<li class="fragment" />Gaussian
+										<li class="fragment" />Principal Directions
+									</ul>
+									</div>
+									
+                                    <img src="img/formula_curv.png" width="400" class="imgNoBorder fragment" />
+									<img src="img/digital_curvature.png" width="400" class="imgNoBorder fragment" />
+									
+									<p class="fragment">Ensuring 3D convergency</p>
                                 </section>
 
                                 <section>
-									<b>Piquer illus/formules these Jerem</b>
-                                    <h2>Analysing this data</h2>
-                                    <img align="right" src="img/Snow_NoColor.png" height="400" class="imgNoBorder" />
-                                    <p align="left" class="fragment">Feature</p>
-                                    <p align="left" class="fragment"><strong>Curvature</strong></p>
+                                    <h2>Issue ?</h2>
+									<p class="fragment">Choosing the radius <b>parameter</b></p>
+									
+									<img src="img/MeanAl_4.png" width="200" class="imgNoBorder fragment" />
+									<img src="img/MeanAl_10.png" width="200" class="imgNoBorder fragment" />
+									<img src="img/MeanAl_17.png" width="200" class="imgNoBorder fragment" />
+									<img src="img/MeanAl_25.png" width="200" class="imgNoBorder fragment" />
+									
+                                    <p class="fragment"><b>Timings</b></p>
+									
+									<b class="fragment">Interactive exploration ?</b>
+									
                                 </section>
 
-				<section>
-						<h2>visualizing digital curvature</h2>
-						
-						<img align="right" src="img/digital_curvature.png" height="209" class="imgNoBorder" />
-						
-                        <p align="left" class="fragment">A long process</p>
-                        <p align="left" class="fragment">Radius parameter</p>
-						<p class="fragment">
-                            <strong><br/><br/><br/>How can we visualize digital curvature in interactive time ?</strong>
-						</p>
-						
-
-						<aside class="notes">
-							Reminder
-						</aside>
-				</section>
 
 				<section>
 						<img src="img/appli.gif" height="500" class="imgNoBorder" />
@@ -158,14 +154,6 @@
 
 				</section>
 
-                                <section>
-                                    <h2>Subdivision criteria</h2>
-                                    <p> Adaptive, yes, but on what criteria ?</p>
-                                    <p class="fragment"> Distance to the camera<br/>
-                                    <img src="img/formula.svg" width="300" class="imgNoBorder" /></p>
-                                    <div style="float:left" class="fragment"><img src="img/criterion.svg" width="400" class="imgNoBorder" /> </div>
-                                    <div style="float:right" class="fragment"> <img src="img/viewlod2_small.png" width="400" class="imgNoBorder" />  </div>
-                                </section>
 
 				<section>
 						<h2>Transvoxels <small><a href="http://dl.acm.org/citation.cfm?id=1925140">[Len10]</a></small></h2>
@@ -186,6 +174,15 @@
 					<img src="img/figure_cracks.png" width="700" class="imgNoBorder" />
                                         
 				</section>
+				
+				<section>
+						<h2>Subdivision criteria</h2>
+						<p> Adaptive, yes, but on what criteria ?</p>
+						<p class="fragment"> Distance to the camera<br/>
+						<img src="img/formula.svg" width="300" class="imgNoBorder" /></p>
+						<div style="float:left" class="fragment"><img src="img/criterion.svg" width="300" class="imgNoBorder" /> </div>
+						<div style="float:right" class="fragment"> <img src="img/viewlod2_small.png" width="300" class="imgNoBorder" />  </div>
+                </section>
 
 
 				<section>
@@ -218,13 +215,13 @@
 					<h2>Isosurface Extraction</h2>
 					<img align="right" src="img/tgl.png" width="500" class="fragment imgNoBorder" data-fragment-index="4" />
 					<ul>
-					<li class="fragment" data-fragment-index="1"/> <b><font color="green">Real time</font></b>
-						<ul>
-							<li/> Adaptivity
-						</ul>
-					<li class="fragment" data-fragment-index="2"/> <b><font color="green">Straightforward</font></b>
+					<li class="fragment" data-fragment-index="1"/> <b><font color="green">Straightforward</font></b>
 						<ul>
 							<li/> Two Marching Cubes
+						</ul>
+					<li class="fragment" data-fragment-index="2"/> <b><font color="green">Real time</font></b>
+						<ul>
+							<li/> Adaptivity
 						</ul>
 					<li class="fragment" data-fragment-index="3"/> <b><font color="green">Animated datasets</font></b>
 					<li class="fragment" data-fragment-index="4"/> <b><font color="red">Bad quality</font></b>
@@ -243,7 +240,7 @@
 					<p align="left">
                         <br/><br/><b><font color="#5f5f5f">Mean curvature:</b></font> Sum <b>all</b> the digital points in the sphere <img align="right" src="img/digital_curvature.png" height="150" class="imgNoBorder" />
                         <br/><b><font color="#5f5f5f">Gaussian curvature:</b></font> Sum the digital moments in the sphere
-                        <strong class="fragment" ><br/><br/>A LOT of texture accesses</strong>
+                        <strong class="fragment" ><br/><br/>A LOT of memory accesses</strong>
 					</p>
 
 					<p>
@@ -277,7 +274,7 @@
 					<h2>Hierachical subdivision</h2>
 					<img src="img/approx-hierarchical.svg" height="200" class="imgNoBorder" />
 					<p class="fragment"> <b><font color="green">Exact</b></font> </p>
-					<p class="fragment"> <b><font color="green">Reduces the number of texture fetches</b></font> </p>
+					<p class="fragment"> <b><font color="green">Reduces the number of memory fetches</b></font> </p>
 					<p class="fragment"> <b><font color="red">Not at all suited for the GPU</b></font> </p>
 					<p class="fragment"> <b><font color="red">As slow as the naive version</b></font> </p>
 				</section>
@@ -285,12 +282,11 @@
 				<section>
 					<h2>Regular subdivision</h2>
 					<p align="left">
-							<br/><br/>Mean curvature: Sum the approximated density of digital points in the sphere <img align="right" src="img/mip2.png" height="150" class="imgNoBorder" />
-							Gaussian curvature: Sum the approximated moments in the sphere
-							<strong class="fragment"><br/><br/><font color="green">Few texture accesses</font></strong>
+							<br/><b><font color="#5f5f5f">Mean curvature:</b></font> Sum the approximated densities of digital points in the sphere <img align="right" src="img/mip2.png" height="150" class="imgNoBorder" />
+							<br/><b><font color="#5f5f5f">Gaussian curvature:</b></font> Sum the approximated moments in the sphere
+							<strong class="fragment"><br/><br/><font color="green">Few memory accesses</font></strong>
 					</p>
 					<p>
-					<br/><br/>
 					<img src="img/octa_r10_l3_a.png" height="200" class="imgNoBorder" />
 					<img src="img/octa_r10_l2_a.png" height="200" class="imgNoBorder" />
 					<img src="img/octa_r10_l1_a.png" height="200" class="imgNoBorder" />
