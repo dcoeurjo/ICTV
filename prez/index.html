@@ -60,11 +60,11 @@
 
 			<!-- Any section element inside of this container is displayed as a slide -->
 			<div class="slides">
-			<section>
-					<img src="img/logo_liris.svg" width="100" class="imgNoBorder" />
-					<img src="img/logo_lama.svg" width="100" class="imgNoBorder" />
-					<img src="img/logo_anr.svg" width="100" class="imgNoBorder" />
-					<img src="img/DGtalLogo.png" width="100" class="imgNoBorder" />
+				<section>
+					<img src="img/logo_liris.svg" height="50" class="imgNoBorder" />
+					<img src="img/logo_lama.svg" height="50" class="imgNoBorder" />
+					<img src="img/logo_anr.svg" height="30" class="imgNoBorder" />
+					<img src="img/DGtalLogo.png" height="30" class="imgNoBorder" />
 					<h1>Interactive Curvature Tensor visualization</h1>
 					<p>
 						<small>
@@ -76,46 +76,133 @@
 						<a href="">Jacques-Olivier Lachaud</a>
 						</small><br/>
 					</p>
+					
+					<img src="img/teaser.png" width="300" class="imgNoBorder" />
+					
+					<footer>
+						\(
+						%%%% If you see this, MathJax wasn't loaded ...
+						\definecolor{myred}{RGB}{231,76,60}
+						\definecolor{mydarkred}{RGB}{166,51,38}
+						\definecolor{mygreen}{RGB}{38,166,115}
+						\definecolor{myblue}{RGB}{23,110,179}
+						\definecolor{mylightblue}{RGB}{104,171,216}
+						\definecolor{myyellow}{RGB}{101,103,10}
+						\definecolor{mygrey}{RGB}{101,123,131}
+						\definecolor{mynormal}{RGB}{41,128,185}
+						\newcommand{\Z}{{\mathbb{Z}}}
+						\newcommand{\N}{{\mathbb{N}}}
+						\newcommand{\R}{{\mathbb{R}}}
+						\newcommand{\M}{\mathcal{M}}
+						\newcommand{\B}{\mathcal{B}_R}
 
-                    <img src="img/teaser.png" width="300" class="imgNoBorder" />
+						\newcommand{\BT}[1]{{\partial #1}}
+						\newcommand{\Bd}[1]{{\partial #1}}
+						\newcommand{\dS}{\BT X}
+						\newcommand{\Body}[2]{{\lbrack #1 \rbrack_{#2}}}
 
+						\newcommand{\Shape}{{X}}
+						\newcommand{\DigShape}{{Z}}
+						\newcommand{\Boundary}[1]{{\partial #1}}
+						\newcommand{\DigBoundary}[1]{{Bd(#1)}}
+						\newcommand{\Shapes}{{\mathbb{X}}}
+						\newcommand{\vx}{{\mathbf{x}}}
+						\newcommand{\vz}{{\mathbf{z}}}
+						\newcommand{\vxH}{{\hat{\mathbf{x}}}}
+						\newcommand{\vp}{{\mathbf{p}}}
+						\newcommand{\vw}{{\mathbf{w}}}
+						\newcommand{\vn}{{\mathbf{n}}}
+						\newcommand{\Dig}{{\mathtt{G}}}
+						\newcommand{\DigF}[2]{{\Dig_{#2}\left(#1\right)}}
+						\newcommand{\DSh}{\DigF{\Shape}{h}}
+
+						\newcommand{\MCard}{{\mathrm{Card}}}
+						\newcommand{\Area}{{\mathrm{Area}}}
+						\newcommand{\Vol}{{\mathrm{Vol}}}
+						\newcommand{\AreaC}[0]{{\widehat{\Area}}}
+						\newcommand{\VolC}[0]{{\widehat{\Vol}}}
+						\newcommand{\Ball}[2]{{B_{#1}\left(#2\right)}}
+						\newcommand{\Mom}[1]{{m^{#1}}}
+						\newcommand{\DMom}[2]{{\hat{m}_{#2}^{#1}}}
+
+						%% Curvature notations
+						\newcommand{\Curv}{{\kappa}}
+						\newcommand{\MeanCurv}{{H}}
+						\newcommand{\GaussCurv}{{K}}
+						\newcommand{\PrincCurv}[1]{{\kappa_{#1}}}
+						\newcommand{\PrincDir}[1]{{\vw_{#1}}}
+						\newcommand{\NormalDir}{{\vn}}
+
+						%% Pottmann curvature estimators
+						\newcommand{\CurvT}[1]{{\tilde{\Curv}^{#1}}}
+						\newcommand{\MeanCurvT}[1]{{\tilde{\MeanCurv}^{#1}}}
+						\newcommand{\GaussCurvT}[1]{{\tilde{\GaussCurv}^{#1}}}
+						\newcommand{\PrincCurvT}[2]{{\tilde{\PrincCurv{}}_{#1}^{#2}}}
+						\newcommand{\PrincDirT}[2]{{\tilde{\PrincDir{}}_{#1}^{#2}}}
+						\newcommand{\NormalDirT}[1]{{\tilde{\NormalDir{}}^{#1}}}
+
+						%% II curvature estimators
+						\newcommand{\CurvH}[1]{{\hat{\Curv}^{#1}}}
+						\newcommand{\MeanCurvH}[1]{{\hat{\MeanCurv}^{#1}}}
+						\newcommand{\GaussCurvH}[1]{{\hat{\GaussCurv}^{#1}}}
+						\newcommand{\PrincCurvH}[2]{{\hat{\PrincCurv{}}_{#1}^{#2}}}
+						\newcommand{\PrincDirH}[2]{{\hat{\PrincDir{}}_{#1}^{#2}}}
+						\newcommand{\NormalDirH}[1]{{\hat{\NormalDir{}}^{#1}}}
+
+						%%Formulas
+						\newcommand{\EqDef}{\!{\mathrel{\mathop:}=}\!}
+						\)
+					</footer>
+					
+				</section>
+				
+				<section>
+					<h2>Analysing Digital Datasets</h2>
+					<img align="right" src="img/Snow_NoColor.png" width="500" class="imgNoBorder" />
+					<p align="left" class="fragment"><br/><br/>Output for most scanners</p>
+					<p align="left" class="fragment">Complex objects</p>
+					<p align="left" class="fragment">Huge size</p>
+					<p align="left" class="fragment"><b>Difficult to analyze</b></p>
+				</section>
+				
+				<section>
+					<h2>Digital Curvature</h2>
+					<p align="left" class="fragment">There is a wide number of <b>curvature estimators</b> for digital objects</p>
+					<p align="left" class="fragment">But a vast majority of them rely on <b>parameters</b> ...</p>
+					<ul class="fragment">
+						<li/>Sphere radius
+						<li/>Neighbourhood window
+						<li/>...
+					</ul>
+					<p class="fragment"><b>from which depends the quality of the result</b><br/><br/>
+					<img src="img/MeanAl_4.png" width="150" class="imgNoBorder" />
+					<img src="img/MeanAl_10.png" width="150" class="imgNoBorder" />
+					<img src="img/MeanAl_17.png" width="150" class="imgNoBorder" />
+					<img src="img/MeanAl_25.png" width="150" class="imgNoBorder" />
+					</p>
+				</section>
+				
+				<section>
+					<h2>Integral Invariants</h2>
+					<p align="left" class="fragment">Let a ball slide along the border of the object</p>
+					<p align="left" class="fragment">Computes the curvature as a ratio between the <b>ball volume</b> and the <b>object volume inside the ball</b></p>
+					<p align="left" class="fragment">Is proven to have <b>3D convergency</b></p>
+					<p class="fragment">
+					<script type="math/tex; mode=display">
+					\MeanCurvH{R}(Z,\vx,h)\ \EqDef\ \frac{8}{3R}
+					- \frac{4\VolC(\Ball{R/h}{\vx/h} \cap
+					Z, h)}{\pi R^4}
+					</script>
+					</p>
+					<img src="img/digital_curvature.png" width="400" class="imgNoBorder fragment" />
 				</section>
 
-                                <section>
-                                    <h2>Computing Digital Curvature</h2>
-									<div>
-									<ul>
-										<li class="fragment"/>Mean
-										<li class="fragment" />Gaussian
-										<li class="fragment" />Principal Directions
-									</ul>
-									</div>
-									
-                                    <img src="img/formula_curv.png" width="400" class="imgNoBorder fragment" />
-									<img src="img/digital_curvature.png" width="400" class="imgNoBorder fragment" />
-									
-									<p class="fragment">Ensuring 3D convergency</p>
-                                </section>
-
-                                <section>
-                                    <h2>Issue ?</h2>
-									<p class="fragment">Choosing the radius <b>parameter</b></p>
-									
-									<img src="img/MeanAl_4.png" width="200" class="imgNoBorder fragment" />
-									<img src="img/MeanAl_10.png" width="200" class="imgNoBorder fragment" />
-									<img src="img/MeanAl_17.png" width="200" class="imgNoBorder fragment" />
-									<img src="img/MeanAl_25.png" width="200" class="imgNoBorder fragment" />
-									
-                                    <p class="fragment"><b>Timings</b></p>
-									
-									<b class="fragment">Interactive exploration ?</b>
-									
-                                </section>
-
-
 				<section>
-						<img src="img/appli.gif" height="500" class="imgNoBorder" />
-						<p> GPU implementation for on the fly curvature computation </p>
+					<h2>Issue</h2>
+					<p align="left" class="fragment">Computing the curvature is a <b>long</b> process</p>
+					<p align="left" class="fragment">Choosing the <b>correct parameterization</b> for an estimation is sometimes difficult</p>
+					<p align="left" class="fragment"><b>The solution: Interactive visualization</b></p>
+					<img src="img/appli.gif" height="300" class="imgNoBorder fragment" />
 				</section>
 
 				<section>
@@ -134,24 +221,35 @@
 
 				<section slide-title="Isosurface Extraction">
 						<h2>Real Time GPU Isosurface Extraction</h2>
-						<p align="left"> <br/>An extensively studied topic </p>
+						<p align="left"> <b>Marching Cubes</b> <small><a href="http://dx.doi.org/10.1145/37402.37422">[LC87]</a></small> </p>
+						<ul>
+							<li align="left" /> Grid division of the scene
+							<li align="left" /> <b>Independent</b> triangulation of each cell
+							<li align="left" /> <b>Highly parallel</b>
+						</ul>
+						<br/>
+						<br/>
 						<img src="img/mc_tables.png" width="300" class="imgNoBorder" /> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 						<img src="img/mc_sample.png" width="300" class="imgNoBorder" />
-                                                <p align="left"> <br/><b>Marching Cubes</b> <small><a href="http://dx.doi.org/10.1145/37402.37422">[LC87]</a></small> </p>
+                        
 				</section>
 
 				<section>
-                                                <h2>Marching Cubes</h2>
+					<h2>Marching Cubes</h2>
 
-                                                <p class="fragment" /><font color="green">GPU loves Marching Cubes</font></p>
-                                                <p class="fragment" /><font color="green">Aligned with Khalimsky space</font></p>
+					<p align="left" class="fragment" /><b><font color="green">GPU loves Marching Cubes</font></b></p>
+					<p align="left" class="fragment" /><b><font color="green">Aligned with surfels</font></b></p>
 
-                                                <img class="fragment" src="img/khalimsky.png" width="320" class="imgNoBorder" />
-                                                <img class="fragment" src="img/marchingcubes.png" width="320" class="imgNoBorder" />
-
-                                                <p class="fragment" ><font color="red">But a regular grid is too much to handle</font></p>
-                                                <p class="fragment" > Adaptive Grid ?</p>
-
+					<img src="img/digital_object_points.svg" width="150" class="imgNoBorder fragment" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+					<img src="img/digital_object_mcgrid.svg" width="150" class="imgNoBorder fragment" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+					<img src="img/digital_object_mctgl.svg" width="150" class="imgNoBorder fragment" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+					<img src="img/digital_object_mctgl_surfels.svg" width="150" class="imgNoBorder fragment" />
+					
+					<p align="left" class="fragment" ><b><font color="red">Regular Grid</font></b></p>
+					<ul align="left" class="fragment">
+						<li/> High number of triangles
+						<li/> Most of them behind from the camera or too far to be visible
+					</ul>
 				</section>
 
 
@@ -172,41 +270,64 @@
 					<p><img src="img/transvoxels_transition0.png" height="250" class="imgNoBorder" />
 					<img src="img/transvoxels_transition1.png" height="250" class="imgNoBorder" /></p>
 					<img src="img/figure_cracks.png" width="700" class="imgNoBorder" />
-                                        
 				</section>
 				
 				<section>
 						<h2>Subdivision criteria</h2>
-						<p> Adaptive, yes, but on what criteria ?</p>
-						<p class="fragment"> Distance to the camera<br/>
-						<img src="img/formula.svg" width="300" class="imgNoBorder" /></p>
-						<div style="float:left" class="fragment"><img src="img/criterion.svg" width="300" class="imgNoBorder" /> </div>
-						<div style="float:right" class="fragment"> <img src="img/viewlod2_small.png" width="300" class="imgNoBorder" />  </div>
+						<img align="right" src="img/criterion.svg" height="300" class="imgNoBorder fragment" />
+						<p align="left" class="fragment"> Based on a <b>radial distance to the camera</b><br/>
+						
+						<p align="left" class="fragment"> Projected screen size at distance d
+						<script type="math/tex; mode=display">
+								s(\text{d}) = \tan(\alpha) * \text{d}
+						</script>
+						</p>
+						
+						<p align="left" class="fragment"> Radial distance measure
+						<script type="math/tex; mode=display">
+							d = z +
+								\begin{cases}
+									w \cdot z \cdot (\theta - \alpha) 	& \text{if } \theta \geq \alpha\\
+									0	              		    			& \text{else.}
+								\end{cases}
+						</script>
+						</p>
+
+						<img src="img/viewlod2_small.png" height="200" class="imgNoBorder fragment" />
                 </section>
 
 
 				<section>
 						<h2>Quadtrees on the GPU <small><a href="http://dx.doi.org/10.1201/b16721-33">[DIP14]</a></small> </h2>
-						<p><strong>GPU really can't handle recursivity</strong></p>
-						<p> How to put an octree on the GPU ? </p>
-
-						<div style="float:left" class="fragment"><img src="img/multires.svg" height="220" class="imgNoBorder" /></div>
-						<div style="float:left" class="fragment"><img src="img/morton_adapt.svg" width="250" class="imgNoBorder" /></div>
-						<div style="float:left" class="fragment"><img src="img/tgl_adapt.svg" width="250" class="imgNoBorder" /></div>
 						
-                        <p class="fragment"><br/><br/><br/><br/><br/><br/><br/><br/>
-                        List of <b>uncorrelated</b> nodes </p>
+						<img align="right" src="img/octree.svg" height="250" class="imgNoBorder fragment"/>
+						
+						<p align="left"><strong>GPU really can't handle recursivity</strong></p>
+						
+						<p align="left" class="fragment"> Derecursifying the octree </p>
+						<p align="left" class="fragment"> Morton codes, each cell encode its path to the root </p>
+						<p align="left" class="fragment"> The whole tree is represented by a list of its leaves as <b>uncorrelated</b> nodes</p>
+						
+						<img src="img/multires.svg" height="200" class="imgNoBorder fragment" />
+						<img src="img/morton_adapt.svg" width="200" class="imgNoBorder fragment" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+						<img src="img/tgl_adapt.svg" width="200" class="imgNoBorder fragment" />
 				</section>
 
 				<section>
 					<h2>Quadtrees on the GPU <small><a href="http://dx.doi.org/10.1201/b16721-33">[DIP14]</a></small> </h2>
-					<p> At each frame, we update the tree </p>
-					
-					<p>
-					<img src="img/keep.svg" width="300" class="fragment imgNoBorder" /><br style="display: block; margin:-20px;"/>
-					<img src="img/merge.svg" width="300" class="fragment imgNoBorder" /><br style="display: block; margin:-20px;"/>
-					<img src="img/subdivide.svg" width="300" class="fragment imgNoBorder" /><br style="display: block; margin:-20px;"/>
-					</p>
+					<div style="float:left">
+					<p align="left">Every time the camera moves, we update <br/> the tree</p>
+					<ul>
+						<li class="fragment" data-fragment-index="1"/>The cell is <b>kept</b>
+						<li class="fragment" data-fragment-index="2"/>The cell is <b>merged</b>
+						<li class="fragment" data-fragment-index="3"/>The cell is <b>subdivided</b>
+					</ul>
+					</div>
+					<div style="float:right">
+					<img align="right" src="img/keep.svg" width="300" class="fragment imgNoBorder" data-fragment-index="1" /><br style="display: block; margin:-20px;"/>
+					<img align="right" src="img/merge.svg" width="300" class="fragment imgNoBorder"  data-fragment-index="2"/><br style="display: block; margin:-20px;"/>
+					<img align="right" src="img/subdivide.svg" width="300" class="fragment imgNoBorder" data-fragment-index="3" /><br style="display: block; margin:-20px;"/>
+					</div>
 						
 					</span>
 				</section>
@@ -237,25 +358,31 @@
 				<section slide-title="Curvature Computation">
                         <h2>Curvature computation</h2>
 
-					<p align="left">
-                        <br/><br/><b><font color="#5f5f5f">Mean curvature:</b></font> Sum <b>all</b> the digital points in the sphere <img align="right" src="img/digital_curvature.png" height="150" class="imgNoBorder" />
-                        <br/><b><font color="#5f5f5f">Gaussian curvature:</b></font> Sum the digital moments in the sphere
-                        <strong class="fragment" ><br/><br/>A LOT of memory accesses</strong>
-					</p>
-
-					<p>
-					<br/>
-					<img src="img/Octa_mean.png" height="200" class="imgNoBorder" />
-					<img src="img/Octa_dir_max.png" height="200" class="imgNoBorder" />
-					<img src="img/Octa_dir_min.png" height="200" class="imgNoBorder" />
-					<img src="img/Octa_normal.png" height="200" class="imgNoBorder" />
-					</p>
+						<script type="math/tex; mode=display">
+						\MeanCurvH{R}(Z,\vx,h)\ \EqDef\ \frac{8}{3R}
+						- \frac{4\VolC(\Ball{R/h}{\vx/h} \cap
+						Z, h)}{\pi R^4}
+						</script>
+						
+						<p align="right" class="fragment" data-fragment-index="1">
+						<img align="left" src="img/digital_curvature.png" width="300" class="imgNoBorder" />
+						<br/>$\VolC$ is obtained by <b>counting the digital points</b> $\vx /h $ that intersect $\textit{B}_{R/h}$. 
+						</p>
+						
+						<p class="fragment" data-fragment-index="6"><b><font color="red"><br/>A LOT of memory accesses</font></b></p>
+						
+						<p>
+						<img src="img/Octa_mean.png" height="170" class="imgNoBorder fragment" data-fragment-index="2" />
+						<img src="img/Octa_dir_max.png" height="170" class="imgNoBorder fragment" data-fragment-index="3" />
+						<img src="img/Octa_dir_min.png" height="170" class="imgNoBorder fragment" data-fragment-index="4" />
+						<img src="img/Octa_normal.png" height="170" class="imgNoBorder fragment" data-fragment-index="5" />
+						</p>
 
 				</section>
 
                     <section>
 
-                    <h2>Reducing the number fo texture accesses</h2>
+                    <h2>Reducing the number of texture accesses</h2>
 					<p align="left"><br/>The digital dataset is loaded on the GPU as a texture</p>
 
 					<p><b>Mipmaps !</b></p>
@@ -281,17 +408,26 @@
 
 				<section>
 					<h2>Regular subdivision</h2>
-					<p align="left">
-							<br/><b><font color="#5f5f5f">Mean curvature:</b></font> Sum the approximated densities of digital points in the sphere <img align="right" src="img/mip2.png" height="150" class="imgNoBorder" />
-							<br/><b><font color="#5f5f5f">Gaussian curvature:</b></font> Sum the approximated moments in the sphere
-							<strong class="fragment"><br/><br/><font color="green">Few memory accesses</font></strong>
-					</p>
-					<p>
-					<img src="img/octa_r10_l3_a.png" height="200" class="imgNoBorder" />
-					<img src="img/octa_r10_l2_a.png" height="200" class="imgNoBorder" />
-					<img src="img/octa_r10_l1_a.png" height="200" class="imgNoBorder" />
-					<img src="img/octa_r10_l0_a.png" height="200" class="imgNoBorder" />
-					</p>
+					
+					<script type="math/tex; mode=display">
+						\MeanCurvH{R}(Z,\vx,h)\ \EqDef\ \frac{8}{3R}
+						- \frac{4\VolC(\Ball{R/h}{\vx/h} \cap
+						Z, h)}{\pi R^4}
+						</script>
+						
+						<p align="right" class="fragment" data-fragment-index="1">
+						<img align="left" src="img/mip2.png" height="150" class="imgNoBorder" />
+						<br/>$\VolC$ is obtained by <b>summing the densities</b> at a level $l$, $\vx_l /h_l$ that intersect $\textit{B}_{R/h}$. 
+						</p>
+						
+						<p class="fragment" data-fragment-index="6"><br/><b><font color="green">Fewer memory accesses</font></b></p>
+						
+						<p>
+						<img src="img/octa_r10_l3_a.png" height="200" class="imgNoBorder fragment" data-fragment-index="2"/>
+						<img src="img/octa_r10_l2_a.png" height="200" class="imgNoBorder fragment" data-fragment-index="3"/>
+						<img src="img/octa_r10_l1_a.png" height="200" class="imgNoBorder fragment" data-fragment-index="4"/>
+						<img src="img/octa_r10_l0_a.png" height="200" class="imgNoBorder fragment" data-fragment-index="5"/>
+						</p>
 
 				</section>
 				
@@ -314,7 +450,7 @@
 				<section slide-title="Results">
 					<h2>Results</h2>
 
-					<img align="right" src="img/timings.png" width="450" class="imgNoBorder" />
+					<img align="right" src="img/timings.svg" width="500" class="imgNoBorder" />
 
 					<p align="left">
 					<br/>
