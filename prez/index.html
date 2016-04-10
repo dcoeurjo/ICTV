@@ -459,30 +459,33 @@
 				<section slide-title="Results">
 					<h2>Results</h2>
 
-					<img align="right" src="img/timings.svg" width="500" class="imgNoBorder" />
+					<div style="width:50%;display:block;float:left;text-align:left;">
+						<strong style="color:#FFA500">Orange : Adaptive isosurface extraction</strong><br/>
+						<strong style="color:#08519C">Dark Blue : Exact curvature computation</strong><br/>
+						<strong style="color:#A6BBDF">Lighter Blue : Approximated curvature computation</strong><br/>
+					</div>
+					<div style="width:49%;display:block;float:right;">
+						<img align="right" src="img/timings.svg" width="500" class="imgNoBorder" />
+					</div>
+					<div style="width:50%;display:block;clear:both;float:left;margin-top:-50px;">
+						<div width="100%" style="text-align:center;">
+							<img src="img/Octa_mean.png" class="imgNoBorder" style="width:25%;" />
+							<img src="img/snow_mean.png" class="imgNoBorder" style="width:25%;" />
+							<img src="img/teaser.png"    class="imgNoBorder" style="width:30%;" />
+						</div>
+						<div width="100%" style="text-align:center;font-size:75%;">
+							<span style="display:block;margin-left:15%;width:15%;float:left;">$128^3$</span>
+							<span style="display:block;margin-left:10%;width:20%;float:left;">$233^3$</span>
+							<span style="display:block;margin-left:10%;width:20%;float:left;">$512^3$</span>
+						</div>
+						<div width="100%" style="text-align:center;font-size:75%;">
+							<span style="float:left;width:15%;">CPU:</span>
+							<span style="display:block;width:20%;float:left;">~25 sec</span>
+							<span style="display:block;margin-left:5%;width:20%;float:left;">~15 min</span>
+							<span style="display:block;margin-left:10%;width:20%;float:left;">~6 min</span>
+						</div>
+					</div>
 
-					<p align="left">
-					<br/>
-						<b><font color="orange"> Orange : Adaptive isosurface extraction </font></b> <br/>
-						<b><font color="#08519c">Dark Blue : Exact curvature computation </font></b><br/>
-						<b><font color="#a6bbdf">Lighter Blue : Approximated curvature computation</font></b><br/>
-					</p>
-
-					<p>
-					<img align="left" src="img/Octa_mean.png" height="130" class="imgNoBorder" />
-					<img align="left" src="img/snow_mean.png" height="130" class="imgNoBorder" />
-					<img align="left" src="img/teaser.png" height="130" class="imgNoBorder" />
-					</p>
-					<p align="left"><br/><br/><br/><br/>
-					<small>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-					128<small>3</small>
-					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-					233<small>3</small>
-					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-					512<small>3</small></small> </p>
 				</section>
 
 				<section>
