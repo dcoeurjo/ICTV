@@ -160,17 +160,35 @@
 				<section>
 					<h2>Analysing Digital Datasets</h2>
 					<img align="right" src="img/Snow_NoColor.png" width="500" class="imgNoBorder" />
-					<p align="left" class="fragment"><br/><br/>Output for most scanners</p>
-					<p align="left" class="fragment">Complex objects</p>
-					<p align="left" class="fragment">Huge size</p>
+					<p align="left"><br/>Output for most scanners</p>
+					<ul>
+						<li/> MRI
+						<li/> Tomographic scanners
+						<li/> ...
+					</ul>
+					<p align="left">Complex objects</p>
+					<p align="left">Huge size</p>
 					<p align="left" class="fragment"><b>Difficult to analyze</b></p>
 				</section>
 
 				<section>
+					<h2>Analysing Digital Datasets</h2>
+					<p>Curvature Tensors</p>
+					<p>Used in material sciences, physics ...</p>
+					<div style="width:50%;text-align:center;float:left;font-size:70%;">
+					<img height="400" src="img/Snow_mean.png" class="imgNoBorder" />
+					</div>
+					<div style="width:50%;text-align:center;float:right;font-size:70%;">
+					<img height="182" src="img/E2bis-prindir-bleu.png" class="imgNoBorder" /><br/>
+					<img height="182" src="img/E2bis-prindir-rouge.png" class="imgNoBorder" />
+					</div>
+				</section>
+
+				<section>
 					<h2>Digital Curvature</h2>
-					<p align="left" class="fragment">There is a wide number of <b>curvature estimators</b> for digital objects</p>
-					<p align="left" class="fragment">But a vast majority of them rely on <b>parameters</b> ...</p>
-					<ul class="fragment">
+					<p align="left" >There is a wide number of <b>curvature estimators</b> for digital objects</p>
+					<p align="left" >But a vast majority of them perform local computations, and rely on <b>parameters</b> acting as a SNR...</p>
+					<ul>
 						<li>Sphere radius <small><a href="http://dx.doi.org/10.1016/j.cviu.2014.04.013">[CLL14]</a></small></li>
 						<li>Neighbourhood window <small><a href="http://dx.doi.org/10.1016/j.cagd.2004.09.004">[CP05]</a></small></li>
 						<li>Convolution kernel <small><a href="http://dx.doi.org/10.1007/978-3-540-79126-3_33">[MBF08]</a></small></li>
@@ -192,47 +210,34 @@
 				</section>
 
 				<section>
-					<h2>Integral Invariants</h2>
-					<p align="left" class="fragment">Let a ball slide along the border of the object</p>
-					<p align="left" class="fragment">Computes the curvature as a ratio between the <b>ball volume</b> and the <b>object volume inside the ball</b></p>
-					<p align="left" class="fragment">Is proven to have <b>3D convergency</b></p>
-					<p class="fragment">
-					<script type="math/tex; mode=display">
-					\MeanCurvH{R}(Z,\vx,h)\ \EqDef\ \frac{8}{3R}
-					- \frac{4\VolC(\Ball{R/h}{\vx/h} \cap
-					Z, h)}{\pi R^4}
-					</script>
-					</p>
-					<img src="img/digital_curvature.png" width="400" class="imgNoBorder fragment" />
-				</section>
-
-				<section>
 					<h2>Issue</h2>
-					<p align="left" class="fragment">Computing the curvature is a <b>long</b> process</p>
-					<p align="left" class="fragment">Choosing the <b>correct parameterization</b> for an estimation is sometimes difficult</p>
-					<p align="left" class="fragment"><b>The solution: Interactive visualization</b></p>
+					<p align="left">Computing the curvature is a <b>long</b> process due to the huge size of the datasets</p>
+					<p align="left">Choosing the <b>correct parameterization</b> for an estimation is sometimes difficult</p>
+					<p align="left" class="fragment"><b>Interactive visualization</b></p>
 					<img src="img/appli.gif" height="300" class="imgNoBorder fragment" />
 				</section>
 
 				<section>
 						<h2>Pipeline</h2>
-						<p align="left">Our pipeline runs in <b>two steps</b> ... </p>
+
+						<p align="left">Interactive vizualization requires <b>two steps</b> ... </p>
 						<ul>
-						<li class="fragment" /><p>Extracting a <b>mesh</b> from the digital object</p>
-						<li class="fragment" /><p>Compute the <b>curvature</b> value on each vertex of this mesh</p>
+						<li class="fragment" /><p>Extracting a <b>mesh</b> to visualize</p>
+						<li class="fragment" /><p>Compute the <b>curvature</b> value on this mesh</p>
 						</ul>
 						<p class="fragment" align="left">
 							<b><font color="#5f5f5f">
-							Both those steps are done <b>on the fly</b> and in <b>real-time</b>, <br/> thanks to the <b>GPU</b> parallelism !
+							We perform both those steps <b>on the fly</b> and in <b>real-time</b>, <br/> thanks to the <b>GPU</b> parallelism
 							</font></b>
 						</p>
 				</section>
 
 				<section slide-title="Isosurface Extraction">
 						<h2>Real Time GPU Isosurface Extraction</h2>
-						<p align="left"> <b>Marching Cubes</b> <small><a href="http://dx.doi.org/10.1145/37402.37422">[LC87]</a></small> </p>
+						<p align="left"> The most known and used solution is <b>Marching Cubes</b> <small><a href="http://dx.doi.org/10.1145/37402.37422">[LC87]</a></small> </p>
 						<ul>
 							<li align="left" /> Grid division of the scene
+							<li align="left" /> Precomputed triangles patch
 							<li align="left" /> <b>Independent</b> triangulation of each cell
 							<li align="left" /> <b>Highly parallel</b>
 						</ul>
@@ -246,19 +251,37 @@
 				<section>
 					<h2>Marching Cubes</h2>
 
-					<p align="left" class="fragment" /><b><font color="green">GPU loves Marching Cubes</font></b></p>
-					<p align="left" class="fragment" /><b><font color="green">Aligned with surfels</font></b></p>
+					<p align="left" /><b><font color="green">GPU loves Marching Cubes</font></b></p>
+					<div class="fragment">
+						<p align="left" /><b><font color="green">Vertices aligned with surfels center</font></b></p>
 
-					<img src="img/digital_object_points.svg" width="150" class="imgNoBorder fragment" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-					<img src="img/digital_object_mcgrid.svg" width="150" class="imgNoBorder fragment" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-					<img src="img/digital_object_mctgl.svg" width="150" class="imgNoBorder fragment" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-					<img src="img/digital_object_mctgl_surfels.svg" width="150" class="imgNoBorder fragment" />
+					<img src="img/digital_object_points.svg" width="150" class="imgNoBorder" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+					<img src="img/digital_object_mcgrid.svg" width="150" class="imgNoBorder" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+					<img src="img/digital_object_mctgl.svg" width="150" class="imgNoBorder" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+					<img src="img/digital_object_mctgl_surfels.svg" width="150" class="imgNoBorder" />
+					</div>
 
-					<p align="left" class="fragment" ><b><font color="red">Regular Grid</font></b></p>
-					<ul align="left" class="fragment">
+					<div class="fragment">
+					<p align="left" ><b><font color="red">Regular Grid</font></b></p>
+					<ul align="left" >
 						<li/> High number of triangles
-						<li/> Most of them behind from the camera or too far to be visible
+						<li/> Some of them too far to be visible from the camera, or even behind it
 					</ul>
+					</div>
+				</section>
+
+				<section>
+
+					<h2>Adaptive Marching Cubes</h2>
+					<p align="left">There exists a lot of algorithm to do Marching Cube based adaptive Isosurface Extraction</p>
+					<ul>
+						<li/> Dual Marching Cubes <a href="http://dl.acm.org/citation.cfm?id=1034484">[Nie04]</a>
+						<li/> Tetrahedral Grids <a href="http://onlinelibrary.wiley.com/doi/10.1111/cgf.12462/full">[SBD14]</a>
+						<li/> ...
+					</ul>
+
+					<p align="left">But to be able to fully exploit the <b>GPU's parallelism</b>, it is mandatory that we use an algorithm performing <b>independent</b> actions on each cell</p>
+	
 				</section>
 
 
@@ -283,16 +306,16 @@
 
 				<section>
 						<h2>Subdivision criteria</h2>
-						<img align="right" src="img/criterion.svg" height="300" class="imgNoBorder fragment" />
-						<p align="left" class="fragment"> Based on a <b>radial distance to the camera</b><br/>
+						<img align="right" src="img/criterion.svg" height="300" class="imgNoBorder" />
+						<p align="left"> Based on a <b>radial distance to the camera</b><br/>
 
-						<p align="left" class="fragment"> Projected screen size at distance d
+						<p align="left"> Projected screen size at distance d
 						<script type="math/tex; mode=display">
 								s(\text{d}) = \tan(\alpha) * \text{d}
 						</script>
 						</p>
 
-						<p align="left" class="fragment"> Radial distance measure
+						<p align="left"> Radial distance measure
 						<script type="math/tex; mode=display">
 							d = z +
 								\begin{cases}
@@ -302,24 +325,24 @@
 						</script>
 						</p>
 
-						<img src="img/viewlod2_small.png" height="200" class="imgNoBorder fragment" />
+						<img src="img/viewlod2_small.png" height="200" class="imgNoBorder" />
                 </section>
 
 
 				<section>
 						<h2>Quadtrees on the GPU <small><a href="http://dx.doi.org/10.1201/b16721-33">[DIP14]</a></small> </h2>
 
-						<img align="right" src="img/octree.svg" height="250" class="imgNoBorder fragment"/>
+						<img align="right" src="img/octree.svg" height="250" class="imgNoBorder"/>
 
 						<p align="left"><strong>GPU really can't handle recursivity</strong></p>
 
-						<p align="left" class="fragment"> Derecursifying the octree </p>
-						<p align="left" class="fragment"> Morton codes, each cell encode its path to the root </p>
-						<p align="left" class="fragment"> The whole tree is represented by a list of its leaves as <b>uncorrelated</b> nodes</p>
+						<p align="left"> Derecursifying the octree<small><a href="http://dl.acm.org/citation.cfm?id=358741">[Gar82]</a></small><small><a href="https://www.crcpress.com/GPU-Pro-5-Advanced-Rendering-Techniques/Engel/9781482208634">[DIP14]</a></small> </p>
+						<p align="left"> Morton codes, each cell encode its path to the root </p>
+						<p align="left"> The whole tree is represented by a list of its leaves as <b>uncorrelated</b> nodes</p>
 
-						<img src="img/multires.svg" height="200" class="imgNoBorder fragment" />
-						<img src="img/morton_adapt.svg" width="200" class="imgNoBorder fragment" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-						<img src="img/tgl_adapt.svg" width="200" class="imgNoBorder fragment" />
+						
+						<img src="img/morton_adapt.svg" width="200" class="imgNoBorder" /><br/>
+						<img src="img/node_list.svg" width=500" class="imgNoBorder" />
 				</section>
 
 				<section>
@@ -343,18 +366,21 @@
 
 				<section>
 					<h2>Isosurface Extraction</h2>
-					<img align="right" src="img/tgl.png" width="500" class="fragment imgNoBorder" data-fragment-index="4" />
+					<img align="right" src="img/tgl.png" width="500" class=" imgNoBorder"/>
 					<ul>
-					<li class="fragment" data-fragment-index="1"/> <b><font color="green">Straightforward</font></b>
+					<li/> <b><font color="green">Straightforward</font></b>
 						<ul>
 							<li/> Two Marching Cubes
 						</ul>
-					<li class="fragment" data-fragment-index="2"/> <b><font color="green">Real time</font></b>
+					<li/> <b><font color="green">Real time</font></b>
 						<ul>
 							<li/> Adaptivity
 						</ul>
-					<li class="fragment" data-fragment-index="3"/> <b><font color="green">Animated datasets</font></b>
-					<li class="fragment" data-fragment-index="4"/> <b><font color="red">Bad quality</font></b>
+					<li/> <b><font color="green">Animated datasets</font></b>
+					<li/> <b><font color="red">Bad quality</font></b>
+						<ul>
+							<li/> Normals from <br/>curvature tensor
+						</ul>
 					</ul>
 
 				</section>
@@ -364,7 +390,23 @@
 						<img src="img/pipeline_step1.png" width="800" class="imgNoBorder" />
 				</section>
 
+
 				<section slide-title="Curvature Computation">
+					<h2>Integral Invariants</h2>
+					<p align="left" >Let a ball slide along the border of the object</p>
+					<p align="left" >Computes the curvature as a ratio between the <b>ball volume</b> and the <b>object volume inside the ball</b></p>
+
+					<p>
+					<script type="math/tex; mode=display">
+					\MeanCurvH{R}(Z,\vx,h)\ \EqDef\ \frac{8}{3R}
+					- \frac{4\VolC(\Ball{R/h}{\vx/h} \cap
+					Z, h)}{\pi R^4}
+					</script>
+					</p>
+					<img src="img/digital_curvature.png" width="400" class="imgNoBorder" />
+				</section>
+				
+				<section>
                         <h2>Curvature computation</h2>
 
 						<script type="math/tex; mode=display">
@@ -373,18 +415,18 @@
 						Z, h)}{\pi R^4}
 						</script>
 
-						<p align="right" class="fragment" data-fragment-index="1">
+						<p align="right">
 						<img align="left" src="img/digital_curvature.png" width="300" class="imgNoBorder" />
 						<br/>$\VolC$ is obtained by <b>counting the digital points</b> $\vx /h $ that intersect $\textit{B}_{R/h}$.
 						</p>
 
-						<p class="fragment" data-fragment-index="6"><b><font color="red"><br/>A LOT of memory accesses</font></b></p>
+						<p class="fragment"><b><font color="red"><br/>A LOT of memory accesses</font></b></p>
 
 						<p>
-						<img src="img/Octa_mean.png" height="170" class="imgNoBorder fragment" data-fragment-index="2" />
-						<img src="img/Octa_dir_max.png" height="170" class="imgNoBorder fragment" data-fragment-index="3" />
-						<img src="img/Octa_dir_min.png" height="170" class="imgNoBorder fragment" data-fragment-index="4" />
-						<img src="img/Octa_normal.png" height="170" class="imgNoBorder fragment" data-fragment-index="5" />
+						<img src="img/Octa_mean.png" height="170" class="imgNoBorder" />
+						<img src="img/Octa_dir_max.png" height="170" class="imgNoBorder" />
+						<img src="img/Octa_dir_min.png" height="170" class="imgNoBorder"  />
+						<img src="img/Octa_normal.png" height="170" class="imgNoBorder" />
 						</p>
 
 				</section>
@@ -396,23 +438,27 @@
 
 					<p><b>Mipmaps !</b></p>
 
-					<img src="img/mipmaps.png" height="150" class="imgNoBorder" />
+					<img src="img/mipmaps.png" height="150" class="imgNoBorder" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+					<img src="img/mip.svg" height="100" class="imgNoBorder" />
+					
 
 					<p>
 					<img src="img/mip2.png" height="150" class="imgNoBorder" />
 					<img src="img/mip1.png" height="150" class="imgNoBorder" />
 					<img src="img/mip0.png" height="150" class="imgNoBorder" />
 					</p>
+					
+					
 
 				</section>
 
 				<section>
 					<h2>Hierachical subdivision</h2>
 					<img src="img/approx-hierarchical.svg" height="200" class="imgNoBorder" />
-					<p class="fragment"> <b><font color="green">Exact</b></font> </p>
-					<p class="fragment"> <b><font color="green">Reduces the number of memory fetches</b></font> </p>
-					<p class="fragment"> <b><font color="red">Not at all suited for the GPU</b></font> </p>
-					<p class="fragment"> <b><font color="red">As slow as the naive version</b></font> </p>
+					<p> <b><font color="green">Would be exact</b></font> </p>
+					<p> <b><font color="green">Would reduce the number of memory fetches</b></font> </p>
+					<p> <b><font color="red">Is not at all suited for the GPU</b></font> </p>
+					<p> <b><font color="red">Is as slow as the naive version</b></font> </p>
 				</section>
 
 				<section>
@@ -424,34 +470,35 @@
 						Z, h)}{\pi R^4}
 						</script>
 
-						<p align="right" class="fragment" data-fragment-index="1">
+						<p align="right">
 						<img align="left" src="img/mip2.png" height="150" class="imgNoBorder" />
-						<br/>$\VolC$ is obtained by <b>summing the densities</b> at a level $l$, $\vx_l /h_l$ that intersect $\textit{B}_{R/h}$.
+						<br/>$\VolC$ is obtained by <b>summing the densities</b> at a level <b>$l$</b>, $\vx_l /h_l$ that intersect $\textit{B}_{R/h}$.
 						</p>
 
-						<p class="fragment" data-fragment-index="6"><br/><b><font color="green">Fewer memory accesses</font></b></p>
+						<p class="fragment" ><br/><b><font color="green">Fewer memory accesses when $l<0$ </font></b></p>
 
 						<div style="width:100%;display:block;">
-							<img src="img/octa_r10_l3_a.png" width="200" class="imgNoBorder fragment" data-fragment-index="2"/>
-							<img src="img/octa_r10_l2_a.png" width="200" class="imgNoBorder fragment" data-fragment-index="3"/>
-							<img src="img/octa_r10_l1_a.png" width="200" class="imgNoBorder fragment" data-fragment-index="4"/>
-							<img src="img/octa_r10_l0_a.png" width="200" class="imgNoBorder fragment" data-fragment-index="5"/>
+							<img src="img/octa_r10_l3_a.png" width="200" class="imgNoBorder"/>
+							<img src="img/octa_r10_l2_a.png" width="200" class="imgNoBorder"/>
+							<img src="img/octa_r10_l1_a.png" width="200" class="imgNoBorder"/>
+							<img src="img/octa_r10_l0_a.png" width="200" class="imgNoBorder"/>
 						</div>
 						<div style="width:100%;display:block;margin-top:-50px;">
-							<div class="fragment" data-fragment-index="2" style="margin-left:7px;width:200px;float:left;">$l_3$</div>
-							<div class="fragment" data-fragment-index="3" style="width:200px;float:left;">$l_2$</div>
-							<div class="fragment" data-fragment-index="4" style="width:200px;float:left;">$l_1$</div>
-							<div class="fragment" data-fragment-index="5" style="width:200px;float:left;">$l_0$</div>
+							<div style="margin-left:7px;width:200px;float:left;">$l_3$</div>
+							<div style="width:200px;float:left;">$l_2$</div>
+							<div style="width:200px;float:left;">$l_1$</div>
+							<div style="width:200px;float:left;">$l_0$</div>
 						</div>
 
 				</section>
 
 				<section>
 					<h2>Refinement over time </h2>
-					<p align="left">Keeping an <b>exact</b> curvature visualization while maintaining a <b>real-time</b> manipulation of the object</p>
+					<p align="left">Keeping an exact curvature visualization while maintaining an interactive manipulation of the object</p>
+					<p align="left">Computing an approximation and <b>refining</b> it when there is FPS available</p>
 					<p align="left">At each frame:</p>
 					<ol>
-							<li/> <p align="left"><b><font color="#5f5f5f">If</font></b> the object is moved <b><font color="#5f5f5f">{ $l=1$ }</font></b></p>
+							<li/> <p align="left"><b><font color="#5f5f5f">If</font></b> there has been a movement<b><font color="#5f5f5f">{ $l=1$ }</font></b></p>
 							<p align="left"><b><font color="#5f5f5f">Else</font></b> <b><font color="#5f5f5f">{ $l=l-1$ }</font></b></p>
 							<li/> <p align="left">Approximate curvature <b><font color="#5f5f5f">at level $l$</font></b></p>
 					</ol>
@@ -476,7 +523,7 @@
 					<div style="width:50%;display:block;clear:both;float:left;margin-top:-50px;">
 						<div width="100%" style="text-align:center;">
 							<img src="img/Octa_mean.png" class="imgNoBorder" style="width:25%;" />
-							<img src="img/snow_mean.png" class="imgNoBorder" style="width:25%;" />
+							<img src="img/233snow_mean.png" class="imgNoBorder" style="width:25%;" />
 							<img src="img/teaser.png"    class="imgNoBorder" style="width:30%;" />
 						</div>
 						<div width="100%" style="text-align:center;font-size:75%;">
@@ -501,10 +548,10 @@
 				<section>
 
 					<h2>Visualizing curvature</h2>
-					<p class="fragment">in <strong>real-time</strong></p>
-					<p class="fragment">refined to <strong>exact curvature</strong></p>
-					<p class="fragment">making it easy to <strong>explore parameters</strong></p>
-					<p class="fragment">thanks to the <strong>GPU !</strong></p>
+					<p>in <strong>real-time</strong></p>
+					<p>refined to <strong>exact curvature</strong></p>
+					<p>making it easy to <strong>explore parameters</strong></p>
+					<p>thanks to the <strong>GPU !</strong></p>
 
 				</section>
 
@@ -515,62 +562,85 @@
 					<img src="img/dragon_r8_normales.png" height="200" class="imgNoBorder" />
 
 					<h2><br/> Thanks for listening ! <br/> Questions ? </h2>
+					<p>Follow us on github <a href="https://github.com/dcoeurjo/ICTV">https://github.com/dcoeurjo/ICTV</a>!</p>
 
-					<div style="margin-top:50px;">
-						<div style="font-size:15px; float:left; width:75px; text-align:left;">
+					<div style="margin-top:20px;">
+					
+						<div style="font-size:12px; float:left; width:75px; text-align:left;">
+							<a href="http://dl.acm.org/citation.cfm?id=358741">[Gar82]</a>
+						</div>
+						<div style="font-size:12px; float:left; width:90%; text-align:left;">
+							Gargantini, I. (1982) “An effective way to represent quadtrees”. Communications of the ACM
+						</div>
+						
+						<div style="font-size:12px; float:left; width:75px; text-align:left;">
 							<a href="http://dx.doi.org/10.1145/37402.37422">[LC87]</a>
 						</div>
-						<div style="font-size:15px; float:left; width:auto; text-align:left;">
+						<div style="font-size:12px; float:left; width:auto; text-align:left;">
 							Lorensen, W. E.; Cline, Harvey E. (1987). "Marching cubes: A high resolution 3d surface construction algorithm". ACM Computer Graphics
 						</div>
 
-						<div style="clear:both; font-size:15px; float:left; width:75px; text-align:left;">
+						<div style="clear:both; font-size:12px; float:left; width:75px; text-align:left;">
 							<a href="http://dx.doi.org/10.1016/j.cagd.2004.09.004">[CP05]</a>
 						</div>
-						<div style="font-size:15px; float:left; width:calc(100% - 75px); text-align:left;">
+						<div style="font-size:12px; float:left; width:calc(100% - 75px); text-align:left;">
 							Cazals, F., Pouget, M. (2005). “Estimating differential quantities using polynomial fitting of osculating jets”. Computer Aided Geometric Design
 						</div>
 
-						<div style="clear:both; font-size:15px; float:left; width:75px; text-align:left;">
+						<div style="clear:both; font-size:12px; float:left; width:75px; text-align:left;">
 							<a href="http://dx.doi.org/10.1007/978-3-540-79126-3_33">[MBF08]</a>
 						</div>
-						<div style="font-size:15px; float:left; width:calc(100% - 75px); text-align:left;">
+						<div style="font-size:12px; float:left; width:calc(100% - 75px); text-align:left;">
 							Malgouyres, R., Brunet, F., Fourey, S. (2008). “Binomial Convolutions and Derivatives Estimation from Noisy Discretizations”. Discrete Geometry for Computer Imagery
 						</div>
 
-						<div style="clear:both; font-size:15px; float:left; width:75px; text-align:left;">
+						<div style="clear:both; font-size:12px; float:left; width:75px; text-align:left;">
 							<a href="http://dl.acm.org/citation.cfm?id=1925140">[Len10]</a>
 						</div>
-						<div style="font-size:15px; float:left; width:auto; text-align:left;">
+						<div style="font-size:12px; float:left; width:auto; text-align:left;">
 							Lengyel, E.S., Owens, J.D. (2010). “Voxel-based terrain for real-time virtual simulations”. University of California
 						</div>
 
-						<div style="clear:both; font-size:15px; float:left; width:75px; text-align:left;">
+						<div style="clear:both; font-size:12px; float:left; width:75px; text-align:left;">
 							<a href="http://dx.doi.org/10.1016/j.cviu.2014.04.013">[CLL14]</a>
 						</div>
-						<div style="font-size:15px; float:left; width:calc(100% - 75px); text-align:left;">
+						<div style="font-size:12px; float:left; width:calc(100% - 75px); text-align:left;">
 							Coeurjolly, D., Lachaud, J.O., Levallois, J. (2014) “Multigrid convergent principal curvature estimators in digital geometry.” Computer Vision and Image Understanding.
 						</div>
 
-						<div style="clear:both; font-size:15px; float:left; width:75px; text-align:left;">
+						<div style="clear:both; font-size:12px; float:left; width:75px; text-align:left;">
 							<a href="http://dx.doi.org/10.1201/b16721-33">[DIP14]</a>
 						</div>
-						<div style="font-size:15px; float: left; width:auto; text-align:left;">
+						<div style="font-size:12px; float: left; width:auto; text-align:left;">
 							Dupuy, J., Iehl, J.C., Poulin, P. (2014) : “Quadtrees on the GPU.” GPU Pro 5, chap.
 						</div>
 
-						<div style="clear:both; font-size:15px; float:left; width:75px; text-align:left;">
+						<div style="clear:both; font-size:12px; float:left; width:75px; text-align:left;">
 							<a href="http://dx.doi.org/10.1007/978-3-319-09955-2_14">[LCL14]</a>
 						</div>
-						<div style="font-size:15px; float:left; width:calc(100% - 75px); text-align:left;">
+						<div style="font-size:12px; float:left; width:calc(100% - 75px); text-align:left;">
 							Levallois, J., Coeurjolly, D., Lachaud, J.O. (2014) “Parameter-free and multigrid convergent digital curvature estimators.” Discrete Geometry for Computer Imagery.
 						</div>
 
-						<div style="clear:both; font-size:15px; float:left; width:75px; text-align:left;">
+						<div style="font-size:12px; float:left; width:75px; text-align:left;">
 							<a href="http://dx.doi.org/10.1016/j.cag.2015.05.023">[LCL15]</a>
 						</div>
-						<div style="font-size:15px; float:left; width:auto; text-align:left;">
+						<div style="font-size:12px; float:left; width:90%; text-align:left;">
 							Levallois, J., Coeurjolly, D., Lachaud, J.O. (2015) “Scale-space feature extraction on digital surfaces”. Computers and Graphics
+						</div>
+		
+						<div style="font-size:12px; float:left; width:75px; text-align:left;">
+							<a href="http://dl.acm.org/citation.cfm?id=1034484">[Nie04]</a>
+						</div>
+						<div style="font-size:12px; float:left; width:90%; text-align:left;">
+							Nielson G. M. (2004) “Dual marching cubes”. Proceedings of the conference on Visualization'04
+						</div>
+						
+						<div style="font-size:12px; float:left; width:75px; text-align:left;">
+							<a href="http://onlinelibrary.wiley.com/doi/10.1111/cgf.12462/full">[SBD14]</a>
+						</div>
+						<div style="font-size:12px; float:left; width:90%; text-align:left;">
+							Scholz, M., Bender, J., Dachsbacher, C. (2014) “Real-Time Isosurface Extraction With View-Dependent Level of Detail and Applications”. Computers Graphics Forum
 						</div>
 					</div>
 
@@ -613,3 +683,4 @@
 
 	</body>
 </html>
+
