@@ -210,7 +210,7 @@
 				</section>
 
 				<section>
-					<h2>Issue</h2>
+					<h2>Issues</h2>
 					<p align="left">Computing the curvature is a <b>long</b> process due to the huge size of the datasets</p>
 					<p align="left">Choosing the <b>correct parameterization</b> for an estimation is sometimes difficult</p>
 					<p align="left" class="fragment"><b>Interactive visualization</b></p>
@@ -222,7 +222,7 @@
 
 						<p align="left">Interactive vizualization requires <b>two steps</b> ... </p>
 						<ul>
-						<li class="fragment" /><p>Extracting a <b>mesh</b> to visualize</p>
+						<li class="fragment" /><p>Extract a <b>mesh</b> to visualize</p>
 						<li class="fragment" /><p>Compute the <b>curvature</b> value on this mesh</p>
 						</ul>
 						<p class="fragment" align="left">
@@ -273,7 +273,7 @@
 				<section>
 
 					<h2>Adaptive Marching Cubes</h2>
-					<p align="left">There exists a lot of algorithm to do Marching Cube based adaptive Isosurface Extraction</p>
+					<p align="left">There exists a lot of algorithms to do Marching Cube based adaptive Isosurface Extraction</p>
 					<ul>
 						<li/> Dual Marching Cubes <a href="http://dl.acm.org/citation.cfm?id=1034484">[Nie04]</a>
 						<li/> Tetrahedral Grids <a href="http://onlinelibrary.wiley.com/doi/10.1111/cgf.12462/full">[SBD14]</a>
@@ -330,13 +330,16 @@
 
 
 				<section>
-						<h2>Quadtrees on the GPU <small><a href="http://dx.doi.org/10.1201/b16721-33">[DIP14]</a></small> </h2>
+						<h2>Quadtrees on the GPU</h2>
 
 						<img align="right" src="img/octree.svg" height="250" class="imgNoBorder"/>
 
 						<p align="left"><strong>GPU really can't handle recursivity</strong></p>
 
-						<p align="left"> Derecursifying the octree<small><a href="http://dl.acm.org/citation.cfm?id=358741">[Gar82]</a></small><small><a href="https://www.crcpress.com/GPU-Pro-5-Advanced-Rendering-Techniques/Engel/9781482208634">[DIP14]</a></small> </p>
+						<p align="left"> Derecursifying the octree
+						<small><a href="http://dl.acm.org/citation.cfm?id=358741">[Gar82]</a></small>
+						<small><a href="https://www.crcpress.com/GPU-Pro-5-Advanced-Rendering-Techniques/Engel/9781482208634">[DIP14]</a>
+						<a href="http://onlinelibrary.wiley.com/doi/10.1111/j.1467-8659.2010.01775.x/full">[LMP*10]</a></small></p>
 						<p align="left"> Morton codes, each cell encode its path to the root </p>
 						<p align="left"> The whole tree is represented by a list of its leaves as <b>uncorrelated</b> nodes</p>
 
@@ -346,7 +349,7 @@
 				</section>
 
 				<section>
-					<h2>Quadtrees on the GPU <small><a href="http://dx.doi.org/10.1201/b16721-33">[DIP14]</a></small> </h2>
+					<h2>Quadtrees on the GPU</h2>
 					<div style="float:left">
 					<p align="left">Every time the camera moves, we update <br/> the tree</p>
 					<ul>
@@ -379,7 +382,7 @@
 					<li/> <b><font color="green">Animated datasets</font></b>
 					<li/> <b><font color="red">Bad quality</font></b>
 						<ul>
-							<li/> Normals from <br/>curvature tensor
+							<li/> Normal vectors from <br/>curvature tensor
 						</ul>
 					</ul>
 
@@ -393,17 +396,69 @@
 
 				<section slide-title="Curvature Computation">
 					<h2>Integral Invariants</h2>
-					<p align="left" >Let a ball slide along the border of the object</p>
-					<p align="left" >Computes the curvature as a ratio between the <b>ball volume</b> and the <b>object volume inside the ball</b></p>
+					<p align="left" >Let a ball slide along the border of the object $X$</p>
+					<p align="left" >Computes the curvature as a ratio between the <b>ball volume </b> $\Ball{R/h}{\vx/h}$ and the <b>object volume inside the ball</b>
+					$Y = \Ball{R/h}{\vx/h} \cap Z, h$</p>
 
 					<p>
+					<br/>
 					<script type="math/tex; mode=display">
 					\MeanCurvH{R}(Z,\vx,h)\ \EqDef\ \frac{8}{3R}
-					- \frac{4\VolC(\Ball{R/h}{\vx/h} \cap
-					Z, h)}{\pi R^4}
+					- \frac{4\VolC(Y)}{\pi R^4}
 					</script>
 					</p>
 					<img src="img/digital_curvature.png" width="400" class="imgNoBorder" />
+				</section>
+				
+				<section slide-title="Curvature Computation">
+					<h2>Integral Invariants</h2>
+					<p align="left" >Summing moments instead of counting voxels to fill a covariance Matrix</p>
+
+					<p>
+					<script type="math/tex; mode=display">
+						\tiny
+						
+						{\color{myblue}\text{Cov}_h(Y)} \ \EqDef \left\lbrack{\color{myblue}
+								\begin{array}{ccc}
+									\DMom{200}{h}(Y) & \DMom{110}{h}(Y) & \DMom{101}{h}(Y)\\
+									\DMom{110}{h}(Y) & \DMom{020}{h}(Y) & \DMom{011}{h}(Y)\\
+									\DMom{101}{h}(Y) & \DMom{011}{h}(Y) & \DMom{002}{h}(Y)
+								\end{array}}
+								\right\rbrack
+								- \frac{1}{\color{myblue}\DMom{000}{h}(Y)}
+								\left\lbrack{\color{myblue}
+								\begin{array}{c}
+									\DMom{100}{h}(Y) \\
+									\DMom{010}{h}(Y) \\
+									\DMom{001}{h}(Y) \\
+								\end{array}}
+								\right\rbrack
+								\otimes
+								\left\lbrack{\color{myblue}
+								\begin{array}{c}
+									\DMom{100}{h}(Y) \\
+									\DMom{010}{h}(Y) \\
+									\DMom{001}{h}(Y) \\
+								\end{array}}
+								\right\rbrack^T
+						
+					</script>
+					
+					<p align="left" >Full curvature tensor</p>
+					
+					<p  style="font-size:70%;">
+						\[
+								\begin{align}
+									&\PrincCurvH{1}{R}(\DSh,\vx,h)\ \EqDef\  \frac{6}{\pi R^6}\left({\color{myblue}\hat{\lambda}_2} - 3{\color{myblue}\hat{\lambda}_1}\right) + \frac{8}{5R}\\
+									&\PrincCurvH{2}{R}(\DSh,\vx,h)\  \EqDef\  \frac{6}{\pi R^6}\left({\color{myblue}\hat{\lambda}_1} - 3{\color{myblue}\hat{\lambda}_2}\right) + \frac{8}{5R}\\
+									&\PrincDirH{1}{R}(\DSh,\vx,h)\  \EqDef\  {\color{myblue}\hat{\nu}_1}\\
+									&\PrincDirH{2}{R}(\DSh,\vx,h)\  \EqDef\  {\color{myblue}\hat{\nu}_2}\\
+									&\NormalDirH{R}(\DSh,\vx,h)\  \EqDef\  {\color{myblue}\hat{\nu}_3}
+								\end{align}
+							\]
+					</p>
+					
+					</p>
 				</section>
 				
 				<section>
@@ -475,7 +530,7 @@
 						<br/>$\VolC$ is obtained by <b>summing the densities</b> at a level <b>$l$</b>, $\vx_l /h_l$ that intersect $\textit{B}_{R/h}$.
 						</p>
 
-						<p class="fragment" ><br/><b><font color="green">Fewer memory accesses when $l<0$ </font></b></p>
+						<p class="fragment" ><br/><b><font color="green">Fewer memory accesses when $l>0$ </font></b></p>
 
 						<div style="width:100%;display:block;">
 							<img src="img/octa_r10_l3_a.png" width="200" class="imgNoBorder"/>
@@ -576,8 +631,15 @@
 						<div style="font-size:12px; float:left; width:75px; text-align:left;">
 							<a href="http://dx.doi.org/10.1145/37402.37422">[LC87]</a>
 						</div>
-						<div style="font-size:12px; float:left; width:auto; text-align:left;">
+						<div style="font-size:12px; float:left; width:90%; text-align:left;">
 							Lorensen, W. E.; Cline, Harvey E. (1987). "Marching cubes: A high resolution 3d surface construction algorithm". ACM Computer Graphics
+						</div>
+						
+						<div style="font-size:12px; float:left; width:75px; text-align:left;">
+							<a href="http://dl.acm.org/citation.cfm?id=1034484">[Nie04]</a>
+						</div>
+						<div style="font-size:12px; float:left; width:90%; text-align:left;">
+							Nielson, G. M. (2004) “Dual marching cubes”. Proceedings of the conference on Visualization'04
 						</div>
 
 						<div style="clear:both; font-size:12px; float:left; width:75px; text-align:left;">
@@ -592,6 +654,13 @@
 						</div>
 						<div style="font-size:12px; float:left; width:calc(100% - 75px); text-align:left;">
 							Malgouyres, R., Brunet, F., Fourey, S. (2008). “Binomial Convolutions and Derivatives Estimation from Noisy Discretizations”. Discrete Geometry for Computer Imagery
+						</div>
+						
+						<div style="font-size:12px; float:left; width:75px; text-align:left;">
+							<a href="http://onlinelibrary.wiley.com/doi/10.1111/j.1467-8659.2010.01775.x/full">[LMP*10]</a>
+						</div>
+						<div style="font-size:12px; float:left; width:90%; text-align:left;">
+							Lewiner, T., Mello, V., Peixoto, A., Pesco, S., Lopes, H. (2010) “Fast generation of pointerless octree duals”. Computers Graphics Forum
 						</div>
 
 						<div style="clear:both; font-size:12px; float:left; width:75px; text-align:left;">
@@ -628,13 +697,6 @@
 						<div style="font-size:12px; float:left; width:90%; text-align:left;">
 							Levallois, J., Coeurjolly, D., Lachaud, J.O. (2015) “Scale-space feature extraction on digital surfaces”. Computers and Graphics
 						</div>
-		
-						<div style="font-size:12px; float:left; width:75px; text-align:left;">
-							<a href="http://dl.acm.org/citation.cfm?id=1034484">[Nie04]</a>
-						</div>
-						<div style="font-size:12px; float:left; width:90%; text-align:left;">
-							Nielson G. M. (2004) “Dual marching cubes”. Proceedings of the conference on Visualization'04
-						</div>
 						
 						<div style="font-size:12px; float:left; width:75px; text-align:left;">
 							<a href="http://onlinelibrary.wiley.com/doi/10.1111/cgf.12462/full">[SBD14]</a>
@@ -642,6 +704,7 @@
 						<div style="font-size:12px; float:left; width:90%; text-align:left;">
 							Scholz, M., Bender, J., Dachsbacher, C. (2014) “Real-Time Isosurface Extraction With View-Dependent Level of Detail and Applications”. Computers Graphics Forum
 						</div>
+						
 					</div>
 
 				</section>
