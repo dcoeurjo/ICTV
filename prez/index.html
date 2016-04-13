@@ -60,9 +60,12 @@
 
 			<!-- Any section element inside of this container is displayed as a slide -->
 			<div class="slides">
+
+                                <!-- Slide 1 -->
 				<section>
-					<img src="img/logo_liris.svg" height="50" class="imgNoBorder" style="float: left;"/>
-					<img src="img/logo_lama.svg" height="70" class="imgNoBorder" style="float:right;"/>
+                                        <!--<img src="img/logo_liris.svg" height="50" class="imgNoBorder" style="float: left;"/>
+                                        <img src="img/logo_lama.svg" height="70" class="imgNoBorder" style="float:right;"/>-->
+                                        <img src="img/logos.svg" width="50%" class="imgNoBorder" /><br/>
 					<h1 style="clear:both;">Interactive Curvature Tensor visualization</h1>
 					<p>
 						<small>
@@ -77,8 +80,8 @@
 
 					<img src="img/teaser.png" width="300" class="imgNoBorder" /><br/>
 
-					<img src="img/logo_anr.svg" height="35" class="imgNoBorder" style="float: left;"/>
-					<img src="img/DGtalLogo.png" height="35" class="imgNoBorder" style="float:right;"/>
+                                        <!--<img src="img/logo_anr.svg" height="35" class="imgNoBorder" style="float: left;"/>
+                                        <img src="img/DGtalLogo.png" height="35" class="imgNoBorder" style="float:right;"/>-->
 
 					<footer>
 						\(
@@ -155,26 +158,45 @@
 						\)
 					</footer>
 
+                                        <aside class="notes">
+                                        Hi everyone, my name is Helene and i'm going to present our work about Interactive curvature visualisation.
+                                        </aside>
+
 				</section>
 
+                                <!-- Slide 2 -->
 				<section>
 					<h2>Analysing Digital Datasets</h2>
 					<img align="right" src="img/Snow_NoColor.png" width="500" class="imgNoBorder" />
 					<p align="left"><br/>Output for most scanners</p>
-					<ul>
-						<li/> MRI
-						<li/> Tomographic scanners
-						<li/> ...
+                                        <ul align="left">
+                                                <li align="left"/> MRI
+                                                <li align="left"/> Microtomographic scanners
+                                                <li align="left"/> ...
 					</ul>
 					<p align="left">Complex objects</p>
+                                        <ul align="left">
+                                            <li align="left"/> Snow Microstructures
+                                        </ul>
 					<p align="left">Huge size</p>
-					<p align="left" class="fragment"><b>Difficult to analyze</b></p>
+                                        <ul align="left">
+                                            <li align="left"/> 1024x1024x1024
+                                        </ul>
+                                        <p align="left"><b>Difficult to analyze</b></p>
+
+                                        <aside class="notes">
+                                        ++ example the snow microstructure presented on the right.<br/>
+                                            -> output from a microtomographic scanner.<br/>
+                                            -> covers a few mm with 1024^3 digital points.<br/>
+                                        </aside>
+
 				</section>
 
+                                <!-- Slide 3 -->
 				<section>
 					<h2>Analysing Digital Datasets</h2>
-					<p>Curvature Tensors</p>
-					<p>Used in material sciences, physics ...</p>
+                                        <p align="left" >Curvature Tensors</p>
+                                        <p align="left" >Used in material sciences, physics ...</p>
 					<div style="width:50%;text-align:center;float:left;font-size:70%;">
 					<img height="400" src="img/Snow_mean.png" class="imgNoBorder" />
 					</div>
@@ -182,8 +204,14 @@
 					<img height="182" src="img/E2bis-prindir-bleu.png" class="imgNoBorder" /><br/>
 					<img height="182" src="img/E2bis-prindir-rouge.png" class="imgNoBorder" />
 					</div>
+
+                                        <aside class="notes">
+                                       ++ Snow microstructure example, tensor can be used to detect snow getting smoother, while melting f.e.
+                                        </aside>
+
 				</section>
 
+                                <!-- Slide 4 -->
 				<section>
 					<h2>Digital Curvature</h2>
 					<p align="left" >There is a wide number of <b>curvature estimators</b> for digital objects</p>
@@ -194,7 +222,7 @@
 						<li>Convolution kernel <small><a href="http://dx.doi.org/10.1007/978-3-540-79126-3_33">[MBF08]</a></small></li>
 					</ul>
 					<div class="fragment">
-					<p align="left"><b>from which depends the quality of the result</b></p>
+                                        <p align="left"><b>from which depends the quality of the result <small><a href="http://dx.doi.org/10.1016/j.cviu.2014.04.013">[CLL14]</a></small></b></p>
 					<p style="width:100%; text-align:center;">
 						<img class="imgNoBorder" style="width:15%;" src="img/MeanAl_4.png" />
 						<img class="imgNoBorder" style="width:15%;" src="img/MeanAl_10.png" />
@@ -207,14 +235,21 @@
 						<span style="width:15.5%;text-align:center;float:left;font-size:70%;">$R=10$</span>
 						<span style="width:15.5%;text-align:center;float:left;font-size:70%;">$R=12$</span>
 					</p></div>
+
+                                        <aside class="notes">
+                                        ++ Acts as a SNR, the bigger the neighbourhood the more the object will be smoothed<br/>
+                                        ++ Example with Integral Invariants, using a sphere radius on Al<br/>
+                                        </aside>
+
 				</section>
 
+                                 <!-- Slide 5 -->
 				<section>
 					<h2>Issues</h2>
 					<p align="left">Computing the curvature is a <b>long</b> process due to the huge size of the datasets</p>
 					<p align="left">Choosing the <b>correct parameterization</b> for an estimation is sometimes difficult</p>
-					<p align="left" class="fragment"><b>Interactive visualization</b></p>
-					<img src="img/appli.gif" height="300" class="imgNoBorder fragment" />
+                                        <p align="left" class="fragment" data-fragment-index="1" >Our contribution, an <b><font color="blue">interactive exploration of parameters</font></b></p>
+                                        <img align="center" src="img/appli.gif" height="300" class="imgNoBorder fragment" data-fragment-index="1" />
 				</section>
 
 				<section>
@@ -222,14 +257,20 @@
 
 						<p align="left">Interactive vizualization requires <b>two steps</b> ... </p>
 						<ul>
-						<li class="fragment" /><p>Extract a <b>mesh</b> to visualize</p>
-						<li class="fragment" /><p>Compute the <b>curvature</b> value on this mesh</p>
+                                                <li class="fragment" data-fragment-index="1"/>Extract a <b>mesh for visualization</b> purposes
+                                                <li class="fragment" data-fragment-index="2"/>Compute the <b>curvature value on the digital object</b> and display it on the mesh
 						</ul>
-						<p class="fragment" align="left">
-							<b><font color="#5f5f5f">
+                                                <p class="fragment" align="left" data-fragment-index="3">
 							We perform both those steps <b>on the fly</b> and in <b>real-time</b>, <br/> thanks to the <b>GPU</b> parallelism
-							</font></b>
 						</p>
+                                                <img src="img/pipeline_full.png" class="imgNoBorder fragment" width="75%" data-fragment-index="3"/>
+
+                                                <aside class="notes">
+                                               ++ Here you can see our GPU pipeline<br/>
+                                               ++ The GPU gets as input a list of datas, deals with each item in parallel, and return a new list of datas<br/>
+                                               ++ Example, receive a bunch of triangles, rasterize each one individually and returns the list of colored pixels<br/>
+                                               ++ Limitation, each data must go through the same processing<br/>
+                                                </aside>
 				</section>
 
 				<section slide-title="Isosurface Extraction">
@@ -241,10 +282,15 @@
 							<li align="left" /> <b>Independent</b> triangulation of each cell
 							<li align="left" /> <b>Highly parallel</b>
 						</ul>
-						<br/>
-						<br/>
 						<img src="img/mc_tables.png" width="300" class="imgNoBorder" /> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 						<img src="img/mc_sample.png" width="300" class="imgNoBorder" />
+
+                                                <aside class="notes">
+                                                ++ Marching Cubes divides the scene in a regular grid<br/>
+                                                ++ Then, for each cell it determined if it's corners are inside or outside of the object<br/>
+                                                ++ For this it computes a code for the cell, and therefore can look up its triangulation in a precomputed triangulation table<br/>
+                                                ++ The final mesh is thus made of a list of triangle patches, one for each cell of the regular gris<br/>
+                                                </aside>
 
 				</section>
 
@@ -268,6 +314,12 @@
 						<li/> Some of them too far to be visible from the camera, or even behind it
 					</ul>
 					</div>
+
+                                        <aside class="notes">
+                                        ++ GPU MC, input grid cells, output triangles<br/>
+                                        ++ Vertices aligned with surfels center, very useful since curvature is defined on surfel centers<br/>
+                                        </aside>
+
 				</section>
 
 				<section>
@@ -275,77 +327,77 @@
 					<h2>Adaptive Marching Cubes</h2>
 					<p align="left">There exists a lot of algorithms to do Marching Cube based adaptive Isosurface Extraction</p>
 					<ul>
-						<li/> Dual Marching Cubes <a href="http://dl.acm.org/citation.cfm?id=1034484">[Nie04]</a>
-						<li/> Tetrahedral Grids <a href="http://onlinelibrary.wiley.com/doi/10.1111/cgf.12462/full">[SBD14]</a>
+                                                <li/> Dual Marching Cubes<small><a href="http://dl.acm.org/citation.cfm?id=1034484">[Nie04]</a></small>
+                                                <li/> Tetrahedral Grids<small><a href="http://onlinelibrary.wiley.com/doi/10.1111/cgf.12462/full">[SBD14]</a></small>
 						<li/> ...
 					</ul>
 
-					<p align="left">But to be able to fully exploit the <b>GPU's parallelism</b>, it is mandatory that we use an algorithm performing <b>independent</b> actions on each cell</p>
+                                        <p align="left">But to be able to fully exploit the <b>GPU's parallelism</b>, there are two conditions</p>
+                                        <ul>
+                                            <li/> We need an algorithm performing <b>independent</b> actions on each cell
+                                            <li/> We need to <b>avoid conditional branching</b> as much as possible
+                                        </ul>
+
+                                        <aside class="notes">
+                                        ++ None of the usual elegant methods fulfill those conditions<br/>
+                                        </aside>
 	
 				</section>
 
 
 				<section>
-						<h2>Transvoxels <small><a href="http://dl.acm.org/citation.cfm?id=1925140">[Len10]</a></small></h2>
-						<p align="left">Adaptation of Marching Cubes to use it with an <b>octree</b> instead of the regular grid</p>
+                                        <h2>Transvoxels <small><a href="http://dl.acm.org/citation.cfm?id=1925140">[Len10]</a></small></h2>
+                                        <p align="left">Adaptation of Marching Cubes to use it with an <b>octree</b> instead of the regular grid</p>
 
-						<img src="img/mc_octree.png" width="300" class="imgNoBorder" />
+                                        <img src="img/mc_octree.png" width="300" class="imgNoBorder" />
 
-						<img src="img/figure_solo_cracks.png" width="500" class="imgNoBorder" />
+                                        <img src="img/figure_solo_cracks.png" width="500" class="imgNoBorder" />
 
-						<p class="fragment" ><b><font color="#5f5f5f">Uses a <b>modified Marching Cubes</b> algorithm to patch the cracks</font></b></p>
+                                        <p class="fragment" ><b><font color="#5f5f5f">Uses a <b>modified Marching Cubes</b> algorithm to patch the cracks</font></b></p>
+
+                                        <aside class="notes">
+                                        ++ We need to either avoid the cracks => complex algorithms that are not GPU frienly<br/>
+                                        ++ Or we fill them with more triangles => much more GPU suited<br/>
+                                        </aside>
 				</section>
 
 				<section>
-					<h2>Transvoxels <small><a href="http://dl.acm.org/citation.cfm?id=1925140">[Len10]</a></small></h2>
-					<b><font color="#5f5f5f">Transition cells</font></b>
+                                        <h2>Transition cells</h2>
 					<p><img src="img/transvoxels_transition0.png" height="250" class="imgNoBorder" />
 					<img src="img/transvoxels_transition1.png" height="250" class="imgNoBorder" /></p>
 					<img src="img/figure_cracks.png" width="700" class="imgNoBorder" />
+
+                                        <aside class="notes">
+                                        ++ Insert transition cells between regular cells of != resolution<br/>
+                                        ++ Triangulate them by looking them up in a triangulation table as MC<br/>
+                                        ++ GPU friendly
+                                        </aside>
+
 				</section>
 
 				<section>
-						<h2>Subdivision criteria</h2>
-						<img align="right" src="img/criterion.svg" height="300" class="imgNoBorder" />
-						<p align="left"> Based on a <b>radial distance to the camera</b><br/>
+                                                <h2>Moving Transvoxels the GPU</h2>
 
-						<p align="left"> Projected screen size at distance d
-						<script type="math/tex; mode=display">
-								s(\text{d}) = \tan(\alpha) * \text{d}
-						</script>
-						</p>
+                                                <!--<img align="right" src="img/octree.svg" height="250" class="imgNoBorder"/>-->
 
-						<p align="left"> Radial distance measure
-						<script type="math/tex; mode=display">
-							d = z +
-								\begin{cases}
-									w \cdot z \cdot (\theta - \alpha) 	& \text{if } \theta \geq \alpha\\
-									0	              		    			& \text{else.}
-								\end{cases}
-						</script>
-						</p>
-
-						<img src="img/viewlod2_small.png" height="200" class="imgNoBorder" />
-                </section>
-
-
-				<section>
-						<h2>Quadtrees on the GPU</h2>
-
-						<img align="right" src="img/octree.svg" height="250" class="imgNoBorder"/>
-
-						<p align="left"><strong>GPU really can't handle recursivity</strong></p>
+                                                <p align="left">Transvoxels was meant for a CPU implementation</p>
+                                                <p align="left"><strong>GPU can't handle recursivity</strong>, so the octree is a major issue</p>
 
 						<p align="left"> Derecursifying the octree
 						<small><a href="http://dl.acm.org/citation.cfm?id=358741">[Gar82]</a></small>
 						<small><a href="https://www.crcpress.com/GPU-Pro-5-Advanced-Rendering-Techniques/Engel/9781482208634">[DIP14]</a>
 						<a href="http://onlinelibrary.wiley.com/doi/10.1111/j.1467-8659.2010.01775.x/full">[LMP*10]</a></small></p>
 						<p align="left"> Morton codes, each cell encode its path to the root </p>
+                                                <img src="img/morton_example.svg" width="70%" class="imgNoBorder" />
 						<p align="left"> The whole tree is represented by a list of its leaves as <b>uncorrelated</b> nodes</p>
+                                                <img src="img/node_list.svg" width=40%" class="imgNoBorder" />
 
-						
-						<img src="img/morton_adapt.svg" width="200" class="imgNoBorder" /><br/>
-						<img src="img/node_list.svg" width=500" class="imgNoBorder" />
+                                            <aside class="notes">
+                                            ++ Only non GPU friendly thing => octree<br/>
+                                            ++ Morton codes grows a new digit for each level of subdivision<br/>
+                                            ++ Each nth digit encodes wich part of space contains the cell at the nth level of subdivision<br/>
+                                            ++ Independent processing of each node<br/>
+                                            </aside>
 				</section>
 
 				<section>
@@ -364,12 +416,41 @@
 					<img align="right" src="img/subdivide.svg" width="300" class="fragment imgNoBorder" data-fragment-index="3" /><br style="display: block; margin:-20px;"/>
 					</div>
 
-					</span>
+                                        <aside class="notes">
+                                        ++ Reuse the current octree<br/>
+                                        ++ Leaves the question on the condition for keep, merge and subdivision of cells
+                                        </aside>
 				</section>
+
+                                <section>
+                                                <h2>Subdivision criteria</h2>
+                                                <img align="right" src="img/criterion.svg" height="300" class="imgNoBorder" />
+                                                <p align="left"> Based on a <b>radial distance to the camera</b><br/>
+
+                                                <p align="left"> Projected screen size at distance d
+                                                <script type="math/tex; mode=display">
+                                                \small
+                                                                s(\text{d}) = \tan(\alpha) * \text{d}
+                                                </script>
+                                                </p>
+
+                                                <p align="left"> Radial distance measure
+                                                <script type="math/tex; mode=display">
+                                                    \small
+                                                        d = z +
+                                                                \begin{cases}
+                                                                        w \cdot z \cdot (\theta - \alpha) 	& \text{if } \theta \geq \alpha\\
+                                                                        0	              		    			& \text{else.}
+                                                                \end{cases}
+                                                </script>
+                                                </p>
+
+                                                <img src="img/viewlod2_small.png" height="200" class="imgNoBorder" />
+                                </section>
 
 				<section>
 					<h2>Isosurface Extraction</h2>
-					<img align="right" src="img/tgl.png" width="500" class=" imgNoBorder"/>
+                                        <img align="right" src="img/tgl.png" width="50%" class=" imgNoBorder"/>
 					<ul>
 					<li/> <b><font color="green">Straightforward</font></b>
 						<ul>
@@ -382,19 +463,97 @@
 					<li/> <b><font color="green">Animated datasets</font></b>
 					<li/> <b><font color="red">Bad quality</font></b>
 						<ul>
-							<li/> Normal vectors from <br/>curvature tensor
+                                                        <li/> Normal vectors from curvature tensor
+                                                        <li/> Curvature measured on the digital object
 						</ul>
 					</ul>
 
 				</section>
 
 				<section>
-						<h2>Pipeline</h2>
-						<img src="img/pipeline_step1.png" width="800" class="imgNoBorder" />
+                                    <h2>Pipeline</h2>
+                                    <img src="img/pipeline_step1.png" width="800" class="imgNoBorder" />
 				</section>
 
+                                <section slide-title="Curvature estimation">
+                                        <h2>Digital estimator of <strong>mean curvature</strong></h2>
+                                        <div style="float:left;width:38%;">
+                                                <img src="img/integral3D.svg" class="imgNoBorder" />
+                                        </div>
+                                        <div style="float:right;width:60%;">
+                                                <blockquote class="theorem" cite="" style="width:100%;font-size:70%;text-align:left;">
+                                                        Be $\Shape$ a convex shape in $\R^3$ so that its boundary $\dS$ is $C^3$ with a bounded positive curvature..<br/><br/>
+                                                        $ Y = \Ball{R/h}{\vx/h} \cap \DigF{\Shape}{h} $<br/><br/>
+                                                        $ {\color{myblue}\VolC(Y)} \ \EqDef \ h^3 \text{Card} (Y) $<br/><br/>
+                                                        $ \MeanCurvH{R}(\DigF{\Shape}{h},\vx,h) \ \EqDef \ \frac{8}{3{{R}}} - \frac{4 {\color{myblue}\VolC(Y)}}{\pi R^4} $
+                                                </blockquote>
+                                        </div>
 
-				<section slide-title="Curvature Computation">
+                                        <blockquote class="theorem" cite="" style="clear:both;width:100%;font-size:80%;text-align:right;">
+                                                \[ \color{myred}
+                                                \left| \MeanCurvH{R}(\DSh,\hat{\vx},h) - \MeanCurv(\Shape,\vx) \right| \le O\left(h^\frac{1}{3}\right) \quad\text{quand}\quad R=kh^\frac{1}{3}
+                                                \]
+                                                <a href="#" class="citation">[CVIU 2014][AFIG 2014]</a>
+                                        </blockquote>
+
+                                        <aside class="notes">
+                                        ++ Chose to use the Integral Invariants curvature estimators<br/>
+                                        ++ Let a ball slide on the object surface and compute volume ration between the ball and the ball-object intersection
+                                        ++ Counting voxels inside the ball is enough to solve the equation
+                                        </aside>
+
+                                </section>
+
+                                <section>
+                                        <h2>Digital estimators of <strong>principal curvatures</strong></h2>
+                                        <div style="float:left;width:40%;">
+                                                <img src="img/integral3D.svg" class="imgNoBorder" />
+                                        </div>
+                                        <div style="float:left;width:58%;">
+                                                <blockquote cite="" style="width:88%;font-size:70%;background: rgba(0, 0, 255, 0.05);text-align:left;">
+                                                        Be $\Shape$ a convex shape in $\R^3$ so that its boundary $\dS$ is $C^3$ with a bounded positive curvature..<br/><br/>
+                                                        $Y = \Ball{R/h}{\vx/h} \cap \DigF{\Shape}{h}$<br/><br/>
+                                                        ${\color{myblue}\DMom{pqs}{h}(Y)} \ \EqDef \ h^{3+p+q+s} \sum y_1^{p} y_2^{r} y_3^{s}$
+                                                </blockquote>
+                                        </div>
+
+                                        <blockquote cite="" style="clear:both;width:88%;font-size:60%;background: rgba(0, 0, 255, 0.05);">
+                                                \[
+                                                        {\color{myblue}\text{Cov}{h}(Y)} \ \EqDef \ \left\lbrack{\color{myblue}
+                                                                        \begin{array}{ccc}
+                                                                                \DMom{200}{h}(Y) & \DMom{110}{h}(Y) & \DMom{101}{h}(Y)\\
+                                                                                \DMom{110}{h}(Y) & \DMom{020}{h}(Y) & \DMom{011}{h}(Y)\\
+                                                                                \DMom{101}{h}(Y) & \DMom{011}{h}(Y) & \DMom{002}{h}(Y)
+                                                                        \end{array}}
+                                                                        \right\rbrack
+                                                                        - \frac{1}{\color{myblue}\DMom{000}{h}(Y)}
+                                                                        \left\lbrack{\color{myblue}
+                                                                        \begin{array}{c}
+                                                                                \DMom{100}{h}(Y) \\
+                                                                                \DMom{010}{h}(Y) \\
+                                                                                \DMom{001}{h}(Y) \\
+                                                                        \end{array}}
+                                                                        \right\rbrack
+                                                                        \otimes
+                                                                        \left\lbrack{\color{myblue}
+                                                                        \begin{array}{c}
+                                                                                \DMom{100}{h}(Y) \\
+                                                                                \DMom{010}{h}(Y) \\
+                                                                                \DMom{001}{h}(Y) \\
+                                                                        \end{array}}
+                                                                        \right\rbrack^T
+                                                \]
+                                        </blockquote>
+
+                                        <aside class="notes">
+                                        ++ If we also store mmt or order 2, we can sum those moments and get the whole curvature tensor
+                                        </aside>
+
+                                </section>
+
+
+                                <!--
+                                <section slide-title="Curvature Computation">
 					<h2>Integral Invariants</h2>
 					<p align="left" >Let a ball slide along the border of the object $X$</p>
 					<p align="left" >Computes the curvature as a ratio between the <b>ball volume </b> $\Ball{R/h}{\vx/h}$ and the <b>object volume inside the ball</b>
@@ -415,9 +574,7 @@
 					<p align="left" >Summing moments instead of counting voxels to fill a covariance Matrix</p>
 
 					<p>
-					<script type="math/tex; mode=display">
-						\tiny
-						
+                                        <script type="math/tex; mode=display">
 						{\color{myblue}\text{Cov}_h(Y)} \ \EqDef \left\lbrack{\color{myblue}
 								\begin{array}{ccc}
 									\DMom{200}{h}(Y) & \DMom{110}{h}(Y) & \DMom{101}{h}(Y)\\
@@ -443,10 +600,11 @@
 								\right\rbrack^T
 						
 					</script>
+                                        </p>
 					
 					<p align="left" >Full curvature tensor</p>
 					
-					<p  style="font-size:70%;">
+                                        <p>
 						\[
 								\begin{align}
 									&\PrincCurvH{1}{R}(\DSh,\vx,h)\ \EqDef\  \frac{6}{\pi R^6}\left({\color{myblue}\hat{\lambda}_2} - 3{\color{myblue}\hat{\lambda}_1}\right) + \frac{8}{5R}\\
@@ -459,25 +617,32 @@
 					</p>
 					
 					</p>
-				</section>
+                                </section>
+                                -->
 				
 				<section>
-                        <h2>Curvature computation</h2>
+                                <h2>Curvature computation</h2>
 
+                                                <!--<p>
 						<script type="math/tex; mode=display">
+
 						\MeanCurvH{R}(Z,\vx,h)\ \EqDef\ \frac{8}{3R}
 						- \frac{4\VolC(\Ball{R/h}{\vx/h} \cap
 						Z, h)}{\pi R^4}
 						</script>
+                                                </p>-->
 
-						<p align="right">
-						<img align="left" src="img/digital_curvature.png" width="300" class="imgNoBorder" />
-						<br/>$\VolC$ is obtained by <b>counting the digital points</b> $\vx /h $ that intersect $\textit{B}_{R/h}$.
-						</p>
+                                                <img align="right" src="img/tgl_dgtal_curvature.svg" width="40%" class="imgNoBorder" />
 
-						<p class="fragment"><b><font color="red"><br/>A LOT of memory accesses</font></b></p>
+                                                <div style="width:50%;">
+                                                <p align="left">The vertices of the mesh serve only as centers for the ball since they are aligned with surfels center. </p>
+                                                <p align="left"> <b>Exact curvature</b> </p>
+                                                <p align="left">The curvature tensor is obtained by counting the digital points <b>from the digital object</b> that intersect the ball and summing their moments.</p>
+                                                </div>
 
-						<p>
+                                                <p class="fragment"><b><font color="red"><br/>A LOT of memory fetches</font></b></p>
+
+                                                <p>
 						<img src="img/Octa_mean.png" height="170" class="imgNoBorder" />
 						<img src="img/Octa_dir_max.png" height="170" class="imgNoBorder" />
 						<img src="img/Octa_dir_min.png" height="170" class="imgNoBorder"  />
@@ -489,9 +654,10 @@
                     <section>
 
                     <h2>Reducing the number of texture accesses</h2>
-					<p align="left"><br/>The digital dataset is loaded on the GPU as a texture</p>
+                                        <p align="left"><br/>The digital dataset is loaded on the GPU as a texture</p>
+                                        <p align="left"><br/>We can exploit the GPU capacities for texture filtering</p>
 
-					<p><b>Mipmaps !</b></p>
+                                        <p><b>Mipmaps</b></p>
 
 					<img src="img/mipmaps.png" height="150" class="imgNoBorder" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 					<img src="img/mip.svg" height="100" class="imgNoBorder" />
@@ -517,22 +683,27 @@
 				</section>
 
 				<section>
-					<h2>Regular subdivision</h2>
+                                        <h2>Regular subdivision with refinement</h2>
 
-					<script type="math/tex; mode=display">
+                                                <!--<p>
+                                                <script type="math/tex; mode=display">
 						\MeanCurvH{R}(Z,\vx,h)\ \EqDef\ \frac{8}{3R}
 						- \frac{4\VolC(\Ball{R/h}{\vx/h} \cap
 						Z, h)}{\pi R^4}
-						</script>
+                                                </script>
+                                                </p>-->
 
-						<p align="right">
-						<img align="left" src="img/mip2.png" height="150" class="imgNoBorder" />
-						<br/>$\VolC$ is obtained by <b>summing the densities</b> at a level <b>$l$</b>, $\vx_l /h_l$ that intersect $\textit{B}_{R/h}$.
-						</p>
+                                                <img align="right" src="img/tgl_dgtal_approx_curvature.svg" width="40%" class="imgNoBorder" />
 
-						<p class="fragment" ><br/><b><font color="green">Fewer memory accesses when $l>0$ </font></b></p>
+                                                <div style="width:50%;">
+                                                <p align="left">The curvature tensor at a level <b>$l$</b> is obtained by summing the digital densities of the <b>filtered digital points</b> that intersect the ball and summing their <b>filtered moments</b>.</p>
+                                                <p align="left">Automatic refinement by decreasing <b>$l$</b></p>
+                                                </div>
+
+                                                <p class="fragment" ><br/><b><font color="green">Fewer memory fecthes when $l>0$ </font></b></p>
 
 						<div style="width:100%;display:block;">
+                                                        <p> <br/><br/> </p>
 							<img src="img/octa_r10_l3_a.png" width="200" class="imgNoBorder"/>
 							<img src="img/octa_r10_l2_a.png" width="200" class="imgNoBorder"/>
 							<img src="img/octa_r10_l1_a.png" width="200" class="imgNoBorder"/>
@@ -552,11 +723,13 @@
 					<p align="left">Keeping an exact curvature visualization while maintaining an interactive manipulation of the object</p>
 					<p align="left">Computing an approximation and <b>refining</b> it when there is FPS available</p>
 					<p align="left">At each frame:</p>
-					<ol>
-							<li/> <p align="left"><b><font color="#5f5f5f">If</font></b> there has been a movement<b><font color="#5f5f5f">{ $l=1$ }</font></b></p>
-							<p align="left"><b><font color="#5f5f5f">Else</font></b> <b><font color="#5f5f5f">{ $l=l-1$ }</font></b></p>
-							<li/> <p align="left">Approximate curvature <b><font color="#5f5f5f">at level $l$</font></b></p>
+                                        <div style="margin-left:25%;float:center;text-align:left;">
+                                        <ol align="center">
+                                                        <li/> <p align="left"><b><font color="#5f5f5f">If</font></b> there has been an update of the scene<b><font color="#5f5f5f">{ $l=Max$ }</font></b></p>
+                                                        <p align="c"><b><font color="#5f5f5f">Else</font></b> <b><font color="#5f5f5f">{ $l=l-1$ }</font></b></p>
+                                                        <li/> <p align="left">Approximate curvature <b><font color="#5f5f5f">at level $l$</font></b></p>
 					</ol>
+                                        </div>
 				</section>
 
 				<section>
@@ -564,41 +737,41 @@
 						<img src="img/pipeline_full.png" width="800" class="imgNoBorder" />
 				</section>
 
-				<section slide-title="Results">
-					<h2>Results</h2>
-
-					<div style="width:50%;display:block;float:left;text-align:left;">
-						<strong style="color:#FFA500">Orange : Adaptive isosurface extraction</strong><br/>
-						<strong style="color:#08519C">Dark Blue : Exact curvature computation</strong><br/>
-						<strong style="color:#A6BBDF">Lighter Blue : Approximated curvature computation</strong><br/>
-					</div>
-					<div style="width:49%;display:block;float:right;">
-						<img align="right" src="img/timings.svg" width="500" class="imgNoBorder" />
-					</div>
-					<div style="width:50%;display:block;clear:both;float:left;margin-top:-50px;">
-						<div width="100%" style="text-align:center;">
-							<img src="img/Octa_mean.png" class="imgNoBorder" style="width:25%;" />
-							<img src="img/233snow_mean.png" class="imgNoBorder" style="width:25%;" />
-							<img src="img/teaser.png"    class="imgNoBorder" style="width:30%;" />
-						</div>
-						<div width="100%" style="text-align:center;font-size:75%;">
-							<span style="display:block;margin-left:15%;width:15%;float:left;">$128^3$</span>
-							<span style="display:block;margin-left:10%;width:20%;float:left;">$233^3$</span>
-							<span style="display:block;margin-left:10%;width:20%;float:left;">$512^3$</span>
-						</div>
-						<div width="100%" style="text-align:center;font-size:75%;">
-							<span style="float:left;width:15%;">CPU:</span>
-							<span style="display:block;width:20%;float:left;">~25 sec</span>
-							<span style="display:block;margin-left:5%;width:20%;float:left;">~15 min</span>
-							<span style="display:block;margin-left:10%;width:20%;float:left;">~6 min</span>
-						</div>
-					</div>
-
-				</section>
-
 				<section>
 					<h1>Demo !</h1>
 				</section>
+
+                                <section slide-title="Results">
+                                        <h2>Results</h2>
+
+                                        <div style="width:40%;display:block;float:left;text-align:left;">
+                                                <p style="color:#FFA500">Orange : Adaptive isosurface extraction</p>
+                                                <p style="color:#08519C">Dark Blue : Exact curvature computation</p>
+                                                <p style="color:#A6BBDF">Lighter Blue : Approximated curvature computation</p>
+                                        </div>
+                                        <div style="width:60%;display:block;float:right;">
+                                                <img align="right" src="img/timings.svg" class="imgNoBorder" />
+                                        </div>
+                                        <div style="width:50%;display:block;clear:both;float:left;margin-top:-50px;">
+                                                <div width="100%" style="text-align:center;">
+                                                        <img src="img/Octa_mean.png" class="imgNoBorder" style="width:25%;" />
+                                                        <img src="img/233snow_mean.png" class="imgNoBorder" style="width:25%;" />
+                                                        <img src="img/teaser.png"    class="imgNoBorder" style="width:30%;" />
+                                                </div>
+                                                <div width="100%" style="text-align:center;font-size:75%;">
+                                                        <span style="display:block;margin-left:15%;width:15%;float:left;">$128^3$</span>
+                                                        <span style="display:block;margin-left:10%;width:20%;float:left;">$233^3$</span>
+                                                        <span style="display:block;margin-left:10%;width:20%;float:left;">$512^3$</span>
+                                                </div>
+                                                <div width="100%" style="text-align:center;font-size:75%;">
+                                                        <span style="float:left;width:15%;">CPU:</span>
+                                                        <span style="display:block;width:20%;float:left;">~25 sec</span>
+                                                        <span style="display:block;margin-left:5%;width:20%;float:left;">~15 min</span>
+                                                        <span style="display:block;margin-left:10%;width:20%;float:left;">~6 min</span>
+                                                </div>
+                                        </div>
+
+                                </section>
 
 				<section>
 
