@@ -363,7 +363,7 @@ body {
  .reveal strong,
  .reveal b {
  	font-weight: bold; /* bold*/
-        color: #000000;
+        color: #555555;
  }
 
  .reveal .citation {

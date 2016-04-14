@@ -176,11 +176,11 @@
 					</ul>
 					<p align="left">Complex objects</p>
                                         <ul align="left">
-                                            <li align="left"/> Snow Microstructures
+                                            <li align="left"/> e.g. Snow Microstructures
                                         </ul>
 					<p align="left">Huge size</p>
                                         <ul align="left">
-                                            <li align="left"/> 1024x1024x1024
+                                            <li align="left"/> 1024³
                                         </ul>
                                         <p align="left"><b>Difficult to analyze</b></p>
 
@@ -248,7 +248,7 @@
 					<h2>Issues</h2>
 					<p align="left">Computing the curvature is a <b>long</b> process due to the huge size of the datasets</p>
 					<p align="left">Choosing the <b>correct parameterization</b> for an estimation is sometimes difficult</p>
-                                        <p align="left" class="fragment" data-fragment-index="1" >Our contribution, an <b><font color="blue">interactive exploration of parameters</font></b></p>
+                                        <p align="left" class="fragment" data-fragment-index="1" >Our contribution, an <b>interactive exploration of parameters</b></p>
                                         <img align="center" src="img/appli.gif" height="300" class="imgNoBorder fragment" data-fragment-index="1" />
 				</section>
 
@@ -505,6 +505,8 @@
                                 </section>
 
                                 <section>
+                                
+										<section>
                                         <h2>Digital estimators of <strong>principal curvatures</strong></h2>
                                         <div style="float:left;width:40%;">
                                                 <img src="img/integral3D.svg" class="imgNoBorder" />
@@ -548,6 +550,38 @@
                                         <aside class="notes">
                                         ++ If we also store mmt or order 2, we can sum those moments and get the whole curvature tensor
                                         </aside>
+                                        </section>
+                                        
+                                        <section>
+											<h2>Estimateurs digitaux des <strong>courbures principales</strong></h2>
+											<div style="float:left;width:38%;">
+												<img src="img/integral3D.svg" class="imgNoBorder" />
+											</div>
+											<div style="float:right;width:60%;">
+												<blockquote class="theorem" cite="" style="width:100%;font-size:70%;text-align:left;">
+													\[
+														\begin{align}
+															&\PrincCurvH{1}{R}(\DSh,\vx,h) \EqDef \frac{6}{\pi R^6}\left({\color{myblue}\hat{\lambda}_2} - 3{\color{myblue}\hat{\lambda}_1}\right) + \frac{8}{5R}\\
+															&\PrincCurvH{2}{R}(\DSh,\vx,h) \EqDef \frac{6}{\pi R^6}\left({\color{myblue}\hat{\lambda}_1} - 3{\color{myblue}\hat{\lambda}_2}\right) + \frac{8}{5R}\\
+															&\PrincDirH{1}{R}(\DSh,\vx,h) \EqDef {\color{myblue}\hat{\nu}_1}\\
+															&\PrincDirH{2}{R}(\DSh,\vx,h) \EqDef {\color{myblue}\hat{\nu}_2}\\
+															&\NormalDirH{R}(\DSh,\vx,h) \EqDef {\color{myblue}\hat{\nu}_3}
+														\end{align}
+													\]
+
+													<!-- $\PrincCurvH{1}{R}(\DigF{\Shape}{h},\vx,h) \EqDef \frac{6}{\pi R^6}({\color{myblue}\hat{\lambda}_2} - 3{\color{myblue}\hat{\lambda}_1}) + \frac{8}{5 R}$<br/>
+													$\PrincCurvH{2}{R}(\DigF{\Shape}{h},\vx,h) \EqDef \frac{6}{\pi R^6}({\color{myblue}\hat{\lambda}_1} - 3{\color{myblue}\hat{\lambda}_2}) + \frac{8}{5 R}$<br/>
+													$\PrincDirH{1}{R}(\DigF{\Shape}{h},\vx,h) \EqDef $ -->
+												</blockquote>
+											</div>
+
+											<blockquote class="theorem" cite="" style="clear:both;text-align:right;width:100%;font-size:80%;">
+												\[ \color{myred}
+												\left| \PrincCurvH{i}{R}(\DSh,\hat{\vx},h) - \PrincCurv{i}(\Shape,\vx) \right| \le O\left(h^\frac{1}{3}\right) \quad\text{quand}\quad R=kh^\frac{1}{3}
+												\]
+												<a href="#" class="citation">[CVIU 2014][AFIG 2014]</a>
+											</blockquote>
+										</section>
 
                                 </section>
 
