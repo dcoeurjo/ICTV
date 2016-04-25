@@ -5,16 +5,17 @@ ICTV (Interactive Curvature Tensor Visualization) is an opensource (GPL) OpenGL 
 This work has been presented at [DGCI 2016](http://dgci2016.univ-nantes.fr). Please cite this project as follows:
 
 ```bibtex
-@inproceedings{ICTV16,
-  author    = {H\'el\`ene Perrier and J\'er\'emy Levallois and David Coeurjolly and {Jean-Philippe} Farrugia and {Jean-Claude} Iehl and {Jacques-Olivier} Lachaud},
-  title     = {Interactive Curvature Tensor Visualization on Digital Surfaces},
-  booktitle = {{DGCI}},
-  series    = {Lecture Notes in Computer Science},
-  volume    = {},
-  pages     = {},
-  note      = {to appear},
-  publisher = {Springer},
-  year      = {2016}
+@INBOOK {ICTV16,
+    author    = "H\'el\`ene Perrier and J\'er\'emy Levallois and David Coeurjolly and {Jean-Philippe} Farrugia and {Jean-Claude} Iehl and {Jacques-Olivier} Lachaud",
+    title     = "Discrete Geometry for Computer Imagery: 19th IAPR International Conference, DGCI 2016, Nantes, France, April 18-20, 2016. Proceedings",
+    chapter   = "Interactive Curvature Tensor Visualization on Digital Surfaces",
+    publisher = "Springer International Publishing",
+    year      = "2016",
+    editor    = "Nicolas Normand and Jeanpierre Gu{\'e}don and Florent Autrusseau",
+    pages     = "282--294",
+    isbn      = "978-3-319-32360-2",
+    doi       = "10.1007/978-3-319-32360-2_22",
+    url       = "http://dx.doi.org/10.1007/978-3-319-32360-2_22"
 }
 ```
 
