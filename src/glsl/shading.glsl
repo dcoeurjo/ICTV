@@ -329,7 +329,7 @@ void main()
 
 layout(early_fragment_tests) in;
 
-in vec2 geometry_k1_k2;
+in vec3 geometry_k1_k2;
 in vec3 geometry_min_dir;
 in vec3 geometry_max_dir;
 in vec3 geometry_position;

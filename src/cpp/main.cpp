@@ -1115,12 +1115,15 @@ public:
 				//m_widgets.doLabel(nv::Rect(), Format("Frame %d", frame));
 				
 				m_widgets.doLabel(nv::Rect(), Format("effective cpu time % 6ldms", cpu_time / 1000));
-				m_widgets.doLabel(nv::Rect(), Format("gpu time % 3ldms % 3ldus LOD", gpu_lod_time / 1000, gpu_lod_time % 1000));
+				/*m_widgets.doLabel(nv::Rect(), Format("gpu time % 3ldms % 3ldus LOD", gpu_lod_time / 1000, gpu_lod_time % 1000));
 				m_widgets.doLabel(nv::Rect(), Format("gpu time % 3ldms % 3ldus Cull", gpu_cull_time / 1000, gpu_cull_time % 1000));
 				m_widgets.doLabel(nv::Rect(), Format("gpu time % 3ldms % 3ldus Triangulate Regular Cells", gpu_render_time_regular / 1000, gpu_render_time_regular % 1000));
 				m_widgets.doLabel(nv::Rect(), Format("gpu time % 3ldms % 3ldus Triangulate Transition Cells", gpu_render_time_transition / 1000, gpu_render_time_transition % 1000));
 				m_widgets.doLabel(nv::Rect(), Format("gpu time % 3ldms % 3ldus Shading", gpu_shading_time / 1000, gpu_shading_time % 1000));
-				m_widgets.doLabel(nv::Rect(), Format("gpu time % 3ldms % 3ldus Blit to FB", gpu_blit_fbo / 1000, gpu_blit_fbo % 1000));
+				m_widgets.doLabel(nv::Rect(), Format("gpu time % 3ldms % 3ldus Blit to FB", gpu_blit_fbo / 1000, gpu_blit_fbo % 1000));*/
+				m_widgets.doLabel(nv::Rect(), Format("effective gpu time % 3ldms % 3ldus", 
+								(gpu_blit_fbo+gpu_shading_time+gpu_render_time_transition+gpu_render_time_regular+gpu_cull_time+gpu_lod_time) / 1000, 
+								(gpu_blit_fbo+gpu_shading_time+gpu_render_time_transition+gpu_render_time_regular+gpu_cull_time+gpu_lod_time) % 1000));
 
 				//printf("Frame number %d\r", frame_number);
 
@@ -1133,12 +1136,12 @@ public:
 				sprintf(tmp, "Isosurface %.2f", Parameters::getInstance()->g_isosurface);
 				m_widgets.doLabel(nv::Rect(), tmp);
 				m_widgets.doHorizontalSlider(nv::Rect(0,0, 200, 0), 0.f, 1.f, &(Parameters::getInstance()->g_isosurface));*/
-				if (hierarch)
+				/*if (hierarch)
 				{
 					sprintf(tmp, "Mode:\nRegular (1), Hierarchical (2)\nCurrent %d", (int)Parameters::getInstance()->g_ground_truth);
 					m_widgets.doLabel(nv::Rect(), tmp);
 					m_widgets.doHorizontalSlider(nv::Rect(0,0, 200, 0), 1.1, 2.9, &(Parameters::getInstance()->g_ground_truth));
-				}
+				}*/
 				sprintf(tmp, "Mode:\nNone (0),\nMean curvature (1), Gaussian curvature (2)\nK1 (3), K2(4)\nCurrent %d", (int)Parameters::getInstance()->g_curv_val);
 				m_widgets.doLabel(nv::Rect(), tmp);
 				m_widgets.doHorizontalSlider(nv::Rect(0,0, 200, 0), 0.1, 4.9, &(Parameters::getInstance()->g_curv_val));
@@ -1148,9 +1151,9 @@ public:
 				sprintf(tmp, "Ball Radius %.2f", Parameters::getInstance()->g_curvradius);
 				m_widgets.doLabel(nv::Rect(), tmp);
 				m_widgets.doHorizontalSlider(nv::Rect(0,0, 200, 0), 1.f, 20.f, &(Parameters::getInstance()->g_curvradius));
-				sprintf(tmp, "GT Lvl %.2f", Parameters::getInstance()->g_lvl);
+				/*sprintf(tmp, "GT Lvl %.2f", Parameters::getInstance()->g_lvl);
 				m_widgets.doLabel(nv::Rect(), tmp);
-				m_widgets.doHorizontalSlider(nv::Rect(0,0, 200, 0), 0.f, 10.f, &(Parameters::getInstance()->g_lvl));
+				m_widgets.doHorizontalSlider(nv::Rect(0,0, 200, 0), 0.f, 10.f, &(Parameters::getInstance()->g_lvl));*/
 				
 				if( Parameters::getInstance()->g_lightmode )
 				{
